@@ -73,9 +73,13 @@
 	<!-- Bordo dello schermo. -->
 	<div class="chassis-frame"></div>
 
-	<div class="chassis-rail chassis-rail--top">
+	<!-- Il rail superiore porta identita' e claim. La lingua e' un controllo, quindi
+	     vive fuori da qui (agganciata al rail dal layout) come gli altri. -->
+	<div class="chassis-rail chassis-rail--top" style="padding-right: 4.5rem;">
+		<span class="text-[0.7rem] tracking-normal text-gray-300 normal-case"
+			>esse<span class="text-accent">dev</span></span
+		>
 		<span>Human vision <span class="text-accent">&middot; AI execution</span></span>
-		<span>Milano, IT</span>
 	</div>
 
 	<div class="chassis-rail chassis-rail--left">
@@ -94,7 +98,7 @@
 	</div>
 
 	<div class="chassis-rail chassis-rail--bottom">
-		<span class="tabular-nums">{clock}</span>
+		<span>Milano <span class="tabular-nums text-gray-400">{clock}</span></span>
 		<span>1-4 nav</span>
 	</div>
 </div>

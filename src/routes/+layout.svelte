@@ -1,12 +1,14 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { page } from '$app/state';
-	import FloatingNav from '$lib/components/FloatingNav.svelte';
 	import Footer from '$lib/components/Footer.svelte';
 	import Chassis from '$lib/components/Chassis.svelte';
+	import LanguageSelector from '$lib/components/ui/LanguageSelector.svelte';
 	import Navbar from '$lib/components/Navbar.svelte';
 	import AccentPicker from '$lib/components/ui/AccentPicker.svelte';
 	import BackToTop from '$lib/components/ui/BackToTop.svelte';
+	import { Menu } from '@lucide/svelte';
+	import { fly } from 'svelte/transition';
 	import '$lib/styles/globals.css';
 	import { initializeAnalytics, isAnalyticsReady, trackPageView } from '$lib/utils/analytics';
 	import {
@@ -319,17 +321,13 @@
 <a href="#main-content" class="skip-link">{skipLabel}</a>
 
 <div
-	class="mx-auto flex min-h-screen w-full max-w-[90vw] flex-col overflow-x-hidden scroll-smooth py-[var(--chassis-gutter)] text-white antialiased selection:bg-white/10"
+	class="mx-auto flex min-h-screen w-full max-w-[90vw] flex-col overflow-x-hidden scroll-smooth pt-[calc(var(--chassis-gutter)+var(--chassis-nav-h))] pb-[var(--chassis-gutter)] text-white antialiased selection:bg-white/10"
 >
 	<!-- Telaio strumentale attorno al contenuto (solo da lg in su). -->
 	<Chassis {data} {scrollY} />
 
 	<!-- Passa dati come props ai componenti -->
 	<Navbar {data} bind:menuOpen />
-
-	{#if isLanguageCodeValid}
-		<FloatingNav {data} bind:menuOpen {scrollY} />
-	{/if}
 
 	<main id="main-content" class="flex-1">
 		{@render children()}
@@ -339,9 +337,39 @@
 
 	{#if scrollY > 350 && !menuOpen}
 		<BackToTop global={data.global} />
+
+		<!-- Burger flottante solo sotto lg: li' la navbar scorre via col contenuto e
+		     senza questo il menu resterebbe irraggiungibile. Da lg in su la barra dei
+		     link e' fissata nel telaio e non serve. -->
+		<button
+			onclick={() => (menuOpen = true)}
+			aria-label="Menu"
+			aria-expanded="false"
+			class="fixed top-4 right-4 z-50 flex h-11 w-11 cursor-pointer items-center justify-center rounded-md border border-white/10 bg-white/[0.02] backdrop-blur-md transition-colors duration-200 hover:border-accent/50 hover:bg-white/[0.045] lg:hidden"
+			in:fly={{ y: -10, duration: 300 }}
+			out:fly={{ y: -10, duration: 200 }}
+		>
+			<Menu class="h-6 w-6 text-gray-300" />
+		</button>
 	{/if}
 
 	{#if !menuOpen}
 		<AccentPicker accent={data.accent} lang={currentLocale} />
+	{/if}
+
+	<!-- Selettore lingua agganciato al rail superiore del telaio, come gli altri
+	     controlli. Sotto lg il telaio non c'e' e la lingua resta nell'overlay mobile. -->
+	{#if isLanguageCodeValid}
+		<div
+			class="fixed top-0 right-[var(--chassis-gutter)] z-50 hidden h-[var(--chassis-gutter)] items-center lg:flex"
+		>
+			<LanguageSelector
+				variant="rail"
+				languages={data.languages}
+				selectedLanguage={data.selectedLanguage}
+				navigation={data.navigation}
+				slugMap={data.slugMap}
+			/>
+		</div>
 	{/if}
 </div>

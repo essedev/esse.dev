@@ -10,8 +10,9 @@
 		languages = [],
 		selectedLanguage = 'en',
 		navigation = {},
-		slugMap = { projects: {}, articles: {} }
-	}: LanguageSelectorProps = $props();
+		slugMap = { projects: {}, articles: {} },
+		variant = 'pill'
+	}: LanguageSelectorProps & { variant?: 'pill' | 'rail' } = $props();
 
 	function buildLanguageUrl(targetLang: string): string {
 		return getLanguageUrl({
@@ -36,7 +37,9 @@
      sotto la lingua attiva (come il thumb del MotionToggle), le altre celle restano
      spente e cliccabili. -->
 <div
-	class="relative inline-flex items-center rounded-md border border-white/10 bg-white/[0.02] p-0.5 font-mono text-xs"
+	class="relative inline-flex items-center rounded-md p-0.5 font-mono {variant === 'rail'
+		? 'text-[0.65rem]'
+		: 'border border-white/10 bg-white/[0.02] text-xs'}"
 	role="group"
 	aria-label="Lingua"
 >

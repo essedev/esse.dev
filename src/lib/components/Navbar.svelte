@@ -25,16 +25,22 @@
 	);
 </script>
 
-<header id="top" class="border-b border-white/5">
+<!-- Da lg in su la navbar si riduce ai soli link numerati e si appunta sotto il rail
+     superiore del telaio: una sola superficie di navigazione invece di navbar piu'
+     pill flottante, che dicevano la stessa cosa. Logo e lingua stanno nella cornice. -->
+<header
+	id="top"
+	class="border-b border-white/5 lg:fixed lg:top-[calc(var(--chassis-gutter)+1px)] lg:right-[calc(var(--chassis-gutter)+1px)] lg:left-[calc(var(--chassis-gutter)+1px)] lg:z-40 lg:h-[var(--chassis-nav-h)] lg:bg-[#0c0c0c]/85 lg:backdrop-blur-md"
+>
 	<nav
-		class="mx-auto flex w-full max-w-screen-2xl items-center justify-between px-4 py-6 sm:px-8 lg:px-14"
+		class="mx-auto flex w-full max-w-screen-2xl items-center justify-between px-4 py-6 sm:px-8 lg:w-[90vw] lg:px-14 lg:py-3"
 	>
-		<a href={homeHref} onclick={handleAnchorClick} aria-label="Simone Salerno">
+		<a href={homeHref} onclick={handleAnchorClick} aria-label="Simone Salerno" class="lg:hidden">
 			<Logo />
 		</a>
 
 		<div
-			class="hidden items-center gap-x-7 text-base whitespace-nowrap lg:flex lg:gap-x-9 lg:text-lg"
+			class="hidden items-center gap-x-7 text-base whitespace-nowrap lg:flex lg:gap-x-9 lg:text-base"
 		>
 			{#each data.global.navigation as route, i (route.name)}
 				<a
@@ -48,15 +54,6 @@
 					<span>{route.name}</span>
 				</a>
 			{/each}
-
-			<div class="2xl:ms-2">
-				<LanguageSelector
-					languages={data.languages}
-					selectedLanguage={data.selectedLanguage}
-					navigation={data.navigation}
-					slugMap={data.slugMap}
-				/>
-			</div>
 		</div>
 
 		<!-- Hamburger: stessa cella (px + py) della X nell'overlay, così aprendo non salta. -->
