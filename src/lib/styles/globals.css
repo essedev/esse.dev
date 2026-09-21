@@ -110,14 +110,14 @@ body::after {
    contenuto, offset dei controlli flottanti) torna al valore di prima. */
 :root {
 	--chassis-gutter: 0px;
-	/* Altezza della barra dei link quando e' fissata sotto il rail superiore. */
+	/* Altezza della barra dei link quando è fissata sotto il rail superiore. */
 	--chassis-nav-h: 0px;
 }
 
 @media (min-width: 1024px) {
 	:root {
 		--chassis-gutter: 34px;
-		--chassis-nav-h: 50px;
+		--chassis-nav-h: 64px;
 	}
 }
 
@@ -226,7 +226,7 @@ body::after {
 	transform: translateX(calc(var(--accent-step) * 26px));
 }
 
-/* Nel rail i colori sono LED: spenti finche' non sono attivi, cosi' il gruppo legge
+/* Nel rail i colori sono LED: spenti finché non sono attivi, così il gruppo legge
    come un controllo solo invece di tre quadrati colorati che gridano. */
 .accent-dot {
 	background-color: var(--dot);

@@ -9,8 +9,10 @@
 <div class="hero-enter relative flex flex-col items-start text-left">
 	<p class="font-mono mb-6 flex items-center text-sm text-gray-400 sm:text-base">
 		<span>{welcome.eyebrow}</span>
-		<span class="mx-3 text-gray-600">·</span>
-		<span>esse<span class="text-accent">dev</span></span>
+		<!-- Desktop: il marchio resta nel rail; rimuoverlo dalla cornice avrebbe indebolito
+		     l'identità persistente, mentre qui era una replica a pochi pixel di distanza. -->
+		<span class="mx-3 text-gray-600 lg:hidden">·</span>
+		<span class="lg:hidden">esse<span class="text-accent">dev</span></span>
 	</p>
 
 	<div class="mb-12 overflow-hidden">

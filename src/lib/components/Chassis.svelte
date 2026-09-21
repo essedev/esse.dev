@@ -73,10 +73,10 @@
 	<!-- Bordo dello schermo. -->
 	<div class="chassis-frame"></div>
 
-	<!-- Il rail superiore porta identita' e claim. La lingua e' un controllo, quindi
+	<!-- Il rail superiore porta identità e claim. La lingua è un controllo, quindi
 	     vive fuori da qui (agganciata al rail dal layout) come gli altri. -->
 	<div class="chassis-rail chassis-rail--top" style="padding-right: 4.5rem;">
-		<span class="text-[0.7rem] tracking-normal text-gray-300 normal-case"
+		<span class="text-[0.8rem] font-semibold tracking-tight text-gray-200 normal-case"
 			>esse<span class="text-accent">dev</span></span
 		>
 		<span>Human vision <span class="text-accent">&middot; AI execution</span></span>

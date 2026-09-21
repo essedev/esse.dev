@@ -25,30 +25,27 @@
 	);
 </script>
 
-<!-- Da lg in su la navbar si riduce ai soli link numerati e si appunta sotto il rail
-     superiore del telaio: una sola superficie di navigazione invece di navbar piu'
-     pill flottante, che dicevano la stessa cosa. Logo e lingua stanno nella cornice. -->
+<!-- Desktop: quattro celle danno peso alla navigazione senza aggiungere una seconda
+     superficie; il semplice aumento dei link avrebbe lasciato la barra otticamente vuota. -->
 <header
 	id="top"
 	class="border-b border-white/5 lg:fixed lg:top-[calc(var(--chassis-gutter)+1px)] lg:right-[calc(var(--chassis-gutter)+1px)] lg:left-[calc(var(--chassis-gutter)+1px)] lg:z-40 lg:h-[var(--chassis-nav-h)] lg:bg-[#0c0c0c]/85 lg:backdrop-blur-md"
 >
 	<nav
-		class="mx-auto flex w-full max-w-screen-2xl items-center justify-between px-4 py-6 sm:px-8 lg:w-[90vw] lg:px-14 lg:py-3"
+		class="mx-auto flex w-full max-w-screen-2xl items-center justify-between px-4 py-6 sm:px-8 lg:h-full lg:w-[90vw] lg:px-14 lg:py-0"
 	>
 		<a href={homeHref} onclick={handleAnchorClick} aria-label="Simone Salerno" class="lg:hidden">
 			<Logo />
 		</a>
 
-		<div
-			class="hidden items-center gap-x-7 text-base whitespace-nowrap lg:flex lg:gap-x-9 lg:text-base"
-		>
+		<div class="hidden h-full w-full grid-cols-4 items-stretch whitespace-nowrap lg:grid">
 			{#each data.global.navigation as route, i (route.name)}
 				<a
 					href={`${base}/${data.selectedLanguage}${route.link}`}
 					onclick={handleAnchorClick}
-					class="group flex items-baseline gap-x-2 text-gray-400 transition-colors hover:text-white"
+					class="group flex h-full items-center gap-x-3 border-l border-white/5 pl-5 font-mono text-lg font-medium text-gray-300 transition-colors first:border-l-0 first:pl-0 hover:text-white"
 				>
-					<span class="font-mono text-xs text-accent/70 transition-colors group-hover:text-accent"
+					<span class="text-[0.65rem] text-accent/70 transition-colors group-hover:text-accent"
 						>0{i + 1}</span
 					>
 					<span>{route.name}</span>
@@ -71,7 +68,7 @@
 		</div>
 	</nav>
 
-	<!-- Da lg in su il claim e la citta' li porta il rail superiore del telaio. -->
+	<!-- Da lg in su il claim e la città li porta il rail superiore del telaio. -->
 	<div
 		class="mx-auto flex w-full max-w-screen-2xl items-center justify-between border-t border-white/5 px-4 py-1.5 font-mono text-[0.7rem] tracking-wide text-gray-500 sm:px-8 lg:hidden"
 	>
