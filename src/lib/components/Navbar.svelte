@@ -34,16 +34,21 @@
 	<nav
 		class="mx-auto flex w-full max-w-screen-2xl items-center justify-between px-4 py-6 sm:px-8 lg:h-full lg:w-[90vw] lg:px-14 lg:py-0"
 	>
-		<a href={homeHref} onclick={handleAnchorClick} aria-label="Simone Salerno" class="lg:hidden">
+		<a
+			href={homeHref}
+			onclick={handleAnchorClick}
+			aria-label="Simone Salerno"
+			class="flex items-center lg:h-full lg:pr-8"
+		>
 			<Logo />
 		</a>
 
-		<div class="hidden h-full w-full grid-cols-4 items-stretch whitespace-nowrap lg:grid">
+		<div class="hidden h-full w-full flex-1 grid-cols-4 items-stretch whitespace-nowrap lg:grid">
 			{#each data.global.navigation as route, i (route.name)}
 				<a
 					href={`${base}/${data.selectedLanguage}${route.link}`}
 					onclick={handleAnchorClick}
-					class="group flex h-full items-center gap-x-3 border-l border-white/5 pl-5 font-mono text-lg font-medium text-gray-300 transition-colors first:border-l-0 first:pl-0 hover:text-white"
+					class="group flex h-full items-center gap-x-3 border-l border-white/5 pl-5 font-mono text-lg font-medium text-gray-300 transition-colors hover:text-white"
 				>
 					<span class="text-[0.65rem] text-accent/70 transition-colors group-hover:text-accent"
 						>0{i + 1}</span
