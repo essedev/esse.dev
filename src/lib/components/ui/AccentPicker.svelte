@@ -79,15 +79,24 @@
 	let activeIndex = $derived(ACCENT_THEMES.findIndex((t) => t.id === active));
 </script>
 
+<!-- Sotto lg resta il pill flottante con l'anello che scivola. Da lg in su il picker
+     scende nel rail sinistro del telaio: i colori diventano LED (spenti finche' non
+     sono attivi) e l'indicatore si riduce a una tacca in accento sul bordo esterno,
+     che e' il linguaggio dei rail. -->
 <div
-	class="fixed bottom-[calc(1.5rem+var(--chassis-gutter))] left-6 z-50 flex items-center gap-1.5 rounded-md border border-white/10 bg-white/[0.02] p-1.5 backdrop-blur-md"
+	class="fixed bottom-6 left-6 z-50 flex items-center gap-1.5 rounded-md border border-white/10 bg-white/[0.02] p-1.5 backdrop-blur-md lg:bottom-[calc(var(--chassis-gutter)+1rem)] lg:left-0 lg:w-[var(--chassis-gutter)] lg:flex-col lg:gap-0 lg:rounded-none lg:border-0 lg:bg-transparent lg:p-0 lg:backdrop-blur-none"
 	role="group"
 	aria-label={labelPrefix}
 >
-	<!-- Indicatore di selezione che scivola tra i quadratini (passo = w-5 + gap-1.5 = 26px). -->
+	<!-- Anello scivolante del pill (passo in globals: .accent-indicator). -->
 	<span
-		class="pointer-events-none absolute top-1.5 left-1.5 h-5 w-5 rounded-sm ring-2 ring-white/80 ring-offset-2 ring-offset-black transition-transform duration-300 ease-out"
-		style="transform: translateX({activeIndex * 26}px);"
+		class="accent-indicator pointer-events-none absolute top-1.5 left-1.5 h-5 w-5 rounded-sm ring-2 ring-white/80 ring-offset-2 ring-offset-black transition-transform duration-300 ease-out lg:hidden"
+		style="--accent-step: {activeIndex};"
+	></span>
+	<!-- Tacca del rail (passo = altezza di una cella). -->
+	<span
+		class="accent-tick pointer-events-none hidden lg:block"
+		style="--accent-step: {activeIndex};"
 	></span>
 	{#each ACCENT_THEMES as theme (theme.id)}
 		<button
@@ -95,8 +104,10 @@
 			onclick={() => select(theme)}
 			aria-label="{labelPrefix} {lang === 'en' ? theme.en : theme.it}"
 			aria-pressed={active === theme.id}
-			class="h-5 w-5 cursor-pointer rounded-sm transition-transform hover:scale-110"
-			style="background-color: {theme.accent};"
-		></button>
+			class="flex h-5 w-5 cursor-pointer items-center justify-center rounded-sm transition-transform hover:scale-110 lg:h-6 lg:w-6 lg:rounded-none lg:hover:scale-100"
+			style="--dot: {theme.accent};"
+		>
+			<span class="accent-dot block h-5 w-5 rounded-sm lg:h-2.5 lg:w-2.5 lg:rounded-full"></span>
+		</button>
 	{/each}
 </div>

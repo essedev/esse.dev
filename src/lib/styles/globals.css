@@ -216,6 +216,52 @@ body::after {
 	font-size: 0.55rem;
 }
 
+/* Indicatore dell'AccentPicker: scorre in orizzontale nel pill mobile (passo =
+   dot 20px + gap 6px) e in verticale quando il picker sta nel rail sinistro
+   (passo = dot 20px + gap 8px). */
+.accent-indicator {
+	transform: translateX(calc(var(--accent-step) * 26px));
+}
+
+/* Nel rail i colori sono LED: spenti finche' non sono attivi, cosi' il gruppo legge
+   come un controllo solo invece di tre quadrati colorati che gridano. */
+.accent-dot {
+	background-color: var(--dot);
+}
+
+@media (min-width: 1024px) {
+	.accent-dot {
+		opacity: 0.32;
+		transition:
+			opacity 0.2s ease,
+			box-shadow 0.2s ease;
+	}
+
+	button:hover > .accent-dot {
+		opacity: 0.7;
+	}
+
+	button[aria-pressed='true'] > .accent-dot {
+		opacity: 1;
+		box-shadow: 0 0 9px var(--dot);
+	}
+}
+
+/* Tacca che marca la cella attiva sul bordo esterno del rail. */
+.accent-tick {
+	position: absolute;
+	top: 0;
+	/* Staccata dal bordo viewport: a left 0 spariva contro il margine dello schermo. */
+	left: 4px;
+	width: 3px;
+	height: 1.5rem;
+	border-radius: 2px;
+	background-color: var(--color-accent);
+	box-shadow: 0 0 8px color-mix(in srgb, var(--color-accent) 55%, transparent);
+	transform: translateY(calc(var(--accent-step) * 1.5rem));
+	transition: transform 0.3s var(--ease-out-expo);
+}
+
 /* Classe utility per overlay fullscreen */
 .fullscreen-overlay {
 	position: fixed;
