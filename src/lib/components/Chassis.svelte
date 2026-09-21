@@ -89,7 +89,6 @@
 	</div>
 
 	<div class="chassis-rail chassis-rail--right">
-		<span class="chassis-zero"></span>
 		<span class="chassis-progress">
 			<span class="chassis-progress__fill" style="height: {(progress * 100).toFixed(1)}%"></span>
 		</span>

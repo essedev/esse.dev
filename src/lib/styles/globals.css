@@ -219,18 +219,6 @@ body::after {
 	background: rgba(255, 255, 255, 0.07);
 }
 
-/* Zero della scala: segno spento, sempre presente. Il back-to-top ci accende sopra
-   la propria tacca invece di comparire dal nulla come oggetto a sé. */
-.chassis-zero {
-	position: absolute;
-	top: var(--chassis-track-top);
-	right: 4px;
-	width: 3px;
-	height: 0.875rem;
-	border-radius: 2px;
-	background: rgba(255, 255, 255, 0.12);
-}
-
 .chassis-progress__fill {
 	position: absolute;
 	inset: 0 0 auto 0;
@@ -253,21 +241,55 @@ body::after {
 
 /* Tacca del back-to-top, sovrapposta allo zero della scala: cresce in hover, che è
    l'unico segnale di "cliccami" che questo linguaggio concede. */
-.rail-zero-label {
+.rail-top-label {
 	font-family: var(--font-mono);
-	font-size: 0.55rem;
-	letter-spacing: 0.1em;
+	font-size: 0.62rem;
+	font-weight: 500;
+	letter-spacing: 0.14em;
 	line-height: 1;
+	text-transform: uppercase;
 	color: var(--color-accent);
+	text-shadow: 0 0 10px color-mix(in srgb, var(--color-accent) 45%, transparent);
 	transition:
 		text-shadow 0.2s ease,
-		opacity 0.2s ease;
-	opacity: 0.75;
+		letter-spacing 0.2s ease;
 }
 
-button:hover > .rail-zero-label {
+button:hover > .rail-top-label {
+	letter-spacing: 0.2em;
+	text-shadow: 0 0 16px color-mix(in srgb, var(--color-accent) 90%, transparent);
+}
+
+/* Freccia del back-to-top. Ferma legge come icona, in hover sale in ciclo: il gesto
+   dice la direzione meglio della parola. Il gate motion globale piu' in basso spegne
+   l'animazione con reduced motion, qui non serve ripeterlo. */
+.rail-top-arrow {
+	color: var(--color-accent);
+	opacity: 0.85;
+	filter: drop-shadow(0 0 6px color-mix(in srgb, var(--color-accent) 45%, transparent));
+	transition: opacity 0.2s ease;
+}
+
+button:hover > .rail-top-arrow {
 	opacity: 1;
-	text-shadow: 0 0 9px color-mix(in srgb, var(--color-accent) 70%, transparent);
+	animation: rail-top-rise 1.05s var(--ease-out-expo) infinite;
+}
+
+@keyframes rail-top-rise {
+	0% {
+		transform: translateY(3px);
+		opacity: 0;
+	}
+	25% {
+		opacity: 1;
+	}
+	70% {
+		opacity: 1;
+	}
+	100% {
+		transform: translateY(-6px);
+		opacity: 0;
+	}
 }
 
 /* Nel rail i colori sono LED: spenti finché non sono attivi, così il gruppo legge
