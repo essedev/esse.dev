@@ -58,6 +58,7 @@
 		class="mx-auto w-full max-w-screen-2xl px-4 pt-20 pb-24 sm:px-8 sm:pt-28 sm:pb-32 lg:px-14 2xl:py-36"
 	>
 		<ProjectsSection
+			index={1}
 			projects={data.projects}
 			selectedLanguage={data.selectedLanguage}
 			navigation={data.navigation}
@@ -72,7 +73,7 @@
 	<div
 		class="mx-auto w-full max-w-screen-2xl px-4 pt-20 pb-24 sm:px-8 sm:pt-28 sm:pb-32 lg:px-14 2xl:py-36"
 	>
-		<AboutSection about={data.about} />
+		<AboutSection index={2} about={data.about} />
 	</div>
 </div>
 
@@ -81,6 +82,7 @@
 		class="mx-auto w-full max-w-screen-2xl px-4 pt-20 pb-24 sm:px-8 sm:pt-28 sm:pb-32 lg:px-14 2xl:py-36"
 	>
 		<ArticlesSection
+			index={3}
 			articles={data.articles}
 			selectedLanguage={data.selectedLanguage}
 			navigation={data.navigation}
@@ -95,6 +97,6 @@
 	<div
 		class="mx-auto w-full max-w-screen-2xl px-4 pt-20 pb-24 sm:px-8 sm:pt-28 sm:pb-32 lg:px-14 2xl:py-36"
 	>
-		<ContactSection contact={data.contact} />
+		<ContactSection index={4} contact={data.contact} />
 	</div>
 </div>

@@ -1,20 +1,16 @@
 <script lang="ts">
 	import type { ContactSectionProps } from '$lib/types';
 	import { reveal } from '$lib/actions/reveal';
+	import SectionHeader from '$lib/components/SectionHeader.svelte';
 
 	// Receive contact data as props
-	let { contact }: ContactSectionProps = $props();
+	let { contact, index }: ContactSectionProps = $props();
 </script>
 
-<div
-	use:reveal
-	class="reveal flex w-full flex-col justify-between gap-y-14 tracking-tight sm:gap-y-24"
->
+<div class="flex w-full flex-col justify-between gap-y-14 tracking-tight sm:gap-y-24">
 	<div class="flex flex-col gap-y-4 sm:gap-y-6">
-		<h3 class="text-[2.5rem] leading-none font-normal sm:text-5xl md:text-6xl 2xl:text-7xl">
-			{contact.title}
-		</h3>
-		<p class="text-xl sm:text-2xl md:text-[1.7rem] xl:text-3xl">
+		<SectionHeader {index} title={contact.title} level="h3" />
+		<p use:reveal class="reveal text-xl sm:text-2xl md:text-[1.7rem] xl:text-3xl">
 			{contact.subtitle}
 		</p>
 	</div>

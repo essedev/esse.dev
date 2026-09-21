@@ -5,6 +5,12 @@
 	import type { PageData } from './$types';
 
 	let { data }: { data: PageData } = $props();
+
+	// L'indice della sezione non si cabla: e' la posizione nella navbar, come in home.
+	function navIndex(name: string): number | undefined {
+		const i = data.global.navigation.findIndex((route) => route.name === name);
+		return i >= 0 ? i + 1 : undefined;
+	}
 </script>
 
 <section
@@ -12,6 +18,8 @@
 >
 	{#if data.pageType === 'projects'}
 		<Projects
+			index={navIndex('projects')}
+			collection={data.projects}
 			projects={data.items.filter((item): item is ProjectItem => 'status' in item.meta)}
 			selectedLanguage={data.currentLang}
 			navigation={data.navigation}
@@ -25,6 +33,8 @@
 		/>
 	{:else}
 		<Articles
+			index={navIndex('blog')}
+			collection={data.articles}
 			articles={data.items.filter((item): item is ArticleItem => 'published_date' in item.meta)}
 			selectedLanguage={data.currentLang}
 			navigation={data.navigation}

@@ -9,6 +9,7 @@
 	import { ArrowRight, FileText } from '@lucide/svelte';
 	import { onMount } from 'svelte';
 	import { reveal } from '$lib/actions/reveal';
+	import SectionHeader from '$lib/components/SectionHeader.svelte';
 
 	// Receive data as props
 	let {
@@ -22,7 +23,9 @@
 		pagination,
 		activeFilters,
 		availableTags,
-		availableStatuses
+		availableStatuses,
+		index,
+		collection
 	}: ProjectsSectionProps & {
 		pagination?: { currentPage: number; totalPages: number };
 		activeFilters?: FilterState;
@@ -84,15 +87,26 @@
 	// Stagger d'ingresso delle card: cascata leggera sulle prime, cappata così le card
 	// rivelate scrollando non restano indietro.
 	const cardStagger = (i: number) => Math.min(i, 4) * 60;
+
+	// Readout dell'header: conteggio e arco di anni, presi dai meta.json. Nel listing
+	// `projects` è solo la pagina corrente, quindi il totale arriva da fuori.
+	let headerReadout = $derived.by(() => {
+		const source = collection ?? projects;
+		const count = source.length;
+		if (!count) return undefined;
+		const years = source
+			.map((p) => p.meta.created_date?.slice(0, 4))
+			.filter((y): y is string => Boolean(y))
+			.sort();
+		const lo = years[0];
+		const hi = years[years.length - 1];
+		if (!lo || !hi) return `${count} items`;
+		return `${count} items \u00b7 ${lo === hi ? lo : `${lo}-${hi}`}`;
+	});
 </script>
 
 <div class="flex flex-col gap-y-10 sm:gap-y-16 2xl:gap-y-[4.5rem]">
-	<h2
-		use:reveal
-		class="reveal text-[2.5rem] leading-none font-normal sm:text-5xl md:text-6xl 2xl:text-7xl"
-	>
-		{projectsPage.title}
-	</h2>
+	<SectionHeader {index} title={projectsPage.title} readout={headerReadout} />
 
 	<!-- Search and Filter Component -->
 	{#if showFilters && activeFilters && availableTags}

@@ -233,6 +233,10 @@ export interface ProjectsSectionProps {
 	showFilters?: boolean;
 	showViewAllButton?: boolean;
 	global?: GlobalContent;
+	/** Indice numerato della sezione, lo stesso della navbar e del rail. */
+	index?: number;
+	/** Collezione completa per il readout: nel listing `projects` e' solo la pagina. */
+	collection?: ProjectItem[];
 }
 
 export interface ArticlesSectionProps {
@@ -243,6 +247,8 @@ export interface ArticlesSectionProps {
 	showFilters?: boolean;
 	showViewAllButton?: boolean;
 	global?: GlobalContent;
+	index?: number;
+	collection?: ArticleItem[];
 }
 
 export interface ProjectSectionProps {
@@ -266,10 +272,12 @@ export interface WelcomeSectionProps {
 
 export interface AboutSectionProps {
 	about: AboutContent;
+	index?: number;
 }
 
 export interface ContactSectionProps {
 	contact: ContactContent;
+	index?: number;
 }
 
 // Navigation Component Props

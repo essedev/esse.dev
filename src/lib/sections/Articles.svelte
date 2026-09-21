@@ -7,6 +7,7 @@
 	import { getTranslations, translateTags, type TranslationKey } from '$lib/utils/translations';
 	import { ArrowRight, FileText } from '@lucide/svelte';
 	import { reveal } from '$lib/actions/reveal';
+	import SectionHeader from '$lib/components/SectionHeader.svelte';
 
 	// Receive data as props
 	let {
@@ -19,7 +20,9 @@
 		global,
 		pagination,
 		activeFilters,
-		availableTags
+		availableTags,
+		index,
+		collection
 	}: ArticlesSectionProps & {
 		pagination?: { currentPage: number; totalPages: number };
 		activeFilters?: FilterState;
@@ -51,15 +54,26 @@
 
 	// Stagger d'ingresso delle card (vedi Projects): cascata leggera e cappata.
 	const cardStagger = (i: number) => Math.min(i, 4) * 60;
+
+	// Readout dell'header: sotto i due pezzi resta vuoto, un conteggio a 1 punterebbe
+	// un riflettore sul blog vuoto invece di dire qualcosa.
+	let headerReadout = $derived.by(() => {
+		const source = collection ?? articles;
+		const count = source.length;
+		if (count < 2) return undefined;
+		const years = source
+			.map((a) => a.meta.published_date?.slice(0, 4))
+			.filter((y): y is string => Boolean(y))
+			.sort();
+		const lo = years[0];
+		const hi = years[years.length - 1];
+		if (!lo || !hi) return `${count} items`;
+		return `${count} items \u00b7 ${lo === hi ? lo : `${lo}-${hi}`}`;
+	});
 </script>
 
 <div class="flex flex-col gap-y-10 sm:gap-y-16 2xl:gap-y-[4.5rem]">
-	<h2
-		use:reveal
-		class="reveal text-[2.5rem] leading-none font-normal sm:text-5xl md:text-6xl 2xl:text-7xl"
-	>
-		{blogPage.title}
-	</h2>
+	<SectionHeader {index} title={blogPage.title} readout={headerReadout} />
 
 	<!-- Search and Filter Component -->
 	{#if showFilters && activeFilters && availableTags}
