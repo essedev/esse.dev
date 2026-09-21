@@ -94,9 +94,7 @@
 		style="--accent-step: {activeIndex};"
 	></span>
 	<!-- Tacca del rail (passo = altezza di una cella). -->
-	<span
-		class="accent-tick pointer-events-none hidden lg:block"
-		style="--accent-step: {activeIndex};"
+	<span class="rail-tick pointer-events-none hidden lg:block" style="--tick-step: {activeIndex};"
 	></span>
 	{#each ACCENT_THEMES as theme (theme.id)}
 		<button

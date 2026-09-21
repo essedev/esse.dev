@@ -76,7 +76,7 @@
 	<!-- Il rail superiore porta claim e lingua, cioe' stato. L'identita' sta nella barra
 	     dei link: in 34px di rail il wordmark non puo' che essere minuscolo. La lingua e'
 	     un controllo e vive fuori da qui, agganciata al rail dal layout. -->
-	<div class="chassis-rail chassis-rail--top" style="padding-right: 4.5rem;">
+	<div class="chassis-rail chassis-rail--top">
 		<span>Human vision <span class="text-accent">&middot; AI execution</span></span>
 	</div>
 
@@ -89,6 +89,7 @@
 	</div>
 
 	<div class="chassis-rail chassis-rail--right">
+		<span class="chassis-zero"></span>
 		<span class="chassis-progress">
 			<span class="chassis-progress__fill" style="height: {(progress * 100).toFixed(1)}%"></span>
 		</span>

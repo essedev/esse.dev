@@ -112,12 +112,17 @@ body::after {
 	--chassis-gutter: 0px;
 	/* Altezza della barra dei link quando è fissata sotto il rail superiore. */
 	--chassis-nav-h: 0px;
+	/* Inizio della scala di scorrimento nel rail destro. E' un token perché ci si
+	   allineano sia il segno dello zero sia il bersaglio del back-to-top, che vive
+	   in un nodo separato (il rail è aria-hidden e non va reso interattivo). */
+	--chassis-track-top: 0px;
 }
 
 @media (min-width: 1024px) {
 	:root {
 		--chassis-gutter: 34px;
 		--chassis-nav-h: 64px;
+		--chassis-track-top: 25vh;
 	}
 }
 
@@ -205,12 +210,25 @@ body::after {
 }
 
 .chassis-progress {
-	position: relative;
+	position: absolute;
+	top: var(--chassis-track-top);
+	bottom: var(--chassis-track-top);
 	width: 2px;
-	height: 58%;
 	overflow: hidden;
 	border-radius: 2px;
 	background: rgba(255, 255, 255, 0.07);
+}
+
+/* Zero della scala: segno spento, sempre presente. Il back-to-top ci accende sopra
+   la propria tacca invece di comparire dal nulla come oggetto a sé. */
+.chassis-zero {
+	position: absolute;
+	top: var(--chassis-track-top);
+	right: 4px;
+	width: 3px;
+	height: 0.875rem;
+	border-radius: 2px;
+	background: rgba(255, 255, 255, 0.12);
 }
 
 .chassis-progress__fill {
@@ -221,6 +239,8 @@ body::after {
 }
 
 .chassis-progress__value {
+	position: absolute;
+	bottom: calc(var(--chassis-track-top) - 1.15rem);
 	font-size: 0.55rem;
 }
 
@@ -229,6 +249,25 @@ body::after {
    (passo = dot 20px + gap 8px). */
 .accent-indicator {
 	transform: translateX(calc(var(--accent-step) * 26px));
+}
+
+/* Tacca del back-to-top, sovrapposta allo zero della scala: cresce in hover, che è
+   l'unico segnale di "cliccami" che questo linguaggio concede. */
+.rail-zero-label {
+	font-family: var(--font-mono);
+	font-size: 0.55rem;
+	letter-spacing: 0.1em;
+	line-height: 1;
+	color: var(--color-accent);
+	transition:
+		text-shadow 0.2s ease,
+		opacity 0.2s ease;
+	opacity: 0.75;
+}
+
+button:hover > .rail-zero-label {
+	opacity: 1;
+	text-shadow: 0 0 9px color-mix(in srgb, var(--color-accent) 70%, transparent);
 }
 
 /* Nel rail i colori sono LED: spenti finché non sono attivi, così il gruppo legge
@@ -255,8 +294,9 @@ body::after {
 	}
 }
 
-/* Tacca che marca la cella attiva sul bordo esterno del rail. */
-.accent-tick {
+/* Tacca che marca la cella attiva sul bordo esterno del rail. La usano sia i LED
+   dell'accento sia la coppia di lingue: stesso indice, stessa grammatica. */
+.rail-tick {
 	position: absolute;
 	top: 0;
 	/* Staccata dal bordo viewport: a left 0 spariva contro il margine dello schermo. */
@@ -266,7 +306,7 @@ body::after {
 	border-radius: 2px;
 	background-color: var(--color-accent);
 	box-shadow: 0 0 8px color-mix(in srgb, var(--color-accent) 55%, transparent);
-	transform: translateY(calc(var(--accent-step) * 1.5rem));
+	transform: translateY(calc(var(--tick-step) * 1.5rem));
 	transition: transform 0.3s var(--ease-out-expo);
 }
 

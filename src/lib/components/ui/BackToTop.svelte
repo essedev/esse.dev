@@ -21,19 +21,22 @@
 	let backToTopText = $derived(getTranslation(global, 'backToTop'));
 </script>
 
-<!-- Da lg in su il bottone si riduce a un quadratino nel rail destro, appena sopra
-     il rail inferiore: bordo e fondo in accento a bassa opacita', che salgono
-     sull'hover. Il pieno d'accento era troppo pesante per un controllo secondario
-     che compare solo scrollando. Sotto lg il telaio non si monta e resta il bottone
-     flottante di prima. -->
+<!-- Da lg in su il bottone non e' piu' un oggetto: e' un bersaglio trasparente
+     allineato allo zero della scala nel rail destro, etichettato "00" come la home
+     nel rail sinistro, che gia' si chiama "00 / HOME". Una tacca muta non diceva
+     che si poteva cliccare; un numero della stessa famiglia si.
+     La barra resta telemetria muta (il rail e' aria-hidden apposta, la percentuale
+     si aggiorna a ogni scroll), quindi il controllo deve restare un nodo separato
+     appoggiato sopra. Niente drag e niente scrub: quella gutter e' la zona della
+     scrollbar di sistema e un salto accidentale sarebbe peggio di un bottone brutto.
+     Sotto lg il telaio non si monta e resta il bottone flottante di prima. -->
 <button
 	onclick={scrollToTop}
-	class="group fixed right-6 bottom-6 z-50 flex h-11 w-11 cursor-pointer items-center justify-center rounded-md border border-white/10 bg-white/[0.02] backdrop-blur-md transition-colors duration-200 hover:border-accent/50 hover:bg-white/[0.045] lg:right-1 lg:bottom-[calc(var(--chassis-gutter)+0.375rem)] lg:h-[26px] lg:w-[26px] lg:rounded-sm lg:border-accent/30 lg:bg-accent/[0.08] lg:backdrop-blur-none lg:hover:border-accent/70 lg:hover:bg-accent/15"
+	class="group fixed right-6 bottom-6 z-50 flex h-11 w-11 cursor-pointer items-center justify-center rounded-md border border-white/10 bg-white/[0.02] backdrop-blur-md transition-colors duration-200 hover:border-accent/50 hover:bg-white/[0.045] lg:top-[calc(var(--chassis-track-top)-1.5rem)] lg:right-0 lg:bottom-auto lg:h-6 lg:w-[var(--chassis-gutter)] lg:rounded-none lg:border-0 lg:bg-transparent lg:backdrop-blur-none"
 	aria-label={backToTopText}
 	in:fly={{ y: 10, duration: 300 }}
 	out:fly={{ y: 10, duration: 200 }}
 >
-	<ChevronUp
-		class="h-5 w-5 text-gray-400 transition-colors lg:h-3.5 lg:w-3.5 lg:text-accent/70 lg:group-hover:text-accent"
-	/>
+	<ChevronUp class="h-5 w-5 text-gray-400 lg:hidden" />
+	<span class="rail-zero-label hidden lg:block">00</span>
 </button>

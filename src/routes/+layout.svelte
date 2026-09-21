@@ -361,7 +361,7 @@
 	     controlli. Sotto lg il telaio non c'e' e la lingua resta nell'overlay mobile. -->
 	{#if isLanguageCodeValid}
 		<div
-			class="fixed top-0 right-[var(--chassis-gutter)] z-50 hidden h-[var(--chassis-gutter)] items-center lg:flex"
+			class="fixed top-[calc(var(--chassis-gutter)+var(--chassis-nav-h)+1.5rem)] left-0 z-50 hidden lg:block"
 		>
 			<LanguageSelector
 				variant="rail"
