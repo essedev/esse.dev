@@ -45,7 +45,7 @@
 </div>
 -->
 
-<div id="top" class="border-b border-white/5">
+<div id="top">
 	<div
 		class="mx-auto flex min-h-[80vh] w-full max-w-screen-2xl items-center justify-start px-4 sm:px-8 lg:px-14"
 	>
@@ -53,7 +53,7 @@
 	</div>
 </div>
 
-<div id={sanitizeId(data.global.navigation[0]?.link || '#')} class="border-t border-white/5">
+<div id={sanitizeId(data.global.navigation[0]?.link || '#')}>
 	<div
 		class="mx-auto w-full max-w-screen-2xl px-4 pt-20 pb-24 sm:px-8 sm:pt-28 sm:pb-32 lg:px-14 2xl:py-36"
 	>
@@ -69,7 +69,7 @@
 	</div>
 </div>
 
-<div id={sanitizeId(data.global.navigation[1]?.link || '#')} class="border-t border-white/5">
+<div id={sanitizeId(data.global.navigation[1]?.link || '#')}>
 	<div
 		class="mx-auto w-full max-w-screen-2xl px-4 pt-20 pb-24 sm:px-8 sm:pt-28 sm:pb-32 lg:px-14 2xl:py-36"
 	>
@@ -77,7 +77,7 @@
 	</div>
 </div>
 
-<div id={sanitizeId(data.global.navigation[2]?.link || '#')} class="border-t border-white/5">
+<div id={sanitizeId(data.global.navigation[2]?.link || '#')}>
 	<div
 		class="mx-auto w-full max-w-screen-2xl px-4 pt-20 pb-24 sm:px-8 sm:pt-28 sm:pb-32 lg:px-14 2xl:py-36"
 	>
@@ -93,7 +93,7 @@
 	</div>
 </div>
 
-<div id={sanitizeId(data.global.navigation[3]?.link || '#')} class="border-t border-white/5">
+<div id={sanitizeId(data.global.navigation[3]?.link || '#')}>
 	<div
 		class="mx-auto w-full max-w-screen-2xl px-4 pt-20 pb-24 sm:px-8 sm:pt-28 sm:pb-32 lg:px-14 2xl:py-36"
 	>
