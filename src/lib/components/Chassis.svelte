@@ -95,6 +95,6 @@
 
 	<div class="chassis-rail chassis-rail--bottom">
 		<span class="tabular-nums">{clock}</span>
-		<span>1-4 nav <span class="text-gray-700">&middot;</span> 0 top</span>
+		<span>1-4 nav</span>
 	</div>
 </div>
