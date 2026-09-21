@@ -3,6 +3,7 @@
 	import { page } from '$app/state';
 	import FloatingNav from '$lib/components/FloatingNav.svelte';
 	import Footer from '$lib/components/Footer.svelte';
+	import Chassis from '$lib/components/Chassis.svelte';
 	import Navbar from '$lib/components/Navbar.svelte';
 	import AccentPicker from '$lib/components/ui/AccentPicker.svelte';
 	import BackToTop from '$lib/components/ui/BackToTop.svelte';
@@ -318,8 +319,11 @@
 <a href="#main-content" class="skip-link">{skipLabel}</a>
 
 <div
-	class="mx-auto flex min-h-screen w-full max-w-[90vw] flex-col overflow-x-hidden scroll-smooth text-white antialiased selection:bg-white/10"
+	class="mx-auto flex min-h-screen w-full max-w-[90vw] flex-col overflow-x-hidden scroll-smooth py-[var(--chassis-gutter)] text-white antialiased selection:bg-white/10"
 >
+	<!-- Telaio strumentale attorno al contenuto (solo da lg in su). -->
+	<Chassis {data} {scrollY} />
+
 	<!-- Passa dati come props ai componenti -->
 	<Navbar {data} bind:menuOpen />
 

@@ -74,8 +74,9 @@
 		</div>
 	</nav>
 
+	<!-- Da lg in su il claim e la citta' li porta il rail superiore del telaio. -->
 	<div
-		class="mx-auto flex w-full max-w-screen-2xl items-center justify-between border-t border-white/5 px-4 py-1.5 font-mono text-[0.7rem] tracking-wide text-gray-500 sm:px-8 lg:px-14"
+		class="mx-auto flex w-full max-w-screen-2xl items-center justify-between border-t border-white/5 px-4 py-1.5 font-mono text-[0.7rem] tracking-wide text-gray-500 sm:px-8 lg:hidden"
 	>
 		<span>Human vision &middot; <span class="text-accent">AI execution</span></span>
 		<span class="hidden sm:block">Milano, IT</span>

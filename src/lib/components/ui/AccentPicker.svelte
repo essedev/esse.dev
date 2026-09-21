@@ -80,7 +80,7 @@
 </script>
 
 <div
-	class="fixed bottom-6 left-6 z-50 flex items-center gap-1.5 rounded-md border border-white/10 bg-white/[0.02] p-1.5 backdrop-blur-md"
+	class="fixed bottom-[calc(1.5rem+var(--chassis-gutter))] left-6 z-50 flex items-center gap-1.5 rounded-md border border-white/10 bg-white/[0.02] p-1.5 backdrop-blur-md"
 	role="group"
 	aria-label={labelPrefix}
 >

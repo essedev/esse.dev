@@ -73,8 +73,14 @@ e decisioni in `docs/RESTYLE.md`, log in `docs/CYCLES.md` (Ciclo 9). In sintesi:
   segmented control lingua, switch animazioni (`MotionToggle`), accent picker. Le
   animazioni rispettano il motion toggle; il thumb dello switch è esentato apposta
   (vedi `.motion-thumb` in globals - Tailwind v4 anima `translate`, non `transform`).
-- Logo testuale `essedev` (`Logo.svelte`), voci nav a indice numerato, status bar
-  sotto la navbar (claim del sito), menu mobile a overlay numerato dentro `max-w-[90vw]`.
+- Logo testuale `essedev` (`Logo.svelte`), voci nav a indice numerato, menu mobile a
+  overlay numerato dentro `max-w-[90vw]`.
+- **Telaio strumentale** (`Chassis.svelte`, montato nel `+layout.svelte`): cornice fissa
+  che porta stato vivo (sezione corrente, avanzamento scroll, ora di Milano, claim).
+  Vive nella gutter del token `--chassis-gutter`, che vale `0px` sotto `lg` e `34px`
+  sopra: **qualunque elemento `fixed` va staccato dal bordo con quel token** (vedi
+  `AccentPicker`, `BackToTop`, `FloatingNav`), altrimenti finisce sopra un rail. Sotto
+  `lg` il telaio non si monta e il claim torna nella status bar della navbar.
 - Shortcut tastiera (`+layout.svelte`): `1-4` -> sezioni, `0`/`Home` -> top,
   `End` -> fondo.
 

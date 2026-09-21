@@ -41,6 +41,8 @@
 html {
 	overscroll-behavior: none;
 	-webkit-overflow-scrolling: touch;
+	/* Le ancore non devono finire sotto il rail superiore del telaio. */
+	scroll-padding-top: calc(var(--chassis-gutter) + 1.5rem);
 	transition:
 		--color-accent 0.4s var(--ease-out-expo),
 		--color-accent-soft 0.4s var(--ease-out-expo);
@@ -101,6 +103,117 @@ body::after {
 		transparent 72%
 	);
 	pointer-events: none;
+}
+
+/* Telaio strumentale: cornice fissa che porta i readout di stato. La gutter vale 0
+   sotto lg, dove i rail non si montano, così tutto quello che la usa (padding del
+   contenuto, offset dei controlli flottanti) torna al valore di prima. */
+:root {
+	--chassis-gutter: 0px;
+}
+
+@media (min-width: 1024px) {
+	:root {
+		--chassis-gutter: 34px;
+	}
+}
+
+.chassis-matte,
+.chassis-frame,
+.chassis-rail {
+	position: fixed;
+	pointer-events: none;
+}
+
+/* Ritaglia tutto (sfondo e contenuto in scorrimento) sull'area dello schermo: la
+   gutter resta nero pieno. Sopra il contenuto, sotto i rail e i controlli flottanti. */
+.chassis-matte {
+	inset: 0;
+	z-index: 20;
+	border: var(--chassis-gutter) solid #0c0c0c;
+}
+
+.chassis-frame {
+	inset: var(--chassis-gutter);
+	z-index: 30;
+	border: 1px solid rgba(255, 255, 255, 0.08);
+	border-radius: var(--radius-md);
+}
+
+.chassis-rail {
+	z-index: 30;
+	display: flex;
+	align-items: center;
+	color: #5a5a5a;
+	font-family: var(--font-mono);
+	font-size: 0.6rem;
+	line-height: 1;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+	user-select: none;
+}
+
+/* I rail orizzontali coprono solo la colonna dello schermo: gli angoli restano ai
+   rail laterali, altrimenti i readout si sovrappongono. */
+.chassis-rail--top,
+.chassis-rail--bottom {
+	left: var(--chassis-gutter);
+	right: var(--chassis-gutter);
+	height: var(--chassis-gutter);
+	justify-content: space-between;
+	padding: 0 0.25rem;
+}
+
+.chassis-rail--top {
+	top: 0;
+}
+
+.chassis-rail--bottom {
+	bottom: 0;
+}
+
+.chassis-rail--left,
+.chassis-rail--right {
+	top: 0;
+	bottom: 0;
+	width: var(--chassis-gutter);
+	flex-direction: column;
+	justify-content: center;
+	gap: 0.6rem;
+}
+
+.chassis-rail--left {
+	left: 0;
+}
+
+.chassis-rail--right {
+	right: 0;
+}
+
+.chassis-vertical {
+	writing-mode: vertical-rl;
+	transform: rotate(180deg);
+	letter-spacing: 0.22em;
+}
+
+.chassis-progress {
+	position: relative;
+	width: 2px;
+	height: 58%;
+	overflow: hidden;
+	border-radius: 2px;
+	background: rgba(255, 255, 255, 0.07);
+}
+
+.chassis-progress__fill {
+	position: absolute;
+	inset: 0 0 auto 0;
+	border-radius: 2px;
+	background: var(--color-accent);
+}
+
+.chassis-progress__value {
+	font-size: 0.55rem;
 }
 
 /* Classe utility per overlay fullscreen */

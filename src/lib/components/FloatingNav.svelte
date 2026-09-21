@@ -27,7 +27,7 @@
 
 {#if show()}
 	<header
-		class="pointer-events-none fixed top-[1.7rem] z-50 flex w-full justify-end sm:top-4 sm:left-0 sm:justify-center"
+		class="pointer-events-none fixed top-[1.7rem] z-50 flex w-full justify-end sm:top-[calc(1rem+var(--chassis-gutter))] sm:left-0 sm:justify-center"
 		in:fade={{ duration: 300 }}
 		out:fade={{ duration: 200 }}
 	>
