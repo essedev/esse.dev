@@ -1,0 +1,430 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>B1: telaio strumentale + dati reali</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+	href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Martian+Mono:wght@300;400;500;700&display=swap"
+	rel="stylesheet"
+/>
+<style>
+	:root {
+		--bg: #0c0c0c;
+		--accent: #2cc3f7;
+		--t1: #f4f4f5;
+		--t2: #d4d4d8;
+		--t3: #8a8a8a;
+		--t4: #5a5a5a;
+		--t5: #3a3a3a;
+		--line: rgba(255, 255, 255, 0.08);
+		--mono: 'Martian Mono', ui-monospace, monospace;
+		--sans: 'IBM Plex Sans', system-ui, sans-serif;
+		--g: 34px;
+	}
+	* { box-sizing: border-box; }
+	html, body { height: 100%; margin: 0; }
+	body { background: #000; color: var(--t1); font-family: var(--sans); overflow: hidden; }
+	s { text-decoration: none; color: var(--t4); }
+	b { color: var(--accent); font-weight: inherit; }
+	a { color: inherit; text-decoration: none; }
+
+	.stage {
+		position: fixed;
+		inset: 0;
+		display: grid;
+		grid-template-columns: var(--g) 1fr var(--g);
+		grid-template-rows: var(--g) 1fr var(--g);
+		background: var(--bg);
+	}
+
+	/* Rail: il perimetro porta stato, non decorazione. */
+	.rail {
+		display: flex;
+		align-items: center;
+		font-family: var(--mono);
+		font-size: 9.5px;
+		font-weight: 400;
+		letter-spacing: 0.14em;
+		color: var(--t4);
+		text-transform: uppercase;
+		user-select: none;
+		overflow: hidden;
+		position: relative;
+	}
+	/* I rail orizzontali stanno solo sulla colonna dello schermo: gli angoli
+	   restano ai rail laterali, altrimenti i readout si sovrappongono. */
+	.rail-top { grid-area: 1 / 2 / 2 / 3; justify-content: space-between; padding: 0 2px; }
+	.rail-left { grid-area: 2 / 1 / 3 / 2; justify-content: center; }
+	.rail-right { grid-area: 2 / 3 / 3 / 4; justify-content: center; }
+	.rail-bottom { grid-area: 3 / 2 / 4 / 3; justify-content: space-between; padding: 0 2px; }
+	.grp { display: flex; align-items: center; gap: 10px; }
+	.sep { color: var(--t5); }
+	.on { color: var(--t2); }
+
+	/* La telemetria si puo spegnere per capire quanto pesa. */
+	.stage[data-telemetry='off'] .tele { visibility: hidden; }
+
+	.vtext { writing-mode: vertical-rl; transform: rotate(180deg); letter-spacing: 0.22em; color: var(--t3); }
+	.vtext em { font-style: normal; color: var(--accent); }
+	.prog { position: relative; width: 2px; height: 58%; background: rgba(255, 255, 255, 0.07); border-radius: 2px; }
+	.prog i { position: absolute; inset: 0 0 auto 0; height: 0%; background: var(--accent); border-radius: 2px; }
+	/* In alto, non in basso: nell'angolo si sovrappone al rail inferiore. */
+	.pct { position: absolute; top: 12px; font-size: 9px; color: var(--t4); }
+
+	.screen {
+		grid-area: 2 / 2 / 3 / 3;
+		position: relative;
+		overflow: hidden;
+		background: var(--bg);
+		border: 1px solid var(--line);
+		border-radius: 12px;
+	}
+	.scroller { height: 100%; overflow-y: auto; scrollbar-width: thin; scrollbar-color: #262626 transparent; }
+	.scroller::-webkit-scrollbar { width: 6px; }
+	.scroller::-webkit-scrollbar-thumb { background: #262626; border-radius: 6px; }
+
+	.screen::after {
+		content: '';
+		position: absolute;
+		inset: auto 0 0 0;
+		height: 52%;
+		pointer-events: none;
+		background: radial-gradient(60% 100% at 50% 135%, rgba(44, 195, 247, 0.15), transparent 70%);
+	}
+
+	/* Dose CRT 1: vignette + fosforo sull'accento + scanline solo sulle superfici media. */
+	.stage[data-crt='1'] .screen,
+	.stage[data-crt='2'] .screen { box-shadow: inset 0 0 120px rgba(0, 0, 0, 0.75); }
+	.stage[data-crt='1'] b,
+	.stage[data-crt='2'] b,
+	.stage[data-crt='1'] .vtext em,
+	.stage[data-crt='2'] .vtext em { text-shadow: 0 0 14px rgba(44, 195, 247, 0.5); }
+	.stage[data-crt='1'] .thumb::after,
+	.stage[data-crt='2'] .thumb::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		background: repeating-linear-gradient(to bottom, rgba(0, 0, 0, 0.22) 0 1px, transparent 1px 3px);
+	}
+	/* Dose CRT 2: scanline su tutto + aberrazione cromatica sui titoli. */
+	.stage[data-crt='2'] .screen::before {
+		content: '';
+		position: absolute;
+		inset: 0;
+		z-index: 4;
+		pointer-events: none;
+		background: repeating-linear-gradient(to bottom, rgba(0, 0, 0, 0.17) 0 1px, transparent 1px 3px);
+	}
+	.stage[data-crt='2'] h1 {
+		text-shadow: -1px 0 rgba(255, 0, 90, 0.2), 1px 0 rgba(0, 220, 255, 0.2), 0 0 34px rgba(44, 195, 247, 0.14);
+	}
+	.stage[data-crt='2'] .screen { box-shadow: inset 0 0 150px rgba(0, 0, 0, 0.85); }
+
+	/* Contenuto. */
+	.wrap { max-width: 1100px; margin: 0 auto; padding: 0 clamp(20px, 4vw, 60px); }
+	.nav { display: flex; align-items: center; justify-content: space-between; padding: 28px 0 0; }
+	.logo { font-family: var(--mono); font-weight: 600; font-size: 22px; letter-spacing: -0.03em; }
+	.nav ul { display: flex; gap: 26px; list-style: none; margin: 0; padding: 0; font-family: var(--mono); font-size: 11px; color: var(--t3); }
+	.nav li i { font-style: normal; color: var(--t4); margin-right: 6px; }
+
+	.sec { padding: 96px 0; }
+	.hero { padding: 120px 0 130px; }
+	.eyebrow { font-family: var(--mono); font-size: 13px; color: var(--t3); margin: 0 0 24px; }
+	h1 { font-family: var(--mono); font-weight: 500; font-size: clamp(42px, 7vw, 94px); line-height: 1.1; letter-spacing: -0.02em; margin: 0 0 30px; }
+	.lede { max-width: 33em; font-size: 18px; line-height: 1.6; color: var(--t2); margin: 0; }
+	.sub { font-family: var(--mono); font-size: 12px; color: var(--t4); margin: 40px 0 0; }
+
+	/* Header strumentale: numero, nome, righello, readout vero a destra. */
+	.ihead {
+		display: flex;
+		align-items: center;
+		gap: 16px;
+		margin: 0 0 38px;
+		font-family: var(--mono);
+		font-size: 11px;
+		letter-spacing: 0.18em;
+		text-transform: uppercase;
+	}
+	.ihead .n { color: var(--accent); }
+	.ihead .name { color: var(--t2); }
+	.ihead hr { flex: 1; border: 0; border-top: 1px solid var(--line); }
+	.ihead .out { color: var(--t4); }
+
+	/* 01 Projects: griglia densa. */
+	.grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+	.card { border: 1px solid var(--line); border-radius: 12px; padding: 16px; background: rgba(255, 255, 255, 0.015); transition: background 0.2s, border-color 0.2s; }
+	.card:hover { background: rgba(255, 255, 255, 0.045); border-color: rgba(44, 195, 247, 0.4); }
+	.thumb { position: relative; overflow: hidden; height: 130px; border-radius: 8px; background: linear-gradient(140deg, rgba(44, 195, 247, 0.17), rgba(44, 195, 247, 0.03)); border: 1px solid var(--line); margin-bottom: 14px; }
+	.card h3 { font-family: var(--mono); font-size: 15px; font-weight: 500; margin: 0 0 8px; }
+	.card p { font-size: 13px; line-height: 1.5; color: var(--t3); margin: 0 0 14px; }
+	.meta { display: flex; align-items: center; justify-content: space-between; font-family: var(--mono); font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--t4); }
+	.st { display: inline-flex; align-items: center; gap: 6px; }
+	.st i { width: 5px; height: 5px; border-radius: 50%; background: var(--t4); }
+	.st.live i { background: var(--accent); box-shadow: 0 0 8px var(--accent); }
+
+	/* 02 Articles: indice tipografico, nessuna card. */
+	.idx { display: flex; flex-direction: column; }
+	.idx a { display: flex; align-items: baseline; gap: 18px; padding: 22px 0; border-top: 1px solid var(--line); transition: color 0.2s; }
+	.idx a:last-child { border-bottom: 1px solid var(--line); }
+	.idx a:hover .t { color: var(--accent); }
+	.idx .n { font-family: var(--mono); font-size: 10px; color: var(--t4); width: 26px; flex: none; }
+	.idx .t { font-size: 19px; color: var(--t2); transition: color 0.2s; }
+	.idx .dots { flex: 1; border-bottom: 1px dotted rgba(255, 255, 255, 0.14); transform: translateY(-4px); }
+	.idx .d { font-family: var(--mono); font-size: 10px; color: var(--t4); }
+
+	/* 03 About: colonna stretta, molta aria. */
+	.narrow { max-width: 30em; }
+	.narrow p { font-size: 17px; line-height: 1.75; color: var(--t2); margin: 0 0 20px; }
+
+	/* 04 Contact: una riga sola. */
+	.mail { display: inline-block; font-family: var(--mono); font-weight: 500; font-size: clamp(24px, 4.2vw, 50px); letter-spacing: -0.02em; color: var(--t1); border-bottom: 2px solid rgba(44, 195, 247, 0.35); padding-bottom: 6px; transition: color 0.2s, border-color 0.2s; }
+	.mail:hover { color: var(--accent); border-color: var(--accent); }
+	.links { display: flex; gap: 22px; margin-top: 34px; font-family: var(--mono); font-size: 11px; color: var(--t4); letter-spacing: 0.12em; text-transform: uppercase; }
+	.links a:hover { color: var(--accent); }
+	.foot { margin-top: 90px; padding: 20px 0 40px; border-top: 1px solid var(--line); display: flex; justify-content: space-between; font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--t5); }
+
+	/* Barra di controllo dell'anteprima, non fa parte del design. */
+	.pill {
+		position: fixed;
+		left: 50%;
+		bottom: 14px;
+		transform: translateX(-50%);
+		z-index: 50;
+		display: flex;
+		flex-direction: column;
+		gap: 9px;
+		padding: 12px 16px;
+		border-radius: 12px;
+		border: 1px dashed rgba(255, 255, 255, 0.22);
+		background: rgba(9, 9, 9, 0.92);
+		backdrop-filter: blur(10px);
+		font-family: var(--mono);
+		font-size: 10.5px;
+		color: var(--t3);
+		max-width: min(92vw, 780px);
+	}
+	.pill.hidden { display: none; }
+	.pill .line { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+	.pill .lbl { width: 86px; color: var(--t4); letter-spacing: 0.12em; text-transform: uppercase; }
+	.pill button { font: inherit; color: var(--t2); background: transparent; border: 1px solid var(--line); border-radius: 6px; padding: 5px 10px; cursor: pointer; transition: all 0.15s; }
+	.pill button:hover { border-color: rgba(44, 195, 247, 0.5); color: var(--t1); }
+	.pill button[aria-pressed='true'] { border-color: var(--accent); color: var(--accent); background: rgba(44, 195, 247, 0.08); }
+	.pill .hint { color: var(--t5); font-size: 9px; letter-spacing: 0.1em; }
+	.src { border-top: 1px solid var(--line); padding-top: 9px; display: none; }
+	.src.open { display: block; }
+	.src table { border-collapse: collapse; font-size: 9.5px; width: 100%; }
+	.src td { padding: 3px 10px 3px 0; vertical-align: top; color: var(--t4); }
+	.src td:first-child { color: var(--t2); white-space: nowrap; }
+	.src td:last-child { color: #6f7377; }
+	.src .warn { margin-top: 8px; color: #c9a227; font-size: 9.5px; line-height: 1.6; }
+</style>
+</head>
+<body>
+	<div class="stage" id="stage" data-crt="1" data-telemetry="on">
+		<div class="rail rail-top">
+			<div class="grp"><span>Human vision</span><b>&middot;</b><span style="color: var(--accent)">AI execution</span></div>
+			<div class="grp"><span class="on">IT</span><span class="sep">/</span><span>EN</span></div>
+		</div>
+
+		<div class="rail rail-left">
+			<div class="vtext" id="sectionLabel"><em>00</em> / HOME</div>
+		</div>
+
+		<div class="screen">
+			<div class="scroller" id="scroller">
+				<div class="wrap">
+					<header class="nav">
+						<div class="logo">esse<b>dev</b></div>
+						<ul>
+							<li><i>01</i>projects</li><li><i>02</i>articles</li><li><i>03</i>about</li><li><i>04</i>contact</li>
+						</ul>
+					</header>
+
+					<section class="sec hero" data-label="00 / HOME">
+						<p class="eyebrow">AI Engineer <s>&middot;</s> esse<b>dev</b></p>
+						<h1>I cast code.</h1>
+						<p class="lede">Progetto data model, boundary e standard. L'esecuzione la accelerano gli agent, la direzione resta mia.</p>
+						<p class="sub">half engineer, <b>half wizard</b></p>
+					</section>
+
+					<section class="sec" data-label="01 / PROJECTS">
+						<div class="ihead">
+							<span class="n">01</span><span class="name">Projects</span><hr />
+							<span class="out tele">25 items &middot; 2022&ndash;2025</span>
+						</div>
+						<div class="grid3">
+							<article class="card">
+								<div class="thumb"></div>
+								<h3>Allocation</h3>
+								<p>Pianificazione ore e commesse per un team di 35 persone.</p>
+								<div class="meta"><span class="st live"><i></i>in progress</span><span class="tele">2025</span></div>
+							</article>
+							<article class="card">
+								<div class="thumb"></div>
+								<h3>yellow-calls</h3>
+								<p>Trascrizione e ricerca semantica sulle call commerciali.</p>
+								<div class="meta"><span class="st live"><i></i>in progress</span><span class="tele">2025</span></div>
+							</article>
+							<article class="card">
+								<div class="thumb"></div>
+								<h3>Budokan</h3>
+								<p>Sito e prenotazioni per un centro sportivo.</p>
+								<div class="meta"><span class="st"><i></i>completed</span><span class="tele">2024</span></div>
+							</article>
+						</div>
+					</section>
+
+					<section class="sec" data-label="02 / ARTICLES">
+						<div class="ihead">
+							<span class="n">02</span><span class="name">Articles</span><hr />
+							<span class="out tele">long form</span>
+						</div>
+						<div class="idx">
+							<a href="#"><span class="n">01</span><span class="t">Stimare in ore-ingegnere quando scrive l'agent</span><span class="dots"></span><span class="d">2026-08</span></a>
+							<a href="#"><span class="n">02</span><span class="t">Il data model lo definisce l'umano</span><span class="dots"></span><span class="d">2026-06</span></a>
+							<a href="#"><span class="n">03</span><span class="t">Rule condizionali invece di un CLAUDE.md gonfio</span><span class="dots"></span><span class="d">2026-05</span></a>
+						</div>
+					</section>
+
+					<section class="sec" data-label="03 / ABOUT">
+						<div class="ihead">
+							<span class="n">03</span><span class="name">About</span><hr />
+							<span class="out tele">Milano, IT</span>
+						</div>
+						<div class="narrow">
+							<p>AI Engineer e lead engineering di Yellow Tech. Costruisco soluzioni AI per aziende italiane, fra progetti su misura e percorsi di adoption.</p>
+							<p>Le decisioni tecniche passano da me: data model, boundary, standard. Il resto lo esegue chi esegue meglio, e negli ultimi due anni è spesso un agent.</p>
+						</div>
+					</section>
+
+					<section class="sec" data-label="04 / CONTACT">
+						<div class="ihead">
+							<span class="n">04</span><span class="name">Contact</span><hr />
+							<span class="out tele" id="localTime">19:41 CEST</span>
+						</div>
+						<a class="mail" href="#">ciao@esse.dev</a>
+						<div class="links">
+							<a href="#">GitHub</a><a href="#">LinkedIn</a><a href="#">simonesalerno.it</a><a href="#">esse.dev</a>
+						</div>
+						<div class="foot">
+							<span>&copy; 2026 Simone Salerno</span>
+							<span class="tele">326 commit &middot; 94 co-authored</span>
+							<span class="tele">509d04c</span>
+						</div>
+					</section>
+				</div>
+			</div>
+		</div>
+
+		<div class="rail rail-right">
+			<div class="prog"><i id="progFill"></i></div>
+			<div class="pct" id="progPct">0%</div>
+		</div>
+
+		<div class="rail rail-bottom">
+			<div class="grp"><span>Milano</span><span class="on" id="clock">--:--:--</span></div>
+			<div class="grp tele"><span>326 commit</span><span class="sep">&middot;</span><span>94 ai</span><span class="sep">&middot;</span><span>9 cicli</span></div>
+			<div class="grp tele"><span>509d04c</span><span class="sep">&middot;</span><span class="on">MXP</span></div>
+		</div>
+	</div>
+
+	<div class="pill" id="pill">
+		<div class="line">
+			<span class="lbl">CRT</span>
+			<button data-crt="0">0 &middot; niente</button>
+			<button data-crt="1">1 &middot; fosforo</button>
+			<button data-crt="2">2 &middot; scanline</button>
+		</div>
+		<div class="line">
+			<span class="lbl">Telemetria</span>
+			<button data-tele="on">on</button>
+			<button data-tele="off">off</button>
+			<button id="srcBtn">fonti dei numeri</button>
+		</div>
+		<div class="src" id="src">
+			<table>
+				<tr><td>326 commit</td><td>git rev-list --count HEAD</td></tr>
+				<tr><td>94 ai</td><td>git log --format=%B | grep -c 'Co-Authored-By: Claude'</td></tr>
+				<tr><td>9 cicli</td><td>grep -c '^## ' docs/CYCLES.md</td></tr>
+				<tr><td>25 items &middot; 2022&ndash;2025</td><td>meta.json dei progetti: published + created_date</td></tr>
+				<tr><td>in progress / completed</td><td>campo status già presente in meta.json (15 / 5 / 5 archived)</td></tr>
+				<tr><td>509d04c</td><td>git rev-parse --short HEAD al build</td></tr>
+				<tr><td>MXP</td><td>platform.cf.colo, a runtime su Workers. NON cablato oggi</td></tr>
+				<tr><td>orologio</td><td>client, Europe/Rome</td></tr>
+			</table>
+			<div class="warn">
+				Due avvertenze vere. 94/326 è un lower bound: i commit che scrivi tu dopo il lavoro dell'agent non sono splittati, va detto o il numero mente per difetto.
+				E Workers Builds clona shallow, quindi rev-list conta male: o storia piena o stat committate in un JSON.
+			</div>
+		</div>
+		<div class="hint">tasti: 0/1/2 dose CRT &nbsp; t telemetria &nbsp; f fonti &nbsp; h nasconde questa barra</div>
+	</div>
+
+<script>
+	const stage = document.getElementById('stage');
+	const scroller = document.getElementById('scroller');
+	const pill = document.getElementById('pill');
+	const src = document.getElementById('src');
+	const label = document.getElementById('sectionLabel');
+	const fill = document.getElementById('progFill');
+	const pct = document.getElementById('progPct');
+
+	const store = {
+		get(k, d) { try { return localStorage.getItem(k) || d; } catch { return d; } },
+		set(k, v) { try { localStorage.setItem(k, v); } catch { /* file:// o storage bloccato */ } }
+	};
+
+	let crt = store.get('b1.crt', '1');
+	let tele = store.get('b1.tele', 'on');
+
+	function sync() {
+		stage.dataset.crt = crt;
+		stage.dataset.telemetry = tele;
+		document.querySelectorAll('button[data-crt]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.crt === crt)));
+		document.querySelectorAll('button[data-tele]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.tele === tele)));
+		store.set('b1.crt', crt);
+		store.set('b1.tele', tele);
+	}
+
+	function onScroll() {
+		const max = scroller.scrollHeight - scroller.clientHeight;
+		const p = max > 0 ? scroller.scrollTop / max : 0;
+		fill.style.height = (p * 100).toFixed(0) + '%';
+		pct.textContent = (p * 100).toFixed(0) + '%';
+		const secs = [...scroller.querySelectorAll('[data-label]')];
+		let cur = secs[0];
+		for (const s of secs) if (s.offsetTop - scroller.scrollTop <= scroller.clientHeight * 0.4) cur = s;
+		if (cur) {
+			const [n, name] = cur.dataset.label.split(' / ');
+			label.innerHTML = `<em>${n}</em> / ${name}`;
+		}
+	}
+
+	document.querySelectorAll('button[data-crt]').forEach((b) => b.addEventListener('click', () => { crt = b.dataset.crt; sync(); }));
+	document.querySelectorAll('button[data-tele]').forEach((b) => b.addEventListener('click', () => { tele = b.dataset.tele; sync(); }));
+	document.getElementById('srcBtn').addEventListener('click', () => src.classList.toggle('open'));
+	scroller.addEventListener('scroll', onScroll, { passive: true });
+
+	addEventListener('keydown', (e) => {
+		const k = e.key.toLowerCase();
+		if (['0', '1', '2'].includes(k)) { crt = k; sync(); }
+		else if (k === 't') { tele = tele === 'on' ? 'off' : 'on'; sync(); }
+		else if (k === 'f') src.classList.toggle('open');
+		else if (k === 'h') pill.classList.toggle('hidden');
+	});
+
+	setInterval(() => {
+		const d = new Date();
+		document.getElementById('clock').textContent = d.toLocaleTimeString('it-IT', { hour12: false, timeZone: 'Europe/Rome' });
+		document.getElementById('localTime').textContent =
+			d.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Rome' }) + ' CEST';
+	}, 1000);
+
+	sync();
+	onScroll();
+</script>
+</body>
+</html>

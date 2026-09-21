@@ -1,0 +1,537 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Restyle: direzioni</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+	href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Martian+Mono:wght@300;400;500;700&display=swap"
+	rel="stylesheet"
+/>
+<style>
+	:root {
+		--bg: #0c0c0c;
+		--accent: #2cc3f7;
+		--t1: #f4f4f5;
+		--t2: #d4d4d8;
+		--t3: #8a8a8a;
+		--t4: #5a5a5a;
+		--line: rgba(255, 255, 255, 0.08);
+		--mono: 'Martian Mono', ui-monospace, monospace;
+		--sans: 'IBM Plex Sans', system-ui, sans-serif;
+		--g: 34px;
+	}
+	* { box-sizing: border-box; }
+	html, body { height: 100%; margin: 0; }
+	body { background: #000; color: var(--t1); font-family: var(--sans); overflow: hidden; }
+	s { text-decoration: none; color: var(--t4); }
+	b { color: var(--accent); font-weight: inherit; }
+
+	/* Telaio: griglia a 3x3, il contenuto sta nella cella centrale. */
+	.stage {
+		position: fixed;
+		inset: 0;
+		display: grid;
+		grid-template-columns: var(--g) 1fr var(--g);
+		grid-template-rows: var(--g) 1fr var(--g);
+		background: var(--bg);
+		transition: all 0.25s ease;
+	}
+	.stage[data-frame='none'] { --g: 0px; }
+	.stage[data-frame='chassis'] { --g: 34px; }
+	.stage[data-frame='bezel'] {
+		--g: 74px;
+		background:
+			repeating-linear-gradient(115deg, rgba(255, 255, 255, 0.014) 0 2px, transparent 2px 5px),
+			linear-gradient(160deg, #24272b 0%, #15171a 38%, #0b0c0e 100%);
+	}
+	.stage[data-frame='bezel'] .rail-top,
+	.stage[data-frame='bezel'] .rail-bottom { padding: 0 46px; }
+
+	.rail {
+		display: flex;
+		align-items: center;
+		font-family: var(--mono);
+		font-size: 9.5px;
+		font-weight: 400;
+		letter-spacing: 0.14em;
+		color: var(--t4);
+		text-transform: uppercase;
+		user-select: none;
+		overflow: hidden;
+	}
+	.rail-top { grid-area: 1 / 1 / 2 / 4; justify-content: space-between; padding: 0 14px; }
+	.rail-left { grid-area: 2 / 1 / 3 / 2; justify-content: center; }
+	.rail-right { grid-area: 2 / 3 / 3 / 4; justify-content: center; }
+	.rail-bottom { grid-area: 3 / 1 / 4 / 4; justify-content: space-between; padding: 0 14px; }
+	.stage[data-frame='none'] .rail { display: none; }
+	.stage[data-frame='chassis'] .b-only { display: none; }
+	.stage[data-frame='bezel'] .c-only { display: none; }
+	/* Il telaio strumentale assorbe la status bar: nella pagina sparisce. */
+	.stage[data-frame='chassis'] .statusbar { display: none; }
+	.rail .grp { display: flex; align-items: center; gap: 12px; }
+
+	/* Rail sinistro: sezione corrente, verticale. */
+	.vtext {
+		writing-mode: vertical-rl;
+		transform: rotate(180deg);
+		letter-spacing: 0.22em;
+		color: var(--t3);
+	}
+	.vtext em { font-style: normal; color: var(--accent); }
+
+	/* Rail destro: progresso di scroll. */
+	.prog {
+		position: relative;
+		width: 2px;
+		height: 62%;
+		background: rgba(255, 255, 255, 0.07);
+		border-radius: 2px;
+	}
+	.prog i { position: absolute; inset: 0 0 auto 0; height: 0%; background: var(--accent); border-radius: 2px; }
+	.pct { position: absolute; bottom: 14px; font-size: 9px; color: var(--t4); }
+
+	/* Schermo. */
+	.screen { grid-area: 2 / 2 / 3 / 3; position: relative; overflow: hidden; background: var(--bg); }
+	.stage[data-frame='chassis'] .screen {
+		border: 1px solid var(--line);
+		border-radius: 12px;
+		box-shadow: inset 0 0 90px rgba(44, 195, 247, 0.05);
+	}
+	.stage[data-frame='bezel'] .screen {
+		border-radius: 18px;
+		box-shadow:
+			inset 0 0 0 1px rgba(0, 0, 0, 0.9),
+			inset 0 0 70px rgba(0, 0, 0, 0.85),
+			0 0 0 2px #05060700,
+			0 0 0 6px #2e3338,
+			0 0 0 8px #0a0b0c,
+			0 14px 40px rgba(0, 0, 0, 0.8),
+			0 0 60px rgba(44, 195, 247, 0.09);
+	}
+	.scroller { height: 100%; overflow-y: auto; scrollbar-width: thin; scrollbar-color: #2a2a2a transparent; }
+	.scroller::-webkit-scrollbar { width: 6px; }
+	.scroller::-webkit-scrollbar-thumb { background: #262626; border-radius: 6px; }
+
+	/* Glow del pavimento, comune a tutte le direzioni. */
+	.screen::after {
+		content: '';
+		position: absolute;
+		inset: auto 0 0 0;
+		height: 55%;
+		pointer-events: none;
+		background: radial-gradient(60% 100% at 50% 130%, rgba(44, 195, 247, 0.16), transparent 70%);
+	}
+	/* Scanline solo nel bezel. */
+	.stage[data-frame='bezel'] .screen::before {
+		content: '';
+		position: absolute;
+		inset: 0;
+		z-index: 3;
+		pointer-events: none;
+		background: repeating-linear-gradient(to bottom, rgba(0, 0, 0, 0.16) 0 1px, transparent 1px 3px);
+	}
+
+	/* Decorazioni del bezel. */
+	.screw {
+		position: absolute;
+		width: 9px;
+		height: 9px;
+		border-radius: 50%;
+		background: radial-gradient(circle at 35% 30%, #4a4e53, #1a1c1f 70%);
+		box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.6), 0 1px 1px rgba(255, 255, 255, 0.05);
+		display: none;
+	}
+	.stage[data-frame='bezel'] .screw { display: block; }
+	.screw { width: 11px; height: 11px; }
+	.screw.tl { top: 18px; left: 18px; }
+	.screw.tr { top: 18px; right: 18px; }
+	.screw.bl { bottom: 18px; left: 18px; }
+	.screw.br { bottom: 18px; right: 18px; }
+	.vent { width: 18px; height: 190px; border-radius: 3px; background: repeating-linear-gradient(to bottom, #2b2f33 0 2px, #0c0d0f 2px 5px); box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.5); }
+	.led { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 8px var(--accent); animation: pulse 2.4s ease-in-out infinite; }
+	.led.off { background: #2a2d30; box-shadow: none; animation: none; }
+	@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+	@media (prefers-reduced-motion: reduce) { .led { animation: none; } }
+
+	/* Contenuto del sito (finto ma con i token veri). */
+	.wrap { max-width: 1080px; margin: 0 auto; padding: 0 clamp(20px, 4vw, 56px); }
+	.nav { display: flex; align-items: center; justify-content: space-between; padding: 26px 0 0; }
+	.logo { font-family: var(--mono); font-weight: 600; font-size: 22px; letter-spacing: -0.03em; }
+	.nav ul { display: flex; gap: 26px; list-style: none; margin: 0; padding: 0; font-family: var(--mono); font-size: 11px; color: var(--t3); }
+	.nav li i { font-style: normal; color: var(--t4); margin-right: 6px; }
+	.statusbar { margin-top: 18px; padding-top: 12px; border-top: 1px solid var(--line); font-family: var(--mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--t4); }
+
+	.sec { padding: 92px 0; }
+	.hero { padding-top: 96px; }
+	.eyebrow { font-family: var(--mono); font-size: 13px; color: var(--t3); margin: 0 0 22px; }
+	h1 { font-family: var(--mono); font-weight: 500; font-size: clamp(42px, 7vw, 92px); line-height: 1.1; letter-spacing: -0.02em; margin: 0 0 28px; }
+	.lede { max-width: 34em; font-size: 18px; line-height: 1.6; color: var(--t2); margin: 0; }
+	.sub { font-family: var(--mono); font-size: 12px; color: var(--t4); margin: 38px 0 0; }
+
+	.secname { display: flex; align-items: baseline; gap: 14px; margin: 0 0 30px; font-family: var(--mono); font-size: 12px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--t3); }
+	.secname i { font-style: normal; color: var(--t4); }
+	.secname hr { flex: 1; border: 0; border-top: 1px solid var(--line); }
+
+	.grid3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+	.card { border: 1px solid var(--line); border-radius: 12px; padding: 16px; background: rgba(255, 255, 255, 0.015); transition: background 0.2s, border-color 0.2s; }
+	.card:hover { background: rgba(255, 255, 255, 0.045); border-color: rgba(44, 195, 247, 0.4); }
+	.thumb { height: 120px; border-radius: 8px; background: linear-gradient(140deg, rgba(44, 195, 247, 0.16), rgba(44, 195, 247, 0.03)); border: 1px solid var(--line); margin-bottom: 14px; }
+	.card h3 { font-family: var(--mono); font-size: 15px; font-weight: 500; margin: 0 0 8px; }
+	.card p { font-size: 13px; line-height: 1.5; color: var(--t3); margin: 0 0 12px; }
+	.tags { display: flex; gap: 6px; flex-wrap: wrap; font-family: var(--mono); font-size: 9.5px; color: var(--t4); }
+	.tags span { border: 1px solid var(--line); border-radius: 4px; padding: 3px 6px; }
+
+	.rows { display: flex; flex-direction: column; }
+	.row { display: flex; align-items: baseline; gap: 16px; padding: 18px 0; border-top: 1px solid var(--line); }
+	.row:last-child { border-bottom: 1px solid var(--line); }
+	.row .n { font-family: var(--mono); font-size: 11px; color: var(--t4); width: 28px; flex: none; }
+	.row .t { font-size: 16px; color: var(--t2); }
+	.row .d { margin-left: auto; font-family: var(--mono); font-size: 10px; color: var(--t4); }
+
+	/* Contenuto 2: asimmetrico. */
+	.asym .hero h1 { font-size: clamp(54px, 11vw, 150px); letter-spacing: -0.045em; line-height: 0.92; }
+	.asym .wrap { max-width: none; padding: 0 clamp(20px, 4vw, 56px); }
+	.asym .marginal { display: grid; grid-template-columns: 90px 1fr; gap: 0 24px; align-items: start; }
+	.asym .marginal > .num { font-family: var(--mono); font-size: 11px; color: var(--t4); letter-spacing: 0.2em; padding-top: 6px; }
+	.asym .rule { border: 0; border-top: 1px solid var(--line); margin: 0 0 34px; }
+	.asym .collage { display: grid; grid-template-columns: repeat(12, 1fr); gap: 22px; }
+	.asym .collage .card:nth-child(1) { grid-column: 1 / 8; }
+	.asym .collage .card:nth-child(1) .thumb { height: 260px; }
+	.asym .collage .card:nth-child(2) { grid-column: 9 / 13; margin-top: 90px; }
+	.asym .collage .card:nth-child(3) { grid-column: 3 / 9; margin-top: -40px; }
+	.asym .index { font-family: var(--mono); }
+	.asym .index .row { border-top: 1px dashed rgba(255, 255, 255, 0.1); }
+	.asym .index .row .t { font-family: var(--sans); }
+	.asym .lede { font-size: 20px; max-width: 26em; }
+
+	/* Contenuto 3: trasparenza di processo. */
+	.proc { margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--line); font-family: var(--mono); font-size: 9.5px; color: var(--t4); }
+	.bar { display: flex; align-items: center; gap: 8px; margin-bottom: 5px; }
+	.bar span:first-child { width: 42px; }
+	.bar .track { flex: 1; height: 7px; border-radius: 4px; background: rgba(255, 255, 255, 0.07); overflow: hidden; }
+	.bar .fill { height: 100%; background: #6f7377; }
+	.bar .fill.ai { background: var(--accent); }
+	.bar .v { width: 34px; text-align: right; }
+	.quote { margin-top: 10px; padding-left: 10px; border-left: 2px solid rgba(44, 195, 247, 0.4); font-family: var(--mono); font-size: 10px; line-height: 1.6; color: var(--t3); }
+	.ledger { margin-top: 26px; border: 1px solid var(--line); border-radius: 12px; padding: 22px 24px; display: flex; gap: 38px; flex-wrap: wrap; font-family: var(--mono); }
+	.ledger .kv { display: flex; flex-direction: column; gap: 6px; }
+	.ledger .kv b { font-size: 26px; font-weight: 500; color: var(--t1); letter-spacing: -0.02em; }
+	.ledger .kv b.a { color: var(--accent); }
+	.ledger .kv span { font-size: 9.5px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--t4); }
+
+	/* Barra di controllo dell'anteprima (non fa parte del mockup). */
+	.pill {
+		position: fixed;
+		left: 50%;
+		bottom: 14px;
+		transform: translateX(-50%);
+		z-index: 50;
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+		padding: 12px 16px;
+		border-radius: 12px;
+		border: 1px dashed rgba(255, 255, 255, 0.22);
+		background: rgba(10, 10, 10, 0.88);
+		backdrop-filter: blur(10px);
+		font-family: var(--mono);
+		font-size: 10.5px;
+		color: var(--t3);
+	}
+	.pill.hidden { display: none; }
+	.pill .line { display: flex; align-items: center; gap: 8px; }
+	.pill .lbl { width: 74px; color: var(--t4); letter-spacing: 0.12em; text-transform: uppercase; }
+	.pill button {
+		font: inherit;
+		color: var(--t2);
+		background: transparent;
+		border: 1px solid var(--line);
+		border-radius: 6px;
+		padding: 5px 10px;
+		cursor: pointer;
+		transition: all 0.15s;
+	}
+	.pill button:hover { border-color: rgba(44, 195, 247, 0.5); color: var(--t1); }
+	.pill button[aria-pressed='true'] { border-color: var(--accent); color: var(--accent); background: rgba(44, 195, 247, 0.08); }
+	.pill .note { border-top: 1px solid var(--line); padding-top: 8px; color: var(--t4); max-width: 620px; line-height: 1.6; }
+	.pill .note b { color: var(--t2); }
+	.pill .hint { color: #3a3a3a; font-size: 9px; letter-spacing: 0.1em; }
+</style>
+</head>
+<body>
+	<div class="stage" id="stage" data-frame="chassis">
+		<div class="rail rail-top">
+			<div class="grp c-only"><span>Human vision</span><span style="color: var(--accent)">·</span><span style="color: var(--accent)">AI execution</span></div>
+			<div class="grp c-only"><span style="color: var(--t2)">IT</span><span>/</span><span>EN</span></div>
+			<div class="grp b-only"><span class="led"></span><span class="led off"></span><span style="color: #3a3a3a">PWR</span></div>
+			<div class="grp b-only" style="color: #3a3a3a">ESSEDEV // LAB MK-I</div>
+		</div>
+
+		<div class="rail rail-left">
+			<div class="vtext c-only" id="sectionLabel"><em>00</em> / HOME</div>
+			<div class="vent b-only"></div>
+		</div>
+
+		<div class="screen">
+			<div class="scroller" id="scroller"></div>
+		</div>
+
+		<div class="rail rail-right">
+			<div class="prog c-only"><i id="progFill"></i></div>
+			<div class="pct c-only" id="progPct">0%</div>
+			<div class="vent b-only"></div>
+		</div>
+
+		<div class="rail rail-bottom">
+			<div class="grp c-only"><span>Milano</span><span style="color: var(--t3)" id="clock">--:--:--</span></div>
+			<div class="grp c-only"><span style="color: var(--t3)">&#8984;K</span><span>#509d04c</span></div>
+			<div class="grp b-only" style="color: #3a3a3a">SER. 0326 &nbsp; MADE IN MILANO</div>
+			<div class="grp b-only" style="color: #3a3a3a">&#9679; &#9679; &#9679;</div>
+		</div>
+
+		<span class="screw tl"></span><span class="screw tr"></span><span class="screw bl"></span><span class="screw br"></span>
+	</div>
+
+	<div class="pill" id="pill">
+		<div class="line">
+			<span class="lbl">Telaio</span>
+			<button data-frame="none">A &middot; nessuno</button>
+			<button data-frame="chassis">B &middot; strumentale</button>
+			<button data-frame="bezel">C &middot; bezel</button>
+		</div>
+		<div class="line">
+			<span class="lbl">Contenuto</span>
+			<button data-content="standard">1 &middot; standard (oggi)</button>
+			<button data-content="asym">2 &middot; asimmetrico</button>
+			<button data-content="process">3 &middot; processo</button>
+		</div>
+		<div class="note" id="note"></div>
+		<div class="hint">tasti: a/b/c telaio &nbsp; 1/2/3 contenuto &nbsp; h nasconde questa barra</div>
+	</div>
+
+<script>
+	const NAV = `
+		<div class="wrap">
+			<header class="nav">
+				<div class="logo">esse<b>dev</b></div>
+				<ul><li><i>01</i>projects</li><li><i>02</i>articles</li><li><i>03</i>about</li><li><i>04</i>contact</li></ul>
+			</header>
+			<div class="statusbar">Human vision <b>&middot;</b> <b>AI execution</b></div>
+		</div>`;
+
+	const CARD = (t, d, tags) => `
+		<article class="card">
+			<div class="thumb"></div>
+			<h3>${t}</h3>
+			<p>${d}</p>
+			<div class="tags">${tags.map((x) => `<span>${x}</span>`).join('')}</div>
+		</article>`;
+
+	const PROC_CARD = (t, d, human, ai, quote) => `
+		<article class="card">
+			<h3>${t}</h3>
+			<p>${d}</p>
+			<div class="proc">
+				<div class="bar"><span>human</span><span class="track"><span class="fill" style="width:${(human / (human + ai)) * 100}%"></span></span><span class="v">${human}h</span></div>
+				<div class="bar"><span>agent</span><span class="track"><span class="fill ai" style="width:${(ai / (human + ai)) * 100}%"></span></span><span class="v">${ai}h</span></div>
+				<div class="quote">&gt; ${quote}</div>
+			</div>
+		</article>`;
+
+	const HERO_TEXT = `Progetto data model, boundary e standard. L'esecuzione la accelerano gli agent, la direzione resta mia.`;
+
+	const CONTENT = {
+		standard: `
+			${NAV}
+			<div class="wrap">
+				<section class="sec hero" data-label="00 / HOME">
+					<p class="eyebrow">AI Engineer <s>&middot;</s> esse<b>dev</b></p>
+					<h1>I cast code.</h1>
+					<p class="lede">${HERO_TEXT}</p>
+					<p class="sub">half engineer, <b>half wizard</b></p>
+				</section>
+				<section class="sec" data-label="01 / PROJECTS">
+					<div class="secname"><i>01</i> Projects <hr /></div>
+					<div class="grid3">
+						${CARD('Allocation', 'Pianificazione ore e commesse per un team di 35 persone.', ['FastAPI', 'React', 'Postgres'])}
+						${CARD('yellow-calls', 'Trascrizione e ricerca semantica sulle call commerciali.', ['Whisper', 'pgvector'])}
+						${CARD('Hub', 'SSO e directory interna, punto unico di identità.', ['OIDC', 'Next.js'])}
+					</div>
+				</section>
+				<section class="sec" data-label="02 / ARTICLES">
+					<div class="secname"><i>02</i> Articles <hr /></div>
+					<div class="rows">
+						<div class="row"><span class="n">01</span><span class="t">Stimare in ore-ingegnere quando scrive l'agent</span><span class="d">2026-08</span></div>
+						<div class="row"><span class="n">02</span><span class="t">Il data model lo definisce l'umano</span><span class="d">2026-06</span></div>
+						<div class="row"><span class="n">03</span><span class="t">Rule condizionali invece di un CLAUDE.md gonfio</span><span class="d">2026-05</span></div>
+					</div>
+				</section>
+				<section class="sec" data-label="03 / ABOUT"><div class="secname"><i>03</i> About <hr /></div><p class="lede">AI Engineer e lead engineering a Milano. Costruisco soluzioni AI per aziende italiane.</p></section>
+			</div>`,
+
+		asym: `
+			<div class="asym">
+				${NAV}
+				<div class="wrap">
+					<section class="sec hero" data-label="00 / HOME">
+						<p class="eyebrow">AI Engineer <s>&middot;</s> esse<b>dev</b></p>
+						<h1>I cast<br />code.</h1>
+						<div class="marginal" style="margin-top:46px">
+							<div class="num">00</div>
+							<p class="lede">${HERO_TEXT}</p>
+						</div>
+						<p class="sub">half engineer, <b>half wizard</b></p>
+					</section>
+
+					<section class="sec" data-label="01 / PROJECTS">
+						<hr class="rule" />
+						<div class="marginal">
+							<div class="num">01</div>
+							<div>
+								<div class="collage">
+									${CARD('Allocation', 'Pianificazione ore e commesse per un team di 35 persone. Il caso più grosso, tre anni di iterazione.', ['FastAPI', 'React', 'Postgres'])}
+									${CARD('yellow-calls', 'Trascrizione e ricerca semantica.', ['Whisper', 'pgvector'])}
+									${CARD('Hub', 'SSO e directory interna.', ['OIDC', 'Next.js'])}
+								</div>
+							</div>
+						</div>
+					</section>
+
+					<section class="sec" data-label="02 / ARTICLES">
+						<hr class="rule" />
+						<div class="marginal">
+							<div class="num">02</div>
+							<div class="index rows">
+								<div class="row"><span class="n">01</span><span class="t">Stimare in ore-ingegnere quando scrive l'agent</span><span class="d">2026-08</span></div>
+								<div class="row"><span class="n">02</span><span class="t">Il data model lo definisce l'umano</span><span class="d">2026-06</span></div>
+								<div class="row"><span class="n">03</span><span class="t">Rule condizionali invece di un CLAUDE.md gonfio</span><span class="d">2026-05</span></div>
+							</div>
+						</div>
+					</section>
+				</div>
+			</div>`,
+
+		process: `
+			${NAV}
+			<div class="wrap">
+				<section class="sec hero" data-label="00 / HOME">
+					<p class="eyebrow">AI Engineer <s>&middot;</s> esse<b>dev</b></p>
+					<h1>I cast code.</h1>
+					<p class="lede">${HERO_TEXT}</p>
+					<div class="ledger">
+						<div class="kv"><b>326</b><span>commit</span></div>
+						<div class="kv"><b>9</b><span>cicli</span></div>
+						<div class="kv"><b>18h</b><span>umane</span></div>
+						<div class="kv"><b class="a">74h</b><span>agent</span></div>
+						<div class="kv"><b>2023</b><span>dal</span></div>
+					</div>
+					<p class="sub">questo sito è costruito così. <b>lo puoi guardare mentre succede.</b></p>
+				</section>
+				<section class="sec" data-label="01 / PROJECTS">
+					<div class="secname"><i>01</i> Projects <hr /></div>
+					<div class="grid3">
+						${PROC_CARD('Allocation', 'Pianificazione ore e commesse per 35 persone.', 62, 214, 'il data model lo definisco io, poi si esegue')}
+						${PROC_CARD('yellow-calls', 'Trascrizione e ricerca semantica sulle call.', 18, 96, 'niente mock del DB, si prova contro il servizio vero')}
+						${PROC_CARD('Hub', 'SSO e directory interna.', 24, 61, 'boundary prima, endpoint dopo')}
+					</div>
+				</section>
+				<section class="sec" data-label="02 / ARTICLES">
+					<div class="secname"><i>02</i> Articles <hr /></div>
+					<div class="rows">
+						<div class="row"><span class="n">01</span><span class="t">Stimare in ore-ingegnere quando scrive l'agent</span><span class="d">2026-08</span></div>
+						<div class="row"><span class="n">02</span><span class="t">Il data model lo definisce l'umano</span><span class="d">2026-06</span></div>
+					</div>
+				</section>
+			</div>`
+	};
+
+	const NOTES = {
+		none: 'Nessun telaio: quello che hai oggi. Il carattere deve venire tutto dal contenuto.',
+		chassis:
+			'<b>Telaio strumentale.</b> Il perimetro porta stato vivo (sezione, scroll, ora, lingua, commit). Su mobile collassa a zero. Costo 1-2 giorni, reversibile.',
+		bezel:
+			'<b>Bezel cyberdeck.</b> Scocca decorativa: viti, griglie, LED, scanline. Lo scroll vive dentro lo schermo, quindi rompe scrollbar nativa, ancore e tastiera. Su mobile va nascosto. Costo 4-5 giorni.'
+	};
+	const CNOTES = {
+		standard: 'Contenuto <b>1</b>: la struttura di oggi, sezioni impilate a larghezza costante.',
+		asym: 'Contenuto <b>2</b>: ritmo asimmetrico, numeri di sezione nel margine, collage di card di peso diverso. Nessuna scocca, solo composizione.',
+		process:
+			'Contenuto <b>3</b>: la firma sei tu che mostri il processo. Ore umane vs agent, commit, prompt veri. I numeri delle ore qui sono inventati, i 326 commit sono veri.'
+	};
+
+	const stage = document.getElementById('stage');
+	const scroller = document.getElementById('scroller');
+	const note = document.getElementById('note');
+	const pill = document.getElementById('pill');
+	const label = document.getElementById('sectionLabel');
+	const fill = document.getElementById('progFill');
+	const pct = document.getElementById('progPct');
+
+	const store = {
+		get(k, d) { try { return localStorage.getItem(k) || d; } catch { return d; } },
+		set(k, v) { try { localStorage.setItem(k, v); } catch { /* file:// o storage bloccato */ } }
+	};
+	let frame = store.get('dir.frame', 'chassis');
+	let content = store.get('dir.content', 'standard');
+
+	function onScroll() {
+		const max = scroller.scrollHeight - scroller.clientHeight;
+		const p = max > 0 ? scroller.scrollTop / max : 0;
+		fill.style.height = (p * 100).toFixed(0) + '%';
+		pct.textContent = (p * 100).toFixed(0) + '%';
+		const secs = [...scroller.querySelectorAll('[data-label]')];
+		let cur = secs[0];
+		for (const s of secs) if (s.offsetTop - scroller.scrollTop <= scroller.clientHeight * 0.4) cur = s;
+		if (cur) {
+			const [n, name] = cur.dataset.label.split(' / ');
+			label.innerHTML = `<em>${n}</em> / ${name}`;
+		}
+	}
+
+	function render() {
+		stage.dataset.frame = frame;
+		scroller.innerHTML = CONTENT[content];
+		scroller.scrollTop = 0;
+		note.innerHTML = NOTES[frame] + '<br />' + CNOTES[content];
+		document.querySelectorAll('[data-frame]').forEach((b) => {
+			if (b.tagName === 'BUTTON') b.setAttribute('aria-pressed', String(b.dataset.frame === frame));
+		});
+		document.querySelectorAll('button[data-content]').forEach((b) =>
+			b.setAttribute('aria-pressed', String(b.dataset.content === content))
+		);
+		store.set('dir.frame', frame);
+		store.set('dir.content', content);
+		onScroll();
+	}
+
+	document.querySelectorAll('button[data-frame]').forEach((b) =>
+		b.addEventListener('click', () => { frame = b.dataset.frame; render(); })
+	);
+	document.querySelectorAll('button[data-content]').forEach((b) =>
+		b.addEventListener('click', () => { content = b.dataset.content; render(); })
+	);
+	scroller.addEventListener('scroll', onScroll, { passive: true });
+
+	addEventListener('keydown', (e) => {
+		const k = e.key.toLowerCase();
+		const f = { a: 'none', b: 'chassis', c: 'bezel' }[k];
+		const c = { 1: 'standard', 2: 'asym', 3: 'process' }[k];
+		if (f) { frame = f; render(); }
+		else if (c) { content = c; render(); }
+		else if (k === 'h') pill.classList.toggle('hidden');
+	});
+
+	setInterval(() => {
+		document.getElementById('clock').textContent = new Date().toLocaleTimeString('it-IT', {
+			hour12: false,
+			timeZone: 'Europe/Rome'
+		});
+	}, 1000);
+
+	render();
+</script>
+</body>
+</html>

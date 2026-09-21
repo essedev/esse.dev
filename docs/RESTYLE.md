@@ -54,7 +54,7 @@ esplorazioni e cose finite. La narrazione esiste già nell'articolo
   Plex Mono, VT323, Pixelify Sans: scelto **Martian Mono** per le etichette. (2)
   serif per il titolo - Instrument Serif, Fraunces, Playfair, Spectral. Fraunces
   italic montato sull'hero e poi **scartato in contesto**: il serif italic grande
-  su dark e' l'estetica dei template generati da AI (v0/artifacts), troppo
+  su dark è l'estetica dei template generati da AI (v0/artifacts), troppo
   riconoscibile. Tornati a **Martian Mono** per titolo ed etichette.
 - **Headline dell'hero considerate:** "Ciao, sono Simone." (scartata: spreca il
   punto di massima attenzione, il nome è già nel logo), "L'AI scrive. Io decido.",
@@ -66,12 +66,19 @@ esplorazioni e cose finite. La narrazione esiste già nell'articolo
   gradient), **ciano `#22d3ee`** (scelto: stessa famiglia fredda del logo,
   retro-CRT, distintivo senza omologarsi all'estetica AI).
 
-## Vision finale (fase futura): pixel art autoprodotta
+## Pixel art autoprodotta: SCARTATA (2026-09-21)
 
-La firma visiva del sito sarà pixel art prodotta con uno strumento proprio,
-`idkcraft-studio`: l'AI genera una base ad alta risoluzione, una pipeline
-deterministica (downscale + quantizzazione CIELAB su palette) la rende pixel art
-pulita.
+Idea abbandonata: costo di produzione troppo alto per il valore. Il render AI è
+"finta" pixel art (griglia non reale, anti-aliasing, glow) e un convertitore
+deterministico non ci arriva su soggetti organici in prospettiva: il dettaglio fine
+(es. il chip sul cappello) si perde e va reiniettato a mano. La pixel art vera si
+disegna nativa su griglia, cioè è lavoro da pixel artist, fuori dal perimetro del
+restyle. Gli script sperimentali e i concept generati sono archiviati in
+`docs/archive/pixel-art/` (`scripts/` e `concepts/`): si leggono, non si aggiornano.
+
+Cosa era previsto, per memoria: la firma visiva sarebbe stata pixel art prodotta con
+`idkcraft-studio` (base AI ad alta risoluzione, poi downscale + quantizzazione CIELAB
+su palette).
 
 - **Robottino AI pixelato** come compagno del laboratorio: incarna il rapporto
   human+AI in modo immediato.
@@ -129,9 +136,9 @@ Design system di base, su cui la pixel art si poserà in seguito. Decisioni pres
   screenshot) non converge: per ora hero con fade base sobrio, custom rimandate.
   Registro voluto: fluido ma non lento, easing che decelera (expoOut), non il
   "secco/veloce" che risultava brusco. `prefers-reduced-motion` gestito.
-- **Navbar:** logo testuale temporaneo `essedev_` (mono, "dev" azzurro, cursore
-  lampeggiante; l'icona pixel Windows-95 stonava per palette e stile, tornerà con la
-  pixel art autoprodotta). Voci come indice numerato (`01 progetti`...) coi numeri
+- **Navbar:** logo testuale `essedev` (mono, "dev" azzurro). L'icona pixel
+  Windows-95 stonava per palette e stile ed è stata rimossa; il cursore `_` finale è
+  stato tolto dal wordmark. Voci come indice numerato (`01 progetti`...) coi numeri
   mono azzurri, lingua in mono. Hamburger sotto 1024px.
 - **Status bar:** fascia sotto la navbar (al posto del border piatto), stile barra
   di stato IDE: dot azzurro + ruolo a sinistra, location/lingue a destra. La firma
@@ -163,6 +170,6 @@ Design system di base, su cui la pixel art si poserà in seguito. Decisioni pres
   quadratino, tema accento centralizzato (`color-mix` dal token) e **accent picker**
   runtime (azzurro default + arancione/viola, hue sweep animato, flottante basso-sx,
   persistente, rispetta il motion toggle).
-- **Resta:** animazioni come sistema; pixel art; contenuti progetti. Prima del merge:
+- **Resta:** animazioni come sistema; contenuti progetti. Prima del merge:
   `build` + `test:ci` (con E2E da aggiornare per nav/welcome/badge) + merge su `main`.
 - Log dettagliato in `docs/CYCLES.md` (Ciclo 9).
