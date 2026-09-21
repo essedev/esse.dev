@@ -134,11 +134,16 @@ body::after {
 	inset: 0;
 	z-index: 20;
 	border: var(--chassis-gutter) solid #0c0c0c;
+	/* Il raggio interno di un bordo e' raggio esterno meno spessore: cosi' l'angolo
+	   della matte combacia con quello della cornice e il contenuto non sbuca fuori
+	   dall'arrotondamento mentre scorre. All'esterno non si vede, il body e' dello
+	   stesso nero. */
+	border-radius: calc(var(--chassis-gutter) + var(--radius-md));
 }
 
 .chassis-frame {
 	inset: var(--chassis-gutter);
-	z-index: 30;
+	z-index: 45;
 	border: 1px solid rgba(255, 255, 255, 0.08);
 	border-radius: var(--radius-md);
 }
