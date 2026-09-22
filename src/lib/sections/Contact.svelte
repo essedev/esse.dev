@@ -3,8 +3,16 @@
 	import { reveal } from '$lib/actions/reveal';
 	import SectionHeader from '$lib/components/SectionHeader.svelte';
 
-	// Receive contact data as props
 	let { contact, index }: ContactSectionProps = $props();
+
+	let primary = $derived(contact.links[0]);
+	let profiles = $derived(contact.links.slice(1));
+
+	// I profili si aprono in una scheda nuova; un mailto no, aprirebbe una scheda vuota.
+	const external = (href: string) =>
+		href.startsWith('mailto:')
+			? {}
+			: { target: '_blank', rel: 'noopener noreferrer', 'data-sveltekit-reload': true };
 </script>
 
 <div class="flex w-full flex-col justify-between gap-y-14 tracking-tight sm:gap-y-24">
@@ -15,23 +23,39 @@
 		</p>
 	</div>
 
-	<div class="text-xl sm:text-2xl">
-		{#each contact.links as link, index (link.name)}
-			<div class="mb-2 {index === 0 ? 'mb-4' : ''}">
-				<a
-					class="inline-block transition-all duration-300 ease-in-out
-            {index === 0 ? 'text-2xl sm:text-3xl md:text-4xl' : ''}"
-					href={link.link}
-					target="_blank"
-					data-sveltekit-reload
+	<!-- L'email è il contatto vero e resta grande; i profili sono una riga sola, in mono,
+	     come i readout del telaio: servono a chi li cerca, non devono competere con l'email. -->
+	<div use:reveal class="reveal flex flex-col gap-y-6">
+		{#if primary}
+			<a
+				class="inline-block self-start text-2xl sm:text-3xl md:text-4xl"
+				href={primary.link}
+				{...external(primary.link)}
+			>
+				<span
+					class="inline-block bg-gradient-to-r from-accent to-accent bg-[length:0%_2px] bg-left-bottom bg-no-repeat transition-all duration-500 ease-out hover:bg-[length:100%_2px]"
 				>
-					<span
-						class="inline-block bg-gradient-to-r from-accent to-accent bg-[length:0%_2px] bg-left-bottom bg-no-repeat transition-all duration-500 ease-out hover:bg-[length:100%_2px]"
+					{primary.name}
+				</span>
+			</a>
+		{/if}
+		{#if profiles.length > 0}
+			<div
+				class="flex flex-wrap items-center gap-x-7 gap-y-3 font-mono text-xs tracking-[0.14em] text-gray-400 uppercase sm:text-sm"
+			>
+				{#each profiles as link (link.name)}
+					<a
+						class="group inline-flex items-center gap-x-1.5 transition-colors hover:text-white"
+						href={link.link}
+						{...external(link.link)}
 					>
 						{link.name}
-					</span>
-				</a>
+						<span class="text-gray-600 transition-colors group-hover:text-accent" aria-hidden="true"
+							>&nearr;</span
+						>
+					</a>
+				{/each}
 			</div>
-		{/each}
+		{/if}
 	</div>
 </div>
