@@ -43,6 +43,8 @@ export type TranslationKey =
 	| 'statusArchived'
 	| 'clearStatuses'
 	| 'closeStatusDropdown'
+	| 'shelfArchived'
+	| 'shelfIdeas'
 	| 'noProjectsHome'
 	| 'noArticlesHome'
 	| 'checkBackLater';

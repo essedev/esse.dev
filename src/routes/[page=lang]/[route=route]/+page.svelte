@@ -26,7 +26,6 @@
 			projectsPage={data.projectsPage}
 			showFilters={true}
 			global={data.global}
-			pagination={data.pagination}
 			activeFilters={data.activeFilters}
 			availableTags={data.availableTags}
 			availableStatuses={data.availableStatuses}

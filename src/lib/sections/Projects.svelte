@@ -3,13 +3,14 @@
 	import { base } from '$app/paths';
 	import ProjectCard from '$lib/components/ProjectCard.svelte';
 	import SearchFilter from '$lib/components/SearchFilter.svelte';
-	import Pagination from '$lib/components/ui/Pagination.svelte';
+	import ProjectIndex from '$lib/components/ProjectIndex.svelte';
 	import type { FilterState, ProjectsSectionProps } from '$lib/types/content';
 	import { getTranslations, translateTags, type TranslationKey } from '$lib/utils/translations';
 	import { ArrowRight, FileText } from '@lucide/svelte';
 	import { onMount } from 'svelte';
 	import { reveal } from '$lib/actions/reveal';
 	import SectionHeader from '$lib/components/SectionHeader.svelte';
+	import { SHOWCASE_STATUSES, splitByDensity } from '$lib/utils/shelf';
 
 	// Receive data as props
 	let {
@@ -20,14 +21,12 @@
 		showFilters = false,
 		showViewAllButton = false,
 		global,
-		pagination,
 		activeFilters,
 		availableTags,
 		availableStatuses,
 		index,
 		collection
 	}: ProjectsSectionProps & {
-		pagination?: { currentPage: number; totalPages: number };
 		activeFilters?: FilterState;
 		availableTags?: string[];
 		availableStatuses?: string[];
@@ -54,18 +53,27 @@
 		}
 	});
 
-	// Data is now pre-filtered, but we ensure it has translations.
-	// We also apply the view limit reactively based on screen size.
-	let currentProjects = $derived.by(() => {
-		const languageFiltered = projects.filter((project) => project.translations[selectedLanguage]);
+	// Solo i progetti tradotti nella lingua corrente; i filtri arrivano già applicati.
+	let languageFiltered = $derived(
+		projects.filter((project) => project.translations[selectedLanguage])
+	);
 
-		if (!showViewAllButton) {
-			return languageFiltered;
-		}
+	let viewLimit = $derived(screenSize === 'mobile' ? 3 : screenSize === 'tablet' ? 4 : 6);
 
-		const limit = screenSize === 'mobile' ? 3 : screenSize === 'tablet' ? 4 : 6;
-		return languageFiltered.slice(0, limit);
-	});
+	// Due densità (vedi utils/shelf). In home si mostra solo la vetrina, nell'ordine dei
+	// featured e tagliata al limite responsivo; nel listing vetrina a card e, sotto,
+	// archivio e idee come indice.
+	let shelves = $derived(splitByDensity(languageFiltered));
+	let showcase = $derived(
+		showViewAllButton
+			? languageFiltered
+					.filter((p) => (SHOWCASE_STATUSES as readonly string[]).includes(p.meta.status))
+					.slice(0, viewLimit)
+			: shelves.showcase
+	);
+	let showShelves = $derived(
+		!showViewAllButton && (shelves.archived.length > 0 || shelves.ideas.length > 0)
+	);
 
 	// Get all required translations at once
 	const translationKeys: TranslationKey[] = [
@@ -74,7 +82,9 @@
 		'noResultsFound',
 		'tryAdjusting',
 		'noProjectsHome',
-		'checkBackLater'
+		'checkBackLater',
+		'shelfArchived',
+		'shelfIdeas'
 	];
 
 	let t = $derived(getTranslations(global, translationKeys));
@@ -88,8 +98,8 @@
 	// rivelate scrollando non restano indietro.
 	const cardStagger = (i: number) => Math.min(i, 4) * 60;
 
-	// Readout dell'header: conteggio e arco di anni, presi dai meta.json. Nel listing
-	// `projects` è solo la pagina corrente, quindi il totale arriva da fuori.
+	// Readout dell'header: conteggio e arco di anni, presi dai meta.json. Il totale arriva
+	// da fuori (`collection`) perché `projects` può essere già filtrato.
 	let headerReadout = $derived.by(() => {
 		const source = collection ?? projects;
 		const count = source.length;
@@ -123,39 +133,55 @@
 		</div>
 	{/if}
 
-	{#if currentProjects && currentProjects.length > 0}
-		<div class="grid grid-cols-1 gap-6 sm:gap-10 md:grid-cols-2 xl:grid-cols-3">
-			{#each currentProjects as project, i (project.meta.id)}
-				<div use:reveal={{ delay: cardStagger(i) }} class="reveal h-full [--reveal-shift:2rem]">
-					<ProjectCard
-						title={project.translations[selectedLanguage].title}
-						excerpt={project.translations[selectedLanguage].excerpt}
-						featuredImage={project.meta.featured_image}
-						featuredImagePlaceholder={project.meta.featuredImagePlaceholder}
-						tags={translateTags(global, project.translations[selectedLanguage].tags)}
-						status={project.meta.status}
-						year={project.meta.created_date?.slice(0, 4)}
-						{global}
-						link={'/' +
-							selectedLanguage +
-							'/' +
-							navigation[selectedLanguage].projects +
-							'/' +
-							project.translations[selectedLanguage].slug}
-					/>
-				</div>
-			{/each}
-		</div>
-
-		<!-- Pagination -->
-		{#if pagination && pagination.totalPages > 1}
-			<div class="mt-8">
-				<Pagination currentPage={pagination.currentPage} totalPages={pagination.totalPages} />
+	{#if showcase.length > 0 || showShelves}
+		{#if showcase.length > 0}
+			<div class="grid grid-cols-1 gap-6 sm:gap-10 md:grid-cols-2 xl:grid-cols-3">
+				{#each showcase as project, i (project.meta.id)}
+					<div use:reveal={{ delay: cardStagger(i) }} class="reveal h-full [--reveal-shift:2rem]">
+						<ProjectCard
+							title={project.translations[selectedLanguage].title}
+							excerpt={project.translations[selectedLanguage].excerpt}
+							featuredImage={project.meta.featured_image}
+							featuredImagePlaceholder={project.meta.featuredImagePlaceholder}
+							tags={translateTags(global, project.translations[selectedLanguage].tags)}
+							status={project.meta.status}
+							year={project.meta.created_date?.slice(0, 4)}
+							{global}
+							link={'/' +
+								selectedLanguage +
+								'/' +
+								navigation[selectedLanguage].projects +
+								'/' +
+								project.translations[selectedLanguage].slug}
+						/>
+					</div>
+				{/each}
 			</div>
 		{/if}
 
-		<!-- View All Button - only show if in home page and there are more projects -->
-		{#if showViewAllButton && projects.length > (screenSize === 'mobile' ? 3 : screenSize === 'tablet' ? 4 : 6)}
+		{#if showShelves}
+			<div class="grid grid-cols-1 gap-x-16 gap-y-14 pt-6 lg:grid-cols-2">
+				{#if shelves.archived.length > 0}
+					<ProjectIndex
+						label={t.shelfArchived}
+						projects={shelves.archived}
+						{selectedLanguage}
+						projectsRoute={navigation[selectedLanguage].projects}
+					/>
+				{/if}
+				{#if shelves.ideas.length > 0}
+					<ProjectIndex
+						label={t.shelfIdeas}
+						projects={shelves.ideas}
+						{selectedLanguage}
+						projectsRoute={navigation[selectedLanguage].projects}
+					/>
+				{/if}
+			</div>
+		{/if}
+
+		<!-- In home il pulsante porta a tutto il resto: vetrina completa, archivio e idee. -->
+		{#if showViewAllButton && languageFiltered.length > showcase.length}
 			<div class="flex justify-center">
 				<a
 					href={projectsPageLink}

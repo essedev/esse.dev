@@ -61,10 +61,12 @@
 		{ "name": "status", "value": "Stato" },
 		{ "name": "statusCompleted", "value": "Completato" },
 		{ "name": "statusInProgress", "value": "In corso" },
-		{ "name": "statusIdea", "value": "Esplorazione" },
+		{ "name": "statusIdea", "value": "Idea" },
 		{ "name": "statusArchived", "value": "Archiviato" },
 		{ "name": "clearStatuses", "value": "Cancella stati" },
-		{ "name": "closeStatusDropdown", "value": "Chiudi menu stato" }
+		{ "name": "closeStatusDropdown", "value": "Chiudi menu stato" },
+		{ "name": "shelfArchived", "value": "Archivio" },
+		{ "name": "shelfIdeas", "value": "Idee" }
 	],
 	"tagTranslations": {
 		"React": "React",
