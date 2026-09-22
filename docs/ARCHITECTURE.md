@@ -64,6 +64,10 @@ Punti chiave:
   `listing-<sezione>-<lang>`, `detail-<sezione>-<id>-<lang>`) con un query param
   di cache-busting legato al timestamp di build.
 
+Le favicon seguono la regola opposta (DECISIONS #7): generate da
+`scripts/generate-favicons.ts` a partire da un solo disegno, ma committate e fuori
+dalla catena di build, perché cambiano solo col disegno o con l'accento default.
+
 Gotcha noti: satori vuole font `woff`/`ttf` (non `woff2`) e ignora gli attributi
 `width`/`height` sulle `<img>` (vanno nello `style`).
 

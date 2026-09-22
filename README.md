@@ -13,13 +13,14 @@ Personal portfolio website built with SvelteKit and deployed on Cloudflare Worke
 ## Features
 
 - **Multi-language support** - Internationalization with dynamic routing
-- **Portfolio showcase** - Projects gallery with detailed views
-- **Articles/Blog** - Content publishing with reading time and related posts
-- **Filtering & search** - Search, tags, status and date filters with pagination
+- **Portfolio showcase** - Curated home showcase, project cards plus a one-line index for archived work and ideas, detail pages
+- **Articles/Blog** - One-line article index, reading time, token estimate and related posts
+- **Filtering & search** - Search, tags, status and date filters (articles paginated)
 - **RSS feed** - Per-language blog feed
 - **Contact** - Email and social links
 - **Optimized images** - Automatic image optimization with vite-imagetools
 - **OG images** - Open Graph images pre-generated at build time (static PNGs)
+- **Favicons** - Full favicon/manifest set generated from one drawing (`pnpm generate-favicons`)
 - **Responsive design** - Mobile-first approach
 
 ## Development
@@ -53,12 +54,15 @@ pnpm format           # Format code with Prettier
 pnpm test:unit        # Unit tests (Vitest)
 pnpm test:e2e         # End-to-end tests (Playwright)
 pnpm test:ci          # Unit + E2E
+pnpm generate-favicons # Regenerate favicons + manifest icons (outputs committed)
 ```
 
 ## Documentation
 
 - [`CLAUDE.md`](CLAUDE.md) - conventions, commands and gotchas (for the coding agent)
 - [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) - design decisions and tradeoffs
+- [`docs/DECISIONS.md`](docs/DECISIONS.md) - durable decisions, citable as `#N`
+- [`docs/RESTYLE.md`](docs/RESTYLE.md) - visual identity direction ("Laboratorio" restyle)
 - [`docs/ROADMAP.md`](docs/ROADMAP.md) - current milestones
 - [`docs/CYCLES.md`](docs/CYCLES.md) - work-cycle log
 
@@ -80,19 +84,12 @@ Configure Cloudflare Workers settings in `wrangler.jsonc`.
 
 ## Project Structure
 
-```
-src/
-├── lib/
-│   ├── components/     # Reusable UI components
-│   ├── sections/       # Page sections (Welcome, Projects, About, etc.)
-│   └── style/          # Global styles
-├── routes/
-│   └── [page=lang]/    # Multi-language routing
-│       ├── +page.svelte
-│       ├── [route]/    # Dynamic routes
-│       └── [sub]/      # Sub-routes
-└── scripts/            # Build scripts (image generation)
-```
+Content lives as JSON in `src/lib/content/`, validated by Zod schemas in
+`src/lib/schemas/`; pure logic (content loader, i18n routing, SEO, OG) in
+`src/lib/utils/`; multi-language routes under `src/routes/[page=lang]/`; build scripts
+in `scripts/`; tests in `tests/unit` and `tests/e2e`. Run `tree src -d -L 3` for the
+current layout, and see [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for the
+boundaries.
 
 ## License
 

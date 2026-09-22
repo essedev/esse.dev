@@ -535,9 +535,40 @@ vision completa, le idee considerate e quelle scartate vivono in `docs/RESTYLE.m
   l'header di sezione erano comunque ridondanti: il confine lo segna già lui, portando
   indice e readout invece di niente.
 
+### Blocco 4 - contenuti, indici tipografici, CRT, favicon (fatto)
+
+- **Ricurazione progetti (`8d57f89`):** 19 progetti pubblicati invece di 25 (4 in
+  corso, 5 completati, 6 archiviati, 4 idee); i 15 esclusi sono `published: false`,
+  non cancellati, quindi recuperabili. Copy riscritto in prima persona dai README dei
+  repo, senza le metriche gonfiate dei vecchi stub. Vetrina home guidata da Relay,
+  Nexus e Flux (`config/featured.json`).
+- **Due densità nel listing progetti (`2b1949f`):** in corso e completati restano
+  card con immagine (vetrina); archiviati e idee diventano un indice tipografico a
+  una riga (anno, titolo, excerpt) su due colonne sotto. Split in `utils/shelf.ts`
+  (testato). La home mostra solo la vetrina, nell'ordine dei featured. Il listing
+  progetti non è più paginato: la paginazione taglierebbe a metà le due densità e la
+  collezione è piccola apposta. La label dello status `idea` torna "Idea" (era
+  "Esplorazione").
+- **Articoli come indice (`976088b`):** l'unico articolo stava da solo in una griglia
+  a tre colonne dietro un placeholder. Ora usa lo stesso indice tipografico, con la
+  data completa a sinistra; il componente è generalizzato da `ProjectIndex` a
+  `EntryIndex`. Gli articoli restano paginati (6 per pagina).
+- **Fix indice di sezione in IT (`9017347`):** header e rail del telaio
+  confrontavano la chiave logica (`projects`) col nome tradotto (`progetti`) e in
+  italiano perdevano l'indice. Ora si risolve per ancora (`#projects`), uguale in
+  ogni lingua.
+- **Contatti (`b3dd2da`):** email grande, profili su una riga mono con freccia
+  uscente; il `mailto` non apre più una tab vuota.
+- **Prima dose di CRT (`52b4540`):** tre segni statici, nessuno animato: vignetta
+  interna sul telaio (solo da `lg`), glow al fosforo sul testo in accento (derivato
+  dal token) e scanline solo sulle miniature dei progetti.
+- **Favicon e manifest (`796e15e`):** un solo disegno (schermo scuro con telaio, "e"
+  in Martian Mono, cursore a blocco in accento) da cui `scripts/generate-favicons.ts`
+  genera tutte le taglie. Gli output sono committati e lo script non sta nella build:
+  si rilancia con `pnpm generate-favicons` quando cambiano disegno o accento default.
+
 ### Cosa resta
 
-- Cantieri grossi: animazioni come sistema, pixel art autoprodotta (`idkcraft-studio`),
-  riscrittura/ricurazione dei contenuti progetti (decidere quali/quanti, usare lo
-  status "Esplorazione").
+- Cantieri grossi: animazioni come sistema. La pixel art autoprodotta è scartata
+  (vedi `RESTYLE.md`); la ricurazione dei contenuti progetti è fatta (Blocco 4).
 - Prima del merge/live: `build` + `test:ci` + aggiornare gli E2E + merge su `main`.

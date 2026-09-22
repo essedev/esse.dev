@@ -23,8 +23,8 @@ va veloce. La solidità da ingegnere abilita la delega, non la limita. Edge:
 ingegnere solido CHE spinge l'AI più di altri, con output production-ready, non demo.
 
 Il vecchio welcome difensivo ("l'architettura la decide l'umano, l'AI velocizza,
-l'umano valida") è stato sostituito. Anche la label dello status `idea` è diventata
-"Esplorazione" / "Exploration".
+l'umano valida") è stato sostituito. Anche la label dello status `idea` era diventata
+"Esplorazione" / "Exploration"; sul branch è poi tornata "Idea" (Ciclo 9, blocco 4).
 
 ## Idea madre: Il Laboratorio
 
@@ -63,8 +63,9 @@ esplorazioni e cose finite. La narrazione esiste già nell'articolo
   **"I cast code."**
 - **Accento colore:** arancione deep (scartato: complementare al logo blu, ci
   litigava), viola (scartato: armonizza col logo ma è il cliché-AI / purple
-  gradient), **ciano `#22d3ee`** (scelto: stessa famiglia fredda del logo,
-  retro-CRT, distintivo senza omologarsi all'estetica AI).
+  gradient), ciano `#22d3ee` (primo candidato, stessa famiglia fredda del logo e
+  retro-CRT), poi rifinito nell'**azzurro elettrico `#2cc3f7`** in uso (vedi sotto).
+  Arancione e viola sono rientrati solo come alternative dell'accent picker.
 
 ## Pixel art autoprodotta: SCARTATA (2026-09-21)
 
@@ -143,16 +144,15 @@ Design system di base, su cui la pixel art si poserà in seguito. Decisioni pres
 - **Status bar:** fascia sotto la navbar (al posto del border piatto), stile barra
   di stato IDE: dot azzurro + ruolo a sinistra, location/lingue a destra. La firma
   dell'hero usa "half engineer, half wizard" per non duplicare il ruolo.
-- **Footer:** pannello tecnico (link, last-updated derivato dal git, motion toggle),
-  in mono sobrio.
+- **Footer:** pannello tecnico (link a moduli, motion toggle), in mono sobrio. Il
+  last-updated derivato dal git era previsto ma non è stato implementato.
 
 ## Cosa rimandiamo
 
-- **Pixel art e animazioni:** fase successiva, dopo che l'estetica di base regge.
-- **Contenuti dei progetti:** riscrittura delle schede nella nuova voce e
-  ricurazione della lista (decidere quali e quanti progetti tenere, usare davvero lo
-  status "Esplorazione" per gli spike). È un lavoro di contenuto separato, a monte
-  della scrittura, e richiede una selezione che spetta a Simone.
+- **Animazioni:** fase successiva, dopo che l'estetica di base regge. (La pixel art
+  è stata scartata, vedi sopra.)
+- ~~**Contenuti dei progetti**~~: fatto nel blocco 4 (selezione ridotta, copy
+  riscritto in prima persona, vetrina + indice).
 
 ## Stato (2026-09-22)
 
@@ -178,6 +178,11 @@ Design system di base, su cui la pixel art si poserà in seguito. Decisioni pres
   navigazione, barra di link allineata alla colonna del contenuto. Ogni sezione apre con
   un header a indice numerato + readout calcolato dai dati (progetti: quanti e da
   quando). Sotto `lg` il telaio non si monta e vale l'assetto precedente.
-- **Resta:** animazioni come sistema; contenuti progetti. Prima del merge:
+- **Contenuti e densità (blocco 4):** progetti ricurati (gli esclusi depubblicati,
+  non cancellati), listing a due densità (card per in corso/completati, indice
+  tipografico per archiviati/idee), articoli come indice, contatti asciugati, prima
+  dose statica di CRT (vignetta del telaio, glow al fosforo, scanline sulle
+  miniature), favicon e manifest generati da un solo disegno.
+- **Resta:** animazioni come sistema. Prima del merge:
   `build` + `test:ci` (con E2E da aggiornare per nav/welcome/badge) + merge su `main`.
 - Log dettagliato in `docs/CYCLES.md` (Ciclo 9).
