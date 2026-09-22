@@ -66,9 +66,10 @@ e decisioni in `docs/RESTYLE.md`, log in `docs/CYCLES.md` (Ciclo 9). In sintesi:
   `--color-accent` (default azzurro `#2cc3f7`) + `--radius-sm/md/lg/xl`. **L'accento
   vive in un punto solo:** glow e ombre lo derivano via `color-mix(var(--color-accent))`,
   non hardcodano l'rgba. La sitemap è un CSS separato (`static/sitemap.css`) col suo
-  `--accent`. Un `AccentPicker` (montato in `+layout.svelte`, basso-sx) sovrascrive
-  `--color-accent` su `<html>` a runtime (azzurro/arancione/viola, persistito in
-  localStorage, con hue-sweep animato): se aggiungi un colore-accento NON hardcodarlo.
+  `--accent`. Un `AccentPicker` (montato in `+layout.svelte`: in basso a sinistra sotto
+  `lg`, colonna di LED nel rail sinistro sopra) sovrascrive `--color-accent` su `<html>`
+  a runtime (azzurro/arancione/viola, persistito in localStorage, con hue-sweep
+  animato): se aggiungi un colore-accento NON hardcodarlo.
 - Controlli a tema coerenti (`rounded-md`, bordo `white/10`, `hover:border-accent/50`):
   segmented control lingua, switch animazioni (`MotionToggle`), accent picker. Le
   animazioni rispettano il motion toggle; il thumb dello switch è esentato apposta
