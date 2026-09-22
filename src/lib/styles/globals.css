@@ -151,6 +151,10 @@ body::after {
 	z-index: 45;
 	border: 1px solid rgba(255, 255, 255, 0.08);
 	border-radius: var(--radius-md);
+	/* Vignetta CRT: il vetro scurisce verso il bordo. Sta sul frame perché il frame è già
+	   sopra il contenuto e ha gli angoli dello schermo; sotto lg il frame non c'è e nemmeno
+	   la vignetta, che senza cornice sembrerebbe solo sporco. */
+	box-shadow: inset 0 0 90px rgb(0 0 0 / 0.5);
 }
 
 .chassis-rail {
@@ -435,6 +439,23 @@ button:hover > .rail-top-arrow {
 
 .archive-card:hover .archive-card__media img {
 	transform: scale(1.04);
+}
+
+/* CRT, dose 1: segni leggeri e statici, niente sfarfallio. Le scanline stanno solo sulle
+   miniature, dove leggono come un monitor che mostra il progetto: sul testo lo
+   sporcherebbero e basta. */
+.archive-card__media::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	pointer-events: none;
+	background: repeating-linear-gradient(to bottom, rgb(0 0 0 / 0.22) 0 1px, transparent 1px 3px);
+}
+
+/* Fosforo: il testo in accento emette un alone appena percettibile, come un carattere
+   acceso su un tubo. Deriva dall'accento, quindi segue l'AccentPicker. */
+.text-accent {
+	text-shadow: 0 0 10px color-mix(in srgb, var(--color-accent) 45%, transparent);
 }
 
 .slide-in {
