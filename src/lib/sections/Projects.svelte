@@ -3,8 +3,8 @@
 	import { base } from '$app/paths';
 	import ProjectCard from '$lib/components/ProjectCard.svelte';
 	import SearchFilter from '$lib/components/SearchFilter.svelte';
-	import ProjectIndex from '$lib/components/ProjectIndex.svelte';
-	import type { FilterState, ProjectsSectionProps } from '$lib/types/content';
+	import EntryIndex from '$lib/components/EntryIndex.svelte';
+	import type { FilterState, ProjectItem, ProjectsSectionProps } from '$lib/types/content';
 	import { getTranslations, translateTags, type TranslationKey } from '$lib/utils/translations';
 	import { ArrowRight, FileText } from '@lucide/svelte';
 	import { onMount } from 'svelte';
@@ -71,6 +71,18 @@
 					.slice(0, viewLimit)
 			: shelves.showcase
 	);
+	// Una riga dello scaffale: anno, titolo, una frase.
+	const toEntry = (p: ProjectItem) => {
+		const tr = p.translations[selectedLanguage];
+		return {
+			key: p.meta.id,
+			href: `/${selectedLanguage}/${navigation[selectedLanguage].projects}/${tr.slug}`,
+			meta: p.meta.created_date.slice(0, 4),
+			title: tr.title,
+			excerpt: tr.excerpt
+		};
+	};
+
 	let showShelves = $derived(
 		!showViewAllButton && (shelves.archived.length > 0 || shelves.ideas.length > 0)
 	);
@@ -162,20 +174,10 @@
 		{#if showShelves}
 			<div class="grid grid-cols-1 gap-x-16 gap-y-14 pt-6 lg:grid-cols-2">
 				{#if shelves.archived.length > 0}
-					<ProjectIndex
-						label={t.shelfArchived}
-						projects={shelves.archived}
-						{selectedLanguage}
-						projectsRoute={navigation[selectedLanguage].projects}
-					/>
+					<EntryIndex label={t.shelfArchived} entries={shelves.archived.map(toEntry)} />
 				{/if}
 				{#if shelves.ideas.length > 0}
-					<ProjectIndex
-						label={t.shelfIdeas}
-						projects={shelves.ideas}
-						{selectedLanguage}
-						projectsRoute={navigation[selectedLanguage].projects}
-					/>
+					<EntryIndex label={t.shelfIdeas} entries={shelves.ideas.map(toEntry)} />
 				{/if}
 			</div>
 		{/if}

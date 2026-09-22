@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { base } from '$app/paths';
-	import ArticleCard from '$lib/components/ArticleCard.svelte';
+	import EntryIndex from '$lib/components/EntryIndex.svelte';
 	import SearchFilter from '$lib/components/SearchFilter.svelte';
 	import Pagination from '$lib/components/ui/Pagination.svelte';
-	import type { ArticlesSectionProps, FilterState } from '$lib/types/content';
-	import { getTranslations, translateTags, type TranslationKey } from '$lib/utils/translations';
+	import type { ArticleItem, ArticlesSectionProps, FilterState } from '$lib/types/content';
+	import { getTranslations, type TranslationKey } from '$lib/utils/translations';
 	import { ArrowRight, FileText } from '@lucide/svelte';
 	import { reveal } from '$lib/actions/reveal';
 	import SectionHeader from '$lib/components/SectionHeader.svelte';
@@ -52,8 +52,25 @@
 		`${base}/${selectedLanguage}/${navigation[selectedLanguage].articles}`
 	);
 
-	// Stagger d'ingresso delle card (vedi Projects): cascata leggera e cappata.
-	const cardStagger = (i: number) => Math.min(i, 4) * 60;
+	// Il blog è un indice a righe, non una griglia di card: i pezzi sono testo, e una card
+	// con immagine segnaposto non aggiunge niente a titolo, data e una frase.
+	const formatDate = (iso: string) =>
+		new Date(iso).toLocaleDateString(selectedLanguage === 'it' ? 'it-IT' : 'en-US', {
+			year: 'numeric',
+			month: 'short',
+			day: 'numeric'
+		});
+
+	const toEntry = (a: ArticleItem) => {
+		const tr = a.translations[selectedLanguage];
+		return {
+			key: a.meta.id,
+			href: `/${selectedLanguage}/${navigation[selectedLanguage].articles}/${tr.slug}`,
+			meta: formatDate(a.meta.published_date),
+			title: tr.title,
+			excerpt: tr.excerpt
+		};
+	};
 
 	// Readout dell'header: sotto i due pezzi resta vuoto, un conteggio a 1 punterebbe
 	// un riflettore sul blog vuoto invece di dire qualcosa.
@@ -89,27 +106,7 @@
 	{/if}
 
 	{#if currentArticles && currentArticles.length > 0}
-		<div class="grid grid-cols-1 gap-6 sm:gap-10 md:grid-cols-2 xl:grid-cols-3">
-			{#each currentArticles as article, i (article.meta.id)}
-				<div use:reveal={{ delay: cardStagger(i) }} class="reveal h-full [--reveal-shift:2rem]">
-					<ArticleCard
-						title={article.translations[selectedLanguage].title}
-						excerpt={article.translations[selectedLanguage].excerpt}
-						featuredImage={article.meta.featured_image}
-						featuredImagePlaceholder={article.meta.featuredImagePlaceholder}
-						link={'/' +
-							selectedLanguage +
-							'/' +
-							navigation[selectedLanguage].articles +
-							'/' +
-							article.translations[selectedLanguage].slug}
-						publishedDate={article.meta.published_date}
-						tags={translateTags(global, article.translations[selectedLanguage].tags)}
-						{selectedLanguage}
-					/>
-				</div>
-			{/each}
-		</div>
+		<EntryIndex entries={currentArticles.map(toEntry)} wideMeta />
 
 		<!-- Pagination -->
 		{#if pagination && pagination.totalPages > 1}
