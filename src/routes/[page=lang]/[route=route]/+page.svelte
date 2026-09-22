@@ -6,9 +6,10 @@
 
 	let { data }: { data: PageData } = $props();
 
-	// L'indice della sezione non si cabla: e' la posizione nella navbar, come in home.
-	function navIndex(name: string): number | undefined {
-		const i = data.global.navigation.findIndex((route) => route.name === name);
+	// L'indice della sezione non si cabla: è la posizione nella navbar, come in home. Si
+	// cerca per ancora (#projects, #blog), che non cambia con la lingua; il nome sì.
+	function navIndex(anchor: string): number | undefined {
+		const i = data.global.navigation.findIndex((route) => route.link === `#${anchor}`);
 		return i >= 0 ? i + 1 : undefined;
 	}
 </script>

@@ -25,7 +25,8 @@
 		const { route, page: lang } = page.params;
 		if (!route || !lang) return -1;
 		const name = sectionOf(route, lang, data.navigation);
-		return name ? sections.findIndex((s) => s.name === name) : -1;
+		// Si confronta con l'ancora, non col nome: il nome è tradotto ("progetti"), l'ancora no.
+		return name ? sections.findIndex((s) => s.id === name) : -1;
 	});
 
 	let anchorIndex = $state(-1);
