@@ -1,0 +1,12 @@
+# Impostazioni di pnpm: da pnpm 10 non si leggono più dal campo "pnpm" di package.json.
+onlyBuiltDependencies:
+  - '@tailwindcss/oxide'
+  - esbuild
+  - sharp
+  - workerd
+
+# Override di sicurezza (M1): versioni minime di dipendenze transitive vulnerabili.
+overrides:
+  cookie: '>=0.7.0'
+  rollup: '>=4.59.0'
+  devalue: '^5.9.2'

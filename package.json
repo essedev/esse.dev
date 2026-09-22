@@ -62,18 +62,6 @@
 		"vitest": "^4.1.7",
 		"wrangler": "^4.94.0"
 	},
-	"pnpm": {
-		"onlyBuiltDependencies": [
-			"@tailwindcss/oxide",
-			"esbuild",
-			"sharp",
-			"workerd"
-		],
-		"overrides": {
-			"cookie": ">=0.7.0",
-			"rollup": ">=4.59.0"
-		}
-	},
 	"dependencies": {
 		"@lucide/svelte": "^1.16.0",
 		"postprocessing": "^6.39.1",
