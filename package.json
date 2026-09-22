@@ -6,6 +6,7 @@
 	"scripts": {
 		"dev": "vite dev",
 		"validate-content": "tsx scripts/validate-content.ts",
+		"generate-favicons": "tsx scripts/generate-favicons.ts",
 		"build": "pnpm validate-content && pnpm generate-images && pnpm generate-og-images && vite build",
 		"preview": "pnpm run build && wrangler dev",
 		"prepare": "svelte-kit sync || echo ''",
