@@ -79,8 +79,14 @@ e decisioni in `docs/RESTYLE.md`, log in `docs/CYCLES.md` (Ciclo 9). In sintesi:
   che porta stato vivo (sezione corrente, avanzamento scroll, ora di Milano, claim).
   Vive nella gutter del token `--chassis-gutter`, che vale `0px` sotto `lg` e `34px`
   sopra: **qualunque elemento `fixed` va staccato dal bordo con quel token** (vedi
-  `AccentPicker`, `BackToTop`, `FloatingNav`), altrimenti finisce sopra un rail. Sotto
-  `lg` il telaio non si monta e il claim torna nella status bar della navbar.
+  `AccentPicker`, `BackToTop`), altrimenti finisce sopra un rail. Sotto `lg` il telaio
+  non si monta e il claim torna nella status bar della navbar.
+- Una sola superficie di navigazione: la barra dei link (`Navbar.svelte`) è `fixed` e
+  non `sticky`, perché `overflow-x: hidden` su body e container (serve alla griglia da
+  300vw) ne farebbe lo scrollport e non si aggancerebbe mai. Non c'è più una floating
+  nav: se serve un controllo persistente, va nel telaio.
+- `SectionHeader.svelte`: indice numerato + filo + readout dai dati della sezione. Il
+  readout si passa solo se un dato reale lo sostiene, mai un conteggio di cortesia.
 - Shortcut tastiera (`+layout.svelte`): `1-4` -> sezioni, `0`/`Home` -> top,
   `End` -> fondo.
 

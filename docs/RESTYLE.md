@@ -154,22 +154,30 @@ Design system di base, su cui la pixel art si poserà in seguito. Decisioni pres
   status "Esplorazione" per gli spike). È un lavoro di contenuto separato, a monte
   della scrittura, e richiede una selezione che spetta a Simone.
 
-## Stato (2026-06-05)
+## Stato (2026-09-22)
 
 - Voce + label "Esplorazione" su `main` (deployate).
 - Branch `restyle/laboratory` (non mergiato). **Fatto:** palette, tipografia, hero,
   navbar (logo testuale + indice numerato + status bar + toggle lingua), card
-  progetti/articoli a scheda d'archivio + badge, filtri mono, footer, floating
-  squadrata, back-to-top, arrotondamento via token, shortcut tastiera (1-4 sezioni,
-  0/Home top, End fondo), `//` rimosso dal content. Pagine dettaglio (tag mono
-  squadrati + immagine a token), paginazione a indice numerato (`01 / 04`, accento),
-  404 in mono accent, link contatti e chip filtri allineati all'accento.
+  progetti/articoli a scheda d'archivio + badge, filtri mono, footer, back-to-top,
+  arrotondamento via token, shortcut tastiera (1-4 sezioni, 0/Home top, End fondo),
+  `//` rimosso dal content. Pagine dettaglio (tag mono squadrati + immagine a token),
+  paginazione a indice numerato (`01 / 04`, accento), 404 in mono accent, link
+  contatti e chip filtri allineati all'accento.
 - **Polish (blocco 2):** footer "dashboard" (link a moduli con icona, switch
   meccanico), bottoni uniformati a un solo standard, sitemap restilizzata, status bar
   col claim `Human vision · AI execution` (via dot e lingua duplicata), StatusBadge a
   quadratino, tema accento centralizzato (`color-mix` dal token) e **accent picker**
   runtime (azzurro default + arancione/viola, hue sweep animato, flottante basso-sx,
   persistente, rispetta il motion toggle).
+- **Telaio (blocco 3):** il sito è dentro una cornice fissa (`Chassis.svelte`) che
+  porta stato vivo - sezione corrente, avanzamento scroll come scala, ora di Milano,
+  claim - invece di decorazione. I controlli non galleggiano più sopra la pagina: accent
+  picker e lingua sono strumenti del rail sinistro, il back-to-top è il piede della
+  scala a destra. Via la floating nav, che duplicava la navbar: una sola superficie di
+  navigazione, barra di link allineata alla colonna del contenuto. Ogni sezione apre con
+  un header a indice numerato + readout calcolato dai dati (progetti: quanti e da
+  quando). Sotto `lg` il telaio non si monta e vale l'assetto precedente.
 - **Resta:** animazioni come sistema; contenuti progetti. Prima del merge:
   `build` + `test:ci` (con E2E da aggiornare per nav/welcome/badge) + merge su `main`.
 - Log dettagliato in `docs/CYCLES.md` (Ciclo 9).

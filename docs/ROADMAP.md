@@ -2,7 +2,7 @@
 
 Stato corrente del progetto. Milestone reali, non wishlist. Aggiornata insieme al codice.
 
-Ultimo aggiornamento: 2026-06-05
+Ultimo aggiornamento: 2026-09-22
 
 ## Contesto
 
@@ -122,6 +122,11 @@ Vedi `docs/CYCLES.md` per il log dettagliato del lavoro svolto.
   paginazione/404), bottoni uniformati a un solo standard, tema accento centralizzato e
   **accent picker** runtime (azzurro default + arancione/viola, hue-sweep). Vision e
   decisioni in `docs/RESTYLE.md`, log dettagliato in `docs/CYCLES.md` (Ciclo 9).
+- **Telaio strumentale:** una cornice fissa (`Chassis.svelte`) attorno al contenuto
+  porta stato vivo (sezione, avanzamento, ora, claim) e accoglie i controlli, che da
+  oggetti flottanti diventano strumenti del telaio. La navigazione torna una sola
+  superficie: via la floating nav duplicata, resta una barra di link allineata alla
+  colonna del contenuto. Ogni sezione apre con un header a indice + readout dai dati.
 - Su `main`: welcome AI-first + label "Esplorazione" (pushati). Il resto vive sul
   branch (non mergiato).
 - Resta: animazioni come sistema coerente; pixel art autoprodotta; riscrittura/
@@ -131,5 +136,5 @@ Vedi `docs/CYCLES.md` per il log dettagliato del lavoro svolto.
 
 M1-M10 e il riposizionamento del welcome (parte di M11) sono pushate su `main`; il
 deploy avviene via Cloudflare Workers Builds al push. Il grosso del restyle (M11)
-e' sul branch `restyle/laboratory`, non ancora mergiato: prima del merge serve il
+è sul branch `restyle/laboratory`, non ancora mergiato: prima del merge serve il
 giro `build` + `test:ci` (con alcuni E2E da aggiornare per nav/welcome/badge).

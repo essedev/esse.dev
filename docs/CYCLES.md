@@ -406,7 +406,7 @@ vision completa, le idee considerate e quelle scartate vivono in `docs/RESTYLE.m
 - `feat(content)`: label dello status `idea` -> "Esplorazione" / "Exploration"
   (la chiave interna resta `idea`).
 
-### Su branch `restyle/laboratory` (11 commit, NON mergiato)
+### Su branch `restyle/laboratory` (NON mergiato)
 
 - **Palette:** nero piatto + accento **azzurro elettrico** `#2cc3f7` + pavimento in
   prospettiva (griglia) + glow CRT dal basso. Via gradient blu e noise.
@@ -489,6 +489,51 @@ vision completa, le idee considerate e quelle scartate vivono in `docs/RESTYLE.m
 - **Selettore lingua:** da `IT / EN` testo con slash (sembrava due link sciolti) a
   segmented control mono bordato, cella attiva in accento - coerente con gli altri
   controlli (navbar, floating nav, overlay mobile).
+
+### Blocco 3 - telaio strumentale e nav unificata (fatto)
+
+- **Telaio (`Chassis.svelte`):** cornice fissa attorno al contenuto che porta stato
+  vivo invece di decorazione - sezione corrente con l'indice della navbar (rail
+  sinistro), avanzamento scroll come scala (destro), claim (alto), ora di Milano e
+  promemoria degli shortcut (basso). È un overlay `fixed`, non uno scroll container:
+  scroll nativo, ancore e shortcut continuano a funzionare. `aria-hidden` apposta: è
+  telemetria, non contenuto, e la percentuale si aggiorna a ogni scroll.
+- **La gutter è un token:** i rail vivono in `--chassis-gutter` (`0px` sotto `lg`,
+  `34px` sopra). Sotto `lg` il telaio non si monta e il claim torna nella status bar
+  della navbar. Ogni elemento `fixed` va staccato dal bordo con lo stesso token,
+  altrimenti finisce sopra un rail.
+- **Matte:** uno strato sopra il contenuto ritaglia sfondo (griglia larga 300vw) e
+  contenuto scorrevole all'area dello schermo. Il suo raggio è gutter + `--radius-md`,
+  perché il raggio interno di un bordo è quello esterno meno lo spessore: senza, il
+  contenuto usciva nei quattro angoli. La barra dei link sta a filo del telaio, che le
+  dipinge sopra: prima era staccata di 1px e sotto passava una fessura.
+- **Controlli promossi a strumenti:** accent picker nel rail sinistro come LED spenti
+  con tick in accento sulla cella attiva; lingua come coppia verticale EN/IT sullo
+  stesso fianco, con lo stesso tick da indice (l'inattiva resta a piena opacità: il 32%
+  regge su un pallino di colore, su una parola da 9.5px compone quasi nero);
+  back-to-top da riquadro a chevron sopra `TOP` al piede della scala, con la freccia che
+  sale in hover. Niente drag o scrub sulla scala: quella gutter si sovrappone alla
+  scrollbar di sistema e uno slider litigherebbe con gli shortcut `0`/`Home`/`End`/`1-4`.
+- **Una sola superficie di navigazione:** rimossa la `FloatingNav`, che duplicava
+  wordmark, link e selettore lingua della navbar; col telaio era l'unico oggetto a non
+  appartenere né alla cornice né allo schermo. Resta una barra da 64px con le quattro
+  voci come celle uguali divise da hairline e il wordmark in testa, allineata alla
+  colonna del contenuto. È `fixed`, non `sticky`: `overflow-x: hidden` su body e
+  container (serve alla griglia da 300vw) rende l'antenato lo scrollport, quindi lo
+  sticky non si aggancerebbe mai. Sotto `lg` la navbar scorre via e un burger flottante
+  tiene il menu raggiungibile.
+- **Header di sezione (`SectionHeader.svelte`):** ogni sezione apre con l'indice
+  numerato della navbar, un filo e un readout calcolato dal contenuto stesso (progetti:
+  conteggio e range di anni dal `meta.json`), così cornice e contenuto dicono la stessa
+  cosa. Il readout compare solo dove un dato reale lo sostiene: gli articoli restano
+  nudi sotto i due post (un conteggio da 1 punta un faro sul blog vuoto), about e
+  contatti non hanno niente di strutturato da riportare. Conteggio e anni arrivano da
+  un'unica fonte: passando solo il totale, il listing mostrava il conteggio reale
+  accanto al range della pagina corrente.
+- **Righe full-bleed tra le sezioni rimosse:** l'hero chiudeva con `border-b` e la
+  sezione seguente apriva con `border-t`, due linee sovrapposte a ogni giunzione. Con
+  l'header di sezione erano comunque ridondanti: il confine lo segna già lui, portando
+  indice e readout invece di niente.
 
 ### Cosa resta
 
