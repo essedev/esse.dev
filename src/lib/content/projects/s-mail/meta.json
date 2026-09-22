@@ -4,7 +4,7 @@
 	"featured_image": "images/projects/s-mail/featured.png",
 	"og_image_key": "sMailFeatured",
 	"link": "https://smail.essedev.it",
-	"published": true,
+	"published": false,
 	"status": "in-progress",
 	"created_date": "2024-10-08",
 	"updated_date": "2025-09-10"

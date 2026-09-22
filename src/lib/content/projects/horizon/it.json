@@ -1,19 +1,19 @@
 {
 	"slug": "horizon",
 	"title": "Horizon",
-	"excerpt": "Dashboard anti-overstimulation per monitoring globale con AI che trasforma il caos informativo in insights actionable",
+	"excerpt": "Una dashboard che legge mercati, notizie e geopolitica al posto mio e mi mostra solo le poche cose che contano davvero.",
 	"content": {
 		"blocks": [
 			{
 				"type": "paragraph",
 				"data": {
-					"text": "Horizon è una dashboard progettata per trasformare il caos informativo globale in insights actionable. Attraverso 8 API validate (76 data points, 100% success rate), monitora economia, crypto, news, meteo e geopolitica fornendo solo le informazioni che contano. Filosofia anti-overstimulation: filtra rumore (solo score >0.7), amplifica segnali, riduce latenza cognitiva (max 8-12 insights per sessione)."
+					"text": "L'idea è l'opposto di un feed: una dashboard che ogni giorno legge mercati, crypto, notizie, meteo e geopolitica, dà un punteggio di rilevanza a ogni segnale e me ne mostra una decina al massimo."
 				}
 			},
 			{
 				"type": "paragraph",
 				"data": {
-					"text": "AI ibrida cloud + locale: Gemini 2.5 Flash per classification, relevance scoring (0.0-1.0), urgency classification, sentiment analysis, topic clustering. Stack: FastAPI + SQLAlchemy + PostgreSQL (backend), Next.js + TypeScript + Tailwind CSS + Zustand (frontend). Sources: Alpha Vantage, CoinGecko, Finnhub, NewsAPI, OpenWeatherMap e altri. Costo operativo ~$54/mese."
+					"text": "Un LLM classifica, raggruppa per tema e scarta il rumore; io leggo solo quello che supera la soglia. È parente di Flux: lì leggo quello che scelgo io, qui qualcuno sceglie per me cosa vale la pena sapere."
 				}
 			}
 		]
@@ -21,5 +21,5 @@
 	"image_captions": [
 		"Dashboard Horizon con HeroStatus, QuickStats e DataStream filtrato per rilevanza"
 	],
-	"tags": ["FastAPI", "Next.js", "TypeScript", "AI", "PostgreSQL", "Gemini", "Dashboard"]
+	"tags": ["AI", "Dashboard", "News", "LLM"]
 }

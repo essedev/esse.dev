@@ -1,3 +1,3 @@
 {
-	"projects": ["budokan", "core", "horizon"]
+	"projects": ["relay", "nexus", "flux", "liber", "mcpbelt", "portsage"]
 }

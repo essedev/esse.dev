@@ -1,13 +1,19 @@
 {
 	"slug": "templator",
 	"title": "Templator",
-	"excerpt": "AI-first Next.js template for rapid development with authentication, database, and Cloudflare Workers deployment",
+	"excerpt": "Next.js template built to get started fast with a coding agent: auth, roles, database and email ready, deployed on Cloudflare Workers.",
 	"content": {
 		"blocks": [
 			{
 				"type": "paragraph",
 				"data": {
-					"text": "Templator is a Next.js 15 template optimized for AI-assisted development. It includes complete authentication with Better Auth (email/password, email verification, password reset), 3-tier RBAC system (user/editor/admin), Drizzle ORM with Neon PostgreSQL, Cloudflare Workers deployment with zero cold starts. Full stack with React 19, strict TypeScript, Tailwind CSS 4, shadcn/ui, email system with React Email, built-in blog, contact form and newsletter."
+					"text": "The starting point I used in 2025 for Next.js projects: authentication with Better Auth, three-tier roles, Drizzle on PostgreSQL, transactional email and deploys on Cloudflare Workers. The structure and docs were designed for a coding agent, so it could work on it right away without guessing the conventions."
+				}
+			},
+			{
+				"type": "paragraph",
+				"data": {
+					"text": "Today I start from the official init commands and put the conventions in an instructions file for the agent, but the idea started here."
 				}
 			}
 		]

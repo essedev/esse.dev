@@ -1,19 +1,19 @@
 {
 	"slug": "cosmoscope",
 	"title": "Cosmoscope",
-	"excerpt": "Strumento di esplorazione della conoscenza che trasforma domande in mappe visive interattive con AI",
+	"excerpt": "Un assistente di ricerca che trasforma una domanda in una mappa dei concetti, con le fonti attaccate a ogni nodo.",
 	"content": {
 		"blocks": [
 			{
 				"type": "paragraph",
 				"data": {
-					"text": "Cosmoscope è un assistente di ricerca che prende qualsiasi domanda e costruisce un grafo visivo della conoscenza attorno ad essa. Cerca nel web fonti affidabili, sintetizza le informazioni usando AI e presenta i concetti come una mappa interattiva esplorabile. Esempio: chiedendo \"Cos'è l'entanglement quantistico?\" crea una mappa visiva che mostra il concetto principale connesso a topic correlati come superposizione, teorema di Bell e quantum computing."
+					"text": "L'idea: fai una domanda, per esempio cos'è l'entanglement quantistico, e invece di un paragrafo ottieni una mappa. Il concetto al centro, attorno i temi collegati, e su ogni nodo le fonti da cui viene, con un peso per quanto sono affidabili."
 				}
 			},
 			{
 				"type": "paragraph",
 				"data": {
-					"text": "Caratteristiche: ricerca AI-powered con Grok 4 Fast, selezione intelligente fonti (priorità a .edu, .gov, fonti autorevoli), mappe conoscenza interattive stile n8n con React Flow, attribuzione fonti con punteggi affidabilità, rilevamento automatico relazioni tra concetti. Stack: React + TypeScript + Vite, Tailwind CSS + shadcn/ui, Supabase (PostgreSQL + Edge Functions), Brave Search API."
+					"text": "Mi interessa perché una risposta lineare nasconde la struttura dell'argomento, ed è la struttura che serve per capire da dove continuare. L'ho abbozzata con React Flow e una ricerca web a monte."
 				}
 			}
 		]
@@ -21,5 +21,5 @@
 	"image_captions": [
 		"Interfaccia Cosmoscope con mappa visiva della conoscenza e connessioni tra concetti"
 	],
-	"tags": ["React", "TypeScript", "Vite", "Supabase", "AI", "React Flow", "Grok"]
+	"tags": ["React", "React Flow", "AI", "Search", "Knowledge Graph"]
 }

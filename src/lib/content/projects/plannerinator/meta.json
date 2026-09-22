@@ -3,7 +3,7 @@
 	"images": ["images/projects/plannerinator/featured.png"],
 	"featured_image": "images/projects/plannerinator/featured.png",
 	"og_image_key": "plannerinatorFeatured",
-	"published": true,
+	"published": false,
 	"status": "in-progress",
 	"created_date": "2024-12-20",
 	"updated_date": "2025-09-10"

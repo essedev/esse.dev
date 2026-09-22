@@ -1,0 +1,29 @@
+{
+	"slug": "liber",
+	"title": "Liber",
+	"excerpt": "AI sommelier for restaurants: the guest describes the dish and Liber picks, among the wines actually on the list, the ones that fit best.",
+	"content": {
+		"blocks": [
+			{
+				"type": "paragraph",
+				"data": {
+					"text": "At the table, the guest types what they are eating. Liber suggests the wines on the restaurant's list that pair best and explains the choice the way a sommelier would, without ever suggesting a bottle the restaurant does not have."
+				}
+			},
+			{
+				"type": "paragraph",
+				"data": {
+					"text": "It is not a wrapper around an LLM. The wine reasoning runs on a knowledge graph built with Apache AGE inside PostgreSQL: grapes, regions, styles, pairings. The model acts as a ranker and only picks from the wines actually available, so it cannot make up a label."
+				}
+			},
+			{
+				"type": "paragraph",
+				"data": {
+					"text": "FastAPI backend with async SQLAlchemy, React 19 frontend with TanStack Query, models through OpenRouter. It runs in Docker on a VPS, at heyliber.com."
+				}
+			}
+		]
+	},
+	"image_captions": ["Liber suggesting wines from the list to pair with a dish"],
+	"tags": ["Python", "FastAPI", "React", "PostgreSQL", "Knowledge Graph", "AI"]
+}

@@ -1,13 +1,13 @@
 {
 	"slug": "ethicode",
 	"title": "Ethicode",
-	"excerpt": "Piattaforma di e-learning per imparare a programmare in modo semplice e divertente. Precedentemente chiamato Let's Code Italia.",
+	"excerpt": "Piattaforma di e-learning per imparare a programmare, nata come Let's Code Italia.",
 	"content": {
 		"blocks": [
 			{
 				"type": "paragraph",
 				"data": {
-					"text": "Piattaforma di e-learning per imparare a programmare in modo semplice e divertente. Precedentemente chiamato Let's Code Italia."
+					"text": "Una piattaforma per imparare a programmare con percorsi semplici e pratici, nata nel 2023 come Let's Code Italia. SvelteKit, Tailwind e PocketBase."
 				}
 			}
 		]

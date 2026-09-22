@@ -1,19 +1,19 @@
 {
 	"slug": "horizon",
 	"title": "Horizon",
-	"excerpt": "Anti-overstimulation dashboard for global monitoring with AI that transforms information chaos into actionable insights",
+	"excerpt": "A dashboard that reads markets, news and geopolitics for me and shows only the few things that actually matter.",
 	"content": {
 		"blocks": [
 			{
 				"type": "paragraph",
 				"data": {
-					"text": "Horizon is a dashboard designed to transform global information chaos into actionable insights. Through 8 validated APIs (76 data points, 100% success rate), it monitors economy, crypto, news, weather and geopolitics providing only the information that matters. Anti-overstimulation philosophy: filters noise (only score >0.7), amplifies signals, reduces cognitive latency (max 8-12 insights per session)."
+					"text": "The idea is the opposite of a feed: a dashboard that every day reads markets, crypto, news, weather and geopolitics, gives each signal a relevance score and shows me ten at most."
 				}
 			},
 			{
 				"type": "paragraph",
 				"data": {
-					"text": "Hybrid cloud + local AI: Gemini 2.5 Flash for classification, relevance scoring (0.0-1.0), urgency classification, sentiment analysis, topic clustering. Stack: FastAPI + SQLAlchemy + PostgreSQL (backend), Next.js + TypeScript + Tailwind CSS + Zustand (frontend). Sources: Alpha Vantage, CoinGecko, Finnhub, NewsAPI, OpenWeatherMap and more. Operational cost ~$54/month."
+					"text": "An LLM classifies, groups by topic and drops the noise; I only read what clears the threshold. It is related to Flux: there I read what I choose, here something chooses for me what is worth knowing."
 				}
 			}
 		]
@@ -21,5 +21,5 @@
 	"image_captions": [
 		"Horizon dashboard with HeroStatus, QuickStats and DataStream filtered by relevance"
 	],
-	"tags": ["FastAPI", "Next.js", "TypeScript", "AI", "PostgreSQL", "Gemini", "Dashboard"]
+	"tags": ["AI", "Dashboard", "News", "LLM"]
 }

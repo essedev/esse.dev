@@ -1,13 +1,13 @@
 {
 	"slug": "ethicode",
 	"title": "Ethicode",
-	"excerpt": "E-learning platform to learn how to code in a simple and fun way. Previously called Let's Code Italia.",
+	"excerpt": "E-learning platform to learn how to code, born as Let's Code Italia.",
 	"content": {
 		"blocks": [
 			{
 				"type": "paragraph",
 				"data": {
-					"text": "E-learning platform to learn how to code in a simple and fun way. Previously called Let's Code Italia."
+					"text": "A platform to learn how to code through simple, hands-on paths, started in 2023 as Let's Code Italia. SvelteKit, Tailwind and PocketBase."
 				}
 			}
 		]

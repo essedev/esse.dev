@@ -1,0 +1,10 @@
+{
+	"id": "milanoz",
+	"images": ["images/projects/milanoz/featured.png"],
+	"featured_image": "images/projects/milanoz/featured.png",
+	"og_image_key": "milanozFeatured",
+	"published": true,
+	"status": "idea",
+	"created_date": "2026-07-04",
+	"updated_date": "2026-09-22"
+}

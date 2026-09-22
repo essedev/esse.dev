@@ -1,13 +1,19 @@
 {
 	"slug": "budokan",
 	"title": "Budokan Polisportiva",
-	"excerpt": "Sito web completo per palestra con gestione contenuti dinamici, sistema di prenotazione prove gratuite, sezione corsi e istruttori",
+	"excerpt": "Il sito della polisportiva Budokan: corsi, istruttori e richiesta di una lezione di prova, con i contenuti gestiti dalla palestra.",
 	"content": {
 		"blocks": [
 			{
 				"type": "paragraph",
 				"data": {
-					"text": "Budokan Polisportiva è un sito web moderno per palestra che offre una gestione completa dei contenuti tramite Sanity CMS. Include sezioni dedicate ai corsi offerti, profili degli istruttori, sistema di prenotazione per prove gratuite via email, gallery fotografica, e interfaccia responsive ottimizzata per tutti i dispositivi. Il sito facilita l'interazione tra la palestra e i clienti attraverso un design accattivante e funzionalità user-friendly."
+					"text": "Il sito della polisportiva Budokan. La palestra aggiorna da sola corsi, orari, istruttori e galleria tramite Sanity, e chi vuole provare una disciplina prenota una lezione gratuita direttamente dal sito."
+				}
+			},
+			{
+				"type": "paragraph",
+				"data": {
+					"text": "SvelteKit e TypeScript per il frontend, Sanity come CMS headless."
 				}
 			}
 		]

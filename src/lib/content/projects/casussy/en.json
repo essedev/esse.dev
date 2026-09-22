@@ -1,19 +1,19 @@
 {
 	"slug": "casussy",
 	"title": "Casussy",
-	"excerpt": "Native iOS app for collaborative household management with tasks, shopping lists, weekly menu and expense tracking",
+	"excerpt": "iOS app to run a household together: chores, groceries, the weekly menu and expenses, shared in real time.",
 	"content": {
 		"blocks": [
 			{
 				"type": "paragraph",
 				"data": {
-					"text": "Casussy is a native iOS application for collaborative household management. Designed for families and housemates, it allows organizing daily tasks, shopping lists, weekly meal plans and expense tracking together. The main feature is total sharing: when someone adds a task or completes an item, it's visible to all household members in real-time."
+					"text": "A native app for people who live together: chores, the grocery list, the weekly menu and shared expenses, visible to everyone as soon as someone adds or ticks something."
 				}
 			},
 			{
 				"type": "paragraph",
 				"data": {
-					"text": "Frontend built with Swift + SwiftUI featuring Glass Morphism design, state management with Combine/async-await, offline persistence with Core Data. Backend API with Hono on Node.js, Neon PostgreSQL database with Drizzle ORM, JWT authentication. Invitation system to add family members, automatic recurring tasks, real-time sync across devices."
+					"text": "I designed it in SwiftUI with offline persistence and a lightweight backend for sync, with an invite system to add the people you live with."
 				}
 			}
 		]
@@ -21,5 +21,5 @@
 	"image_captions": [
 		"Casussy dashboard with task management, shopping and weekly menu for the household"
 	],
-	"tags": ["iOS", "Swift", "SwiftUI", "Hono", "PostgreSQL", "Drizzle", "TypeScript"]
+	"tags": ["iOS", "Swift", "SwiftUI", "Sync"]
 }

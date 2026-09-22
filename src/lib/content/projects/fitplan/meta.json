@@ -3,7 +3,7 @@
 	"images": ["images/projects/fitplan/featured.png"],
 	"featured_image": "images/projects/fitplan/featured.png",
 	"og_image_key": "fitplanFeatured",
-	"published": true,
+	"published": false,
 	"status": "in-progress",
 	"created_date": "2025-01-10",
 	"updated_date": "2025-01-10"

@@ -1,13 +1,13 @@
 {
 	"slug": "didattica-integrata",
 	"title": "Didattica Integrata",
-	"excerpt": "Piattaforma pensata per facilitare la valutazione delle proprie esperienze di stage scolastici tramite la compilazione di moduli.",
+	"excerpt": "Una web app per valutare le esperienze di stage scolastico compilando dei moduli.",
 	"content": {
 		"blocks": [
 			{
 				"type": "paragraph",
 				"data": {
-					"text": "Piattaforma pensata per facilitare la valutazione delle proprie esperienze di stage scolastici tramite la compilazione di moduli."
+					"text": "Uno dei miei primi progetti, del 2022: una web app per raccogliere le valutazioni degli stage scolastici tramite moduli. Flask, Bootstrap e SQLite. Il codice è pubblico."
 				}
 			}
 		]

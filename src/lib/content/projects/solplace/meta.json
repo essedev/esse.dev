@@ -3,7 +3,7 @@
 	"images": ["images/projects/solplace/featured.png"],
 	"featured_image": "images/projects/solplace/featured.png",
 	"og_image_key": "solplaceFeatured",
-	"published": true,
+	"published": false,
 	"status": "in-progress",
 	"created_date": "2025-01-10",
 	"updated_date": "2025-01-10"

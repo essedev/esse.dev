@@ -1,13 +1,13 @@
 {
 	"slug": "verbosa",
 	"title": "Verbosa",
-	"excerpt": "Unified platform to interact with different AI language models like OpenAI, Anthropic, Google Gemini and OpenRouter with dynamic model selection",
+	"excerpt": "Multi-provider chat to use OpenAI, Anthropic and Google models from a single interface, in Flutter with a Go backend.",
 	"content": {
 		"blocks": [
 			{
 				"type": "paragraph",
 				"data": {
-					"text": "Verbosa is a multi-provider AI chat developed with Flutter for responsive frontend and Go backend with WebSocket. It supports dynamic AI model selection (Gemini, GPT-4, Claude), real-time streaming messages, secure authentication with JWT, chat session management, project organization, and Material Design 3 adaptive interface for desktop and mobile. The system uses Riverpod for state management and repository pattern for API abstraction."
+					"text": "In 2025 I wanted a single chat to use OpenAI, Anthropic, Google and OpenRouter models, picking the model message by message. Flutter frontend for desktop and mobile, Go backend with WebSockets for streaming, conversations organized by project."
 				}
 			}
 		]

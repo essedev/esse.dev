@@ -3,7 +3,7 @@
 	"images": ["images/projects/pumpgotchi/featured.png"],
 	"featured_image": "images/projects/pumpgotchi/featured.png",
 	"og_image_key": "pumpgotchiFeatured",
-	"published": true,
+	"published": false,
 	"status": "in-progress",
 	"created_date": "2025-01-10",
 	"updated_date": "2025-01-10"
