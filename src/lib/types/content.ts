@@ -290,11 +290,6 @@ export interface FooterProps {
 	data: LayoutData;
 }
 
-export interface FloatingNavProps {
-	data: LayoutData;
-	menuOpen: boolean;
-}
-
 // ==================================================
 // CONTENT LOADER TYPES
 // ==================================================
