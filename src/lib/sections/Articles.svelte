@@ -119,14 +119,9 @@
 		<!-- View All Button - only show if in home page and there are more articles -->
 		{#if showViewAllButton && articles.length > 3}
 			<div class="flex justify-center">
-				<a
-					href={blogPageLink}
-					class="group flex items-center gap-3 rounded-md border border-white/10 bg-white/[0.02] px-8 py-4 backdrop-blur-md transition-colors duration-200 hover:border-accent/50 hover:bg-white/[0.045]"
-				>
-					<span class="text-lg font-medium text-gray-300">{t.viewAll}</span>
-					<ArrowRight
-						class="h-5 w-5 text-gray-300 transition-transform duration-300 group-hover:translate-x-1"
-					/>
+				<a href={blogPageLink} class="group key key--primary px-8 py-4">
+					<span>{t.viewAll}</span>
+					<ArrowRight class="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
 				</a>
 			</div>
 		{/if}

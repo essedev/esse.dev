@@ -53,13 +53,13 @@
 				{#if content.meta.link}
 					<a
 						href={content.meta.link}
-						class="flex w-min items-center gap-x-2 text-2xl underline"
+						class="key key--ghost self-start px-4 py-2.5 normal-case"
 						target="_blank"
 						rel="noopener noreferrer"
 						data-sveltekit-reload
 					>
-						<ExternalLink class="h-6 w-6" />
-						{content.meta.link}
+						<ExternalLink class="h-4 w-4" />
+						{content.meta.link.replace(/^https?:\/\//, '').replace(/\/$/, '')}
 					</a>
 				{/if}
 

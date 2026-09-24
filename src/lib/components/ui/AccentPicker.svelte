@@ -84,7 +84,7 @@
      sono attivi) e l'indicatore si riduce a una tacca in accento sul bordo esterno,
      che e' il linguaggio dei rail. -->
 <div
-	class="fixed bottom-6 left-6 z-50 flex items-center gap-1.5 rounded-md border border-white/10 bg-white/[0.02] p-1.5 backdrop-blur-md lg:bottom-[calc(var(--chassis-gutter)+1rem)] lg:left-0 lg:w-[var(--chassis-gutter)] lg:flex-col lg:gap-0 lg:rounded-none lg:border-0 lg:bg-transparent lg:p-0 lg:backdrop-blur-none"
+	class="fixed bottom-6 left-6 z-50 flex items-center gap-1.5 rounded-sm border border-accent/30 bg-accent/[0.08] p-1.5 backdrop-blur-md lg:bottom-[calc(var(--chassis-gutter)+1rem)] lg:left-0 lg:w-[var(--chassis-gutter)] lg:flex-col lg:gap-0 lg:rounded-none lg:border-0 lg:bg-transparent lg:p-0 lg:backdrop-blur-none"
 	role="group"
 	aria-label={labelPrefix}
 >

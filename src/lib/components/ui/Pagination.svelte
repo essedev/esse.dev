@@ -23,7 +23,7 @@
 		<!-- Previous Page -->
 		<a
 			href={currentPage > 1 ? createPageLink(currentPage - 1) : '#'}
-			class="flex h-9 w-9 items-center justify-center rounded-md border border-white/10 bg-white/[0.02] text-gray-400 transition-colors duration-200 hover:border-accent/50 hover:bg-white/[0.045]"
+			class="key h-9 w-9 justify-center p-0"
 			class:disabled={currentPage <= 1}
 			aria-label="Previous Page"
 		>
@@ -39,7 +39,7 @@
 		<!-- Next Page -->
 		<a
 			href={currentPage < totalPages ? createPageLink(currentPage + 1) : '#'}
-			class="flex h-9 w-9 items-center justify-center rounded-md border border-white/10 bg-white/[0.02] text-gray-400 transition-colors duration-200 hover:border-accent/50 hover:bg-white/[0.045]"
+			class="key h-9 w-9 justify-center p-0"
 			class:disabled={currentPage >= totalPages}
 			aria-label="Next Page"
 		>

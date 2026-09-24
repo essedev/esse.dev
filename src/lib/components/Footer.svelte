@@ -61,7 +61,7 @@
 					href={`${base}/${data.selectedLanguage}/rss.xml`}
 					target="_blank"
 					rel="noreferrer"
-					class="inline-flex items-center gap-1.5 rounded-md border border-white/10 bg-white/[0.02] px-2.5 py-1.5 text-gray-400 transition-colors duration-200 hover:border-accent/50 hover:bg-white/[0.045]"
+					class="key key--ghost gap-1.5 px-2.5 py-1.5 text-[0.68rem]"
 				>
 					<Rss class="h-3.5 w-3.5" />
 					RSS
@@ -70,7 +70,7 @@
 					href={`${base}/sitemap.xml`}
 					target="_blank"
 					rel="noreferrer"
-					class="inline-flex items-center gap-1.5 rounded-md border border-white/10 bg-white/[0.02] px-2.5 py-1.5 text-gray-400 transition-colors duration-200 hover:border-accent/50 hover:bg-white/[0.045]"
+					class="key key--ghost gap-1.5 px-2.5 py-1.5 text-[0.68rem]"
 				>
 					<Map class="h-3.5 w-3.5" />
 					Sitemap
@@ -79,7 +79,7 @@
 					href="https://github.com/essedev/simonesalerno.it"
 					target="_blank"
 					rel="noreferrer"
-					class="inline-flex items-center gap-1.5 rounded-md border border-white/10 bg-white/[0.02] px-2.5 py-1.5 text-gray-400 transition-colors duration-200 hover:border-accent/50 hover:bg-white/[0.045]"
+					class="key key--ghost gap-1.5 px-2.5 py-1.5 text-[0.68rem]"
 				>
 					<Code2 class="h-3.5 w-3.5" />
 					Source

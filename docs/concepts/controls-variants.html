@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Controlli: varianti</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500&family=Martian+Mono:wght@300..600&display=swap" rel="stylesheet" />
+<style>
+:root { --bg: #0c0c0c; --accent: #2cc3f7; --g200: #e5e7eb; --g300: #d1d5db; --g400: #9ca3af; --g500: #6b7280; --g600: #4b5563;
+	--mono: 'Martian Mono', ui-monospace, monospace; --sans: 'IBM Plex Sans', system-ui, sans-serif; --r: 0.75rem; --rs: 0.45rem;
+	--a08: color-mix(in srgb, var(--accent) 8%, transparent); --a15: color-mix(in srgb, var(--accent) 15%, transparent);
+	--a25: color-mix(in srgb, var(--accent) 25%, transparent); --a45: color-mix(in srgb, var(--accent) 45%, transparent);
+	--a60: color-mix(in srgb, var(--accent) 60%, transparent); }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: #f3f4f6; font-family: var(--sans); font-weight: 300; padding: 48px 16px 120px; }
+.wrap { max-width: 1240px; margin: 0 auto; }
+.doc-title { font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--g500); margin-bottom: 12px; }
+h1 { font-weight: 400; font-size: 2rem; margin-bottom: 12px; }
+.lead { color: var(--g400); max-width: 80ch; line-height: 1.6; margin-bottom: 16px; }
+.accents { display: flex; gap: 8px; margin-bottom: 40px; font-family: var(--mono); font-size: 0.72rem; color: var(--g500); align-items: center; }
+.accents button { width: 18px; height: 18px; border-radius: 50%; border: 0; cursor: pointer; }
+.variant { border-top: 1px solid rgb(255 255 255 / 0.1); padding-top: 28px; margin-top: 56px; }
+.vhead { display: flex; align-items: baseline; gap: 14px; margin-bottom: 6px; }
+.vletter { font-family: var(--mono); font-size: 1.5rem; color: var(--accent); text-shadow: 0 0 10px var(--a45); }
+.vname { font-size: 1.4rem; font-weight: 400; }
+.vwhy { color: var(--g400); line-height: 1.6; max-width: 90ch; margin-bottom: 24px; }
+.stage { display: grid; grid-template-columns: 64px 1fr; border: 1px solid rgb(255 255 255 / 0.08); border-radius: var(--r); overflow: hidden; box-shadow: inset 0 0 90px rgb(0 0 0 / 0.5); }
+.rail { border-right: 1px solid rgb(255 255 255 / 0.08); background: #080808; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 18px 0; gap: 24px; }
+.screen { padding: 36px 40px; display: flex; flex-direction: column; gap: 28px; }
+.row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.label { font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--g600); width: 100%; margin-bottom: -4px; }
+.state-note { font-family: var(--mono); font-size: 0.6rem; color: var(--g600); margin-left: 4px; }
+.chev { opacity: 0.7; font-size: 0.8em; }
+
+/* Oggi */
+.v0 .btn { display: inline-flex; align-items: center; gap: 10px; border: 1px solid rgb(255 255 255 / 0.1); background: rgb(255 255 255 / 0.02); color: var(--g300); border-radius: var(--rs); padding: 8px 16px; font-family: var(--mono); font-size: 0.82rem; cursor: pointer; transition: all .2s; }
+.v0 .btn.big { padding: 14px 30px; font-family: var(--sans); font-weight: 500; font-size: 1.05rem; }
+.v0 .btn:hover, .v0 .btn.is-hover { border-color: var(--a60); background: rgb(255 255 255 / 0.045); }
+.v0 .btn.sq { width: 36px; height: 36px; padding: 0; justify-content: center; }
+.v0 .btn.on { color: var(--accent); }
+.v0 .seg { display: inline-flex; border: 1px solid rgb(255 255 255 / 0.1); border-radius: var(--rs); padding: 2px; font-family: var(--mono); font-size: 0.72rem; }
+.v0 .seg span { padding: 3px 9px; color: var(--g400); border-radius: 3px; cursor: pointer; } .v0 .seg .on { background: var(--a15); color: var(--accent); }
+.v0 .rlang { font-family: var(--mono); font-size: 0.62rem; color: var(--g400); display: flex; flex-direction: column; gap: 10px; letter-spacing: 0.14em; }
+.v0 .rlang .on { color: var(--accent); box-shadow: -6px 0 0 -3px var(--accent); }
+.v0 .leds { display: flex; flex-direction: column; gap: 12px; } .v0 .leds i { width: 9px; height: 9px; border-radius: 50%; opacity: 0.32; } .v0 .leds i.on { opacity: 1; box-shadow: 0 0 9px currentColor; }
+.v0 .top { font-family: var(--mono); font-size: 0.62rem; color: var(--accent); letter-spacing: 0.14em; text-align: center; }
+
+/* A: tasto illuminato */
+.vA .btn { display: inline-flex; align-items: center; gap: 10px; border: 1px solid var(--a25); background: var(--a08); color: var(--g200); border-radius: var(--rs); padding: 8px 16px; font-family: var(--mono); font-size: 0.78rem; letter-spacing: 0.06em; text-transform: uppercase; cursor: pointer; transition: all .2s; }
+.vA .btn .ico { color: var(--accent); }
+.vA .btn:hover, .vA .btn.is-hover { border-color: var(--accent); background: var(--a15); color: #fff; box-shadow: 0 0 0 1px var(--a25), 0 0 18px var(--a25); }
+.vA .btn.big { padding: 14px 28px; font-size: 0.9rem; border-color: var(--a45); background: var(--a15); color: #fff; }
+.vA .btn.sq { width: 36px; height: 36px; padding: 0; justify-content: center; }
+.vA .btn.on { background: var(--accent); color: #041018; border-color: var(--accent); box-shadow: 0 0 14px var(--a45); }
+.vA .btn.ghost { background: transparent; border-color: rgb(255 255 255 / 0.1); color: var(--g400); }
+.vA .seg { display: inline-flex; border: 1px solid var(--a25); background: var(--a08); border-radius: var(--rs); padding: 2px; gap: 2px; font-family: var(--mono); font-size: 0.72rem; }
+.vA .seg span { padding: 3px 9px; color: var(--g400); border-radius: 3px; cursor: pointer; } .vA .seg .on { background: var(--accent); color: #041018; box-shadow: 0 0 10px var(--a45); }
+.vA .rkeys { display: flex; flex-direction: column; gap: 6px; }
+.vA .rkey { width: 34px; height: 26px; display: grid; place-items: center; font-family: var(--mono); font-size: 0.62rem; letter-spacing: 0.1em; color: var(--g400); border: 1px solid var(--a25); background: var(--a08); border-radius: 4px; cursor: pointer; }
+.vA .rkey.on { color: #041018; background: var(--accent); border-color: var(--accent); box-shadow: 0 0 12px var(--a45); }
+.vA .rkey i { width: 9px; height: 9px; border-radius: 50%; }
+.vA .rkey.dot.on { background: var(--a15); color: inherit; }
+.vA .rkey.dot.on i { box-shadow: 0 0 9px currentColor; }
+
+/* B: keycap fisico */
+.vB .btn { position: relative; display: inline-flex; align-items: center; gap: 10px; color: var(--g200); border-radius: var(--rs); padding: 8px 16px 10px; font-family: var(--mono); font-size: 0.78rem; letter-spacing: 0.06em; text-transform: uppercase; cursor: pointer;
+	background: linear-gradient(180deg, #232323, #161616); border: 1px solid #2c2c2c; border-bottom-color: #070707; box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.07), 0 2px 0 #050505, 0 3px 6px rgb(0 0 0 / 0.5); transition: transform .08s, box-shadow .08s, border-color .2s; }
+.vB .btn::after { content: ''; position: absolute; top: 6px; right: 6px; width: 4px; height: 4px; border-radius: 50%; background: var(--g600); }
+.vB .btn:hover, .vB .btn.is-hover { border-color: var(--a45); border-bottom-color: #070707; }
+.vB .btn:hover::after, .vB .btn.is-hover::after { background: var(--accent); box-shadow: 0 0 6px var(--accent); }
+.vB .btn:active, .vB .btn.is-press { transform: translateY(2px); box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.05), 0 0 0 #050505, 0 1px 2px rgb(0 0 0 / 0.5); }
+.vB .btn.big { padding: 14px 28px 16px; font-size: 0.9rem; }
+.vB .btn.big::after, .vB .btn.on::after { background: var(--accent); box-shadow: 0 0 6px var(--accent); }
+.vB .btn.sq { width: 36px; height: 38px; padding: 0 0 2px; justify-content: center; }
+.vB .btn.sq::after { display: none; }
+.vB .btn.on { color: var(--accent); border-color: var(--a45); text-shadow: 0 0 8px var(--a45); }
+.vB .seg { display: inline-flex; gap: 4px; }
+.vB .seg span { padding: 4px 10px 6px; font-family: var(--mono); font-size: 0.72rem; color: var(--g400); border-radius: 4px; cursor: pointer; background: linear-gradient(180deg, #222, #151515); border: 1px solid #2a2a2a; border-bottom-color: #070707; box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.06), 0 2px 0 #050505; }
+.vB .seg .on { color: var(--accent); transform: translateY(2px); box-shadow: inset 0 1px 3px rgb(0 0 0 / 0.6); text-shadow: 0 0 8px var(--a45); }
+.vB .rkeys { display: flex; flex-direction: column; gap: 7px; }
+.vB .rkey { width: 34px; height: 26px; display: grid; place-items: center; font-family: var(--mono); font-size: 0.6rem; color: var(--g400); border-radius: 4px; cursor: pointer; background: linear-gradient(180deg, #222, #141414); border: 1px solid #2a2a2a; border-bottom-color: #060606; box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.06), 0 2px 0 #040404; }
+.vB .rkey.on { color: var(--accent); transform: translateY(2px); box-shadow: inset 0 1px 3px rgb(0 0 0 / 0.7); text-shadow: 0 0 8px var(--a45); }
+.vB .rkey i { width: 8px; height: 8px; border-radius: 50%; opacity: 0.45; } .vB .rkey.on i { opacity: 1; box-shadow: 0 0 9px currentColor; }
+
+/* C: HUD a staffe */
+.vC .btn { position: relative; display: inline-flex; align-items: center; gap: 10px; color: var(--g300); padding: 9px 16px; font-family: var(--mono); font-size: 0.78rem; letter-spacing: 0.06em; text-transform: uppercase; cursor: pointer; background: transparent; border: 1px solid rgb(255 255 255 / 0.06); transition: all .2s;
+	--c: var(--a60); background-image: linear-gradient(var(--c), var(--c)), linear-gradient(var(--c), var(--c)), linear-gradient(var(--c), var(--c)), linear-gradient(var(--c), var(--c)), linear-gradient(var(--c), var(--c)), linear-gradient(var(--c), var(--c)), linear-gradient(var(--c), var(--c)), linear-gradient(var(--c), var(--c));
+	background-repeat: no-repeat; background-size: 8px 1px, 1px 8px, 8px 1px, 1px 8px, 8px 1px, 1px 8px, 8px 1px, 1px 8px;
+	background-position: 0 0, 0 0, 100% 0, 100% 0, 0 100%, 0 100%, 100% 100%, 100% 100%; }
+.vC .btn:hover, .vC .btn.is-hover { --c: var(--accent); background-color: var(--a08); color: #fff; }
+.vC .btn.big { padding: 15px 30px; font-size: 0.9rem; --c: var(--accent); color: #fff; }
+.vC .btn.sq { width: 36px; height: 36px; padding: 0; justify-content: center; }
+.vC .btn.on { background-color: var(--a15); color: var(--accent); --c: var(--accent); }
+.vC .seg { display: inline-flex; font-family: var(--mono); font-size: 0.72rem; border: 1px solid rgb(255 255 255 / 0.08); }
+.vC .seg span { padding: 4px 10px; color: var(--g400); cursor: pointer; } .vC .seg .on { color: var(--accent); background: var(--a15); box-shadow: inset 0 -2px 0 var(--accent); }
+.vC .rkeys { display: flex; flex-direction: column; gap: 4px; }
+.vC .rkey { width: 34px; height: 24px; display: grid; place-items: center; font-family: var(--mono); font-size: 0.6rem; color: var(--g500); cursor: pointer; border-left: 2px solid transparent; }
+.vC .rkey.on { color: var(--accent); border-left-color: var(--accent); background: var(--a08); }
+.vC .rkey i { width: 8px; height: 8px; opacity: 0.4; } .vC .rkey.on i { opacity: 1; box-shadow: 0 0 9px currentColor; }
+
+/* Switch animazioni, uguale in tutte le varianti tranne il materiale */
+.sw { display: inline-flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 0.72rem; color: var(--g400); cursor: pointer; }
+.sw .track { width: 30px; height: 17px; border-radius: 5px; border: 1px solid var(--a45); background: var(--a15); padding: 2px; display: flex; justify-content: flex-end; }
+.sw .thumb { width: 11px; height: 11px; border-radius: 2px; background: var(--accent); box-shadow: 0 0 6px var(--accent); }
+.vB .sw .track { border-color: #2a2a2a; background: #0a0a0a; box-shadow: inset 0 1px 3px rgb(0 0 0 / 0.8); }
+.vB .sw .thumb { background: linear-gradient(180deg, #3a3a3a, #222); box-shadow: 0 1px 0 #000; position: relative; } .vB .sw .thumb::after { content: ''; position: absolute; inset: 3px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 5px var(--accent); }
+.vC .sw .track { border-radius: 0; }
+.v0 .sw .track { border-color: var(--a45); }
+
+/* Varianti squadrate di A: base comune (squadrato, fondo tinto, mono maiuscolo) */
+.sq-base .btn { position: relative; display: inline-flex; align-items: center; gap: 10px; border-radius: 2px; padding: 8px 16px; font-family: var(--mono); font-size: 0.76rem; letter-spacing: 0.08em; text-transform: uppercase; cursor: pointer; transition: all .2s; color: var(--g200); background: var(--a08); border: 1px solid var(--a25); }
+.sq-base .btn .ico { color: var(--accent); }
+.sq-base .btn.big { padding: 14px 28px; font-size: 0.88rem; color: #fff; background: var(--a15); border-color: var(--a45); }
+.sq-base .btn.sq { width: 36px; height: 36px; padding: 0; justify-content: center; }
+.sq-base .btn.ghost { background: transparent; border-color: rgb(255 255 255 / 0.12); color: var(--g400); }
+.sq-base .btn:hover, .sq-base .btn.is-hover { border-color: var(--accent); background: var(--a15); color: #fff; box-shadow: 0 0 16px var(--a25); }
+.sq-base .btn.on { background: var(--accent); color: #041018; border-color: var(--accent); box-shadow: 0 0 14px var(--a45); }
+.sq-base .btn.on .ico, .sq-base .btn.on .chev { color: #041018; }
+.sq-base .seg { display: inline-flex; border: 1px solid var(--a25); background: var(--a08); border-radius: 2px; padding: 2px; gap: 2px; font-family: var(--mono); font-size: 0.72rem; }
+.sq-base .seg span { padding: 3px 9px; color: var(--g400); border-radius: 1px; cursor: pointer; } .sq-base .seg .on { background: var(--accent); color: #041018; }
+.sq-base .sw .track { border-radius: 2px; } .sq-base .sw .thumb { border-radius: 1px; }
+.sq-base .rkeys { display: flex; flex-direction: column; gap: 6px; }
+.sq-base .rkey { position: relative; width: 34px; height: 26px; display: grid; place-items: center; font-family: var(--mono); font-size: 0.6rem; letter-spacing: 0.1em; color: var(--g400); border: 1px solid var(--a25); background: var(--a08); border-radius: 2px; cursor: pointer; }
+.sq-base .rkey.on { color: #041018; background: var(--accent); border-color: var(--accent); box-shadow: 0 0 12px var(--a45); }
+.sq-base .rkey i { width: 8px; height: 8px; border-radius: 1px; }
+.sq-base .rkey.dot.on { background: var(--a15); } .sq-base .rkey.dot.on i { box-shadow: 0 0 9px currentColor; }
+
+/* A1: tacca laterale, la stessa del rail */
+.vA1 .btn { padding-left: 20px; }
+.vA1 .btn::before { content: ''; position: absolute; left: 5px; top: 7px; bottom: 7px; width: 3px; background: var(--a45); transition: all .2s; }
+.vA1 .btn.sq { padding-left: 0; } .vA1 .btn.sq::before { top: auto; bottom: 4px; left: 9px; right: 9px; width: auto; height: 2px; }
+.vA1 .btn:hover::before, .vA1 .btn.is-hover::before { background: var(--accent); box-shadow: 0 0 8px var(--accent); }
+.vA1 .btn.on::before { background: #041018; }
+.vA1 .btn.ghost::before { background: rgb(255 255 255 / 0.18); }
+.vA1 .rkey::before { content: ''; position: absolute; left: -1px; top: 5px; bottom: 5px; width: 3px; background: var(--a45); }
+.vA1 .rkey.on::before { background: #fff; }
+
+/* A2: angolo tagliato */
+.vA2 .btn, .vA2 .rkey, .vA2 .seg { clip-path: polygon(0 0, calc(100% - 9px) 0, 100% 9px, 100% 100%, 0 100%); }
+.vA2 .btn::after, .vA2 .rkey::after, .vA2 .seg::after { content: ''; position: absolute; top: 0; right: 0; width: 13px; height: 1px; background: var(--a25); transform-origin: right top; transform: translate(-0.5px, 0) rotate(45deg); }
+.vA2 .seg { position: relative; }
+.vA2 .btn.big::after { background: var(--a45); }
+.vA2 .btn:hover::after, .vA2 .btn.is-hover::after, .vA2 .btn.on::after, .vA2 .rkey.on::after { background: var(--accent); }
+.vA2 .btn.ghost::after { background: rgb(255 255 255 / 0.12); }
+.vA2 .rkey, .vA2 .btn.sq { clip-path: polygon(0 0, calc(100% - 6px) 0, 100% 6px, 100% 100%, 0 100%); }
+.vA2 .rkey::after, .vA2 .btn.sq::after { width: 9px; }
+
+/* A3: doppio filo, cornice interna */
+.vA3 .btn::after, .vA3 .rkey::after { content: ''; position: absolute; inset: 3px; border: 1px solid var(--a15); pointer-events: none; transition: border-color .2s; }
+.vA3 .btn.big::after { border-color: var(--a25); }
+.vA3 .btn:hover::after, .vA3 .btn.is-hover::after { border-color: var(--a45); }
+.vA3 .btn.on::after, .vA3 .rkey.on::after { border-color: rgb(4 16 24 / 0.35); }
+.vA3 .btn.ghost::after { border-color: rgb(255 255 255 / 0.06); }
+.vA3 .btn { padding: 10px 18px; } .vA3 .btn.big { padding: 16px 30px; } .vA3 .btn.sq { padding: 0; width: 38px; height: 38px; }
+.vA3 .rkey { height: 28px; }
+
+/* A4: etichetta tecnica, filo sotto e codice nell'angolo */
+.vA4 .btn { border-bottom-width: 2px; border-bottom-color: var(--a60); padding-top: 12px; }
+.vA4 .btn::after { content: attr(data-code); position: absolute; top: 2px; right: 5px; font-size: 0.44rem; letter-spacing: 0.1em; color: var(--a60); }
+.vA4 .btn.sq { padding-top: 0; } .vA4 .btn.sq::after { display: none; }
+.vA4 .btn:hover, .vA4 .btn.is-hover { border-bottom-color: var(--accent); }
+.vA4 .btn.on::after { color: rgb(4 16 24 / 0.6); }
+.vA4 .btn.ghost { border-bottom-color: rgb(255 255 255 / 0.2); } .vA4 .btn.ghost::after { color: var(--g600); }
+.vA4 .rkey { border-bottom-width: 2px; border-bottom-color: var(--a60); }
+.vA4 .seg { border-bottom-width: 2px; border-bottom-color: var(--a60); }
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<script>
+const ACCENTS = ['#2cc3f7', '#ff8a3d', '#a78bfa'];
+const content = (v) => `
+	<div class="row"><span class="label">Azione principale</span><button class="btn big" data-code="PRJ">Vedi tutti <span class="ico">&rarr;</span></button><button class="btn big is-hover" data-code="PRJ">Vedi tutti <span class="ico">&rarr;</span></button><span class="state-note">normale / hover</span></div>
+	<div class="row"><span class="label">Filtri e ordinamento</span><button class="btn" data-code="F1">Tag <span class="chev">&#9662;</span></button><button class="btn on" data-code="F2">Stato &middot; 2 <span class="chev">&#9662;</span></button><button class="btn is-hover" data-code="S1">Più recenti <span class="chev">&#9662;</span></button><span class="state-note">normale / attivo / hover</span></div>
+	<div class="row"><span class="label">Paginazione e link</span><button class="btn sq">&lsaquo;</button><button class="btn sq on">1</button><button class="btn sq">2</button><button class="btn sq">3</button><button class="btn sq">&rsaquo;</button><span style="width:24px"></span><button class="btn ghost" data-code="ESC">&larr; Indietro</button><button class="btn ghost" data-code="EXT">Visita il repo <span class="ico">&nearr;</span></button></div>
+	<div class="row"><span class="label">Controlli del footer e mobile</span><span class="sw">Animazioni <span class="track"><span class="thumb"></span></span></span><span style="width:16px"></span><span class="seg"><span>EN</span><span class="on">IT</span></span></div>`;
+const rail = (v) => {
+	if (v === 'v0') return `<div class="rlang"><span>EN</span><span class="on">IT</span></div><div class="top">&uarr;<br>TOP</div><div class="leds">${ACCENTS.map((c, i) => `<i class="${i === 0 ? 'on' : ''}" style="background:${c};color:${c}"></i>`).join('')}</div>`;
+	return `<div class="rkeys"><span class="rkey">EN</span><span class="rkey on">IT</span></div><div class="rkeys"><span class="rkey">TOP</span></div><div class="rkeys">${ACCENTS.map((c, i) => `<span class="rkey dot ${i === 0 ? 'on' : ''}"><i style="background:${c};color:${c}"></i></span>`).join('')}</div>`;
+};
+const variant = (cls, letter, name, why) => `<section class="variant ${cls}"><div class="vhead"><span class="vletter">${letter}</span><span class="vname">${name}</span></div><p class="vwhy">${why}</p><div class="stage"><div class="rail">${rail(cls)}</div><div class="screen">${content(cls)}</div></div></section>`;
+function render(accent) {
+	document.documentElement.style.setProperty('--accent', accent);
+	document.getElementById('app').innerHTML = `
+	<div class="doc-title">simonesalerno.it &middot; concept</div>
+	<h1>Controlli: bottoni come tasti di un dispositivo</h1>
+	<p class="lead">Oggi ogni controllo del sito ha lo stesso bordo grigio chiaro su fondo quasi trasparente, e l'accento compare solo all'hover: si leggono come riquadri, non come tasti. Nel codice la stessa classe è copiata a mano in una quindicina di punti, quindi uniformarli vuol dire prima di tutto definirli una volta sola. A sinistra di ogni variante c'è il rail del telaio (lingua, top, colori), a destra i controlli dello schermo. Prova a cambiare l'accento: tutto deriva da un solo colore.</p>
+	<div class="accents">accento ${ACCENTS.map((c) => `<button style="background:${c}" data-c="${c}" aria-label="${c}"></button>`).join('')}</div>
+	${variant('v0', '0', 'Oggi', 'Riquadri neutri, accento solo all\'hover e sugli stati attivi. Nel rail i controlli sono letture senza scatola.')}
+	${variant('vA', 'A', 'Tasto illuminato', 'Bordo in accento a bassa intensità e fondo tinto: il tasto è sempre acceso un poco, all\'hover si illumina tutto, lo stato attivo è pieno. Il più vicino a quello che descrivi, ed è quello che uniforma di più. Rischio: con tanti tasti accesi insieme l\'accento smette di segnalare, quindi i secondari (Indietro, Visita) restano più spenti.')}
+	<div class="variant" style="border-top-color: var(--a25)"><div class="vhead"><span class="vname" style="font-family:var(--mono);font-size:0.8rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--g300)">Varianti squadrate di A</span></div><p class="vwhy">Stessa logica di A (fondo tinto, accento sempre un po' acceso, pieno quando attivo), ma con raggio di 2px e un dettaglio che fa da firma. Cambia solo il dettaglio.</p></div>
+	${variant('sq-base vA1', 'A1', 'Tacca laterale', "Una tacca verticale a sinistra, la stessa del rail (lingua e colori): all'hover si accende. Collega i bottoni dello schermo al telaio con un segno che il sito usa già. Il più sobrio dei quattro.")}
+	${variant('sq-base vA2', 'A2', 'Angolo tagliato', "L'angolo in alto a destra tagliato a 45 gradi, col filo che segue il taglio. È il segno classico delle interfacce da cabina e dei cyberdeck: dice subito dispositivo. Rischio: sui tasti piccoli (paginazione) il taglio si vede appena.")}
+	${variant('sq-base vA3', 'A3', 'Doppio filo', "Una seconda cornice sottile a 3px dal bordo, come i tasti dei pannelli di controllo. Più ricco degli altri: regge bene sui tasti grandi, sui piccoli rischia di sembrare affollato.")}
+	${variant('sq-base vA4', 'A4', 'Etichetta tecnica', "Filo spesso sotto e un codice minuscolo nell'angolo (PRJ, F1, ESC), come le serigrafie sui tasti di uno strumento. Il più caratterizzato. Rischio: i codici sono decorazione, e vanno scelti con criterio o diventano rumore.")}
+	${variant('vB', 'B', 'Keycap fisico', 'Tasti scuri in rilievo, col bordo basso più scuro e un LED nell\'angolo che si accende in accento. Premuti scendono di due pixel. È il più "dispositivo reale" e il più vicino al cyberdeck iniziale. Rischio: lo scheumorfismo stona accanto alle card piatte, e il rilievo costa molto di più da mantenere coerente.')}
+	${variant('vC', 'C', 'HUD a staffe', 'Niente riempimento, solo quattro staffe d\'angolo in accento, come i mirini di un\'interfaccia di bordo. Leggero, tecnico, molto nel tono del telaio. Rischio: è il meno "tasto" dei tre, e a 16px di testo le staffe si notano poco.')}`;
+	document.querySelectorAll('.accents button').forEach((b) => b.addEventListener('click', () => render(b.dataset.c)));
+}
+render(ACCENTS[0]);
+</script>
+</body>
+</html>

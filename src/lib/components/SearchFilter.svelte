@@ -176,9 +176,9 @@
 			value={filters.query}
 			oninput={handleQueryChange}
 			{placeholder}
-			class="w-full rounded-md border border-white/10 bg-white/[0.02] px-4 py-3 pl-12 text-white placeholder-white/40 backdrop-blur-sm focus:border-accent/50 focus:outline-none"
+			class="w-full rounded-sm border border-accent/25 bg-black/30 px-4 py-3 pl-12 text-white placeholder-white/40 transition-colors focus:border-accent focus:outline-none"
 		/>
-		<Search class="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-white/50" />
+		<Search class="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-accent" />
 	</div>
 
 	<!-- Filters Row -->
@@ -225,10 +225,7 @@
 
 		<!-- Clear Filters -->
 		{#if hasActiveFilters}
-			<button
-				onclick={clearAllFilters}
-				class="rounded-md border border-white/10 bg-white/[0.02] px-4 py-2 font-mono text-sm text-white/80 backdrop-blur-sm transition-colors duration-200 hover:border-accent/50 hover:bg-white/[0.045]"
-			>
+			<button onclick={clearAllFilters} class="key key--ghost justify-center px-4 py-2">
 				{t.clearFilters}
 			</button>
 		{/if}

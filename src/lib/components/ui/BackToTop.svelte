@@ -31,12 +31,12 @@
      Sotto lg il telaio non si monta e resta il bottone flottante di prima. -->
 <button
 	onclick={scrollToTop}
-	class="group fixed right-6 bottom-6 z-50 flex h-11 w-11 cursor-pointer items-center justify-center rounded-md border border-white/10 bg-white/[0.02] backdrop-blur-md transition-colors duration-200 hover:border-accent/50 hover:bg-white/[0.045] lg:right-0 lg:bottom-[calc(var(--chassis-track-top)-4.5rem)] lg:h-9 lg:flex-col lg:gap-[3px] lg:w-[var(--chassis-gutter)] lg:rounded-none lg:border-0 lg:bg-transparent lg:backdrop-blur-none"
+	class="group fixed right-6 bottom-6 z-50 flex h-11 w-11 cursor-pointer items-center justify-center rounded-sm border border-accent/30 bg-accent/[0.08] backdrop-blur-md transition-colors duration-200 hover:border-accent hover:bg-accent/15 lg:right-0 lg:bottom-[calc(var(--chassis-track-top)-4.5rem)] lg:h-9 lg:flex-col lg:gap-[3px] lg:w-[var(--chassis-gutter)] lg:rounded-none lg:border-0 lg:bg-transparent lg:backdrop-blur-none"
 	aria-label={backToTopText}
 	in:fly={{ y: 10, duration: 300 }}
 	out:fly={{ y: 10, duration: 200 }}
 >
-	<ChevronUp class="h-5 w-5 text-gray-400 lg:hidden" />
+	<ChevronUp class="h-5 w-5 text-accent lg:hidden" />
 	<ChevronUp class="rail-top-arrow hidden h-3 w-3 lg:block" />
 	<span class="rail-top-label hidden lg:block">Top</span>
 </button>

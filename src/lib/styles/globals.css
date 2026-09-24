@@ -441,6 +441,90 @@ button:hover > .rail-top-arrow {
 	transform: scale(1.04);
 }
 
+/* Tasto: la famiglia unica dei controlli dello schermo (bottoni, trigger dei filtri,
+   paginazione, link di servizio, switch). Sta nel layer components così le utility
+   di Tailwind possono ancora sovrascriverne dimensioni e padding caso per caso.
+   È un tasto illuminato: bordo e fondo tinti d'accento anche a riposo (si dichiara
+   tasto prima dell'hover), si accende tutto all'hover, è pieno quando è attivo.
+   Tutto deriva da --color-accent, quindi segue l'AccentPicker. */
+@layer components {
+	.key {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.6rem;
+		border: 1px solid color-mix(in srgb, var(--color-accent) 28%, transparent);
+		border-radius: var(--radius-sm);
+		background-color: color-mix(in srgb, var(--color-accent) 8%, transparent);
+		color: var(--color-gray-200);
+		font-family: var(--font-mono);
+		font-size: 0.78rem;
+		letter-spacing: 0.06em;
+		text-transform: uppercase;
+		cursor: pointer;
+		transition:
+			border-color 0.2s var(--ease-out-expo),
+			background-color 0.2s var(--ease-out-expo),
+			color 0.2s var(--ease-out-expo),
+			box-shadow 0.2s var(--ease-out-expo);
+	}
+	.key svg {
+		color: var(--color-accent);
+	}
+	.key:hover {
+		border-color: var(--color-accent);
+		background-color: color-mix(in srgb, var(--color-accent) 15%, transparent);
+		color: #fff;
+		box-shadow:
+			0 0 0 1px color-mix(in srgb, var(--color-accent) 25%, transparent),
+			0 0 18px color-mix(in srgb, var(--color-accent) 25%, transparent);
+	}
+	.key:focus-visible {
+		outline: 2px solid var(--color-accent);
+		outline-offset: 2px;
+	}
+	/* Attivo: il tasto è pieno. Vale per toggle (aria-pressed) e per chi porta is-on. */
+	.key[aria-pressed='true'],
+	.key.is-on {
+		border-color: var(--color-accent);
+		background-color: var(--color-accent);
+		color: #041018;
+		box-shadow: 0 0 14px color-mix(in srgb, var(--color-accent) 45%, transparent);
+	}
+	.key[aria-pressed='true'] svg,
+	.key.is-on svg {
+		color: inherit;
+	}
+	/* Azione principale: già un po' più accesa a riposo. */
+	.key--primary {
+		border-color: color-mix(in srgb, var(--color-accent) 45%, transparent);
+		background-color: color-mix(in srgb, var(--color-accent) 15%, transparent);
+		color: #fff;
+		font-size: 0.9rem;
+	}
+	/* Secondari (Indietro, link esterni, servizio): spenti a riposo, così l'accento
+	   continua a segnalare dove sta l'azione vera. */
+	.key--ghost {
+		border-color: rgb(255 255 255 / 0.12);
+		background-color: transparent;
+		color: var(--color-gray-400);
+	}
+	.key--ghost:hover {
+		border-color: color-mix(in srgb, var(--color-accent) 60%, transparent);
+		background-color: color-mix(in srgb, var(--color-accent) 8%, transparent);
+		color: #fff;
+		box-shadow: none;
+	}
+	/* Gruppo a segmenti (lingua, colori): una scocca unica con celle dentro. */
+	.key-group {
+		display: inline-flex;
+		align-items: center;
+		border: 1px solid color-mix(in srgb, var(--color-accent) 28%, transparent);
+		border-radius: var(--radius-sm);
+		background-color: color-mix(in srgb, var(--color-accent) 8%, transparent);
+		font-family: var(--font-mono);
+	}
+}
+
 /* Pannello dell'indice: stesso materiale della card (bordo, fondo, raggio), così scaffale
    e blog stanno accanto alla vetrina senza sembrare un altro sito. */
 .entry-panel {

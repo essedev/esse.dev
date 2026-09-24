@@ -70,8 +70,11 @@ e decisioni in `docs/RESTYLE.md`, log in `docs/CYCLES.md` (Ciclo 9). In sintesi:
   `lg`, colonna di LED nel rail sinistro sopra) sovrascrive `--color-accent` su `<html>`
   a runtime (azzurro/arancione/viola, persistito in localStorage, con hue-sweep
   animato): se aggiungi un colore-accento NON hardcodarlo.
-- Controlli a tema coerenti (`rounded-md`, bordo `white/10`, `hover:border-accent/50`):
-  segmented control lingua, switch animazioni (`MotionToggle`), accent picker. Le
+- Controlli dello schermo: una sola famiglia di classi in `globals.css` (`@layer
+  components`): `.key` (tasto illuminato: bordo e fondo tinti d'accento, pieno con
+  `aria-pressed`/`.is-on`), `.key--primary`, `.key--ghost` per i secondari, `.key-group`
+  per i segmenti. Non ricopiare classi Tailwind di bordo/fondo su un bottone: usa `.key`
+  e aggiungi solo dimensioni e padding. Switch animazioni (`MotionToggle`). Le
   animazioni rispettano il motion toggle; il thumb dello switch è esentato apposta
   (vedi `.motion-thumb` in globals - Tailwind v4 anima `translate`, non `transform`).
 - Logo testuale `essedev` (`Logo.svelte`), voci nav a indice numerato, menu mobile a

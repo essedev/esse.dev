@@ -32,7 +32,7 @@
 	role="switch"
 	aria-checked={enabled}
 	aria-label={label}
-	class="group inline-flex cursor-pointer items-center gap-2 rounded-md border border-white/10 bg-white/[0.02] px-2.5 py-1.5 font-mono text-xs text-gray-400 transition-colors duration-200 hover:border-accent/50 hover:bg-white/[0.045]"
+	class="group key gap-2 px-2.5 py-1.5 text-[0.68rem]"
 >
 	<span>{label}</span>
 	<!-- Switch "meccanico" squadrato: track carbone, thumb pieno che scatta a
