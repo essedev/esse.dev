@@ -54,9 +54,7 @@
 </div>
 
 <div id={sanitizeId(data.global.navigation[0]?.link || '#')}>
-	<div
-		class="mx-auto w-full max-w-screen-2xl px-4 pt-20 pb-24 sm:px-8 sm:pt-28 sm:pb-32 lg:px-14 2xl:py-36"
-	>
+	<div class="section mx-auto w-full max-w-screen-2xl px-4 sm:px-8 lg:px-14">
 		<ProjectsSection
 			index={1}
 			projects={data.projects}
@@ -70,17 +68,13 @@
 </div>
 
 <div id={sanitizeId(data.global.navigation[1]?.link || '#')}>
-	<div
-		class="mx-auto w-full max-w-screen-2xl px-4 pt-20 pb-24 sm:px-8 sm:pt-28 sm:pb-32 lg:px-14 2xl:py-36"
-	>
+	<div class="section mx-auto w-full max-w-screen-2xl px-4 sm:px-8 lg:px-14">
 		<AboutSection index={2} about={data.about} />
 	</div>
 </div>
 
 <div id={sanitizeId(data.global.navigation[2]?.link || '#')}>
-	<div
-		class="mx-auto w-full max-w-screen-2xl px-4 pt-20 pb-24 sm:px-8 sm:pt-28 sm:pb-32 lg:px-14 2xl:py-36"
-	>
+	<div class="section mx-auto w-full max-w-screen-2xl px-4 sm:px-8 lg:px-14">
 		<ArticlesSection
 			index={3}
 			articles={data.articles}
@@ -94,9 +88,7 @@
 </div>
 
 <div id={sanitizeId(data.global.navigation[3]?.link || '#')}>
-	<div
-		class="mx-auto w-full max-w-screen-2xl px-4 pt-20 pb-24 sm:px-8 sm:pt-28 sm:pb-32 lg:px-14 2xl:py-36"
-	>
+	<div class="section mx-auto w-full max-w-screen-2xl px-4 sm:px-8 lg:px-14">
 		<ContactSection index={4} contact={data.contact} />
 	</div>
 </div>

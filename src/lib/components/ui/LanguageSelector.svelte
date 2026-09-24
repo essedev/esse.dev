@@ -40,7 +40,7 @@
 	     come una fila di interruttori sullo stesso fianco. L'inattiva resta a
 	     opacita' piena: a 9.5px una parola al 32% su nero non si legge. -->
 	<div
-		class="relative flex w-[var(--chassis-gutter)] flex-col font-mono text-[0.65rem] tracking-[0.1em]"
+		class="relative flex w-[var(--chassis-gutter)] flex-col font-mono text-tele tracking-label"
 		role="group"
 		aria-label="Lingua"
 	>

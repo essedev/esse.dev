@@ -82,11 +82,11 @@
 				</div>
 
 				{#if tagLinks.length > 0}
-					<div class="flex flex-wrap gap-1.5 font-mono text-xs text-gray-400">
+					<div class="flex flex-wrap gap-1.5">
 						{#each tagLinks as tag (tag.raw)}
 							<a
 								href={`${base}/${currentLang}/${blogRoute}?tags=${encodeURIComponent(tag.raw)}`}
-								class="border border-white/10 px-2 py-1 transition-colors hover:border-accent/50 hover:text-accent"
+								class="chip"
 							>
 								{tag.label}
 							</a>
@@ -101,7 +101,7 @@
 					<OptimizedImage
 						src={content.meta.featured_image}
 						alt={currentTranslation.title}
-						className="aspect-video rounded-xl"
+						className="panel aspect-video"
 						showPlaceholder={Boolean(content.meta.featuredImagePlaceholder)}
 						sizes="100vw"
 					/>
@@ -117,7 +117,7 @@
 		</article>
 
 		{#if related && related.length > 0}
-			<section class="mt-12 border-t border-white/10 pt-10">
+			<section class="mt-12 border-t border-line-2 pt-10">
 				<h2 use:reveal class="reveal mb-6 text-3xl font-normal text-gray-100">
 					{currentLang === 'en' ? 'Related articles' : 'Articoli correlati'}
 				</h2>

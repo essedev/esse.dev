@@ -16,11 +16,9 @@
 </script>
 
 <div use:reveal class="reveal flex flex-col gap-y-5 sm:gap-y-7">
-	<div
-		class="font-mono flex items-center gap-x-4 text-[0.65rem] tracking-[0.18em] text-gray-600 uppercase sm:text-xs"
-	>
+	<div class="label flex items-center gap-x-4 text-gray-600 sm:text-xs">
 		{#if n}<span class="text-accent">{n}</span>{/if}
-		<span class="h-px flex-1 bg-white/10"></span>
+		<span class="h-px flex-1 bg-line-2"></span>
 		{#if readout}<span>{readout}</span>{/if}
 	</div>
 	<svelte:element

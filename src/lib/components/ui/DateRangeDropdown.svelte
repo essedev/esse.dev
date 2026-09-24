@@ -68,7 +68,7 @@
 		aria-haspopup="dialog"
 		aria-controls={dropdownId}
 		onclick={toggleDropdown}
-		class="key flex w-full gap-2 px-4 py-2"
+		class="key w-full"
 		style="touch-action: manipulation;"
 	>
 		<Calendar class="h-4 w-4" />
@@ -96,7 +96,7 @@
 					type="date"
 					value={dateRange.from || ''}
 					onchange={(e) => onDateChange('from', e.currentTarget.value)}
-					class="date-input w-full rounded-sm border border-accent/25 bg-black/30 px-3 py-2 text-white backdrop-blur-sm focus:border-accent focus:outline-none"
+					class="date-input field px-3 py-2"
 				/>
 			</div>
 			<div class="space-y-2">
@@ -106,12 +106,12 @@
 					type="date"
 					value={dateRange.to || ''}
 					onchange={(e) => onDateChange('to', e.currentTarget.value)}
-					class="date-input w-full rounded-sm border border-accent/25 bg-black/30 px-3 py-2 text-white backdrop-blur-sm focus:border-accent focus:outline-none"
+					class="date-input field px-3 py-2"
 				/>
 			</div>
 			{#if hasDateRange && onClearDates}
-				<div class="border-t border-white/5 pt-3">
-					<button onclick={onClearDates} class="key key--ghost w-full justify-center px-4 py-2">
+				<div class="border-t border-line-1 pt-3">
+					<button onclick={onClearDates} class="key key--ghost w-full justify-center">
 						{t.clearDates}
 					</button>
 				</div>

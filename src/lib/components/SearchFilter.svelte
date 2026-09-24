@@ -168,7 +168,7 @@
 	);
 </script>
 
-<div class="flex flex-col gap-4 rounded-lg border border-white/10 bg-black/20 p-5">
+<div class="panel flex flex-col gap-4 p-4 sm:p-5">
 	<!-- Search Input -->
 	<div class="relative">
 		<input
@@ -176,7 +176,7 @@
 			value={filters.query}
 			oninput={handleQueryChange}
 			{placeholder}
-			class="w-full rounded-sm border border-accent/25 bg-black/30 px-4 py-3 pl-12 text-white placeholder-white/40 transition-colors focus:border-accent focus:outline-none"
+			class="field px-4 py-3 pl-12"
 		/>
 		<Search class="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-accent" />
 	</div>
@@ -225,7 +225,7 @@
 
 		<!-- Clear Filters -->
 		{#if hasActiveFilters}
-			<button onclick={clearAllFilters} class="key key--ghost justify-center px-4 py-2">
+			<button onclick={clearAllFilters} class="key key--ghost justify-center">
 				{t.clearFilters}
 			</button>
 		{/if}
@@ -236,13 +236,11 @@
 		<div class="flex flex-wrap gap-2">
 			{#each filters.selectedTags as tag (tag)}
 				{@const originalCaseTag = findOriginalCaseTag(tag)}
-				<span
-					class="inline-flex items-center gap-1 rounded-md bg-white/10 px-2.5 py-1 font-mono text-xs text-white/80"
-				>
+				<span class="chip is-on">
 					{translateTag(global, originalCaseTag)}
 					<button
 						onclick={() => handleTagToggle(originalCaseTag)}
-						class="rounded-sm p-1 hover:bg-white/20"
+						class="-mr-1 rounded-[3px] p-0.5 hover:bg-accent/20"
 						aria-label="{t.removeFilter} {originalCaseTag}"
 					>
 						<X class="h-3 w-3" />
@@ -250,9 +248,7 @@
 				</span>
 			{/each}
 			{#each filters.selectedStatuses as status (status)}
-				<span
-					class="inline-flex items-center gap-1 rounded-md border border-accent/30 bg-accent/15 px-2.5 py-1 font-mono text-xs text-accent"
-				>
+				<span class="chip is-on">
 					{status === 'completed'
 						? t.statusCompleted
 						: status === 'in-progress'
@@ -264,7 +260,7 @@
 									: status}
 					<button
 						onclick={() => handleStatusToggle(status)}
-						class="rounded-sm p-1 hover:bg-accent/20"
+						class="-mr-1 rounded-[3px] p-0.5 hover:bg-accent/20"
 						aria-label="{t.removeFilter} {status}"
 					>
 						<X class="h-3 w-3" />

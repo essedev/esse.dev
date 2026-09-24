@@ -21,7 +21,7 @@
 	);
 </script>
 
-<footer class="mt-12 border-t border-white/5">
+<footer class="mt-12 border-t border-line-1">
 	<div class="mx-auto w-full max-w-screen-2xl px-4 py-12 sm:px-8 lg:px-14">
 		<div class="flex flex-col justify-between gap-10 md:flex-row">
 			<!-- Brand -->
@@ -53,7 +53,7 @@
 
 		<!-- Riga di sistema -->
 		<div
-			class="mt-10 flex flex-col gap-3 border-t border-white/5 pt-6 font-mono text-xs text-gray-500 sm:flex-row sm:items-center sm:justify-between"
+			class="mt-10 flex flex-col gap-3 border-t border-line-1 pt-6 font-mono text-xs text-gray-500 sm:flex-row sm:items-center sm:justify-between"
 		>
 			<span>{copyrightText}</span>
 			<div class="flex flex-wrap items-center gap-2">
@@ -61,7 +61,7 @@
 					href={`${base}/${data.selectedLanguage}/rss.xml`}
 					target="_blank"
 					rel="noreferrer"
-					class="key key--ghost gap-1.5 px-2.5 py-1.5 text-[0.68rem]"
+					class="key key--ghost key--sm"
 				>
 					<Rss class="h-3.5 w-3.5" />
 					RSS
@@ -70,7 +70,7 @@
 					href={`${base}/sitemap.xml`}
 					target="_blank"
 					rel="noreferrer"
-					class="key key--ghost gap-1.5 px-2.5 py-1.5 text-[0.68rem]"
+					class="key key--ghost key--sm"
 				>
 					<Map class="h-3.5 w-3.5" />
 					Sitemap
@@ -79,7 +79,7 @@
 					href="https://github.com/essedev/simonesalerno.it"
 					target="_blank"
 					rel="noreferrer"
-					class="key key--ghost gap-1.5 px-2.5 py-1.5 text-[0.68rem]"
+					class="key key--ghost key--sm"
 				>
 					<Code2 class="h-3.5 w-3.5" />
 					Source

@@ -41,7 +41,7 @@
 		{/if}
 		{#if profiles.length > 0}
 			<div
-				class="flex flex-wrap items-center gap-x-7 gap-y-3 font-mono text-xs tracking-[0.14em] text-gray-400 uppercase sm:text-sm"
+				class="flex flex-wrap items-center gap-x-7 gap-y-3 font-mono text-xs tracking-label text-gray-400 uppercase sm:text-sm"
 			>
 				{#each profiles as link (link.name)}
 					<a

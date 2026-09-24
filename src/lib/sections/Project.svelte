@@ -53,7 +53,7 @@
 				{#if content.meta.link}
 					<a
 						href={content.meta.link}
-						class="key key--ghost self-start px-4 py-2.5 normal-case"
+						class="key key--ghost self-start normal-case"
 						target="_blank"
 						rel="noopener noreferrer"
 						data-sveltekit-reload
@@ -64,11 +64,11 @@
 				{/if}
 
 				{#if tagLinks.length > 0}
-					<div class="flex flex-wrap gap-1.5 font-mono text-xs text-gray-400">
+					<div class="flex flex-wrap gap-1.5">
 						{#each tagLinks as tag (tag.raw)}
 							<a
 								href={`${base}/${currentLang}/${projectsRoute}?tags=${encodeURIComponent(tag.raw)}`}
-								class="border border-white/10 px-2 py-1 transition-colors hover:border-accent/50 hover:text-accent"
+								class="chip"
 							>
 								{tag.label}
 							</a>
@@ -82,7 +82,7 @@
 					<OptimizedImage
 						src={content.meta.featured_image}
 						alt={currentTranslation.title}
-						className="aspect-video rounded-xl"
+						className="panel aspect-video"
 						showPlaceholder={Boolean(content.meta.featuredImagePlaceholder)}
 						sizes="100vw"
 					/>

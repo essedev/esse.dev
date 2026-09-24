@@ -69,7 +69,7 @@
 		aria-haspopup="listbox"
 		aria-controls={dropdownId}
 		onclick={toggleDropdown}
-		class="key flex w-full gap-2 px-4 py-2"
+		class="key w-full"
 		style="touch-action: manipulation;"
 	>
 		<Activity class="h-4 w-4" />
@@ -97,14 +97,14 @@
 			{#each availableStatuses as status (status)}
 				<button
 					onclick={() => handleStatusSelect(status)}
-					class="flex w-full cursor-pointer items-center gap-2 rounded-md px-3 py-2 text-left text-white/80 transition-colors {selectedStatuses.includes(
+					class="flex w-full cursor-pointer items-center gap-2 rounded-sm px-3 py-2 text-left text-white/80 transition-colors {selectedStatuses.includes(
 						status
 					)
 						? 'bg-white/15'
 						: 'hover:bg-white/10 active:bg-white/15'}"
 				>
 					<div
-						class="flex h-4 w-4 items-center justify-center rounded-sm border border-white/10 {selectedStatuses.includes(
+						class="flex h-4 w-4 items-center justify-center rounded-[3px] border border-line-2 {selectedStatuses.includes(
 							status
 						)
 							? 'bg-white/15'
@@ -119,8 +119,8 @@
 			{/each}
 		</div>
 		{#if selectedStatuses.length > 0 && onClearStatuses}
-			<div class="border-t border-white/5 p-2">
-				<button onclick={onClearStatuses} class="key key--ghost w-full justify-center px-4 py-2">
+			<div class="border-t border-line-1 p-2">
+				<button onclick={onClearStatuses} class="key key--ghost w-full justify-center">
 					{t.clearStatuses}
 				</button>
 			</div>

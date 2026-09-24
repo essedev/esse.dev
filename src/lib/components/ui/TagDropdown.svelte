@@ -69,7 +69,7 @@
 		aria-haspopup="listbox"
 		aria-controls={dropdownId}
 		onclick={toggleDropdown}
-		class="key flex w-full gap-2 px-4 py-2"
+		class="key w-full"
 		style="touch-action: manipulation;"
 	>
 		<Tag class="h-4 w-4" />
@@ -98,21 +98,21 @@
 				type="text"
 				bind:value={tagSearchQuery}
 				placeholder={t.searchTags}
-				class="w-full rounded-sm border border-accent/25 bg-black/30 px-3 py-2 text-white placeholder-white/50 backdrop-blur-sm focus:border-accent focus:outline-none"
+				class="field px-3 py-2"
 			/>
 		</div>
 		<div class="max-h-40 space-y-1 overflow-y-auto p-2 pt-0">
 			{#each filteredTags as tag (tag)}
 				<button
 					onclick={() => handleTagSelect(tag)}
-					class="flex w-full cursor-pointer items-center gap-2 rounded-md px-3 py-2 text-left text-white/80 transition-colors {isTagSelected(
+					class="flex w-full cursor-pointer items-center gap-2 rounded-sm px-3 py-2 text-left text-white/80 transition-colors {isTagSelected(
 						tag
 					)
 						? 'bg-white/15'
 						: 'hover:bg-white/10 active:bg-white/15'}"
 				>
 					<div
-						class="flex h-4 w-4 items-center justify-center rounded-sm border border-white/10 {isTagSelected(
+						class="flex h-4 w-4 items-center justify-center rounded-[3px] border border-line-2 {isTagSelected(
 							tag
 						)
 							? 'bg-white/15'
@@ -127,8 +127,8 @@
 			{/each}
 		</div>
 		{#if selectedTagsCount > 0 && onClearTags}
-			<div class="border-t border-white/5 p-2">
-				<button onclick={onClearTags} class="key key--ghost w-full justify-center px-4 py-2">
+			<div class="border-t border-line-1 p-2">
+				<button onclick={onClearTags} class="key key--ghost w-full justify-center">
 					{t.clearTags}
 				</button>
 			</div>

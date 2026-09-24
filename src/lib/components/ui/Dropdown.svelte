@@ -207,7 +207,7 @@
 		id={dropdownId}
 		{role}
 		aria-labelledby={triggerId}
-		class="dropdown absolute mt-2 overflow-hidden rounded-xl border border-white/10 bg-white/5"
+		class="dropdown panel absolute mt-2 overflow-hidden"
 		class:animate={isAnimating}
 		style="
 		top: {position.top}; 

@@ -32,13 +32,13 @@
 	role="switch"
 	aria-checked={enabled}
 	aria-label={label}
-	class="group key gap-2 px-2.5 py-1.5 text-[0.68rem]"
+	class="group key key--sm"
 >
 	<span>{label}</span>
 	<!-- Switch "meccanico" squadrato: track carbone, thumb pieno che scatta a
 	     destra e si accende in azzurro (mini glow CRT) quando le animazioni sono on. -->
 	<span
-		class="relative inline-flex h-4 w-7 items-center rounded-[5px] border px-[2px] transition-colors duration-200 {enabled
+		class="relative inline-flex h-4 w-7 items-center rounded-[4px] border px-[2px] transition-colors duration-200 {enabled
 			? 'border-accent/50 bg-accent/20'
 			: 'border-white/15 bg-white/5'}"
 	>

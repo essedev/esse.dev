@@ -14,9 +14,7 @@
 	}
 </script>
 
-<section
-	class="mx-auto max-w-screen-2xl px-4 pt-14 pb-24 xs:pt-20 xs:pb-32 sm:px-8 sm:pt-28 sm:pb-44 lg:px-14"
->
+<section class="section mx-auto max-w-screen-2xl px-4 sm:px-8 lg:px-14">
 	{#if data.pageType === 'projects'}
 		<Projects
 			index={navIndex('projects')}

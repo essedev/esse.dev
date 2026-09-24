@@ -29,7 +29,7 @@
      superficie; il semplice aumento dei link avrebbe lasciato la barra otticamente vuota. -->
 <header
 	id="top"
-	class="border-b border-white/5 lg:fixed lg:top-[var(--chassis-gutter)] lg:right-[var(--chassis-gutter)] lg:left-[var(--chassis-gutter)] lg:rounded-t-[var(--radius-md)] lg:z-40 lg:h-[var(--chassis-nav-h)] lg:bg-[#0c0c0c]/85 lg:backdrop-blur-md"
+	class="border-b border-line-1 lg:fixed lg:top-[var(--chassis-gutter)] lg:right-[var(--chassis-gutter)] lg:left-[var(--chassis-gutter)] lg:rounded-t-[var(--radius-md)] lg:z-40 lg:h-[var(--chassis-nav-h)] lg:bg-[#0c0c0c]/85 lg:backdrop-blur-md"
 >
 	<nav
 		class="mx-auto flex w-full max-w-screen-2xl items-center justify-between px-4 py-6 sm:px-8 lg:h-full lg:w-[90vw] lg:px-14 lg:py-0"
@@ -48,9 +48,9 @@
 				<a
 					href={`${base}/${data.selectedLanguage}${route.link}`}
 					onclick={handleAnchorClick}
-					class="group flex h-full items-center gap-x-3 border-l border-white/5 pl-5 font-mono text-lg font-medium text-gray-300 transition-colors hover:text-white"
+					class="group flex h-full items-center gap-x-3 border-l border-line-1 pl-5 font-mono text-lg font-medium text-gray-300 transition-colors hover:text-white"
 				>
-					<span class="text-[0.65rem] text-accent/70 transition-colors group-hover:text-accent"
+					<span class="text-label text-accent/70 transition-colors group-hover:text-accent"
 						>0{i + 1}</span
 					>
 					<span>{route.name}</span>
@@ -75,7 +75,7 @@
 
 	<!-- Da lg in su il claim e la città li porta il rail superiore del telaio. -->
 	<div
-		class="mx-auto flex w-full max-w-screen-2xl items-center justify-between border-t border-white/5 px-4 py-1.5 font-mono text-[0.7rem] tracking-wide text-gray-500 sm:px-8 lg:hidden"
+		class="label mx-auto flex w-full max-w-screen-2xl items-center justify-between border-t border-line-1 px-4 py-2 text-gray-500 sm:px-8 lg:hidden"
 	>
 		<span>Human vision &middot; <span class="text-accent">AI execution</span></span>
 		<span class="hidden sm:block">Milano, IT</span>
@@ -120,7 +120,7 @@
 				</nav>
 
 				<div
-					class="flex items-center justify-between border-t border-white/5 px-4 py-6 font-mono text-xs text-gray-500 sm:px-8"
+					class="flex items-center justify-between border-t border-line-1 px-4 py-6 font-mono text-xs text-gray-500 sm:px-8"
 				>
 					<span>Human vision &middot; <span class="text-accent">AI execution</span></span>
 					<LanguageSelector

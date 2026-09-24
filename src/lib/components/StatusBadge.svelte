@@ -30,11 +30,7 @@
 	let label = $derived(getTranslation(global, STATUS_KEY[status]));
 </script>
 
-<span
-	class="inline-flex items-center gap-1.5 font-mono text-[0.7rem] tracking-wider uppercase {STATUS_STYLE[
-		status
-	]} {className}"
->
+<span class="label inline-flex items-center gap-1.5 {STATUS_STYLE[status]} {className}">
 	<span class="h-[7px] w-[7px] rounded-[1px] bg-current"></span>
 	{label}
 </span>

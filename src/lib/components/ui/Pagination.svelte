@@ -23,14 +23,14 @@
 		<!-- Previous Page -->
 		<a
 			href={currentPage > 1 ? createPageLink(currentPage - 1) : '#'}
-			class="key h-9 w-9 justify-center p-0"
+			class="key key--icon"
 			class:disabled={currentPage <= 1}
 			aria-label="Previous Page"
 		>
 			<ChevronLeft class="h-4 w-4" />
 		</a>
 
-		<span class="text-sm tracking-wider text-gray-500">
+		<span class="text-xs tracking-label text-gray-500">
 			<span class="text-accent">{String(currentPage).padStart(2, '0')}</span>
 			<span class="px-1 text-gray-600">/</span>
 			{String(totalPages).padStart(2, '0')}
@@ -39,7 +39,7 @@
 		<!-- Next Page -->
 		<a
 			href={currentPage < totalPages ? createPageLink(currentPage + 1) : '#'}
-			class="key h-9 w-9 justify-center p-0"
+			class="key key--icon"
 			class:disabled={currentPage >= totalPages}
 			aria-label="Next Page"
 		>

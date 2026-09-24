@@ -26,7 +26,7 @@
 	}
 </script>
 
-<a {href} onclick={handleClick} class="key key--ghost self-start py-2 pr-4 pl-2.5">
+<a {href} onclick={handleClick} class="key key--ghost self-start pl-2.5">
 	<ChevronLeft class="h-4 w-4" />
 	<span>{label}</span>
 </a>
