@@ -35,7 +35,9 @@
 
 <div use:reveal class="reveal panel overflow-hidden">
 	{#if label}
-		<div class="label flex items-center gap-x-4 border-b border-line-2 px-5 py-3.5 text-gray-500">
+		<div
+			class="label flex items-center gap-x-4 border-b border-line-2 px-4 py-3.5 text-gray-500 sm:px-5"
+		>
 			<span class="text-gray-300">{label}</span>
 			<span class="flex-1"></span>
 			<span class="tabular-nums">{count}</span>
@@ -44,31 +46,47 @@
 	<ul>
 		{#each entries as entry (entry.key)}
 			<li class="border-b border-line-1 last:border-b-0">
+				<!-- Una griglia sola a tutte le larghezze. Sotto md la riga è titolo + anno a
+				     destra (o data sopra il titolo, se il dato è lungo) e una frase sotto; da md
+				     il dato prende la prima colonna e a destra compaiono stack e freccia. Niente
+				     colonna vuota da 3rem su un telefono. -->
 				<a
 					href={`${base}${entry.href}`}
-					class="group grid items-baseline gap-x-4 px-5 py-4 transition-colors duration-200 hover:bg-surface-2 sm:gap-x-6 {wideMeta
-						? 'grid-cols-[5.5rem_1fr] md:grid-cols-[7rem_1fr_minmax(0,15rem)_1.5rem]'
-						: 'grid-cols-[3rem_1fr] md:grid-cols-[4.5rem_1fr_minmax(0,15rem)_1.5rem]'}"
+					class="group grid grid-cols-[minmax(0,1fr)_auto] items-baseline gap-x-4 gap-y-1 px-4 py-3.5 transition-colors duration-200 hover:bg-surface-2 sm:px-5 sm:py-4 md:gap-x-6 {wideMeta
+						? 'md:grid-cols-[7rem_minmax(0,1fr)_minmax(0,15rem)_1.5rem]'
+						: 'md:grid-cols-[4.5rem_minmax(0,1fr)_minmax(0,15rem)_1.5rem]'}"
 				>
-					<span class="font-mono text-xs text-gray-500 uppercase tabular-nums">{entry.meta}</span>
-					<span class="flex min-w-0 flex-col gap-y-1">
-						<span
-							class="text-base text-gray-200 transition-colors group-hover:text-white sm:text-lg"
-						>
-							{entry.title}
-						</span>
-						<span class="text-sm leading-relaxed text-gray-500">{entry.excerpt}</span>
+					<span
+						class="font-mono text-xs whitespace-nowrap text-gray-500 uppercase tabular-nums md:col-start-1 md:row-start-1 {wideMeta
+							? 'col-span-2 row-start-1 md:col-span-1'
+							: 'col-start-2 row-start-1'}"
+					>
+						{entry.meta}
+					</span>
+					<span
+						class="col-start-1 min-w-0 text-base text-gray-200 transition-colors group-hover:text-white sm:text-lg md:col-start-2 md:row-start-1 {wideMeta
+							? 'col-span-2 row-start-2 md:col-span-1'
+							: 'row-start-1'}"
+					>
+						{entry.title}
+					</span>
+					<span
+						class="col-span-2 line-clamp-2 text-sm leading-relaxed text-gray-500 md:col-span-1 md:col-start-2 md:row-start-2 {wideMeta
+							? 'row-start-3'
+							: 'row-start-2'}"
+					>
+						{entry.excerpt}
 					</span>
 					<!-- Stack su una riga sola, troncata: i tag tradotti possono essere lunghi e un
 					     pannello che va a capo per un'etichetta perde il ritmo della tabella. -->
 					<span
-						class="label hidden truncate text-right text-gray-500 md:block"
+						class="label hidden truncate text-right text-gray-500 md:col-start-3 md:row-start-1 md:block"
 						title={(entry.tags ?? []).join(' · ')}
 					>
 						{(entry.tags ?? []).slice(0, 2).join(' · ')}
 					</span>
 					<span
-						class="hidden text-right font-mono text-sm text-gray-600 transition-all duration-200 group-hover:translate-x-0.5 group-hover:text-accent md:block"
+						class="hidden text-right font-mono text-sm text-gray-600 transition-all duration-200 group-hover:translate-x-0.5 group-hover:text-accent md:col-start-4 md:row-start-1 md:block"
 						aria-hidden="true">&rarr;</span
 					>
 				</a>

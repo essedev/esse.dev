@@ -582,11 +582,15 @@ button:hover > .rail-top-arrow {
 
 	/* Chip: tag e filtri attivi. Etichetta mono 11px in un bordo line-2, mai un fondo a
 	   riposo; `is-on` la accende in accento (filtro applicato). Se è un link, l'hover fa
-	   lo stesso. */
+	   lo stesso. In una riga flex senza wrap la chip si stringe e tronca con l'ellissi,
+	   così una fila di tag sta sempre su una riga sola. */
 	.chip {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.35rem;
+		display: inline-block;
+		vertical-align: middle;
+		min-width: 0;
+		max-width: 100%;
+		overflow: hidden;
+		text-overflow: ellipsis;
 		padding: 0.2rem 0.5rem;
 		border: 1px solid var(--color-line-2);
 		border-radius: var(--radius-sm);

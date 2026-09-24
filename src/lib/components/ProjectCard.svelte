@@ -15,39 +15,45 @@
 		year,
 		global
 	}: ProjectCardProps = $props();
+
+	// Tre tag al massimo, su una riga sola: se non ci stanno si stringono con l'ellissi,
+	// il conteggio dice quanti ne restano. La lista completa sta nel dettaglio.
+	const MAX_TAGS = 3;
+	let shown = $derived((tags ?? []).slice(0, MAX_TAGS));
+	let hidden = $derived(Math.max(0, (tags ?? []).length - MAX_TAGS));
 </script>
 
-<a href={`${base}${link}`} class="panel panel--lift group flex h-full flex-col">
-	<div class="px-5 pt-5">
-		<OptimizedImage
-			src={featuredImage}
-			alt={title}
-			className="panel__media aspect-video"
-			showPlaceholder={Boolean(featuredImagePlaceholder)}
-			sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
-		/>
-	</div>
+<!-- Sotto sm la miniatura è una fascia 21:9: la card resta una vetrina ma non spende
+     metà schermo in un'immagine sola. Da sm torna 16:9. -->
+<a href={`${base}${link}`} class="panel panel--lift group flex h-full flex-col p-4 sm:p-5">
+	<OptimizedImage
+		src={featuredImage}
+		alt={title}
+		className="panel__media aspect-[21/9] sm:aspect-video"
+		showPlaceholder={Boolean(featuredImagePlaceholder)}
+		sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
+	/>
 
-	<div class="flex flex-1 flex-col p-5">
-		<div class="mb-3 flex items-center justify-between">
+	<div class="mt-4 flex flex-1 flex-col">
+		<div class="mb-2.5 flex items-center justify-between gap-x-3">
 			{#if status}
 				<StatusBadge {status} {global} />
 			{/if}
 			{#if year}
-				<span class="font-mono text-xs text-gray-500">{year}</span>
+				<span class="font-mono text-xs text-gray-500 tabular-nums">{year}</span>
 			{/if}
 		</div>
 
-		<h5 class="mb-2 text-xl font-medium text-gray-100">{title}</h5>
-		<p class="mb-4 text-sm text-gray-400">{excerpt}</p>
+		<h5 class="mb-1.5 text-lg font-medium text-gray-100">{title}</h5>
+		<p class="mb-4 line-clamp-3 text-sm leading-relaxed text-gray-400">{excerpt}</p>
 
-		{#if tags && tags.length > 0}
-			<div class="mt-auto flex flex-wrap gap-1.5">
-				{#each tags.slice(0, 4) as tag (tag)}
+		{#if shown.length > 0}
+			<div class="mt-auto flex min-w-0 gap-1.5">
+				{#each shown as tag (tag)}
 					<span class="chip">{tag}</span>
 				{/each}
-				{#if tags.length > 4}
-					<span class="chip border-transparent text-gray-500">+{tags.length - 4}</span>
+				{#if hidden > 0}
+					<span class="chip shrink-0 border-transparent text-gray-500">+{hidden}</span>
 				{/if}
 			</div>
 		{/if}
