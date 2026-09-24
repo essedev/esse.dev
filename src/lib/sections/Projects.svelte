@@ -79,7 +79,8 @@
 			href: `/${selectedLanguage}/${navigation[selectedLanguage].projects}/${tr.slug}`,
 			meta: p.meta.created_date.slice(0, 4),
 			title: tr.title,
-			excerpt: tr.excerpt
+			excerpt: tr.excerpt,
+			tags: translateTags(global, tr.tags)
 		};
 	};
 
@@ -172,7 +173,7 @@
 		{/if}
 
 		{#if showShelves}
-			<div class="grid grid-cols-1 gap-x-16 gap-y-14 pt-6 lg:grid-cols-2">
+			<div class="flex flex-col gap-y-6 pt-4">
 				{#if shelves.archived.length > 0}
 					<EntryIndex label={t.shelfArchived} entries={shelves.archived.map(toEntry)} />
 				{/if}

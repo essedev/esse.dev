@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Scaffale: varianti</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500&family=Martian+Mono:wght@300..600&display=swap" rel="stylesheet" />
+<style>
+:root {
+	--bg: #0c0c0c;
+	--accent: #2cc3f7;
+	--line: rgb(255 255 255 / 0.1);
+	--line-soft: rgb(255 255 255 / 0.05);
+	--fill: rgb(255 255 255 / 0.02);
+	--fill-hover: rgb(255 255 255 / 0.045);
+	--r: 0.75rem;
+	--g100: #f3f4f6; --g200: #e5e7eb; --g300: #d1d5db; --g400: #9ca3af; --g500: #6b7280; --g600: #4b5563;
+	--mono: 'Martian Mono', ui-monospace, monospace;
+	--sans: 'IBM Plex Sans', system-ui, sans-serif;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--g100); font-family: var(--sans); font-weight: 300; padding: 48px 16px 120px; }
+.wrap { max-width: 1180px; margin: 0 auto; }
+a { color: inherit; text-decoration: none; }
+
+/* Intestazioni del documento */
+.doc-title { font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--g500); margin-bottom: 12px; }
+h1 { font-weight: 400; font-size: 2rem; margin-bottom: 12px; }
+.lead { color: var(--g400); max-width: 70ch; line-height: 1.6; margin-bottom: 56px; }
+.variant { border-top: 1px solid var(--line); padding-top: 32px; margin-top: 72px; }
+.variant-head { display: flex; align-items: baseline; gap: 16px; margin-bottom: 8px; }
+.variant-letter { font-family: var(--mono); color: var(--accent); font-size: 1.6rem; text-shadow: 0 0 10px color-mix(in srgb, var(--accent) 45%, transparent); }
+.variant-name { font-size: 1.5rem; font-weight: 400; }
+.variant-why { color: var(--g400); line-height: 1.6; max-width: 80ch; margin-bottom: 8px; }
+.variant-cost { font-family: var(--mono); font-size: 0.72rem; color: var(--g500); letter-spacing: 0.06em; margin-bottom: 32px; }
+.sub { font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--g500); margin: 40px 0 16px; }
+
+/* Badge e piccoli elementi condivisi */
+.badge { display: inline-flex; align-items: center; gap: 6px; font-family: var(--mono); font-size: 0.66rem; letter-spacing: 0.08em; text-transform: uppercase; }
+.badge::before { content: ''; width: 7px; height: 7px; border-radius: 1px; background: currentColor; }
+.st-progress { color: #fcd34d; } .st-done { color: #6ee7b7; } .st-idea { color: var(--accent); } .st-archived { color: var(--g400); }
+.year { font-family: var(--mono); font-size: 0.72rem; color: var(--g500); }
+.tags { display: flex; flex-wrap: wrap; gap: 6px; font-family: var(--mono); font-size: 0.66rem; color: var(--g400); }
+.tags span { border: 1px solid var(--line); padding: 2px 8px; }
+.media { position: relative; overflow: hidden; border-radius: var(--r); background: linear-gradient(160deg, #2e2e2e, #232323); display: grid; place-items: center; color: var(--g500); }
+.media::after { content: ''; position: absolute; inset: 0; background: repeating-linear-gradient(to bottom, rgb(0 0 0 / 0.22) 0 1px, transparent 1px 3px); }
+.media svg { width: 28%; max-width: 44px; opacity: 0.8; }
+
+/* La card della vetrina: invariata in tutte le varianti */
+.grid3 { display: grid; gap: 24px; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); }
+.card { display: flex; flex-direction: column; border: 1px solid var(--line); border-radius: var(--r); background: var(--fill); transition: transform .3s, border-color .3s, background .3s; }
+.card:hover { transform: translateY(-4px); border-color: color-mix(in srgb, var(--accent) 50%, transparent); background: var(--fill-hover); }
+.card .media { margin: 20px 20px 0; aspect-ratio: 16/9; }
+.card-body { padding: 20px; display: flex; flex-direction: column; gap: 10px; flex: 1; }
+.card-top { display: flex; justify-content: space-between; align-items: center; }
+.card h3 { font-weight: 500; font-size: 1.2rem; }
+.card p { color: var(--g400); font-size: 0.9rem; line-height: 1.55; }
+.card .tags { margin-top: auto; padding-top: 6px; }
+
+/* Oggi: riga nuda */
+.cols2 { display: grid; gap: 56px; grid-template-columns: repeat(auto-fit, minmax(420px, 1fr)); }
+.shelf-head { display: flex; align-items: center; gap: 16px; font-family: var(--mono); font-size: 0.68rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--g500); padding-bottom: 12px; border-bottom: 1px solid var(--line); }
+.shelf-head b { color: var(--g300); font-weight: 400; }
+.shelf-head i { flex: 1; height: 1px; background: var(--line-soft); }
+.row { display: grid; grid-template-columns: 4rem 1fr auto; gap: 24px; align-items: baseline; padding: 20px 0; border-bottom: 1px solid var(--line-soft); }
+.row .t { font-size: 1.15rem; color: var(--g200); }
+.row .e { font-size: 0.85rem; color: var(--g500); line-height: 1.5; margin-top: 4px; }
+.row .arr { font-family: var(--mono); color: var(--g600); }
+.row:hover .t { color: #fff; } .row:hover .arr { color: var(--accent); }
+
+/* A: card compatta senza immagine */
+.gridA { display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+.mini { display: flex; flex-direction: column; gap: 10px; padding: 18px 20px; border: 1px solid var(--line); border-radius: var(--r); background: var(--fill); transition: border-color .3s, background .3s; }
+.mini:hover { border-color: color-mix(in srgb, var(--accent) 50%, transparent); background: var(--fill-hover); }
+.mini h4 { font-weight: 500; font-size: 1.05rem; }
+.mini p { color: var(--g400); font-size: 0.85rem; line-height: 1.5; }
+
+/* B: pannello tabellare */
+.panel { border: 1px solid var(--line); border-radius: var(--r); background: var(--fill); overflow: hidden; }
+.panel-head { display: flex; align-items: center; gap: 16px; padding: 14px 20px; border-bottom: 1px solid var(--line); font-family: var(--mono); font-size: 0.66rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--g500); }
+.panel-head b { color: var(--g300); font-weight: 400; }
+.panel-head i { flex: 1; }
+.prow { display: grid; grid-template-columns: 5.5rem 1fr minmax(0, 15rem) 1.5rem; gap: 24px; align-items: center; padding: 16px 20px; border-bottom: 1px solid var(--line-soft); transition: background .2s; }
+.prow:last-child { border-bottom: 0; }
+.prow:hover { background: var(--fill-hover); }
+.prow:hover .arr { color: var(--accent); transform: translateX(3px); }
+.prow .t { font-size: 1.05rem; color: var(--g200); }
+.prow .e { font-size: 0.82rem; color: var(--g500); margin-top: 3px; line-height: 1.45; }
+.prow .tags { justify-content: flex-end; }
+.prow .arr { font-family: var(--mono); color: var(--g600); transition: transform .2s, color .2s; text-align: right; }
+@media (max-width: 760px) { .prow { grid-template-columns: 4rem 1fr; } .prow .tags, .prow .arr { display: none; } }
+
+/* C: media object */
+.gridC { display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(420px, 1fr)); }
+.obj { display: grid; grid-template-columns: 148px 1fr; gap: 20px; padding: 14px; border: 1px solid var(--line); border-radius: var(--r); background: var(--fill); transition: border-color .3s, background .3s; }
+.obj:hover { border-color: color-mix(in srgb, var(--accent) 50%, transparent); background: var(--fill-hover); }
+.obj .media { aspect-ratio: 16/10; border-radius: calc(var(--r) - 4px); }
+.obj-body { display: flex; flex-direction: column; gap: 6px; padding: 2px 4px 2px 0; }
+.obj h4 { font-weight: 500; font-size: 1.05rem; }
+.obj p { color: var(--g400); font-size: 0.82rem; line-height: 1.5; }
+@media (max-width: 520px) { .gridC { grid-template-columns: 1fr; } .obj { grid-template-columns: 96px 1fr; } }
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+
+<script>
+const IMG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="4" width="18" height="16" rx="2"/><circle cx="9" cy="10" r="2"/><path d="m21 17-5-5-9 8"/></svg>';
+const showcase = [
+	{ t: 'Relay', s: 'progress', y: '2026', e: 'Terminale nativo per macOS pensato per far girare tanti coding agent in parallelo, con lo stato letto dagli hook.', tags: ['Swift', 'AppKit', 'macOS'] },
+	{ t: 'Nexus', s: 'progress', y: '2026', e: "Piattaforma dati personale guidata da un assistente AI: ogni cosa è un'entità definita da uno schema.", tags: ['Python', 'FastAPI', 'React'] },
+	{ t: 'Flux', s: 'done', y: '2024', e: 'Lettore di newsletter e feed RSS che estrae gli articoli in markdown pulito, su un solo Worker Cloudflare.', tags: ['Workers', 'Hono', 'D1'] }
+];
+const archived = [
+	{ t: 'Verbosa', y: '2025', e: "Chat multi-provider per usare i modelli di OpenAI, Anthropic e Google da un'unica interfaccia.", tags: ['Flutter', 'Go'] },
+	{ t: 'Kebabbivori', y: '2025', e: 'Recensioni dei kebab della provincia di Varese, con un voto in dieci categorie.', tags: ['Next.js', 'Supabase'] },
+	{ t: 'Templator', y: '2025', e: 'Template Next.js pensato per partire veloce con un coding agent.', tags: ['Next.js', 'Workers'] },
+	{ t: 'doppia.os', y: '2023', e: 'Un desktop nel browser, costruito in SvelteKit come esperimento di interfaccia.', tags: ['SvelteKit'] }
+];
+const ideas = [
+	{ t: 'Milanoz', y: '2026', e: 'Una mappa di Milano quartiere per quartiere: gli 88 NIL con dati su abitanti, redditi e caldo.', tags: ['Python', 'Maps'] },
+	{ t: 'Cosmoscope', y: '2025', e: 'Un assistente di ricerca che trasforma una domanda in una mappa dei concetti.', tags: ['React Flow', 'AI'] }
+];
+const blog = [
+	{ t: 'Il mio nuovo laboratorio: dove le idee di un bambino incontrano il codice', y: '27 gen 2025', e: 'Dal raccoglitore arancione pieno di progetti di robot al codice: la storia di questo sito.', tags: ['Storia'] }
+];
+const ST = { progress: ['st-progress', 'In corso'], done: ['st-done', 'Completato'], idea: ['st-idea', 'Idea'], archived: ['st-archived', 'Archiviato'] };
+const badge = (s) => `<span class="badge ${ST[s][0]}">${ST[s][1]}</span>`;
+const tags = (list) => `<div class="tags">${list.map((x) => `<span>${x}</span>`).join('')}</div>`;
+
+const card = (p) => `<a class="card" href="#"><div class="media">${IMG}</div><div class="card-body"><div class="card-top">${badge(p.s)}<span class="year">${p.y}</span></div><h3>${p.t}</h3><p>${p.e}</p>${tags(p.tags)}</div></a>`;
+const showcaseBlock = `<div class="grid3">${showcase.map(card).join('')}</div>`;
+
+// Oggi
+const head = (label, n) => `<div class="shelf-head"><b>${label}</b><i></i><span>${String(n).padStart(2, '0')}</span></div>`;
+const row = (p) => `<a class="row" href="#"><span class="year">${p.y}</span><span><div class="t">${p.t}</div><div class="e">${p.e}</div></span><span class="arr">&rarr;</span></a>`;
+const today = `${showcaseBlock}<div class="cols2" style="margin-top:56px"><div>${head('Archivio', 6)}${archived.map(row).join('')}</div><div>${head('Idee', 4)}${ideas.map(row).join('')}</div></div><div class="sub">Blog</div><div style="border-top:1px solid var(--line)">${blog.map((b) => `<a class="row" href="#" style="grid-template-columns:8rem 1fr auto"><span class="year">${b.y.toUpperCase()}</span><span><div class="t">${b.t}</div><div class="e">${b.e}</div></span><span class="arr">&rarr;</span></a>`).join('')}</div>`;
+
+// A
+const mini = (p, s) => `<a class="mini" href="#"><div class="card-top">${badge(s)}<span class="year">${p.y}</span></div><h4>${p.t}</h4><p>${p.e}</p>${tags(p.tags)}</a>`;
+const A = `${showcaseBlock}<div class="sub">Archivio &middot; 06</div><div class="gridA">${archived.map((p) => mini(p, 'archived')).join('')}</div><div class="sub">Idee &middot; 04</div><div class="gridA">${ideas.map((p) => mini(p, 'idea')).join('')}</div><div class="sub">Blog</div><div class="gridA">${blog.map((b) => `<a class="mini" href="#"><span class="year">${b.y.toUpperCase()}</span><h4>${b.t}</h4><p>${b.e}</p></a>`).join('')}</div>`;
+
+// B
+const prow = (p) => `<a class="prow" href="#"><span class="year">${p.y}</span><span><div class="t">${p.t}</div><div class="e">${p.e}</div></span>${tags(p.tags)}<span class="arr">&rarr;</span></a>`;
+const panel = (label, n, items) => `<div class="panel"><div class="panel-head"><b>${label}</b><i></i><span>${String(n).padStart(2, '0')}</span></div>${items.map(prow).join('')}</div>`;
+const B = `${showcaseBlock}<div style="display:grid;gap:24px;margin-top:40px">${panel('Archivio', 6, archived)}${panel('Idee', 4, ideas)}</div><div class="sub">Blog</div>${panel('Articoli', 1, blog.map((b) => ({ ...b, y: b.y.toUpperCase() })))}`;
+
+// C
+const obj = (p, s) => `<a class="obj" href="#"><div class="media">${IMG}</div><div class="obj-body"><div class="card-top">${badge(s)}<span class="year">${p.y}</span></div><h4>${p.t}</h4><p>${p.e}</p></div></a>`;
+const C = `${showcaseBlock}<div class="sub">Archivio &middot; 06</div><div class="gridC">${archived.map((p) => obj(p, 'archived')).join('')}</div><div class="sub">Idee &middot; 04</div><div class="gridC">${ideas.map((p) => obj(p, 'idea')).join('')}</div><div class="sub">Blog</div><div class="gridC">${blog.map((b) => `<a class="obj" href="#"><div class="media">${IMG}</div><div class="obj-body"><span class="year">${b.y.toUpperCase()}</span><h4>${b.t}</h4><p>${b.e}</p></div></a>`).join('')}</div>`;
+
+const variant = (letter, name, why, cost, body) => `<section class="variant"><div class="variant-head"><span class="variant-letter">${letter}</span><span class="variant-name">${name}</span></div><p class="variant-why">${why}</p><p class="variant-cost">${cost}</p>${body}</section>`;
+
+document.getElementById('app').innerHTML = `
+<div class="doc-title">simonesalerno.it &middot; concept</div>
+<h1>Scaffale: card contro riga</h1>
+<p class="lead">In tutte le varianti la vetrina (in corso e completati) resta com'è. Cambia solo come stanno sotto archivio, idee e blog. Il problema di oggi: la card è un oggetto (bordo, fondo, raggio, badge, immagine) e la riga è solo tipografia su un filo, quindi sembrano due siti. Le tre varianti rimettono un materiale in comune.</p>
+${variant('0', 'Oggi', "Il riferimento: vetrina a card, scaffale a righe nude su due colonne, blog a una riga.", 'già nel branch', today)}
+${variant('A', 'Card compatta', "Stesso materiale della card (bordo, fondo, raggio, badge in alto), senza immagine. La differenza di peso la fa l'altezza, non un linguaggio diverso. Il blog con un solo articolo diventa una card piccola, non una lista vuota.", 'costo: basso. rischio: 10 card piccole sotto 9 grandi possono sembrare una griglia unica e ripetitiva', A)}
+${variant('B', 'Pannello tabellare', "Le righe restano righe, ma dentro un pannello dello stesso materiale della card, con intestazione, hover sulla riga intera e lo stack come colonna. Legge come una tabella di uno strumento, in linea col telaio.", 'costo: basso. rischio: il blog con un solo articolo resta un pannello quasi vuoto finché non cresce', B)}
+${variant('C', 'Media object', "Card orizzontali con una miniatura piccola a sinistra: tiene il linguaggio dell'immagine (con le scanline) a una densità più bassa. È il ponte più dolce fra card e riga.", 'costo: medio. rischio: servono immagini anche per archivio e idee, oggi tutte segnaposto', C)}
+`;
+</script>
+</body>
+</html>

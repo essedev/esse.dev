@@ -4,7 +4,7 @@
 	import SearchFilter from '$lib/components/SearchFilter.svelte';
 	import Pagination from '$lib/components/ui/Pagination.svelte';
 	import type { ArticleItem, ArticlesSectionProps, FilterState } from '$lib/types/content';
-	import { getTranslations, type TranslationKey } from '$lib/utils/translations';
+	import { getTranslations, translateTags, type TranslationKey } from '$lib/utils/translations';
 	import { ArrowRight, FileText } from '@lucide/svelte';
 	import { reveal } from '$lib/actions/reveal';
 	import SectionHeader from '$lib/components/SectionHeader.svelte';
@@ -68,7 +68,8 @@
 			href: `/${selectedLanguage}/${navigation[selectedLanguage].articles}/${tr.slug}`,
 			meta: formatDate(a.meta.published_date),
 			title: tr.title,
-			excerpt: tr.excerpt
+			excerpt: tr.excerpt,
+			tags: translateTags(global, tr.tags)
 		};
 	};
 
