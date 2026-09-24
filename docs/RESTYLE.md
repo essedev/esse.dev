@@ -116,9 +116,12 @@ Design system di base, su cui la pixel art si poserà in seguito. Decisioni pres
   Mono geometrico "da officina", peso medium sul titolo. (Fraunces italic provato sul
   titolo e scartato in contesto: il serif-su-dark grande dà l'aria "template generato
   da AI". Il mono è meno elegante ma più specifico e meno omologato.)
-- **Headline hero:** titolo **"I cast code."** Doppio senso di `cast`: il type
-  casting della programmazione e il lanciare un incantesimo, il tocco magia senza
-  cringe. Resta in inglese anche in IT (brand statement intraducibile; il corpo sotto
+- **Headline hero:** titolo **"I write the spells."** (2026-09-24), che sostituisce
+  "I cast code.". Quel doppio senso (type cast e incantesimo) si scioglieva solo
+  leggendo "half wizard" più sotto e non diceva cosa faccio; "I write the spells" tiene
+  il mago al posto giusto: io scrivo l'incantesimo (architettura, contesto, controlli),
+  l'AI lo lancia. Il corpo sotto è asciugato a tre frasi, una per riga da `lg`, senza
+  ripetere due volte che l'AI scrive il codice. Varianti in `docs/concepts/hero-variants.html`. Resta in inglese anche in IT (brand statement intraducibile; il corpo sotto
   è localizzato). Sostituisce "Ciao, sono Simone." (il nome era già nel logo). Layout
   **allineato a sinistra** (editoriale, respiro a destra per la futura scena pixel
   art), non centrato.

@@ -1,18 +1,24 @@
 {
 	"eyebrow": "Simone Salerno",
-	"title": "I cast code.",
+	"title": "I write the spells.",
 	"description": {
 		"blocks": [
 			{
 				"type": "paragraph",
 				"data": {
-					"text": "I design the architecture, the AI writes the code, I review and ship. I know where it slips and I set it up so it doesn't."
+					"text": "I design the architecture. The AI writes the code."
 				}
 			},
 			{
 				"type": "paragraph",
 				"data": {
-					"text": "The AI does the heavy lifting, I keep the decisions. What used to take weeks now takes a weekend, and what goes out is production-ready, not a demo."
+					"text": "I know where it slips, and I set it up so it doesn't."
+				}
+			},
+			{
+				"type": "paragraph",
+				"data": {
+					"text": "What used to take weeks now takes a weekend, and it ships production-ready."
 				}
 			}
 		]

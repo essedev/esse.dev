@@ -1,18 +1,24 @@
 {
 	"eyebrow": "Simone Salerno",
-	"title": "I cast code.",
+	"title": "I write the spells.",
 	"description": {
 		"blocks": [
 			{
 				"type": "paragraph",
 				"data": {
-					"text": "Decido l'architettura, l'AI scrive il codice, io controllo e rilascio. So dove sbaglia e la imposto perché non lo faccia."
+					"text": "Decido l'architettura. L'AI scrive il codice."
 				}
 			},
 			{
 				"type": "paragraph",
 				"data": {
-					"text": "L'AI fa il grosso, le decisioni le tengo io. Quello che prima erano settimane ora è un weekend, e quello che esce è production-ready, non una demo."
+					"text": "So dove sbaglia, e la imposto perché non lo faccia."
+				}
+			},
+			{
+				"type": "paragraph",
+				"data": {
+					"text": "Quello che prima erano settimane ora è un weekend, ed esce production-ready."
 				}
 			}
 		]

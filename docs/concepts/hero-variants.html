@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Hero: varianti</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500&family=Martian+Mono:wght@300..600&display=swap" rel="stylesheet" />
+<style>
+:root { --bg: #0c0c0c; --accent: #2cc3f7; --g300: #d1d5db; --g400: #9ca3af; --g500: #6b7280; --line: rgb(255 255 255 / 0.1);
+	--mono: 'Martian Mono', ui-monospace, monospace; --sans: 'IBM Plex Sans', system-ui, sans-serif; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: #f3f4f6; font-family: var(--sans); font-weight: 300; padding: 48px 16px 120px; }
+.wrap { max-width: 1320px; margin: 0 auto; }
+.doc-title { font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--g500); margin-bottom: 12px; }
+h1.doc { font-weight: 400; font-size: 2rem; margin-bottom: 12px; }
+.lead { color: var(--g400); max-width: 75ch; line-height: 1.6; margin-bottom: 24px; }
+.group-title { font-family: var(--mono); font-size: 0.75rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--g300); margin: 64px 0 8px; }
+.variant { margin-top: 36px; }
+.vhead { display: flex; align-items: baseline; gap: 14px; margin-bottom: 6px; }
+.vletter { font-family: var(--mono); font-size: 1.4rem; color: var(--accent); text-shadow: 0 0 10px color-mix(in srgb, var(--accent) 45%, transparent); }
+.vname { font-size: 1.3rem; font-weight: 400; }
+.vwhy { color: var(--g400); line-height: 1.6; max-width: 90ch; margin-bottom: 16px; }
+.screen { border: 1px solid rgb(255 255 255 / 0.08); border-radius: 0.75rem; padding: 96px 80px; box-shadow: inset 0 0 90px rgb(0 0 0 / 0.5);
+	background: radial-gradient(ellipse at 50% 120%, rgb(44 195 247 / 0.07), transparent 60%); overflow: hidden; }
+.eyebrow { font-family: var(--mono); color: var(--g400); font-size: 1rem; margin-bottom: 24px; }
+.title { font-family: var(--mono); font-weight: 500; font-size: clamp(3rem, 7vw, 6rem); line-height: 1.12; margin-bottom: 48px; }
+.copy p { color: var(--g300); font-size: 1.25rem; line-height: 1.55; }
+.copy p + p { margin-top: 16px; }
+.tag { font-family: var(--mono); color: var(--g500); font-size: 0.875rem; margin-top: 40px; }
+.tag b { color: var(--accent); font-weight: 400; text-shadow: 0 0 10px color-mix(in srgb, var(--accent) 45%, transparent); }
+.hl { display: inline-flex; flex-direction: column; max-width: 100%; }
+/* Paragrafo: A colonna fissa, B larghezza del titolo bilanciata, C una frase per riga */
+.pA { max-width: 38rem; text-wrap: pretty; }
+.pB { width: 0; min-width: 100%; text-wrap: balance; }
+.pC p { white-space: normal; }
+.pC p + p { margin-top: 6px; }
+@media (min-width: 1100px) { .pC p { white-space: nowrap; } }
+.lang { display: inline-flex; gap: 8px; margin-bottom: 20px; font-family: var(--mono); font-size: 0.75rem; }
+.lang button { background: none; border: 1px solid var(--line); color: var(--g400); padding: 4px 10px; border-radius: 0.45rem; cursor: pointer; font: inherit; }
+.lang button[aria-pressed='true'] { color: var(--accent); border-color: color-mix(in srgb, var(--accent) 50%, transparent); }
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<script>
+const COPY = {
+	en: {
+		now: ["I design the architecture, the AI writes the code, I review and ship. I know where it slips and I set it up so it doesn't.",
+			"The AI does the heavy lifting, I keep the decisions. What used to take weeks now takes a weekend, and what goes out is production-ready, not a demo."],
+		tight: ['I design the architecture. The AI writes the code.', "I know where it slips, and I set it up so it doesn't.", 'What used to take weeks now takes a weekend, and it ships production-ready.'],
+		tag: ['half engineer, ', 'half wizard']
+	},
+	it: {
+		now: ["Decido l'architettura, l'AI scrive il codice, io controllo e rilascio. So dove sbaglia e la imposto perché non lo faccia.",
+			"L'AI fa il grosso, le decisioni le tengo io. Quello che prima erano settimane ora è un weekend, e quello che esce è production-ready, non una demo."],
+		tight: ["Decido l'architettura. L'AI scrive il codice.", 'So dove sbaglia, e la imposto perché non lo faccia.', 'Quello che prima erano settimane ora è un weekend, ed esce production-ready.'],
+		tag: ['half engineer, ', 'half wizard']
+	}
+};
+const TITLES = [
+	['I cast code.', "Oggi. Gioco di parole su cast a spell, che si scioglie solo leggendo \"half wizard\" più sotto; per un dev \"cast\" è prima di tutto il type cast. Non dice cosa fai."],
+	['I write the spells.', 'Tiene il mago ma lo rimette al posto giusto: tu scrivi l\'incantesimo (architettura, contesto, controlli), l\'AI lo lancia. È esattamente il paragrafo sotto, detto in quattro parole.'],
+	['I design. Agents build.', 'Il più chiaro: dice il metodo senza metafora. Perde il tono giocoso, e "half wizard" sotto resta un po\' orfano.'],
+	['I build with agents.', 'Il più diretto e cercabile. Il meno memorabile dei quattro.']
+];
+let lang = 'en';
+const hero = (title, pClass, paras) => `<div class="screen"><div class="hl"><div class="eyebrow">Simone Salerno</div><div class="title">${title}</div><div class="copy ${pClass}">${paras.map((p) => `<p>${p}</p>`).join('')}</div></div><div class="tag">${COPY[lang].tag[0]}<b>${COPY[lang].tag[1]}</b></div></div>`;
+const variant = (letter, name, why, body) => `<section class="variant"><div class="vhead"><span class="vletter">${letter}</span><span class="vname">${name}</span></div><p class="vwhy">${why}</p>${body}</section>`;
+function render() {
+	const c = COPY[lang];
+	document.getElementById('app').innerHTML = `
+	<div class="doc-title">simonesalerno.it &middot; concept</div>
+	<h1 class="doc">Hero: paragrafo e titolo</h1>
+	<p class="lead">Due problemi separati. Il paragrafo va a capo a metà frase con righe di lunghezza casuale, e ripete due volte lo stesso concetto (l'AI scrive / l'AI fa il grosso). Il titolo è un gioco di parole che si capisce solo dopo. Prima le varianti del paragrafo col titolo di oggi, poi i titoli col paragrafo scelto.</p>
+	<div class="lang"><button data-l="en" aria-pressed="${lang === 'en'}">EN</button><button data-l="it" aria-pressed="${lang === 'it'}">IT</button></div>
+	<div class="group-title">Paragrafo</div>
+	${variant('0', 'Oggi', 'Larghezza del titolo, testo attuale: righe lunghe e a capo dove capita.', hero(TITLES[0][0], 'pB" style="text-wrap:wrap', c.now))}
+	${variant('A', 'Colonna fissa', 'Stesso testo, colonna di 38rem (circa 65 caratteri) con text-wrap: pretty, che evita le parole sole in fondo. È la misura da libro: non insegue il titolo.', hero(TITLES[0][0], 'pA', c.now))}
+	${variant('B', 'Larghezza del titolo, bilanciata', "Stesso testo, stessa larghezza del titolo, ma con text-wrap: balance: le righe di ogni paragrafo hanno lunghezza simile, quindi il blocco sembra voluto e non tagliato.", hero(TITLES[0][0], 'pB', c.now))}
+	${variant('C', 'Una frase per riga', 'Testo asciugato a tre frasi senza ripetizioni, una per riga su desktop. Gli a capo li decide il senso, non la larghezza: è la forma che regge meglio accanto a un titolo così grande.', hero(TITLES[0][0], 'pC', c.tight))}
+	<div class="group-title">Titolo (con il paragrafo C)</div>
+	${TITLES.map((t, i) => variant(String(i + 1), t[0], t[1], hero(t[0], 'pC', c.tight))).join('')}
+	`;
+	document.querySelectorAll('.lang button').forEach((b) => b.addEventListener('click', () => { lang = b.dataset.l; render(); }));
+}
+render();
+</script>
+</body>
+</html>
