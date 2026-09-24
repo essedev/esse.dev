@@ -83,7 +83,7 @@ describe('buildAlternates', () => {
 
 describe('socialLinks', () => {
 	const links: LinkItem[] = [
-		{ name: 'Email', link: 'mailto:contact@simonesalerno.it' },
+		{ name: 'Email', link: 'mailto:hello@esse.dev' },
 		{ name: 'LinkedIn', link: 'https://www.linkedin.com/in/simone-salerno' },
 		{ name: 'GitHub', link: 'https://github.com/essedev/' }
 	];
