@@ -66,17 +66,32 @@ e decisioni in `docs/RESTYLE.md`, log in `docs/CYCLES.md` (Ciclo 9). In sintesi:
   `--color-accent` (default azzurro `#2cc3f7`) + `--radius-sm/md/lg/xl`. **L'accento
   vive in un punto solo:** glow e ombre lo derivano via `color-mix(var(--color-accent))`,
   non hardcodano l'rgba. La sitemap è un CSS separato (`static/sitemap.css`) col suo
-  `--accent`. Un `AccentPicker` (montato in `+layout.svelte`: in basso a sinistra sotto
-  `lg`, colonna di LED nel rail sinistro sopra) sovrascrive `--color-accent` su `<html>`
-  a runtime (azzurro/arancione/viola, persistito in localStorage, con hue-sweep
-  animato): se aggiungi un colore-accento NON hardcodarlo.
-- Controlli dello schermo: una sola famiglia di classi in `globals.css` (`@layer
-  components`): `.key` (tasto illuminato: bordo e fondo tinti d'accento, pieno con
-  `aria-pressed`/`.is-on`), `.key--primary`, `.key--ghost` per i secondari, `.key-group`
-  per i segmenti. Non ricopiare classi Tailwind di bordo/fondo su un bottone: usa `.key`
-  e aggiungi solo dimensioni e padding. Switch animazioni (`MotionToggle`). Le
-  animazioni rispettano il motion toggle; il thumb dello switch è esentato apposta
-  (vedi `.motion-thumb` in globals - Tailwind v4 anima `translate`, non `transform`).
+  `--accent`. Un `AccentPicker` (montato in `+layout.svelte`: sotto `lg` un tasto del
+  dock in basso a sinistra che cicla i temi, sopra una colonna di LED nel rail
+  sinistro) sovrascrive `--color-accent` su `<html>` a runtime (azzurro/arancione/
+  viola, persistito in cookie così l'SSR lo applica pre-paint, crossfade CSS): se
+  aggiungi un colore-accento NON hardcodarlo.
+- Materiali, in `globals.css` (`@layer components`), tutti derivati dai token del
+  `@theme`: `.panel` (card, indice, box filtri, dropdown, immagine di dettaglio: bordo
+  `line-2`, fondo `surface-1`, raggio md; `.panel--lift` per l'hover della card,
+  `.panel__media` per la miniatura dentro), `.chip` (tag e filtri attivi, `.is-on` in
+  accento, tronca con ellissi in una riga flex), `.field` (input), `.label` (mono 11px
+  maiuscolo con tracking: indici, intestazioni, stato, meta), `.section` (ritmo
+  verticale delle sezioni). Due raggi soli (`--radius-sm` controlli, `--radius-md`
+  pannelli), tre linee (`line-1/2/accent`), tre superfici, quattro taglie di mono
+  (`text-tele` rail, `text-label`, `text-xs` date, `text-control` tasti). Un valore di
+  bordo, fondo, raggio o taglia scritto a mano in un componente è un errore: usa il
+  token o la classe.
+- Controlli dello schermo: `.key` (tasto illuminato: bordo e fondo tinti d'accento,
+  pieno con `aria-pressed`/`.is-on`), `.key--primary`, `.key--ghost` per i secondari,
+  `.key--sm` (footer, switch), `.key--icon` (44px quadrato per una sola icona),
+  `.key--float` (flottante sopra il contenuto), `.key-group` per i segmenti. Non
+  ricopiare classi Tailwind di bordo/fondo su un bottone: usa `.key` e aggiungi solo
+  larghezza o padding se serve. Sotto `lg` i tre flottanti (menu, torna su, accento
+  che cicla i temi) sono lo stesso `key key--icon key--float` e il footer tiene 6rem
+  di clearance in basso. Switch animazioni (`MotionToggle`). Le animazioni rispettano
+  il motion toggle; il thumb dello switch è esentato apposta (vedi `.motion-thumb` in
+  globals - Tailwind v4 anima `translate`, non `transform`).
 - Logo testuale `essedev` (`Logo.svelte`), voci nav a indice numerato, menu mobile a
   overlay numerato dentro `max-w-[90vw]`.
 - **Telaio strumentale** (`Chassis.svelte`, montato nel `+layout.svelte`): cornice fissa
@@ -91,6 +106,9 @@ e decisioni in `docs/RESTYLE.md`, log in `docs/CYCLES.md` (Ciclo 9). In sintesi:
   nav: se serve un controllo persistente, va nel telaio.
 - `SectionHeader.svelte`: indice numerato + filo + readout dai dati della sezione. Il
   readout si passa solo se un dato reale lo sostiene, mai un conteggio di cortesia.
+- Prosa e pagine di dettaglio: i paragrafi di About e Contatti hanno `max-w-prose`,
+  progetto e articolo sono una colonna `max-w-3xl` allineata a sinistra. Niente testo
+  a tutta larghezza su desktop.
 - Shortcut tastiera (`+layout.svelte`): `1-4` -> sezioni, `0`/`Home` -> top,
   `End` -> fondo.
 

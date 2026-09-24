@@ -567,8 +567,36 @@ vision completa, le idee considerate e quelle scartate vivono in `docs/RESTYLE.m
   genera tutte le taglie. Gli output sono committati e lo script non sta nella build:
   si rilancia con `pnpm generate-favicons` quando cambiano disegno o accento default.
 
+### Blocco 5 - revisione UI: token, materiali, dock mobile, colonna di lettura (fatto)
+
+Audit con Playwright su 5 pagine per 3 viewport (390, 768, 1440) più metriche dal
+DOM. Nessun bug: il problema era la grammatica. Undici raggi, otto opacità di bordo,
+cinque fondi di contenitore, otto taglie di mono, quattro stili di chip, tre oggetti
+diversi per i tre controlli flottanti di mobile, testo a 1300px su desktop.
+
+- **Token e materiali (`a5f19a2`):** nel `@theme` due raggi, tre linee, tre superfici,
+  quattro taglie di mono; in `@layer components` `.panel`, `.chip`, `.field`,
+  `.label`, `.section` e le taglie di `.key` (`--sm`, `--icon`, `--float`). Ogni
+  componente li consuma, nessun valore a mano. Le classi `.archive-card` e
+  `.entry-panel` spariscono dentro `.panel`.
+- **Card e indice (`d2550e7`):** miniatura 21:9 sotto `sm`, excerpt a tre righe, una
+  riga sola di tre chip che si stringono con l'ellissi più un conteggio: altezza
+  stabile in griglia. L'indice sotto `md` non ha più la colonna vuota da 3rem: anno
+  inline a destra del titolo, data lunga sopra, excerpt a due righe (riga da ~90px
+  invece di 150-175).
+- **Dock mobile (`7604f03`):** menu, torna su e accento sono lo stesso tasto
+  `key--icon key--float` da 44px; il picker diventa un tasto con il LED acceso che
+  cicla i temi, il burger dell'header e quello flottante condividono la cella, il
+  footer tiene 6rem di clearance sotto `lg`.
+- **Colonna di lettura (`74343bf`):** About e Contatti a `max-w-prose`, progetto e
+  articolo in una colonna `max-w-3xl` a sinistra (che ridimensiona anche l'immagine
+  hero); excerpt in tondo, meta dell'articolo come etichetta, link del 404 a tasto.
+- **Cornice:** i rail passano alla taglia `text-tele` unica e al bordo `line-2` dei
+  pannelli, senza cambiare disegno.
+- Gate a fine giro: lint, check 0 errori, build, 196 unit, 32 e2e.
+
 ### Cosa resta
 
 - Cantieri grossi: animazioni come sistema. La pixel art autoprodotta è scartata
-  (vedi `RESTYLE.md`); la ricurazione dei contenuti progetti è fatta (Blocco 4).
+  (vedi `RESTYLE.md`); contenuti progetti (Blocco 4) e sistema UI (Blocco 5) fatti.
 - Prima del merge/live: `build` + `test:ci` + aggiornare gli E2E + merge su `main`.

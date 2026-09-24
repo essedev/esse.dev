@@ -72,3 +72,15 @@ A differenza delle OG gli output sono committati e lo script non è nella catena
 `pnpm build`: si rilancia a mano con `pnpm generate-favicons` quando cambiano il
 disegno o l'accento default. Scartati: file preparati a mano per taglia (il vecchio
 set era divergente).
+
+## #8 - Token e materiali: nessun valore visivo scritto a mano nei componenti
+
+**Status:** attiva (Ciclo 9, blocco 5)
+
+Raggi, linee, superfici e taglie del mono vivono come token nel `@theme` e ogni
+contenitore, chip, campo o etichetta usa una classe di `@layer components`
+(`.panel`, `.chip`, `.field`, `.label`, `.key*`, `.section`). Prima ogni componente
+sceglieva la sua opacità di bordo e il suo raggio: undici raggi e otto bordi per lo
+stesso concetto. Una classe in più costa una riga; un valore in più costa la
+coerenza. Scartato: linee guida scritte senza classi (non reggono al secondo
+componente).

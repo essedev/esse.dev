@@ -20,13 +20,14 @@ sta in `docs/CYCLES.md` (Cicli 1-8), le decisioni durevoli in `docs/DECISIONS.md
 ### M11 - Restyle "Laboratorio" - In corso (branch `restyle/laboratory`)
 
 Rebrand visivo verso un'identità "Laboratorio". Vision e decisioni in
-`docs/RESTYLE.md`, log in `docs/CYCLES.md` (Ciclo 9, blocchi 1-4).
+`docs/RESTYLE.md`, log in `docs/CYCLES.md` (Ciclo 9, blocchi 1-5).
 
 - Fatto sul branch: palette, tipografia, hero, navbar, card, filtri, footer, pagine
   interne, tema accento centralizzato + accent picker, telaio strumentale con nav
   unificata e header di sezione, ricurazione dei contenuti progetti, listing a due
   densità (vetrina + indice), articoli a indice, prima dose statica di CRT, favicon e
-  manifest generati da un solo disegno.
+  manifest generati da un solo disegno, sistema di token e materiali con dock mobile
+  e colonna di lettura (blocco 5).
 - Su `main`: solo welcome AI-first e label dello status `idea` (pushati). La label è
   poi tornata "Idea" sul branch.
 - Resta: animazioni come sistema coerente (M12).
