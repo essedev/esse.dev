@@ -4,6 +4,16 @@
 
 	// Receive welcome data as props
 	let { welcome }: WelcomeSectionProps = $props();
+
+	// L'ultima parola del titolo va in accento, come "dev" nel logo: è il punto della
+	// frase ("spells"), e il colore la fa leggere per prima senza cambiare il testo.
+	let titleParts = $derived.by(() => {
+		const title = welcome.title.trim();
+		const cut = title.lastIndexOf(' ');
+		return cut < 0
+			? { head: '', tail: title }
+			: { head: title.slice(0, cut + 1), tail: title.slice(cut + 1) };
+	});
 </script>
 
 <div class="hero-enter relative flex flex-col items-start text-left">
@@ -15,21 +25,23 @@
 		<span class="lg:hidden">esse<span class="text-accent">dev</span></span>
 	</p>
 
-	<div class="mb-12 overflow-hidden">
+	<div class="mb-8 overflow-hidden sm:mb-10">
 		<h1
 			class="font-mono -mt-2 text-left text-[3rem] leading-[1.15] font-medium sm:text-[5rem] lg:-mt-3 xl:-mt-4 xl:text-[6rem] 2xl:-mt-6 2xl:text-[7.5rem]"
 		>
-			{welcome.title}
+			{titleParts.head}<span class="text-accent">{titleParts.tail}</span>
 		</h1>
 	</div>
 
 	<ContentRenderer
 		content={welcome.description}
-		className="flex flex-col gap-y-2 text-left"
+		className="flex flex-col gap-y-3 text-left lg:gap-y-1"
 		blockClasses={{
 			// Una frase per blocco e, da lg, una per riga: gli a capo li decide il senso, non
-			// la larghezza del contenitore. Sotto lg le frasi vanno a capo normalmente.
-			paragraph: 'text-base text-pretty text-gray-300 sm:text-lg lg:text-xl lg:whitespace-nowrap'
+			// la larghezza del contenitore. Il corpo cresce con il titolo (da xl a 2xl), così
+			// il rapporto fra i due resta costante invece di schiacciare il testo in nota.
+			paragraph:
+				'text-lg leading-snug text-pretty text-gray-300 sm:text-xl lg:whitespace-nowrap xl:text-2xl 2xl:text-[1.75rem]'
 		}}
 	/>
 
