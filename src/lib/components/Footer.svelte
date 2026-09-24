@@ -22,7 +22,10 @@
 </script>
 
 <footer class="mt-12 border-t border-line-1">
-	<div class="mx-auto w-full max-w-screen-2xl px-4 py-12 sm:px-8 lg:px-14">
+	<!-- Sotto lg il dock flottante (accento a sinistra, torna su a destra) occupa gli
+	     ultimi 60px dello schermo: il footer si ferma prima, così i suoi tasti restano
+	     raggiungibili a pagina finita. -->
+	<div class="mx-auto w-full max-w-screen-2xl px-4 pt-12 pb-24 sm:px-8 lg:px-14 lg:pb-12">
 		<div class="flex flex-col justify-between gap-10 md:flex-row">
 			<!-- Brand -->
 			<div class="flex flex-col gap-3">

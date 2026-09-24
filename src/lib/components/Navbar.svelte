@@ -58,16 +58,18 @@
 			{/each}
 		</div>
 
-		<!-- Hamburger: stessa cella (px + py) della X nell'overlay, così aprendo non salta. -->
-		<div class="flex h-10 w-10 items-center justify-center lg:hidden">
+		<!-- Hamburger: lo stesso tasto del dock flottante e della X nell'overlay, nella
+		     stessa cella, così aprendo non salta. -->
+		<div class="flex h-11 w-11 items-center justify-center lg:hidden">
 			{#if !menuOpen}
 				<button
 					transition:fade={{ duration: 150 }}
 					onclick={handleMenuClick}
 					aria-label="Menu"
 					aria-expanded="false"
+					class="key key--icon"
 				>
-					<Menu class="h-7 w-7" />
+					<Menu class="h-5 w-5" />
 				</button>
 			{/if}
 		</div>
@@ -97,12 +99,8 @@
 					>
 						<Logo />
 					</a>
-					<button
-						onclick={handleMenuClick}
-						aria-label="Chiudi menu"
-						class="flex h-10 w-10 items-center justify-center text-gray-300 transition-colors hover:text-white"
-					>
-						<X class="h-7 w-7" />
+					<button onclick={handleMenuClick} aria-label="Chiudi menu" class="key key--icon">
+						<X class="h-5 w-5" />
 					</button>
 				</div>
 

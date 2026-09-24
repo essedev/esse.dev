@@ -345,11 +345,11 @@
 			onclick={() => (menuOpen = true)}
 			aria-label="Menu"
 			aria-expanded="false"
-			class="fixed top-4 right-4 z-50 flex h-11 w-11 cursor-pointer items-center justify-center rounded-sm border border-accent/30 bg-accent/[0.08] backdrop-blur-md transition-colors duration-200 hover:border-accent hover:bg-accent/15 lg:hidden"
+			class="key key--icon key--float fixed top-6 right-4 z-50 lg:hidden"
 			in:fly={{ y: -10, duration: 300 }}
 			out:fly={{ y: -10, duration: 200 }}
 		>
-			<Menu class="h-6 w-6 text-accent" />
+			<Menu class="h-5 w-5" />
 		</button>
 	{/if}
 

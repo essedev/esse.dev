@@ -75,37 +75,59 @@
 		setVars(theme.accent, theme.soft);
 	}
 
+	let activeIndex = $derived(
+		Math.max(
+			0,
+			ACCENT_THEMES.findIndex((t) => t.id === active)
+		)
+	);
+	let activeTheme = $derived(ACCENT_THEMES[activeIndex]);
+	let nextTheme = $derived(ACCENT_THEMES[(activeIndex + 1) % ACCENT_THEMES.length]);
+
+	const name = (t: AccentTheme) => (lang === 'en' ? t.en : t.it);
 	let labelPrefix = $derived(lang === 'en' ? 'Accent' : 'Accento');
-	let activeIndex = $derived(ACCENT_THEMES.findIndex((t) => t.id === active));
+	// Il tasto mobile cicla: dice cos'è acceso ora e cosa succede al tocco.
+	let cycleLabel = $derived(
+		lang === 'en'
+			? `Accent: ${name(activeTheme)}. Switch to ${name(nextTheme)}`
+			: `Accento: ${name(activeTheme)}. Passa a ${name(nextTheme)}`
+	);
 </script>
 
-<!-- Sotto lg resta il pill flottante con l'anello che scivola. Da lg in su il picker
-     scende nel rail sinistro del telaio: i colori diventano LED (spenti finche' non
-     sono attivi) e l'indicatore si riduce a una tacca in accento sul bordo esterno,
-     che e' il linguaggio dei rail. -->
+<!-- Sotto lg: un tasto solo nel dock, con il LED del colore acceso; ogni tocco passa al
+     colore successivo. Stessa forma del menu e del torna su, così i tre flottanti sono
+     lo stesso oggetto. Da lg il picker scende nel rail sinistro del telaio: i colori
+     diventano LED (spenti finché non sono attivi) e l'indicatore si riduce a una tacca
+     in accento sul bordo esterno, che è il linguaggio dei rail. -->
+<button
+	type="button"
+	onclick={() => select(nextTheme)}
+	aria-label={cycleLabel}
+	class="key key--icon key--float fixed bottom-4 left-4 z-50 lg:hidden"
+>
+	<span
+		class="block h-3 w-3 rounded-full bg-accent shadow-[0_0_10px] shadow-accent/70"
+		aria-hidden="true"
+	></span>
+</button>
+
 <div
-	class="fixed bottom-6 left-6 z-50 flex items-center gap-1.5 rounded-sm border border-accent/30 bg-accent/[0.08] p-1.5 backdrop-blur-md lg:bottom-[calc(var(--chassis-gutter)+1rem)] lg:left-0 lg:w-[var(--chassis-gutter)] lg:flex-col lg:gap-0 lg:rounded-none lg:border-0 lg:bg-transparent lg:p-0 lg:backdrop-blur-none"
+	class="fixed bottom-[calc(var(--chassis-gutter)+1rem)] left-0 z-50 hidden w-[var(--chassis-gutter)] flex-col items-center lg:flex"
 	role="group"
 	aria-label={labelPrefix}
 >
-	<!-- Anello scivolante del pill (passo in globals: .accent-indicator). -->
-	<span
-		class="accent-indicator pointer-events-none absolute top-1.5 left-1.5 h-5 w-5 rounded-sm ring-2 ring-white/80 ring-offset-2 ring-offset-black transition-transform duration-300 ease-out lg:hidden"
-		style="--accent-step: {activeIndex};"
-	></span>
 	<!-- Tacca del rail (passo = altezza di una cella). -->
-	<span class="rail-tick pointer-events-none hidden lg:block" style="--tick-step: {activeIndex};"
-	></span>
+	<span class="rail-tick pointer-events-none" style="--tick-step: {activeIndex};"></span>
 	{#each ACCENT_THEMES as theme (theme.id)}
 		<button
 			type="button"
 			onclick={() => select(theme)}
-			aria-label="{labelPrefix} {lang === 'en' ? theme.en : theme.it}"
+			aria-label="{labelPrefix} {name(theme)}"
 			aria-pressed={active === theme.id}
-			class="flex h-5 w-5 cursor-pointer items-center justify-center rounded-sm transition-transform hover:scale-110 lg:h-6 lg:w-6 lg:rounded-none lg:hover:scale-100"
+			class="flex h-6 w-6 cursor-pointer items-center justify-center"
 			style="--dot: {theme.accent};"
 		>
-			<span class="accent-dot block h-5 w-5 rounded-sm lg:h-2.5 lg:w-2.5 lg:rounded-full"></span>
+			<span class="accent-dot block h-2.5 w-2.5 rounded-full"></span>
 		</button>
 	{/each}
 </div>
