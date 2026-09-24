@@ -6,7 +6,10 @@
 	let { welcome }: WelcomeSectionProps = $props();
 </script>
 
-<div class="hero-enter relative flex flex-col items-start text-left">
+<!-- Il blocco si stringe sulla larghezza del titolo (inline-flex) e il paragrafo la
+     riempie senza allargarla (w-0 min-w-full): testo e titolo finiscono sulla stessa
+     verticale a ogni breakpoint, invece di un max-width fisso che non lo sa. -->
+<div class="hero-enter relative inline-flex max-w-full flex-col items-start text-left">
 	<p class="font-mono mb-6 flex items-center text-sm text-gray-400 sm:text-base">
 		<span>{welcome.eyebrow}</span>
 		<!-- Desktop: il marchio resta nel rail; rimuoverlo dalla cornice avrebbe indebolito
@@ -25,7 +28,7 @@
 
 	<ContentRenderer
 		content={welcome.description}
-		className="flex max-w-xl flex-col gap-y-4 text-left"
+		className="flex w-0 min-w-full flex-col gap-y-4 text-left"
 		blockClasses={{
 			paragraph: 'text-base text-gray-300 sm:text-lg lg:text-xl'
 		}}
