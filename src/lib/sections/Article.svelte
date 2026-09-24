@@ -50,15 +50,16 @@
 	</div>
 
 	{#if content && currentTranslation}
-		<article class="flex flex-col gap-y-8">
+		<!-- Stessa colonna di lettura del dettaglio progetto (48rem, a sinistra). -->
+		<article class="flex max-w-3xl flex-col gap-y-8">
 			<!-- Header with title and meta -->
 			<header use:reveal={{ delay: 60 }} class="reveal flex flex-col gap-y-4">
 				<h1 class="text-5xl font-normal sm:text-6xl 2xl:text-7xl">
 					{currentTranslation.title}
 				</h1>
 
-				<div class="flex flex-col gap-y-2 text-xl text-gray-400">
-					<div class="flex flex-wrap items-center gap-x-2">
+				<div class="flex flex-col gap-y-4">
+					<div class="label flex flex-wrap items-center gap-x-2 text-gray-500">
 						<time datetime={content.meta.published_date}>
 							{formatDate(content.meta.published_date, currentLang)}
 						</time>
@@ -75,7 +76,7 @@
 					</div>
 
 					{#if currentTranslation.excerpt}
-						<p class="text-2xl text-gray-300 italic">
+						<p class="text-xl leading-snug text-gray-300 sm:text-2xl">
 							{currentTranslation.excerpt}
 						</p>
 					{/if}
@@ -111,7 +112,7 @@
 			<!-- Content -->
 			{#if currentTranslation.content}
 				<div use:reveal={{ delay: 150 }} class="reveal">
-					<ContentRenderer content={currentTranslation.content} className="max-w-none" />
+					<ContentRenderer content={currentTranslation.content} />
 				</div>
 			{/if}
 		</article>

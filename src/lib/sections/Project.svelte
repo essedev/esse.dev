@@ -34,7 +34,10 @@
 	</div>
 
 	{#if content && currentTranslation}
-		<article class="flex flex-col gap-y-8">
+		<!-- Colonna di lettura: titolo, sommario, immagine e corpo stanno in 48rem, allineati a
+	     sinistra come tutto il sito. Una riga da 1300px non si legge, e l'immagine 16:9 a
+	     tutta larghezza era un muro. -->
+		<article class="flex max-w-3xl flex-col gap-y-8">
 			<header use:reveal={{ delay: 60 }} class="reveal flex flex-col gap-y-6">
 				{#if content.meta.status}
 					<StatusBadge status={content.meta.status} {global} class="self-start" />
@@ -45,9 +48,7 @@
 				</h2>
 
 				{#if currentTranslation.excerpt}
-					<div class="text-2xl italic">
-						<p>{currentTranslation.excerpt}</p>
-					</div>
+					<p class="text-xl leading-snug text-gray-300 sm:text-2xl">{currentTranslation.excerpt}</p>
 				{/if}
 
 				{#if content.meta.link}

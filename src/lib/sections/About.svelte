@@ -15,7 +15,8 @@
 			content={about.description}
 			className="flex flex-col gap-y-4 lg:gap-y-6 2xl:gap-y-8"
 			blockClasses={{
-				paragraph: 'text-xl sm:text-2xl lg:text-[1.7rem] 2xl:text-3xl'
+				// Cap di lettura in ch: segue il corpo, così a ogni taglia la riga resta sui 65 caratteri.
+				paragraph: 'max-w-prose text-xl sm:text-2xl lg:text-[1.7rem] 2xl:text-3xl'
 			}}
 		/>
 	</div>

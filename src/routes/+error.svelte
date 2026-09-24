@@ -48,12 +48,8 @@
 <div class="flex min-h-[80vh] flex-col items-center justify-center text-center">
 	<h1 class="font-mono text-7xl font-medium text-accent sm:text-8xl">{page.status}</h1>
 	<p class="mt-4 font-mono text-xl text-gray-400 sm:text-2xl">{notFoundText}</p>
-	<a
-		data-sveltekit-reload
-		href={homeUrl}
-		class="group mt-8 flex items-center gap-x-1.5 font-mono text-sm text-gray-400 transition-colors hover:text-accent"
-	>
-		<ChevronLeft class="h-4 w-4 transition-transform group-hover:-translate-x-0.5" />
+	<a data-sveltekit-reload href={homeUrl} class="key key--ghost mt-8 pl-2.5">
+		<ChevronLeft class="h-4 w-4" />
 		{backHomeText}
 	</a>
 </div>

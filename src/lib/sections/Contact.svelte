@@ -18,7 +18,7 @@
 <div class="flex w-full flex-col justify-between gap-y-14 tracking-tight sm:gap-y-24">
 	<div class="flex flex-col gap-y-4 sm:gap-y-6">
 		<SectionHeader {index} title={contact.title} level="h3" />
-		<p use:reveal class="reveal text-xl sm:text-2xl md:text-[1.7rem] xl:text-3xl">
+		<p use:reveal class="reveal max-w-prose text-xl sm:text-2xl md:text-[1.7rem] xl:text-3xl">
 			{contact.subtitle}
 		</p>
 	</div>
