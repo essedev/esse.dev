@@ -2,6 +2,7 @@
 	import type { ContactSectionProps } from '$lib/types';
 	import { reveal } from '$lib/actions/reveal';
 	import SectionHeader from '$lib/components/SectionHeader.svelte';
+	import { ArrowUpRight } from '@lucide/svelte';
 
 	let { contact, index }: ContactSectionProps = $props();
 
@@ -50,9 +51,10 @@
 						{...external(link.link)}
 					>
 						{link.name}
-						<span class="text-gray-600 transition-colors group-hover:text-accent" aria-hidden="true"
-							>&nearr;</span
-						>
+						<ArrowUpRight
+							class="h-3.5 w-3.5 text-gray-600 transition-colors group-hover:text-accent"
+							aria-hidden="true"
+						/>
 					</a>
 				{/each}
 			</div>

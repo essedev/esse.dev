@@ -128,8 +128,8 @@
 	{:else}
 		<!-- No results found or no articles at all -->
 		<div class="flex flex-col items-center gap-4 py-16 text-center">
-			<FileText class="h-16 w-16 text-white/20" />
-			<div class="text-white/60">
+			<FileText class="h-16 w-16 text-gray-700" />
+			<div class="text-gray-400">
 				{#if activeFilters && (activeFilters.query || activeFilters.selectedTags.length > 0 || activeFilters.dateRange.from || activeFilters.dateRange.to)}
 					<p class="text-lg">{t.noResultsFound}</p>
 					<p class="mt-2 text-sm">{t.tryAdjusting}</p>

@@ -105,18 +105,16 @@
 			{#each filteredTags as tag (tag)}
 				<button
 					onclick={() => handleTagSelect(tag)}
-					class="flex w-full cursor-pointer items-center gap-2 rounded-sm px-3 py-2 text-left text-white/80 transition-colors {isTagSelected(
+					class="flex w-full cursor-pointer items-center gap-2 rounded-sm px-3 py-2 text-left text-gray-300 transition-colors {isTagSelected(
 						tag
 					)
-						? 'bg-white/15'
-						: 'hover:bg-white/10 active:bg-white/15'}"
+						? 'bg-surface-2 text-white'
+						: 'hover:bg-surface-2'}"
 				>
 					<div
-						class="flex h-4 w-4 items-center justify-center rounded-[3px] border border-line-2 {isTagSelected(
-							tag
-						)
-							? 'bg-white/15'
-							: ''}"
+						class="flex h-4 w-4 items-center justify-center rounded-[3px] border {isTagSelected(tag)
+							? 'border-accent bg-accent text-[#041018]'
+							: 'border-line-2'}"
 					>
 						{#if isTagSelected(tag)}
 							<Check class="h-3 w-3" />

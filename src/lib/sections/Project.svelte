@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { base } from '$app/paths';
 	import BackLink from '$lib/components/BackLink.svelte';
-	import OptimizedImage from '$lib/components/OptimizedImage.svelte';
 	import StatusBadge from '$lib/components/StatusBadge.svelte';
 	import ContentRenderer from '$lib/components/ui/ContentRenderer.svelte';
 	import type { ProjectSectionProps } from '$lib/types';
@@ -78,17 +77,8 @@
 				{/if}
 			</header>
 
-			{#if content.meta.featured_image || content.meta.featuredImagePlaceholder}
-				<div use:reveal={{ delay: 110 }} class="reveal w-full">
-					<OptimizedImage
-						src={content.meta.featured_image}
-						alt={currentTranslation.title}
-						className="panel aspect-video"
-						showPlaceholder={Boolean(content.meta.featuredImagePlaceholder)}
-						sizes="100vw"
-					/>
-				</div>
-			{/if}
+			<!-- Niente immagine hero: non esistono ancora immagini vere e un placeholder da 48rem
+			     è solo un muro. Quando arriveranno, il blocco torna qui con OptimizedImage. -->
 
 			{#if currentTranslation.content}
 				<div use:reveal={{ delay: 150 }} class="reveal">

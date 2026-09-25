@@ -2,7 +2,6 @@
 	import { base } from '$app/paths';
 	import ArticleCard from '$lib/components/ArticleCard.svelte';
 	import BackLink from '$lib/components/BackLink.svelte';
-	import OptimizedImage from '$lib/components/OptimizedImage.svelte';
 	import ContentRenderer from '$lib/components/ui/ContentRenderer.svelte';
 	import type { ArticleSectionProps } from '$lib/types';
 	import { getTranslation, translateTags } from '$lib/utils/translations';
@@ -97,17 +96,8 @@
 			</header>
 
 			<!-- Featured image if available -->
-			{#if content.meta.featured_image || content.meta.featuredImagePlaceholder}
-				<div use:reveal={{ delay: 110 }} class="reveal w-full">
-					<OptimizedImage
-						src={content.meta.featured_image}
-						alt={currentTranslation.title}
-						className="panel aspect-video"
-						showPlaceholder={Boolean(content.meta.featuredImagePlaceholder)}
-						sizes="100vw"
-					/>
-				</div>
-			{/if}
+			<!-- Niente immagine hero: non esistono ancora immagini vere e un placeholder da 48rem
+			     è solo un muro. Quando arriveranno, il blocco torna qui con OptimizedImage. -->
 
 			<!-- Content -->
 			{#if currentTranslation.content}

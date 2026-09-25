@@ -90,7 +90,7 @@
 	>
 		<div class="space-y-4 p-4" bind:this={dropdownContentElement} tabindex="-1">
 			<div class="space-y-2">
-				<label for="date-from" class="block text-sm text-white/70">{t.from}</label>
+				<label for="date-from" class="label block text-gray-400">{t.from}</label>
 				<input
 					id="date-from"
 					type="date"
@@ -100,7 +100,7 @@
 				/>
 			</div>
 			<div class="space-y-2">
-				<label for="date-to" class="block text-sm text-white/70">{t.to}</label>
+				<label for="date-to" class="label block text-gray-400">{t.to}</label>
 				<input
 					id="date-to"
 					type="date"

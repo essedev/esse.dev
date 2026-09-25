@@ -2,7 +2,8 @@
 	import { reveal } from '$lib/actions/reveal';
 
 	// Header strumentale di sezione: indice numerato, righello che riempie, readout a
-	// destra. L'indice è lo stesso che il rail sinistro del telaio mostra scorrendo,
+	// destra. Il titolo è in mono come l'hero e la nav: è un'etichetta dello strumento,
+	// non contenuto (i titoli di card e dettaglio restano in sans). L'indice è lo stesso che il rail sinistro del telaio mostra scorrendo,
 	// così cornice e contenuto parlano la stessa lingua. Il readout compare solo dove
 	// c'è un dato vero da mostrare: una riga inventata varrebbe meno del vuoto.
 	let {
@@ -23,7 +24,7 @@
 	</div>
 	<svelte:element
 		this={level}
-		class="text-[2.5rem] leading-none font-normal sm:text-5xl md:text-6xl 2xl:text-7xl"
+		class="font-mono text-[2rem] leading-[1.1] font-medium tracking-tight sm:text-[2.75rem] md:text-[3.25rem] 2xl:text-[3.75rem]"
 	>
 		{title}
 	</svelte:element>

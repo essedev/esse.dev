@@ -40,12 +40,12 @@
 	<span
 		class="relative inline-flex h-4 w-7 items-center rounded-[4px] border px-[2px] transition-colors duration-200 {enabled
 			? 'border-accent/50 bg-accent/20'
-			: 'border-white/15 bg-white/5'}"
+			: 'border-line-2 bg-surface-2'}"
 	>
 		<span
 			class="motion-thumb h-2.5 w-2.5 rounded-[2px] transition-all duration-300 ease-[cubic-bezier(0.34,1.45,0.6,1)] {enabled
 				? 'translate-x-[0.7rem] bg-accent shadow-[0_0_6px] shadow-accent/70'
-				: 'translate-x-0 bg-white/40'}"
+				: 'translate-x-0 bg-gray-500'}"
 		></span>
 	</span>
 </button>

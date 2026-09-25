@@ -6,8 +6,8 @@
 
 	// Badge di stato del progetto. Unica fonte di stile + etichetta, condivisa da
 	// card (listing) e pagina di dettaglio. `class` permette al chiamante di
-	// posizionarlo. Stile "riga di sistema": dot + label mono uppercase nel colore
-	// dello stato. 'idea'/Esplorazione usa l'accento azzurro del brand.
+	// posizionarlo. Stile "riga di sistema": LED nel colore dello stato + label mono
+	// uppercase neutra. 'idea' usa l'accento del brand.
 	let {
 		status,
 		global,
@@ -30,7 +30,13 @@
 	let label = $derived(getTranslation(global, STATUS_KEY[status]));
 </script>
 
-<span class="label inline-flex items-center gap-1.5 {STATUS_STYLE[status]} {className}">
-	<span class="h-[7px] w-[7px] rounded-[1px] bg-current"></span>
+<!-- LED colorato, etichetta neutra: il colore dice lo stato, il testo resta nella
+     scala di grigi come ogni altra etichetta. -->
+<span class="label inline-flex items-center gap-2 text-gray-300 {className}">
+	<span
+		class="h-[7px] w-[7px] rounded-[1px] bg-current shadow-[0_0_6px_currentColor] {STATUS_STYLE[
+			status
+		]}"
+	></span>
 	{label}
 </span>

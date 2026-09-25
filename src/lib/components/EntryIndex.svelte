@@ -13,6 +13,7 @@
 <script lang="ts">
 	import { base } from '$app/paths';
 	import { reveal } from '$lib/actions/reveal';
+	import { ArrowRight } from '@lucide/svelte';
 
 	// Indice a pannello: una riga per voce (dato, titolo e una frase, stack) dentro un
 	// pannello dello stesso materiale delle card (bordo, fondo, raggio). È la densità bassa
@@ -64,7 +65,7 @@
 						{entry.meta}
 					</span>
 					<span
-						class="col-start-1 min-w-0 text-base text-gray-200 transition-colors group-hover:text-white sm:text-lg md:col-start-2 md:row-start-1 {wideMeta
+						class="col-start-1 min-w-0 text-base font-medium text-gray-100 transition-colors group-hover:text-white sm:text-lg md:col-start-2 md:row-start-1 {wideMeta
 							? 'col-span-2 row-start-2 md:col-span-1'
 							: 'row-start-1'}"
 					>
@@ -77,18 +78,22 @@
 					>
 						{entry.excerpt}
 					</span>
-					<!-- Stack su una riga sola, troncata: i tag tradotti possono essere lunghi e un
-					     pannello che va a capo per un'etichetta perde il ritmo della tabella. -->
+					<!-- Stack come chip, le stesse delle card: due al massimo, su una riga, si
+					     stringono con l'ellissi. -->
 					<span
-						class="label hidden truncate text-right text-gray-500 md:col-start-3 md:row-start-1 md:block"
+						class="hidden min-w-0 justify-end gap-1.5 md:col-start-3 md:row-start-1 md:flex"
 						title={(entry.tags ?? []).join(' · ')}
 					>
-						{(entry.tags ?? []).slice(0, 2).join(' · ')}
+						{#each (entry.tags ?? []).slice(0, 2) as tag (tag)}
+							<span class="chip">{tag}</span>
+						{/each}
 					</span>
 					<span
-						class="hidden text-right font-mono text-sm text-gray-600 transition-all duration-200 group-hover:translate-x-0.5 group-hover:text-accent md:col-start-4 md:row-start-1 md:block"
-						aria-hidden="true">&rarr;</span
+						class="hidden text-gray-600 transition-all duration-200 group-hover:translate-x-0.5 group-hover:text-accent md:col-start-4 md:row-start-1 md:flex md:justify-end md:self-center"
+						aria-hidden="true"
 					>
+						<ArrowRight class="h-3.5 w-3.5" />
+					</span>
 				</a>
 			</li>
 		{/each}

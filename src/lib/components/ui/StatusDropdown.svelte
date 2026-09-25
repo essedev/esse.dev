@@ -97,18 +97,18 @@
 			{#each availableStatuses as status (status)}
 				<button
 					onclick={() => handleStatusSelect(status)}
-					class="flex w-full cursor-pointer items-center gap-2 rounded-sm px-3 py-2 text-left text-white/80 transition-colors {selectedStatuses.includes(
+					class="flex w-full cursor-pointer items-center gap-2 rounded-sm px-3 py-2 text-left text-gray-300 transition-colors {selectedStatuses.includes(
 						status
 					)
-						? 'bg-white/15'
-						: 'hover:bg-white/10 active:bg-white/15'}"
+						? 'bg-surface-2 text-white'
+						: 'hover:bg-surface-2'}"
 				>
 					<div
-						class="flex h-4 w-4 items-center justify-center rounded-[3px] border border-line-2 {selectedStatuses.includes(
+						class="flex h-4 w-4 items-center justify-center rounded-[3px] border {selectedStatuses.includes(
 							status
 						)
-							? 'bg-white/15'
-							: ''}"
+							? 'border-accent bg-accent text-[#041018]'
+							: 'border-line-2'}"
 					>
 						{#if selectedStatuses.includes(status)}
 							<Check class="h-3 w-3" />
