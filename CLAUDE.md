@@ -60,8 +60,14 @@ deploy avviene via Cloudflare Workers Builds al push, il gate di qualità è loc
 Rebrand visivo in corso sul branch `restyle/laboratory` (non ancora mergiato). Vision
 e decisioni in `docs/RESTYLE.md`, log in `docs/CYCLES.md` (Ciclo 9). In sintesi:
 
-- Font: **Martian Mono** (titoli, etichette, numeri) + **IBM Plex Sans** (body), via
-  Google Fonts in `app.html`.
+- Font: **Martian Mono** per lo strumento (hero, nav, titoli di sezione, etichette,
+  tasti, readout) + **IBM Plex Sans** per il contenuto (titoli di card, indice e
+  dettaglio, prosa), via Google Fonts in `app.html`. Il mono ha due registri: minuscolo
+  per il testo "battuto" (nav, tagline, eyebrow), maiuscolo con tracking per le
+  etichette macchina (`.label`, tasti, rail). Pesi: display 400/500, titoli di
+  elemento 500, prosa 300 (dal body). I grigi `gray-*` sono rimappati su neutral nel
+  `@theme`: mai `text-white/NN` per il testo. Icone solo Lucide, niente frecce
+  Unicode. Lo stato è un LED colorato con etichetta neutra (`StatusBadge`).
 - Accento e arrotondamento da token nel `@theme` (`src/lib/styles/globals.css`):
   `--color-accent` (default azzurro `#2cc3f7`) + `--radius-sm/md/lg/xl`. **L'accento
   vive in un punto solo:** glow e ombre lo derivano via `color-mix(var(--color-accent))`,
@@ -107,8 +113,10 @@ e decisioni in `docs/RESTYLE.md`, log in `docs/CYCLES.md` (Ciclo 9). In sintesi:
 - `SectionHeader.svelte`: indice numerato + filo + readout dai dati della sezione. Il
   readout si passa solo se un dato reale lo sostiene, mai un conteggio di cortesia.
 - Prosa e pagine di dettaglio: i paragrafi di About e Contatti hanno `max-w-prose`,
-  progetto e articolo sono una colonna `max-w-3xl` allineata a sinistra. Niente testo
-  a tutta larghezza su desktop.
+  progetto e articolo sono una colonna `max-w-3xl` allineata a sinistra, senza
+  immagine hero finché non esistono immagini vere (`src/lib/assets/images` è vuota).
+  Il placeholder di `OptimizedImage` è uno schermo spento con griglia, bagliore
+  d'accento ed etichetta, non una lastra grigia.
 - Shortcut tastiera (`+layout.svelte`): `1-4` -> sezioni, `0`/`Home` -> top,
   `End` -> fondo.
 

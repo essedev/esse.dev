@@ -593,6 +593,15 @@ diversi per i tre controlli flottanti di mobile, testo a 1300px su desktop.
   hero); excerpt in tondo, meta dell'articolo come etichetta, link del 404 a tasto.
 - **Cornice:** i rail passano alla taglia `text-tele` unica e al bordo `line-2` dei
   pannelli, senza cambiare disegno.
+- **Desktop, seconda passata:** il "mix" restante era di ruoli, non di misure. Titoli
+  di sezione in Martian Mono medium come hero e nav (lo strumento), sans solo per il
+  contenuto; grigi rimappati su neutral nel `@theme` (la scala gray di Tailwind è
+  bluastra e stonava con accento arancione o viola) e via ogni `text-white/NN`;
+  titoli di card e indice allo stesso peso (500); tag come chip anche nell'indice;
+  stato come LED colorato con etichetta neutra; frecce Lucide al posto di quelle
+  Unicode. Il placeholder delle immagini è uno schermo spento (griglia, bagliore
+  d'accento, etichetta) e le pagine di dettaglio non mostrano più l'immagine hero:
+  `src/lib/assets/images` è vuota, il blocco torna quando ci saranno immagini vere.
 - Gate a fine giro: lint, check 0 errori, build, 196 unit, 32 e2e.
 
 ### Cosa resta
