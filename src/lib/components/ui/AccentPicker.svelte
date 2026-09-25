@@ -96,9 +96,8 @@
 
 <!-- Sotto lg: un tasto solo nel dock, con il LED del colore acceso; ogni tocco passa al
      colore successivo. Stessa forma del menu e del torna su, così i tre flottanti sono
-     lo stesso oggetto. Da lg il picker scende nel rail sinistro del telaio: i colori
-     diventano LED (spenti finché non sono attivi) e l'indicatore si riduce a una tacca
-     in accento sul bordo esterno, che è il linguaggio dei rail. -->
+     lo stesso oggetto. Da lg il picker scende nel rail sinistro del telaio: tre keycap
+     da 26px con un LED dentro, acceso solo quello premuto. -->
 <button
 	type="button"
 	onclick={() => select(nextTheme)}
@@ -112,22 +111,20 @@
 </button>
 
 <div
-	class="fixed bottom-[calc(var(--chassis-gutter)+1rem)] left-0 z-50 hidden w-[var(--chassis-gutter)] flex-col items-center lg:flex"
+	class="fixed bottom-[calc(var(--chassis-gutter)+1rem)] left-0 z-50 hidden w-[var(--chassis-gutter)] flex-col items-center gap-1.5 lg:flex"
 	role="group"
 	aria-label={labelPrefix}
 >
-	<!-- Tacca del rail (passo = altezza di una cella). -->
-	<span class="rail-tick pointer-events-none" style="--tick-step: {activeIndex};"></span>
 	{#each ACCENT_THEMES as theme (theme.id)}
 		<button
 			type="button"
 			onclick={() => select(theme)}
 			aria-label="{labelPrefix} {name(theme)}"
 			aria-pressed={active === theme.id}
-			class="flex h-6 w-6 cursor-pointer items-center justify-center"
+			class="key key--led h-[26px] w-[26px] justify-center p-0"
 			style="--dot: {theme.accent};"
 		>
-			<span class="accent-dot block h-2.5 w-2.5 rounded-full"></span>
+			<span class="accent-dot block h-2 w-2 rounded-full"></span>
 		</button>
 	{/each}
 </div>

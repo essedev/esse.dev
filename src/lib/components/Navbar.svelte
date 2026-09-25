@@ -26,10 +26,12 @@
 </script>
 
 <!-- Desktop: quattro celle danno peso alla navigazione senza aggiungere una seconda
-     superficie; il semplice aumento dei link avrebbe lasciato la barra otticamente vuota. -->
+     superficie; il semplice aumento dei link avrebbe lasciato la barra otticamente vuota.
+     Da lg la barra è una fascia con la faccia della scocca, agganciata al telaio: le
+     celle restano legende piatte, i link sono un menu e non tasti. -->
 <header
 	id="top"
-	class="border-b border-line-1 lg:fixed lg:top-[var(--chassis-gutter)] lg:right-[var(--chassis-gutter)] lg:left-[var(--chassis-gutter)] lg:rounded-t-[var(--radius-md)] lg:z-40 lg:h-[var(--chassis-nav-h)] lg:bg-[#0c0c0c]/85 lg:backdrop-blur-md"
+	class="border-b border-line-1 lg:fixed lg:top-[var(--chassis-gutter)] lg:right-[var(--chassis-gutter)] lg:left-[var(--chassis-gutter)] lg:rounded-t-[var(--radius-md)] lg:z-40 lg:h-[var(--chassis-nav-h)] lg:nav-shell"
 >
 	<nav
 		class="mx-auto flex w-full max-w-screen-2xl items-center justify-between px-4 py-6 sm:px-8 lg:h-full lg:w-[90vw] lg:px-14 lg:py-0"

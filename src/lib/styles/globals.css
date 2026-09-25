@@ -169,11 +169,12 @@ body::after {
 }
 
 /* Ritaglia tutto (sfondo e contenuto in scorrimento) sull'area dello schermo: la
-   gutter resta nero pieno. Sopra il contenuto, sotto i rail e i controlli flottanti. */
+   gutter è la scocca del dispositivo, stessa faccia delle card. Sopra il contenuto,
+   sotto i rail e i controlli flottanti. */
 .chassis-matte {
 	inset: 0;
 	z-index: 20;
-	border: var(--chassis-gutter) solid #0c0c0c;
+	border: var(--chassis-gutter) solid #131313;
 	/* Il raggio interno di un bordo e' raggio esterno meno spessore: cosi' l'angolo
 	   della matte combacia con quello della cornice e il contenuto non sbuca fuori
 	   dall'arrotondamento mentre scorre. All'esterno non si vede, il body e' dello
@@ -184,16 +185,21 @@ body::after {
 .chassis-frame {
 	inset: var(--chassis-gutter);
 	z-index: 45;
-	border: 1px solid var(--color-line-2);
+	border: 1px solid #000;
 	border-radius: var(--radius-md);
-	/* Vignetta CRT: il vetro scurisce verso il bordo. Sta sul frame perché il frame è già
-	   sopra il contenuto e ha gli angoli dello schermo; sotto lg il frame non c'è e nemmeno
-	   la vignetta, che senza cornice sembrerebbe solo sporco. */
-	box-shadow: inset 0 0 90px rgb(0 0 0 / 0.5);
+	/* Lo schermo è incassato nella scocca come quello delle card: seam nero, ombra verso
+	   dentro dall'alto, vignetta CRT (il vetro scurisce verso il bordo). Sta sul frame
+	   perché il frame è già sopra il contenuto e ha gli angoli dello schermo; sotto lg
+	   il frame non c'è e nemmeno la vignetta, che senza cornice sembrerebbe solo sporco. */
+	box-shadow:
+		inset 0 3px 10px rgb(0 0 0 / 0.9),
+		inset 0 0 90px rgb(0 0 0 / 0.5),
+		0 0 0 1px rgb(255 255 255 / 0.05);
 }
 
 .chassis-rail {
-	z-index: 30;
+	/* Sopra il frame: i readout stanno sulla scocca, non sotto la sua ombra. */
+	z-index: 46;
 	display: flex;
 	align-items: center;
 	color: #5a5a5a;
@@ -271,6 +277,13 @@ body::after {
 	font-size: var(--text-tele);
 }
 
+/* Fascia della navbar da lg: la faccia della scocca, agganciata al telaio. Utility
+   così accetta la variante lg:. */
+@utility nav-shell {
+	background: var(--shell);
+	box-shadow: var(--shell-edge), var(--shell-top);
+}
+
 /* Nel rail i colori sono LED: spenti finché non sono attivi, così il gruppo legge
    come un controllo solo invece di tre quadrati colorati che gridano. */
 .accent-dot {
@@ -288,22 +301,6 @@ button:hover > .accent-dot {
 button[aria-pressed='true'] > .accent-dot {
 	opacity: 1;
 	box-shadow: 0 0 9px var(--dot);
-}
-
-/* Tacca che marca la cella attiva sul bordo esterno del rail. La usano sia i LED
-   dell'accento sia la coppia di lingue: stesso indice, stessa grammatica. */
-.rail-tick {
-	position: absolute;
-	top: 0;
-	/* Staccata dal bordo viewport: a left 0 spariva contro il margine dello schermo. */
-	left: 4px;
-	width: 3px;
-	height: 1.5rem;
-	border-radius: 2px;
-	background-color: var(--color-accent);
-	box-shadow: 0 0 8px color-mix(in srgb, var(--color-accent) 55%, transparent);
-	transform: translateY(calc(var(--tick-step) * 1.5rem));
-	transition: transform 0.3s var(--ease-out-expo);
 }
 
 /* Classe utility per overlay fullscreen */
@@ -550,6 +547,15 @@ button[aria-pressed='true'] > .accent-dot {
 		height: 2.75rem;
 		padding: 0;
 		justify-content: center;
+	}
+	/* Tasto con un LED dentro (colori dell'accento nel rail): premuto non si riempie
+	   d'accento, resta scuro e accende il LED, che porta il suo colore in --dot. */
+	.key--led[aria-pressed='true'] {
+		border-color: color-mix(in srgb, var(--dot) 55%, transparent);
+		background: var(--keycap);
+		box-shadow: var(--keycap-edge), var(--keycap-top);
+		color: inherit;
+		font-weight: 400;
 	}
 	/* Flottante sopra il contenuto: un'ombra in più lo stacca dalla pagina. */
 	.key--float {

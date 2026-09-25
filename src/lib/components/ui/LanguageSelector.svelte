@@ -24,7 +24,7 @@
 		});
 	}
 
-	// Posizione dell'indicatore che scivola sotto la lingua attiva.
+	// Posizione dell'indicatore che scivola sotto la lingua attiva (variante pill).
 	let activeIndex = $derived(
 		Math.max(
 			0,
@@ -34,20 +34,19 @@
 </script>
 
 {#if variant === 'rail'}
-	<!-- Variante telaio: due celle da 24px impilate nel rail sinistro, l'attiva in
-	     accento e l'altra in grigio pieno, con la tacca sul bordo esterno a fare da
-	     indice. Stessa grammatica dei LED dell'accento, cosi' i due gruppi leggono
-	     come una fila di interruttori sullo stesso fianco. L'inattiva resta a
-	     opacita' piena: a 9.5px una parola al 32% su nero non si legge. -->
+	<!-- Variante telaio: due keycap da 26px impilati nel rail sinistro, quello attivo
+	     premuto in accento. Stessa taglia e stesso passo dei LED dell'accento e del
+	     torna-su: il fianco del dispositivo è una fila di tasti fisici. -->
 	<div
-		class="relative flex w-[var(--chassis-gutter)] flex-col font-mono text-tele tracking-label"
+		class="flex w-[var(--chassis-gutter)] flex-col items-center gap-1.5"
 		role="group"
 		aria-label="Lingua"
 	>
-		<span class="rail-tick pointer-events-none" style="--tick-step: {activeIndex};"></span>
 		{#each languages as language (language.code)}
 			{#if language.code === selectedLanguage}
-				<span aria-current="true" class="flex h-6 items-center justify-center text-accent"
+				<span
+					aria-current="true"
+					class="key is-on h-[26px] w-[26px] justify-center p-0 text-tele tracking-label"
 					>{language.code.toUpperCase()}</span
 				>
 			{:else}
@@ -58,7 +57,7 @@
 						e.preventDefault();
 						goto(url, { noScroll: true });
 					}}
-					class="flex h-6 items-center justify-center text-gray-400 transition-colors hover:text-white"
+					class="key h-[26px] w-[26px] justify-center p-0 text-tele tracking-label"
 					>{language.code.toUpperCase()}</a
 				>
 			{/if}
