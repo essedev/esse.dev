@@ -145,6 +145,9 @@ body::after {
    contenuto, offset dei controlli flottanti) torna al valore di prima. */
 :root {
 	--chassis-gutter: 0px;
+	/* Raggio dello schermo: poco più dei keycap accanto (6px), così le curve del telaio
+	   e dei tasti parlano la stessa lingua. */
+	--radius-screen: 8px;
 	/* Altezza della barra dei link quando è fissata sotto il rail superiore. */
 	--chassis-nav-h: 0px;
 	/* Inizio della scala di scorrimento nel rail destro. E' un token perché ci si
@@ -175,18 +178,34 @@ body::after {
 	inset: 0;
 	z-index: 20;
 	border: var(--chassis-gutter) solid #131313;
-	/* Il raggio interno di un bordo e' raggio esterno meno spessore: cosi' l'angolo
-	   della matte combacia con quello della cornice e il contenuto non sbuca fuori
-	   dall'arrotondamento mentre scorre. All'esterno non si vede, il body e' dello
-	   stesso nero. */
-	border-radius: calc(var(--chassis-gutter) + var(--radius-md));
+	/* Il raggio interno di un bordo è raggio esterno meno spessore: così l'angolo della
+	   matte combacia con quello dello schermo e il contenuto non sbuca fuori mentre
+	   scorre. All'esterno la scocca resta squadrata contro il bordo della finestra: un
+	   angolo tondo lì disegnava una curva grigia sul nero, come un dispositivo tagliato.
+	   Si ottiene con un raggio esterno pari al bordo più quello dello schermo, e un
+	   pseudo-elemento che riempie solo i quattro angoli (non tutto: coprirebbe lo
+	   schermo). */
+	border-radius: calc(var(--chassis-gutter) + var(--radius-screen));
+}
+
+.chassis-matte::before {
+	content: '';
+	position: absolute;
+	inset: calc(-1 * var(--chassis-gutter));
+	z-index: -1;
+	--corner: linear-gradient(#131313 0 0);
+	background:
+		var(--corner) left top / var(--chassis-gutter) var(--chassis-gutter) no-repeat,
+		var(--corner) right top / var(--chassis-gutter) var(--chassis-gutter) no-repeat,
+		var(--corner) left bottom / var(--chassis-gutter) var(--chassis-gutter) no-repeat,
+		var(--corner) right bottom / var(--chassis-gutter) var(--chassis-gutter) no-repeat;
 }
 
 .chassis-frame {
 	inset: var(--chassis-gutter);
 	z-index: 45;
 	border: 1px solid #000;
-	border-radius: var(--radius-md);
+	border-radius: var(--radius-screen);
 	/* Lo schermo è incassato nella scocca come quello delle card: seam nero, ombra verso
 	   dentro dall'alto, vignetta CRT (il vetro scurisce verso il bordo). Sta sul frame
 	   perché il frame è già sopra il contenuto e ha gli angoli dello schermo; sotto lg
