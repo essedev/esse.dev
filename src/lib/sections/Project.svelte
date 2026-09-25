@@ -44,21 +44,21 @@
 		     su una misura di lettura. Lo schermo si usa tutto senza righe da 130 caratteri.
 		     Niente immagine hero finché non esistono immagini vere. -->
 		<article class="flex flex-col gap-y-10 lg:gap-y-14">
-			<header use:reveal={{ delay: 60 }} class="reveal flex max-w-5xl flex-col gap-y-5">
+			<header use:reveal={{ delay: 60 }} class="reveal flex flex-col gap-y-5">
 				<h2
 					class="font-mono text-4xl leading-[1.05] font-medium tracking-tight sm:text-5xl 2xl:text-6xl"
 				>
 					{currentTranslation.title}
 				</h2>
 				{#if currentTranslation.excerpt}
-					<p class="max-w-3xl text-xl leading-snug text-gray-300 sm:text-2xl">
+					<p class="text-xl leading-snug text-gray-300 sm:text-2xl">
 						{currentTranslation.excerpt}
 					</p>
 				{/if}
 			</header>
 
 			<div
-				class="grid gap-y-10 lg:grid-cols-[16rem_minmax(0,1fr)] lg:gap-x-16 xl:grid-cols-[18rem_minmax(0,1fr)]"
+				class="grid gap-y-10 lg:grid-cols-[16rem_minmax(0,1fr)] lg:gap-x-16 xl:grid-cols-[18rem_minmax(0,1fr)] 2xl:grid-cols-[22rem_minmax(0,1fr)] 2xl:gap-x-24"
 			>
 				<aside
 					use:reveal={{ delay: 100 }}
@@ -111,7 +111,7 @@
 				</aside>
 
 				{#if currentTranslation.content}
-					<div use:reveal={{ delay: 150 }} class="reveal min-w-0 max-w-[68ch]">
+					<div use:reveal={{ delay: 150 }} class="reveal min-w-0">
 						<ContentRenderer
 							content={currentTranslation.content}
 							className="flex flex-col gap-y-4"

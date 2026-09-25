@@ -125,7 +125,8 @@ e decisioni in `docs/RESTYLE.md`, log in `docs/CYCLES.md` (Ciclo 9). In sintesi:
 - Prosa e pagine di dettaglio: i paragrafi di About e Contatti hanno `max-w-prose`.
   Progetto e articolo: titolo (mono) e sommario a tutta larghezza, poi da `lg` due
   colonne, scheda tecnica sticky a sinistra (stato, anno, repo, stack; data, lettura,
-  tag) e corpo a destra su `max-w-[68ch]`. Niente immagine hero finché non esistono
+  tag) e corpo a destra a tutta colonna: la misura la governa la larghezza della
+  scheda, che cresce con lo schermo (16, 18, 22rem). Niente immagine hero finché non esistono
   immagini vere (`src/lib/assets/images` è vuota).
   Il placeholder di `OptimizedImage` è uno schermo spento con griglia, bagliore
   d'accento ed etichetta, non una lastra grigia.
