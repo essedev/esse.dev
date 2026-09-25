@@ -376,12 +376,12 @@ button[aria-pressed='true'] > .accent-dot {
 	--keycap: linear-gradient(#1c1c1c, #141414);
 	--keycap-edge: 0 2px 0 #000;
 	--keycap-top: inset 0 1px 0 rgb(255 255 255 / 0.06);
-	/* La scocca è un keycap più grande: stessa faccia a gradiente, bordo inferiore da
-	   3px e un'ombra morbida a terra, senza la quale sul nero il volume non si vede. */
+	/* La scocca è un keycap più grande: stessa faccia a gradiente, stesso bordo da 2px
+	   e un'ombra a terra leggera, senza la quale sul nero il volume non si vede. */
 	--shell: linear-gradient(#181818, #101010);
-	--shell-edge: 0 3px 0 #000;
+	--shell-edge: 0 2px 0 #000;
 	--shell-top: inset 0 1px 0 rgb(255 255 255 / 0.07);
-	--shell-ground: 0 14px 32px rgb(0 0 0 / 0.45);
+	--shell-ground: 0 6px 16px rgb(0 0 0 / 0.3);
 	--well: #0a0a0a;
 	--well-shadow: inset 0 1px 2px #000;
 }
@@ -407,12 +407,12 @@ button[aria-pressed='true'] > .accent-dot {
 }
 
 .panel--lift:hover {
-	transform: translateY(-3px);
+	transform: translateY(-2px);
 	border-color: color-mix(in srgb, var(--color-accent) 50%, transparent);
 	box-shadow:
-		0 6px 0 #000,
+		0 4px 0 #000,
 		var(--shell-top),
-		0 22px 40px rgb(0 0 0 / 0.5);
+		0 10px 22px rgb(0 0 0 / 0.35);
 }
 
 /* Schermo incassato nella scocca: cornice nera interna e ombra verso dentro, raggio
