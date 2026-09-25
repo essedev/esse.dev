@@ -49,67 +49,84 @@
 	</div>
 
 	{#if content && currentTranslation}
-		<!-- Stessa colonna di lettura del dettaglio progetto (48rem, a sinistra). -->
-		<article class="flex max-w-3xl flex-col gap-y-8">
-			<!-- Header with title and meta -->
-			<header use:reveal={{ delay: 60 }} class="reveal flex flex-col gap-y-4">
-				<h1 class="text-5xl font-normal sm:text-6xl 2xl:text-7xl">
+		<!-- Stesso impianto del dettaglio progetto: titolo e sommario a tutta larghezza, poi
+		     da lg due colonne con la scheda (data, lettura, tag) ferma a sinistra e il corpo
+		     su una misura di lettura a destra. Niente immagine hero finché non esistono
+		     immagini vere. -->
+		<article class="flex flex-col gap-y-10 lg:gap-y-14">
+			<header use:reveal={{ delay: 60 }} class="reveal flex max-w-5xl flex-col gap-y-5">
+				<h1
+					class="font-mono text-4xl leading-[1.05] font-medium tracking-tight sm:text-5xl 2xl:text-6xl"
+				>
 					{currentTranslation.title}
 				</h1>
-
-				<div class="flex flex-col gap-y-4">
-					<div class="label flex flex-wrap items-center gap-x-2 text-gray-500">
-						<time datetime={content.meta.published_date}>
-							{formatDate(content.meta.published_date, currentLang)}
-						</time>
-						{#if metrics.minutes > 0}
-							<span aria-hidden="true" class="text-gray-600">·</span>
-							<span>{metrics.minutes} min {currentLang === 'en' ? 'read' : 'di lettura'}</span>
-							<span aria-hidden="true" class="text-gray-600">·</span>
-							<span
-								title={currentLang === 'en' ? 'Estimated LLM context size' : 'Contesto LLM stimato'}
-							>
-								~{metrics.tokensLabel} token
-							</span>
-						{/if}
-					</div>
-
-					{#if currentTranslation.excerpt}
-						<p class="text-xl leading-snug text-gray-300 sm:text-2xl">
-							{currentTranslation.excerpt}
-						</p>
-					{/if}
-				</div>
-
-				{#if tagLinks.length > 0}
-					<div class="flex flex-wrap gap-1.5">
-						{#each tagLinks as tag (tag.raw)}
-							<a
-								href={`${base}/${currentLang}/${blogRoute}?tags=${encodeURIComponent(tag.raw)}`}
-								class="chip"
-							>
-								{tag.label}
-							</a>
-						{/each}
-					</div>
+				{#if currentTranslation.excerpt}
+					<p class="max-w-3xl text-xl leading-snug text-gray-300 sm:text-2xl">
+						{currentTranslation.excerpt}
+					</p>
 				{/if}
 			</header>
 
-			<!-- Featured image if available -->
-			<!-- Niente immagine hero: non esistono ancora immagini vere e un placeholder da 48rem
-			     è solo un muro. Quando arriveranno, il blocco torna qui con OptimizedImage. -->
+			<div
+				class="grid gap-y-10 lg:grid-cols-[16rem_minmax(0,1fr)] lg:gap-x-16 xl:grid-cols-[18rem_minmax(0,1fr)]"
+			>
+				<aside
+					use:reveal={{ delay: 100 }}
+					class="reveal flex flex-col gap-y-6 self-start lg:sticky lg:top-[calc(var(--chassis-gutter)+var(--chassis-nav-h)+2rem)]"
+				>
+					<div class="flex flex-col gap-y-2">
+						<span class="label text-gray-600"
+							>{currentLang === 'en' ? 'Published' : 'Pubblicato'}</span
+						>
+						<time datetime={content.meta.published_date} class="font-mono text-sm text-gray-300">
+							{formatDate(content.meta.published_date, currentLang)}
+						</time>
+					</div>
+					{#if metrics.minutes > 0}
+						<div class="flex flex-col gap-y-2">
+							<span class="label text-gray-600">{currentLang === 'en' ? 'Reading' : 'Lettura'}</span
+							>
+							<span class="font-mono text-sm text-gray-300">
+								{metrics.minutes} min
+								<span
+									class="text-gray-500"
+									title={currentLang === 'en'
+										? 'Estimated LLM context size'
+										: 'Contesto LLM stimato'}
+								>
+									· ~{metrics.tokensLabel} token
+								</span>
+							</span>
+						</div>
+					{/if}
+					{#if tagLinks.length > 0}
+						<div class="flex flex-col gap-y-2">
+							<span class="label text-gray-600">Tag</span>
+							<div class="flex flex-wrap gap-1.5">
+								{#each tagLinks as tag (tag.raw)}
+									<a
+										href={`${base}/${currentLang}/${blogRoute}?tags=${encodeURIComponent(tag.raw)}`}
+										class="chip"
+									>
+										{tag.label}
+									</a>
+								{/each}
+							</div>
+						</div>
+					{/if}
+				</aside>
 
-			<!-- Content -->
-			{#if currentTranslation.content}
-				<div use:reveal={{ delay: 150 }} class="reveal">
-					<ContentRenderer content={currentTranslation.content} />
-				</div>
-			{/if}
+				{#if currentTranslation.content}
+					<div use:reveal={{ delay: 150 }} class="reveal min-w-0 max-w-[68ch]">
+						<ContentRenderer content={currentTranslation.content} />
+					</div>
+				{/if}
+			</div>
 		</article>
 
 		{#if related && related.length > 0}
 			<section class="mt-12 border-t border-line-2 pt-10">
-				<h2 use:reveal class="reveal mb-6 text-3xl font-normal text-gray-100">
+				<h2 use:reveal class="reveal mb-6 font-mono text-2xl font-medium text-gray-100">
 					{currentLang === 'en' ? 'Related articles' : 'Articoli correlati'}
 				</h2>
 				<div class="grid grid-cols-1 gap-6 sm:gap-10 md:grid-cols-2 xl:grid-cols-3">

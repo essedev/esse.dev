@@ -11,8 +11,14 @@
 	// Receive props from parent
 	let { content, currentLang, global, navigation }: ProjectSectionProps = $props();
 
-	// Get translation with type safety
 	let backText = $derived(getTranslation(global, 'back'));
+	// Etichette della scheda tecnica: non passano dal JSON globale perché sono parole di
+	// interfaccia fisse, non contenuto.
+	let t = $derived(
+		currentLang === 'en'
+			? { status: 'Status', year: 'Year', repo: 'Repository', stack: 'Stack' }
+			: { status: 'Stato', year: 'Anno', repo: 'Repository', stack: 'Stack' }
+	);
 
 	let currentTranslation = $derived(content.translations[currentLang]);
 	let projectsRoute = $derived(navigation?.[currentLang]?.projects ?? 'projects');
@@ -33,58 +39,86 @@
 	</div>
 
 	{#if content && currentTranslation}
-		<!-- Colonna di lettura: titolo, sommario, immagine e corpo stanno in 48rem, allineati a
-	     sinistra come tutto il sito. Una riga da 1300px non si legge, e l'immagine 16:9 a
-	     tutta larghezza era un muro. -->
-		<article class="flex max-w-3xl flex-col gap-y-8">
-			<header use:reveal={{ delay: 60 }} class="reveal flex flex-col gap-y-6">
-				{#if content.meta.status}
-					<StatusBadge status={content.meta.status} {global} class="self-start" />
-				{/if}
-
-				<h2 class="text-5xl font-normal sm:text-6xl 2xl:text-7xl">
+		<!-- Titolo e sommario a tutta larghezza; sotto, da lg, due colonne: a sinistra la
+		     scheda tecnica (stato, repo, stack) che resta ferma scorrendo, a destra il corpo
+		     su una misura di lettura. Lo schermo si usa tutto senza righe da 130 caratteri.
+		     Niente immagine hero finché non esistono immagini vere. -->
+		<article class="flex flex-col gap-y-10 lg:gap-y-14">
+			<header use:reveal={{ delay: 60 }} class="reveal flex max-w-5xl flex-col gap-y-5">
+				<h2
+					class="font-mono text-4xl leading-[1.05] font-medium tracking-tight sm:text-5xl 2xl:text-6xl"
+				>
 					{currentTranslation.title}
 				</h2>
-
 				{#if currentTranslation.excerpt}
-					<p class="text-xl leading-snug text-gray-300 sm:text-2xl">{currentTranslation.excerpt}</p>
-				{/if}
-
-				{#if content.meta.link}
-					<a
-						href={content.meta.link}
-						class="key key--ghost self-start normal-case"
-						target="_blank"
-						rel="noopener noreferrer"
-						data-sveltekit-reload
-					>
-						<ExternalLink class="h-4 w-4" />
-						{content.meta.link.replace(/^https?:\/\//, '').replace(/\/$/, '')}
-					</a>
-				{/if}
-
-				{#if tagLinks.length > 0}
-					<div class="flex flex-wrap gap-1.5">
-						{#each tagLinks as tag (tag.raw)}
-							<a
-								href={`${base}/${currentLang}/${projectsRoute}?tags=${encodeURIComponent(tag.raw)}`}
-								class="chip"
-							>
-								{tag.label}
-							</a>
-						{/each}
-					</div>
+					<p class="max-w-3xl text-xl leading-snug text-gray-300 sm:text-2xl">
+						{currentTranslation.excerpt}
+					</p>
 				{/if}
 			</header>
 
-			<!-- Niente immagine hero: non esistono ancora immagini vere e un placeholder da 48rem
-			     è solo un muro. Quando arriveranno, il blocco torna qui con OptimizedImage. -->
+			<div
+				class="grid gap-y-10 lg:grid-cols-[16rem_minmax(0,1fr)] lg:gap-x-16 xl:grid-cols-[18rem_minmax(0,1fr)]"
+			>
+				<aside
+					use:reveal={{ delay: 100 }}
+					class="reveal flex flex-col gap-y-6 self-start lg:sticky lg:top-[calc(var(--chassis-gutter)+var(--chassis-nav-h)+2rem)]"
+				>
+					{#if content.meta.status}
+						<div class="flex flex-col gap-y-2">
+							<span class="label text-gray-600">{t.status}</span>
+							<StatusBadge status={content.meta.status} {global} class="self-start" />
+						</div>
+					{/if}
+					{#if content.meta.created_date}
+						<div class="flex flex-col gap-y-2">
+							<span class="label text-gray-600">{t.year}</span>
+							<span class="font-mono text-sm text-gray-300 tabular-nums">
+								{content.meta.created_date.slice(0, 4)}
+							</span>
+						</div>
+					{/if}
+					{#if content.meta.link}
+						<div class="flex flex-col gap-y-2">
+							<span class="label text-gray-600">{t.repo}</span>
+							<a
+								href={content.meta.link}
+								class="key key--ghost self-start normal-case"
+								target="_blank"
+								rel="noopener noreferrer"
+								data-sveltekit-reload
+							>
+								<ExternalLink class="h-4 w-4" />
+								{content.meta.link.replace(/^https?:\/\//, '').replace(/\/$/, '')}
+							</a>
+						</div>
+					{/if}
+					{#if tagLinks.length > 0}
+						<div class="flex flex-col gap-y-2">
+							<span class="label text-gray-600">{t.stack}</span>
+							<div class="flex flex-wrap gap-1.5">
+								{#each tagLinks as tag (tag.raw)}
+									<a
+										href={`${base}/${currentLang}/${projectsRoute}?tags=${encodeURIComponent(tag.raw)}`}
+										class="chip"
+									>
+										{tag.label}
+									</a>
+								{/each}
+							</div>
+						</div>
+					{/if}
+				</aside>
 
-			{#if currentTranslation.content}
-				<div use:reveal={{ delay: 150 }} class="reveal">
-					<ContentRenderer content={currentTranslation.content} className="flex flex-col gap-y-4" />
-				</div>
-			{/if}
+				{#if currentTranslation.content}
+					<div use:reveal={{ delay: 150 }} class="reveal min-w-0 max-w-[68ch]">
+						<ContentRenderer
+							content={currentTranslation.content}
+							className="flex flex-col gap-y-4"
+						/>
+					</div>
+				{/if}
+			</div>
 		</article>
 	{/if}
 </div>
