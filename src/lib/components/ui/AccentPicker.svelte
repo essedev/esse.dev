@@ -121,7 +121,7 @@
 			onclick={() => select(theme)}
 			aria-label="{labelPrefix} {name(theme)}"
 			aria-pressed={active === theme.id}
-			class="key key--led h-[26px] w-[26px] justify-center p-0"
+			class="key key--hw key--led h-[26px] w-[26px] justify-center p-0"
 			style="--dot: {theme.accent};"
 		>
 			<span class="accent-dot block h-2 w-2 rounded-full"></span>

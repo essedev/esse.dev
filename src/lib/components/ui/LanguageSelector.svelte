@@ -46,7 +46,7 @@
 			{#if language.code === selectedLanguage}
 				<span
 					aria-current="true"
-					class="key is-on h-[26px] w-[26px] justify-center p-0 text-tele tracking-label"
+					class="key key--hw is-on h-[26px] w-[26px] justify-center p-0 text-tele tracking-label"
 					>{language.code.toUpperCase()}</span
 				>
 			{:else}
@@ -57,7 +57,7 @@
 						e.preventDefault();
 						goto(url, { noScroll: true });
 					}}
-					class="key h-[26px] w-[26px] justify-center p-0 text-tele tracking-label"
+					class="key key--hw h-[26px] w-[26px] justify-center p-0 text-tele tracking-label"
 					>{language.code.toUpperCase()}</a
 				>
 			{/if}

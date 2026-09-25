@@ -385,63 +385,52 @@ button[aria-pressed='true'] > .accent-dot {
 	}
 }
 
-/* Materiale "hardware": tutto ciò che si tocca è un keycap (rilevato, con il bordo
-   inferiore nero da 2px che sparisce quando premi), tutto ciò in cui si scrive è
-   incassato, tutto ciò che contiene è una scocca. Tre profondità, un solo linguaggio. */
+/* Due mondi. Il telaio è hardware: scocca a gradiente e keycap rilevati (bordo
+   inferiore nero da 2px che sparisce quando premi). Lo schermo è software: dentro, ogni
+   superficie è piatta e la profondità è solo luce (bordi, fondi, accento). Un keycap
+   con l'ombra a terra dentro uno schermo sarebbe un oggetto fisico disegnato su un
+   monitor. */
 :root {
 	--keycap: linear-gradient(#1c1c1c, #141414);
 	--keycap-edge: 0 2px 0 #000;
 	--keycap-top: inset 0 1px 0 rgb(255 255 255 / 0.06);
-	/* La scocca è un keycap più grande: stessa faccia a gradiente, stesso bordo da 2px
-	   e un'ombra a terra leggera, senza la quale sul nero il volume non si vede. */
 	--shell: linear-gradient(#181818, #101010);
 	--shell-edge: 0 2px 0 #000;
 	--shell-top: inset 0 1px 0 rgb(255 255 255 / 0.07);
-	--shell-ground: 0 6px 16px rgb(0 0 0 / 0.3);
-	--well: #0a0a0a;
-	--well-shadow: inset 0 1px 2px #000;
+	/* Software: un fondo appena più chiaro del nero dello schermo e un bordo sottile. */
+	--surface: #111111;
+	--surface-raised: #161616;
 }
 
-/* Scocca: l'unico materiale dei contenitori (card, indice, box filtri, dropdown). Un
-   keycap grande: faccia a gradiente, filo di luce in alto, bordo inferiore nero da
-   3px, ombra a terra. */
+/* Pannello: l'unico contenitore dentro lo schermo (card, indice, box filtri,
+   dropdown). Piatto: fondo surface, bordo line-2, raggio md. */
 .panel {
-	border: 1px solid rgb(255 255 255 / 0.14);
+	border: 1px solid var(--color-line-2);
 	border-radius: var(--radius-md);
-	background: var(--shell);
-	box-shadow: var(--shell-edge), var(--shell-top), var(--shell-ground);
+	background: var(--surface);
 }
 
-/* Card: si solleva di 3px e il bordo inferiore cresce di altrettanto, come un tasto
-   che viene su. Reduced-motion: il gate motion più in basso azzera le transizioni
-   (snap), colore e bordo restano. */
+/* Card: in hover il bordo si accende in accento e il fondo si schiarisce di un passo.
+   Nessun movimento: sullo schermo la risposta è luce, non spostamento. */
 .panel--lift {
 	transition:
-		transform 0.3s var(--ease-out-expo),
-		box-shadow 0.3s var(--ease-out-expo),
-		border-color 0.3s var(--ease-out-expo);
+		border-color 0.3s var(--ease-out-expo),
+		background-color 0.3s var(--ease-out-expo);
 }
 
 .panel--lift:hover {
-	transform: translateY(-2px);
 	border-color: color-mix(in srgb, var(--color-accent) 50%, transparent);
-	box-shadow:
-		0 4px 0 #000,
-		var(--shell-top),
-		0 10px 22px rgb(0 0 0 / 0.35);
+	background-color: var(--surface-raised);
 }
 
-/* Schermo incassato nella scocca: cornice nera interna e ombra verso dentro, raggio
-   piccolo, desaturato a riposo, scanline CRT statiche. Le scanline stanno solo qui:
-   su un monitor leggono come segnale, sul testo sporcherebbero e basta. */
+/* Schermo della card: un riquadro a filo con bordo sottile, desaturato a riposo,
+   scanline CRT statiche. Le scanline stanno solo qui: su un monitor leggono come
+   segnale, sul testo sporcherebbero e basta. */
 .panel__media {
 	position: relative;
 	overflow: hidden;
-	border-radius: 3px;
-	box-shadow:
-		inset 0 0 0 1px #000,
-		inset 0 3px 8px rgb(0 0 0 / 0.9),
-		inset 0 0 28px rgb(0 0 0 / 0.6);
+	border-radius: var(--radius-sm);
+	box-shadow: inset 0 0 0 1px var(--color-line-1);
 	filter: saturate(0.8);
 	transition: filter 0.4s var(--ease-out-expo);
 }
@@ -471,19 +460,19 @@ button[aria-pressed='true'] > .accent-dot {
 /* Tasto: la famiglia unica dei controlli dello schermo (bottoni, trigger dei filtri,
    paginazione, link di servizio, switch, flottanti). Sta nel layer components così le
    utility di Tailwind possono ancora sovrascriverne dimensioni e padding caso per caso.
-   È un keycap: fondo scuro con un filo di luce in alto, bordo inferiore nero da 2px,
-   icona in accento. Premuto scende di 2px e il bordo sparisce. Attivo o primario è
-   pieno d'accento con lo stesso spessore. Tutto deriva da --color-accent. */
+   È un pulsante software: fondo pieno scuro, bordo sottile, icona in accento; in hover
+   il bordo si accende, premuto si scurisce di un passo. Attivo o primario è pieno
+   d'accento. Niente spessore: quello è dei tasti del telaio (`.key--hw`). Tutto deriva
+   da --color-accent. */
 @layer components {
 	.key {
 		display: inline-flex;
 		align-items: center;
 		gap: 0.6rem;
 		padding: 0.5rem 1rem;
-		border: 1px solid rgb(255 255 255 / 0.14);
+		border: 1px solid var(--color-line-2);
 		border-radius: var(--radius-sm);
-		background: var(--keycap);
-		box-shadow: var(--keycap-edge), var(--keycap-top);
+		background: var(--surface-raised);
 		color: var(--color-gray-200);
 		font-family: var(--font-mono);
 		font-size: var(--text-control);
@@ -493,9 +482,8 @@ button[aria-pressed='true'] > .accent-dot {
 		cursor: pointer;
 		transition:
 			border-color 0.2s var(--ease-out-expo),
-			color 0.2s var(--ease-out-expo),
-			transform 0.1s ease-out,
-			box-shadow 0.1s ease-out;
+			background-color 0.2s var(--ease-out-expo),
+			color 0.2s var(--ease-out-expo);
 	}
 	.key svg {
 		flex: none;
@@ -503,30 +491,22 @@ button[aria-pressed='true'] > .accent-dot {
 	}
 	.key:hover {
 		border-color: color-mix(in srgb, var(--color-accent) 60%, transparent);
+		background: #1b1b1b;
 		color: #fff;
 	}
 	.key:active {
-		transform: translateY(2px);
-		box-shadow:
-			0 0 0 #000,
-			var(--keycap-top);
+		background: #0e0e0e;
 	}
 	.key:focus-visible {
 		outline: 2px solid var(--color-accent);
 		outline-offset: 2px;
 	}
-	/* Attivo (toggle premuto) e azione principale: il keycap è pieno d'accento. */
+	/* Attivo (toggle premuto) e azione principale: pieno d'accento. */
 	.key[aria-pressed='true'],
 	.key.is-on,
 	.key--primary {
 		border-color: var(--color-accent);
-		background: linear-gradient(
-			color-mix(in srgb, var(--color-accent) 92%, #fff),
-			var(--color-accent)
-		);
-		box-shadow:
-			0 2px 0 color-mix(in srgb, var(--color-accent) 45%, #000),
-			var(--keycap-top);
+		background: var(--color-accent);
 		color: #041018;
 		font-weight: 500;
 	}
@@ -536,10 +516,7 @@ button[aria-pressed='true'] > .accent-dot {
 		color: inherit;
 	}
 	.key--primary:hover {
-		background: linear-gradient(
-			color-mix(in srgb, var(--color-accent) 80%, #fff),
-			color-mix(in srgb, var(--color-accent) 92%, #fff)
-		);
+		background: color-mix(in srgb, var(--color-accent) 85%, #fff);
 		color: #041018;
 	}
 	.key--primary {
@@ -567,6 +544,38 @@ button[aria-pressed='true'] > .accent-dot {
 		padding: 0;
 		justify-content: center;
 	}
+	/* Tasto del telaio: l'unico keycap fisico. Faccia a gradiente, filo di luce in
+	   alto, bordo inferiore nero da 2px che sparisce alla pressione. Lo portano solo i
+	   controlli montati sulla scocca (lingua, LED dell'accento, torna-su nel rail). */
+	.key--hw {
+		border-color: rgb(255 255 255 / 0.14);
+		background: var(--keycap);
+		box-shadow: var(--keycap-edge), var(--keycap-top);
+		transition:
+			border-color 0.2s var(--ease-out-expo),
+			color 0.2s var(--ease-out-expo),
+			transform 0.1s ease-out,
+			box-shadow 0.1s ease-out;
+	}
+	.key--hw:hover {
+		background: var(--keycap);
+	}
+	.key--hw:active {
+		transform: translateY(2px);
+		background: var(--keycap);
+		box-shadow:
+			0 0 0 #000,
+			var(--keycap-top);
+	}
+	.key--hw.is-on {
+		background: linear-gradient(
+			color-mix(in srgb, var(--color-accent) 92%, #fff),
+			var(--color-accent)
+		);
+		box-shadow:
+			0 2px 0 color-mix(in srgb, var(--color-accent) 45%, #000),
+			var(--keycap-top);
+	}
 	/* Tasto con un LED dentro (colori dell'accento nel rail): premuto non si riempie
 	   d'accento, resta scuro e accende il LED, che porta il suo colore in --dot. */
 	.key--led[aria-pressed='true'] {
@@ -576,26 +585,22 @@ button[aria-pressed='true'] > .accent-dot {
 		color: inherit;
 		font-weight: 400;
 	}
-	/* Flottante sopra il contenuto: un'ombra in più lo stacca dalla pagina. */
+	/* Flottante sopra il contenuto (mobile): un'ombra lo stacca dalla pagina. */
 	.key--float {
-		box-shadow:
-			var(--keycap-edge),
-			var(--keycap-top),
-			0 8px 24px rgb(0 0 0 / 0.5);
+		box-shadow: 0 8px 24px rgb(0 0 0 / 0.5);
 	}
 	/* Gruppo a segmenti (lingua nell'overlay mobile): una scocca keycap con le celle
 	   dentro e l'indicatore in accento che scivola. */
 	.key-group {
 		display: inline-flex;
 		align-items: center;
-		border: 1px solid rgb(255 255 255 / 0.14);
+		border: 1px solid var(--color-line-2);
 		border-radius: var(--radius-sm);
-		background: var(--keycap);
-		box-shadow: var(--keycap-edge), var(--keycap-top);
+		background: var(--surface-raised);
 		font-family: var(--font-mono);
 	}
 
-	/* Chip: tag e filtri attivi, un tastino da 11px con un bordo inferiore da 1px.
+	/* Chip: tag e filtri attivi, etichetta da 11px bordata, fondo piatto.
 	   `is-on` la accende in accento (filtro applicato); se è un link, l'hover fa lo
 	   stesso. In una riga flex senza wrap si stringe e tronca con l'ellissi. */
 	.chip {
@@ -608,10 +613,7 @@ button[aria-pressed='true'] > .accent-dot {
 		padding: 0.2rem 0.5rem;
 		border: 1px solid var(--color-line-2);
 		border-radius: 4px;
-		background: var(--keycap);
-		box-shadow:
-			0 1px 0 #000,
-			var(--keycap-top);
+		background: var(--surface-raised);
 		color: var(--color-gray-400);
 		font-family: var(--font-mono);
 		font-size: var(--text-label);
@@ -629,24 +631,21 @@ button[aria-pressed='true'] > .accent-dot {
 		color: var(--color-accent);
 	}
 	.chip.is-on {
-		background: color-mix(in srgb, var(--color-accent) 12%, #141414);
+		background: color-mix(in srgb, var(--color-accent) 12%, var(--surface-raised));
 	}
 	/* Il conteggio dei tag nascosti non è un tastino: solo testo. */
 	.chip--count {
 		border-color: transparent;
 		background: none;
-		box-shadow: none;
 		color: var(--color-gray-500);
 	}
 
-	/* Campo: input di ricerca e date, incassato nella scocca. Fondo nero, ombra verso
-	   dentro, bordo che si accende al focus. */
+	/* Campo: input di ricerca e date. Fondo nero, bordo che si accende al focus. */
 	.field {
 		width: 100%;
-		border: 1px solid rgb(255 255 255 / 0.14);
+		border: 1px solid var(--color-line-2);
 		border-radius: var(--radius-sm);
-		background-color: var(--well);
-		box-shadow: var(--well-shadow);
+		background-color: #0a0a0a;
 		color: #fff;
 		transition: border-color 0.2s var(--ease-out-expo);
 	}

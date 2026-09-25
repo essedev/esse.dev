@@ -35,10 +35,10 @@
 	class="group key key--sm"
 >
 	<span>{label}</span>
-	<!-- Switch meccanico: pista incassata nel keycap, thumb pieno che scatta a destra e
+	<!-- Switch software: pista scura nel pulsante, thumb pieno che scatta a destra e
 	     si accende in accento (mini glow CRT) quando le animazioni sono on. -->
 	<span
-		class="relative inline-flex h-4 w-7 items-center rounded-[3px] border border-line-2 bg-[#0a0a0a] px-[2px] shadow-[inset_0_1px_2px_#000]"
+		class="relative inline-flex h-4 w-7 items-center rounded-[3px] border border-line-2 bg-[#0a0a0a] px-[2px]"
 	>
 		<span
 			class="motion-thumb h-2.5 w-2.5 rounded-[2px] transition-all duration-300 ease-[cubic-bezier(0.34,1.45,0.6,1)] {enabled

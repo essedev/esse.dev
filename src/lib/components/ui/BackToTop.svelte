@@ -38,7 +38,7 @@
      sopra, centrato nei 34px della gutter. -->
 <button
 	onclick={scrollToTop}
-	class="key fixed right-[4px] bottom-[calc(var(--chassis-track-top)-4rem)] z-50 hidden h-[26px] w-[26px] justify-center p-0 lg:inline-flex"
+	class="key key--hw fixed right-[4px] bottom-[calc(var(--chassis-track-top)-4rem)] z-50 hidden h-[26px] w-[26px] justify-center p-0 lg:inline-flex"
 	aria-label={backToTopText}
 	in:fly={{ y: 10, duration: 300 }}
 	out:fly={{ y: 10, duration: 200 }}
