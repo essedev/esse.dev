@@ -207,7 +207,7 @@
 		id={dropdownId}
 		{role}
 		aria-labelledby={triggerId}
-		class="dropdown panel absolute mt-2 overflow-hidden"
+		class="dropdown panel absolute mt-2 overflow-hidden shadow-[0_2px_0_#000,0_16px_40px_rgb(0_0_0/0.55)]"
 		class:animate={isAnimating}
 		style="
 		top: {position.top}; 
@@ -216,9 +216,6 @@
 		width: {isMobile ? 'auto' : width}; 
 		max-height: {maxHeight}; 
 		z-index: {zIndex};
-		backdrop-filter: blur(16px) saturate(180%);
-		-webkit-backdrop-filter: blur(16px) saturate(180%);
-		background-color: rgba(17, 17, 17, 0.6);
 		"
 	>
 		{@render children()}

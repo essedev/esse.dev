@@ -47,7 +47,7 @@
 					<span class="chip">{tag}</span>
 				{/each}
 				{#if hidden > 0}
-					<span class="chip shrink-0 border-transparent text-gray-500">+{hidden}</span>
+					<span class="chip chip--count shrink-0">+{hidden}</span>
 				{/if}
 			</div>
 		{/if}

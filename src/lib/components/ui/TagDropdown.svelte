@@ -75,7 +75,7 @@
 		<Tag class="h-4 w-4" />
 		{t.tags}
 		{#if selectedTagsCount > 0}
-			<span class="ml-1 rounded-sm bg-accent/20 px-2 py-0.5 text-xs text-accent backdrop-blur-sm">
+			<span class="chip is-on ml-1 normal-case">
 				{selectedTagsCount}
 			</span>
 		{/if}
