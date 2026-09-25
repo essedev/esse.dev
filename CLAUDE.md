@@ -96,14 +96,19 @@ e decisioni in `docs/RESTYLE.md`, log in `docs/CYCLES.md` (Ciclo 9). In sintesi:
   bordo/fondo su un bottone, aggiungi solo larghezza o padding se serve. Sotto `lg` i
   tre flottanti (menu, torna su, accento che cicla i temi) sono lo stesso
   `key key--icon key--float` e il footer tiene 6rem di clearance in basso; da `lg`
-  il torna-su è un keycap da 26px nel rail destro, l'unico tasto fisico sul telaio.
+  i controlli del telaio (lingua e LED dell'accento nel rail sinistro, torna-su nel
+  destro) sono keycap da 26px, `key--led` per quelli con il LED dentro.
   Switch animazioni (`MotionToggle`). Le animazioni rispettano il motion toggle; il
   thumb dello switch è esentato apposta (vedi `.motion-thumb` in globals - Tailwind
   v4 anima `translate`, non `transform`).
 - Logo testuale `essedev` (`Logo.svelte`), voci nav a indice numerato, menu mobile a
   overlay numerato dentro `max-w-[90vw]`.
 - **Telaio strumentale** (`Chassis.svelte`, montato nel `+layout.svelte`): cornice fissa
-  che porta stato vivo (sezione corrente, avanzamento scroll, ora di Milano, claim).
+  che porta stato vivo (sezione corrente, avanzamento scroll, ora di Milano, claim). La
+  gutter è la scocca del dispositivo (`.chassis-matte`, stesso materiale delle card) e lo
+  schermo è incassato (`.chassis-frame`: seam nero, ombra verso dentro, vignetta). La
+  navbar da `lg` è una fascia con la faccia della scocca (`lg:nav-shell`), le celle
+  restano legende piatte: i link sono un menu, non tasti.
   Vive nella gutter del token `--chassis-gutter`, che vale `0px` sotto `lg` e `34px`
   sopra: **qualunque elemento `fixed` va staccato dal bordo con quel token** (vedi
   `AccentPicker`, `BackToTop`), altrimenti finisce sopra un rail. Sotto `lg` il telaio

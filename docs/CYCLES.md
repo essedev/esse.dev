@@ -609,6 +609,10 @@ diversi per i tre controlli flottanti di mobile, testo a 1300px su desktop.
   ciò che si tocca (tasti, chip, TOP nel rail), incassato per ciò in cui si scrive
   (campi, pista dello switch), scocca per ciò che contiene (card, indice, filtri,
   dropdown opachi), schermo incassato nella card.
+- **Telaio nello stesso materiale:** la gutter diventa la scocca (faccia delle card) e
+  lo schermo è incassato con seam nero e ombra verso dentro; lingua e LED dell'accento
+  nel rail sono keycap da 26px come il torna-su; la navbar da `lg` è una fascia con la
+  faccia della scocca, celle piatte (un menu non è una tastiera).
 - Gate a fine giro: lint, check 0 errori, build, 196 unit, 32 e2e.
 
 ### Cosa resta
