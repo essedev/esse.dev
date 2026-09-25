@@ -373,34 +373,46 @@ button[aria-pressed='true'] > .accent-dot {
    inferiore nero da 2px che sparisce quando premi), tutto ciò in cui si scrive è
    incassato, tutto ciò che contiene è una scocca. Tre profondità, un solo linguaggio. */
 :root {
-	--shell: #121212;
 	--keycap: linear-gradient(#1c1c1c, #141414);
 	--keycap-edge: 0 2px 0 #000;
 	--keycap-top: inset 0 1px 0 rgb(255 255 255 / 0.06);
+	/* La scocca è un keycap più grande: stessa faccia a gradiente, bordo inferiore da
+	   3px e un'ombra morbida a terra, senza la quale sul nero il volume non si vede. */
+	--shell: linear-gradient(#181818, #101010);
+	--shell-edge: 0 3px 0 #000;
+	--shell-top: inset 0 1px 0 rgb(255 255 255 / 0.07);
+	--shell-ground: 0 14px 32px rgb(0 0 0 / 0.45);
 	--well: #0a0a0a;
 	--well-shadow: inset 0 1px 2px #000;
 }
 
-/* Scocca: l'unico materiale dei contenitori (card, indice, box filtri, dropdown). Fondo
-   opaco, bordo line-2, raggio md e lo stesso bordo inferiore dei tasti. */
+/* Scocca: l'unico materiale dei contenitori (card, indice, box filtri, dropdown). Un
+   keycap grande: faccia a gradiente, filo di luce in alto, bordo inferiore nero da
+   3px, ombra a terra. */
 .panel {
-	border: 1px solid var(--color-line-2);
+	border: 1px solid rgb(255 255 255 / 0.14);
 	border-radius: var(--radius-md);
 	background: var(--shell);
-	box-shadow: var(--keycap-edge);
+	box-shadow: var(--shell-edge), var(--shell-top), var(--shell-ground);
 }
 
-/* Card: micro-lift e bordo accento. Reduced-motion: il gate motion più in basso
-   azzera le transizioni (snap), colore e bordo restano. */
+/* Card: si solleva di 3px e il bordo inferiore cresce di altrettanto, come un tasto
+   che viene su. Reduced-motion: il gate motion più in basso azzera le transizioni
+   (snap), colore e bordo restano. */
 .panel--lift {
 	transition:
 		transform 0.3s var(--ease-out-expo),
+		box-shadow 0.3s var(--ease-out-expo),
 		border-color 0.3s var(--ease-out-expo);
 }
 
 .panel--lift:hover {
-	transform: translateY(-2px);
+	transform: translateY(-3px);
 	border-color: color-mix(in srgb, var(--color-accent) 50%, transparent);
+	box-shadow:
+		0 6px 0 #000,
+		var(--shell-top),
+		0 22px 40px rgb(0 0 0 / 0.5);
 }
 
 /* Schermo incassato nella scocca: cornice nera interna e ombra verso dentro, raggio
@@ -411,8 +423,9 @@ button[aria-pressed='true'] > .accent-dot {
 	overflow: hidden;
 	border-radius: 3px;
 	box-shadow:
-		inset 0 0 0 1px rgb(0 0 0 / 0.8),
-		inset 0 0 24px rgb(0 0 0 / 0.6);
+		inset 0 0 0 1px #000,
+		inset 0 3px 8px rgb(0 0 0 / 0.9),
+		inset 0 0 28px rgb(0 0 0 / 0.6);
 	filter: saturate(0.8);
 	transition: filter 0.4s var(--ease-out-expo);
 }
@@ -570,8 +583,10 @@ button[aria-pressed='true'] > .accent-dot {
 		padding: 0.2rem 0.5rem;
 		border: 1px solid var(--color-line-2);
 		border-radius: 4px;
-		background: #0e0e0e;
-		box-shadow: 0 1px 0 #000;
+		background: var(--keycap);
+		box-shadow:
+			0 1px 0 #000,
+			var(--keycap-top);
 		color: var(--color-gray-400);
 		font-family: var(--font-mono);
 		font-size: var(--text-label);
@@ -589,7 +604,7 @@ button[aria-pressed='true'] > .accent-dot {
 		color: var(--color-accent);
 	}
 	.chip.is-on {
-		background-color: color-mix(in srgb, var(--color-accent) 10%, #0e0e0e);
+		background: color-mix(in srgb, var(--color-accent) 12%, #141414);
 	}
 	/* Il conteggio dei tag nascosti non è un tastino: solo testo. */
 	.chip--count {
