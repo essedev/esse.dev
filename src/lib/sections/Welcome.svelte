@@ -25,13 +25,13 @@
 		<span class="lg:hidden">esse<span class="text-accent">dev</span></span>
 	</p>
 
-	<div class="mb-8 overflow-hidden sm:mb-10">
-		<h1
-			class="font-mono -mt-2 text-left text-[3rem] leading-[1.15] font-medium sm:text-[5rem] lg:-mt-3 xl:-mt-4 xl:text-[6rem] 2xl:-mt-6 2xl:text-[7.5rem]"
-		>
-			{titleParts.head}<span class="text-accent">{titleParts.tail}</span>
-		</h1>
-	</div>
+	<!-- Niente margini negativi né overflow-hidden sul titolo: a Martian Mono tagliavano
+	     le ascendenti della prima riga. -->
+	<h1
+		class="font-mono mb-8 text-left text-[3rem] leading-[1.1] font-medium sm:mb-10 sm:text-[5rem] xl:text-[6rem] 2xl:text-[7.5rem]"
+	>
+		{titleParts.head}<span class="text-accent">{titleParts.tail}</span>
+	</h1>
 
 	<ContentRenderer
 		content={welcome.description}
