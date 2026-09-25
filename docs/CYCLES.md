@@ -619,6 +619,10 @@ diversi per i tre controlli flottanti di mobile, testo a 1300px su desktop.
   pannelli a bordo sottile, pulsanti a fondo pieno senza spessore, chip e campi piatti,
   hover come luce e non come spostamento. Scartato il "pannello di controllo" (tutto
   fisico): non regge la prosa lunga né mobile, dove il telaio non c'è.
+- **Hero e dettaglio:** il titolo dell'hero aveva margini negativi dentro un
+  `overflow-hidden` che a Martian Mono tagliavano le ascendenti; tolti entrambi. Le
+  pagine di progetto e articolo lasciano la colonna stretta da 48rem per un impianto a
+  due colonne da `lg`: scheda tecnica sticky a sinistra, corpo a destra su 68ch.
 - Gate a fine giro: lint, check 0 errori, build, 196 unit, 32 e2e.
 
 ### Cosa resta

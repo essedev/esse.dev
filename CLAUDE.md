@@ -122,9 +122,11 @@ e decisioni in `docs/RESTYLE.md`, log in `docs/CYCLES.md` (Ciclo 9). In sintesi:
   nav: se serve un controllo persistente, va nel telaio.
 - `SectionHeader.svelte`: indice numerato + filo + readout dai dati della sezione. Il
   readout si passa solo se un dato reale lo sostiene, mai un conteggio di cortesia.
-- Prosa e pagine di dettaglio: i paragrafi di About e Contatti hanno `max-w-prose`,
-  progetto e articolo sono una colonna `max-w-3xl` allineata a sinistra, senza
-  immagine hero finché non esistono immagini vere (`src/lib/assets/images` è vuota).
+- Prosa e pagine di dettaglio: i paragrafi di About e Contatti hanno `max-w-prose`.
+  Progetto e articolo: titolo (mono) e sommario a tutta larghezza, poi da `lg` due
+  colonne, scheda tecnica sticky a sinistra (stato, anno, repo, stack; data, lettura,
+  tag) e corpo a destra su `max-w-[68ch]`. Niente immagine hero finché non esistono
+  immagini vere (`src/lib/assets/images` è vuota).
   Il placeholder di `OptimizedImage` è uno schermo spento con griglia, bagliore
   d'accento ed etichetta, non una lastra grigia.
 - Shortcut tastiera (`+layout.svelte`): `1-4` -> sezioni, `0`/`Home` -> top,
