@@ -84,3 +84,13 @@ sceglieva la sua opacità di bordo e il suo raggio: undici raggi e otto bordi pe
 stesso concetto. Una classe in più costa una riga; un valore in più costa la
 coerenza. Scartato: linee guida scritte senza classi (non reggono al secondo
 componente).
+
+## #9 - Materiale hardware a tre profondità
+
+**Status:** attiva (Ciclo 9, blocco 5)
+
+Ogni superficie dichiara cosa si può fare con lei: keycap rilevato (si preme), campo
+incassato (si scrive), scocca (contiene). Il tasto "illuminato" con fondo d'accento
+tenue è stato scartato dopo due iterazioni perché a riposo leggeva come disabilitato e
+non distingueva il primario dal secondario se non per intensità. Le alternative
+Modulo (piatto) e Terminale (parentesi) sono in `docs/concepts/system-variants.html`.

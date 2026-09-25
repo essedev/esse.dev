@@ -77,27 +77,29 @@ e decisioni in `docs/RESTYLE.md`, log in `docs/CYCLES.md` (Ciclo 9). In sintesi:
   sinistro) sovrascrive `--color-accent` su `<html>` a runtime (azzurro/arancione/
   viola, persistito in cookie così l'SSR lo applica pre-paint, crossfade CSS): se
   aggiungi un colore-accento NON hardcodarlo.
-- Materiali, in `globals.css` (`@layer components`), tutti derivati dai token del
-  `@theme`: `.panel` (card, indice, box filtri, dropdown, immagine di dettaglio: bordo
-  `line-2`, fondo `surface-1`, raggio md; `.panel--lift` per l'hover della card,
-  `.panel__media` per la miniatura dentro), `.chip` (tag e filtri attivi, `.is-on` in
-  accento, tronca con ellissi in una riga flex), `.field` (input), `.label` (mono 11px
-  maiuscolo con tracking: indici, intestazioni, stato, meta), `.section` (ritmo
-  verticale delle sezioni). Due raggi soli (`--radius-sm` controlli, `--radius-md`
-  pannelli), tre linee (`line-1/2/accent`), tre superfici, quattro taglie di mono
-  (`text-tele` rail, `text-label`, `text-xs` date, `text-control` tasti). Un valore di
-  bordo, fondo, raggio o taglia scritto a mano in un componente è un errore: usa il
-  token o la classe.
-- Controlli dello schermo: `.key` (tasto illuminato: bordo e fondo tinti d'accento,
-  pieno con `aria-pressed`/`.is-on`), `.key--primary`, `.key--ghost` per i secondari,
-  `.key--sm` (footer, switch), `.key--icon` (44px quadrato per una sola icona),
-  `.key--float` (flottante sopra il contenuto), `.key-group` per i segmenti. Non
-  ricopiare classi Tailwind di bordo/fondo su un bottone: usa `.key` e aggiungi solo
-  larghezza o padding se serve. Sotto `lg` i tre flottanti (menu, torna su, accento
-  che cicla i temi) sono lo stesso `key key--icon key--float` e il footer tiene 6rem
-  di clearance in basso. Switch animazioni (`MotionToggle`). Le animazioni rispettano
-  il motion toggle; il thumb dello switch è esentato apposta (vedi `.motion-thumb` in
-  globals - Tailwind v4 anima `translate`, non `transform`).
+- Materiali "hardware", in `globals.css` (`@layer components`), tre profondità e un
+  solo linguaggio: ciò che si tocca è un **keycap** (`.key`: fondo scuro con filo di
+  luce in alto, bordo inferiore nero da 2px che sparisce alla pressione, icona in
+  accento; `.key--primary` e `aria-pressed`/`.is-on` pieni d'accento con lo stesso
+  spessore; `.key--ghost` testo spento; `.key--sm`; `.key--icon` 44px; `.key--float`
+  con ombra; `.key-group` per i segmenti; `.chip` tastino da 11px per tag e filtri,
+  `.chip--count` per il conteggio), ciò in cui si scrive è **incassato** (`.field`,
+  la pista dello switch), ciò che contiene è una **scocca** (`.panel`: fondo `--shell`
+  opaco, bordo `line-2`, stesso bordo inferiore; `.panel--lift` per l'hover della
+  card; `.panel__media` schermo incassato con cornice nera interna). Etichette mono
+  maiuscole con `.label`, ritmo delle sezioni con `.section`. Token: due raggi
+  (`--radius-sm` controlli, `--radius-md` scocche), tre linee (`line-1/2/accent`),
+  quattro taglie di mono (`text-tele` rail, `text-label`, `text-xs` date,
+  `text-control` tasti). Un valore di bordo, fondo, raggio, ombra o taglia scritto a
+  mano in un componente è un errore: usa il token o la classe.
+- Controlli: tutto ciò che si clicca è un `.key`. Non ricopiare classi Tailwind di
+  bordo/fondo su un bottone, aggiungi solo larghezza o padding se serve. Sotto `lg` i
+  tre flottanti (menu, torna su, accento che cicla i temi) sono lo stesso
+  `key key--icon key--float` e il footer tiene 6rem di clearance in basso; da `lg`
+  il torna-su è un keycap da 26px nel rail destro, l'unico tasto fisico sul telaio.
+  Switch animazioni (`MotionToggle`). Le animazioni rispettano il motion toggle; il
+  thumb dello switch è esentato apposta (vedi `.motion-thumb` in globals - Tailwind
+  v4 anima `translate`, non `transform`).
 - Logo testuale `essedev` (`Logo.svelte`), voci nav a indice numerato, menu mobile a
   overlay numerato dentro `max-w-[90vw]`.
 - **Telaio strumentale** (`Chassis.svelte`, montato nel `+layout.svelte`): cornice fissa

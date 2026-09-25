@@ -602,6 +602,13 @@ diversi per i tre controlli flottanti di mobile, testo a 1300px su desktop.
   Unicode. Il placeholder delle immagini è uno schermo spento (griglia, bagliore
   d'accento, etichetta) e le pagine di dettaglio non mostrano più l'immagine hero:
   `src/lib/assets/images` è vuota, il blocco torna quando ci saranno immagini vere.
+- **Keycap (`docs/concepts/system-variants.html`, scelta B):** dopo due passate il
+  tasto illuminato non convinceva ancora: il fondo tinto all'8% stava a metà e leggeva
+  come disabilitato. Tre sistemi completi a confronto (Modulo, Keycap, Terminale) con
+  card, tasti e TOP insieme; scelto Keycap ed esteso a tutte le superfici: keycap per
+  ciò che si tocca (tasti, chip, TOP nel rail), incassato per ciò in cui si scrive
+  (campi, pista dello switch), scocca per ciò che contiene (card, indice, filtri,
+  dropdown opachi), schermo incassato nella card.
 - Gate a fine giro: lint, check 0 errori, build, 196 unit, 32 e2e.
 
 ### Cosa resta
