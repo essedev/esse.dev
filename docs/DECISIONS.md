@@ -85,12 +85,14 @@ stesso concetto. Una classe in più costa una riga; un valore in più costa la
 coerenza. Scartato: linee guida scritte senza classi (non reggono al secondo
 componente).
 
-## #9 - Materiale hardware a tre profondità
+## #9 - Dispositivo con schermo: hardware fuori, software dentro
 
-**Status:** attiva (Ciclo 9, blocco 5)
+**Status:** attiva (Ciclo 9, blocco 5), sostituisce la prima versione (keycap ovunque)
 
-Ogni superficie dichiara cosa si può fare con lei: keycap rilevato (si preme), campo
-incassato (si scrive), scocca (contiene). Il tasto "illuminato" con fondo d'accento
-tenue è stato scartato dopo due iterazioni perché a riposo leggeva come disabilitato e
-non distingueva il primario dal secondario se non per intensità. Le alternative
-Modulo (piatto) e Terminale (parentesi) sono in `docs/concepts/system-variants.html`.
+Il telaio è un oggetto fisico: scocca e keycap (rail, lingua, LED, torna-su, fascia
+della navbar). Lo schermo mostra software: pannelli, pulsanti, chip e campi sono
+piatti e la profondità è solo luce. La prima versione portava il keycap anche dentro
+lo schermo ed era uno skeuomorfismo dentro uno skeuomorfismo. Scartati: il tasto
+"illuminato" con fondo d'accento tenue (a riposo leggeva come disabilitato), il
+"pannello di controllo" tutto fisico (non regge la prosa lunga né mobile, dove il
+telaio non c'è). I tre sistemi confrontati sono in `docs/concepts/system-variants.html`.

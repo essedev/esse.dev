@@ -613,6 +613,12 @@ diversi per i tre controlli flottanti di mobile, testo a 1300px su desktop.
   lo schermo è incassato con seam nero e ombra verso dentro; lingua e LED dell'accento
   nel rail sono keycap da 26px come il torna-su; la navbar da `lg` è una fascia con la
   faccia della scocca, celle piatte (un menu non è una tastiera).
+- **Due mondi:** keycap con ombra a terra dentro uno schermo erano oggetti fisici
+  disegnati su un monitor. Modello scelto: dispositivo con schermo. Fuori (telaio, rail,
+  navbar) hardware, con `.key--hw` come unico keycap; dentro tutto software, piatto:
+  pannelli a bordo sottile, pulsanti a fondo pieno senza spessore, chip e campi piatti,
+  hover come luce e non come spostamento. Scartato il "pannello di controllo" (tutto
+  fisico): non regge la prosa lunga né mobile, dove il telaio non c'è.
 - Gate a fine giro: lint, check 0 errori, build, 196 unit, 32 e2e.
 
 ### Cosa resta

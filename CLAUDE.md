@@ -77,27 +77,30 @@ e decisioni in `docs/RESTYLE.md`, log in `docs/CYCLES.md` (Ciclo 9). In sintesi:
   sinistro) sovrascrive `--color-accent` su `<html>` a runtime (azzurro/arancione/
   viola, persistito in cookie così l'SSR lo applica pre-paint, crossfade CSS): se
   aggiungi un colore-accento NON hardcodarlo.
-- Materiali "hardware", in `globals.css` (`@layer components`), tre profondità e un
-  solo linguaggio: ciò che si tocca è un **keycap** (`.key`: fondo scuro con filo di
-  luce in alto, bordo inferiore nero da 2px che sparisce alla pressione, icona in
-  accento; `.key--primary` e `aria-pressed`/`.is-on` pieni d'accento con lo stesso
-  spessore; `.key--ghost` testo spento; `.key--sm`; `.key--icon` 44px; `.key--float`
-  con ombra; `.key-group` per i segmenti; `.chip` tastino da 11px per tag e filtri,
-  `.chip--count` per il conteggio), ciò in cui si scrive è **incassato** (`.field`,
-  la pista dello switch), ciò che contiene è una **scocca** (`.panel`: fondo `--shell`
-  opaco, bordo `line-2`, stesso bordo inferiore; `.panel--lift` per l'hover della
-  card; `.panel__media` schermo incassato con cornice nera interna). Etichette mono
-  maiuscole con `.label`, ritmo delle sezioni con `.section`. Token: due raggi
-  (`--radius-sm` controlli, `--radius-md` scocche), tre linee (`line-1/2/accent`),
-  quattro taglie di mono (`text-tele` rail, `text-label`, `text-xs` date,
-  `text-control` tasti). Un valore di bordo, fondo, raggio, ombra o taglia scritto a
-  mano in un componente è un errore: usa il token o la classe.
+- Due mondi, in `globals.css` (`@layer components`). **Il telaio è hardware:** la
+  gutter è la scocca a gradiente (`--shell`), i suoi controlli sono keycap rilevati
+  (`.key--hw`: faccia a gradiente, filo di luce, bordo inferiore nero da 2px che
+  sparisce alla pressione; `.key--led` per quelli con il LED dentro). **Lo schermo è
+  software:** dentro tutto è piatto e la profondità è solo luce. `.panel` (card,
+  indice, filtri, dropdown: fondo `--surface`, bordo `line-2`, raggio md;
+  `.panel--lift` accende bordo e fondo in hover, senza spostamento; `.panel__media`
+  riquadro a filo con scanline), `.key` (pulsante: fondo `--surface-raised`, bordo
+  sottile, icona in accento; `.key--primary` e `aria-pressed`/`.is-on` pieni
+  d'accento; `.key--ghost` testo spento; `.key--sm`; `.key--icon` 44px; `.key--float`
+  con ombra per i flottanti mobile; `.key-group` per i segmenti), `.chip` (tag e
+  filtri, `.chip--count` per il conteggio), `.field` (input). Etichette mono maiuscole
+  con `.label`, ritmo delle sezioni con `.section`. Token: due raggi (`--radius-sm`
+  controlli, `--radius-md` pannelli, `--radius-screen` per lo schermo del telaio), tre
+  linee (`line-1/2/accent`), quattro taglie di mono (`text-tele` rail, `text-label`,
+  `text-xs` date, `text-control` tasti). Un valore di bordo, fondo, raggio, ombra o
+  taglia scritto a mano in un componente è un errore: usa il token o la classe. Un
+  keycap dentro lo schermo è un errore di modello: lì si usa `.key`.
 - Controlli: tutto ciò che si clicca è un `.key`. Non ricopiare classi Tailwind di
   bordo/fondo su un bottone, aggiungi solo larghezza o padding se serve. Sotto `lg` i
   tre flottanti (menu, torna su, accento che cicla i temi) sono lo stesso
   `key key--icon key--float` e il footer tiene 6rem di clearance in basso; da `lg`
   i controlli del telaio (lingua e LED dell'accento nel rail sinistro, torna-su nel
-  destro) sono keycap da 26px, `key--led` per quelli con il LED dentro.
+  destro) sono keycap da 26px (`key key--hw`).
   Switch animazioni (`MotionToggle`). Le animazioni rispettano il motion toggle; il
   thumb dello switch è esentato apposta (vedi `.motion-thumb` in globals - Tailwind
   v4 anima `translate`, non `transform`).
