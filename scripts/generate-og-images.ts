@@ -1,7 +1,7 @@
 /**
  * Pre-genera le immagini OG a build time (Node) come PNG statici in static/og/.
  * Riusa la stessa pipeline del vecchio endpoint runtime: OgDataResolver ->
- * generateHtmlLayout -> satori (HTML->SVG) -> sharp (SVG->PNG). Niente più
+ * generateHtmlLayout -> satori (HTML->SVG) -> sharp (SVG->PNG). Niente piu'
  * generazione runtime sul Worker, niente endpoint, niente superficie injection.
  *
  * Va eseguito con vite-node (per risolvere $lib e import.meta.glob):
@@ -16,13 +16,12 @@ import sharp from 'sharp';
 import { ContentLoader } from '../src/lib/utils/content';
 import { OgDataResolver } from '../src/lib/utils/og/data-resolver';
 import {
-	createLaboratoryBackgroundSvg,
+	createGradientBackgroundHtml,
 	generateHtmlLayout
 } from '../src/lib/utils/og/html-generator';
 
 const OUT_DIR = join(process.cwd(), 'static/og');
-const MONO_DIR = join(process.cwd(), 'node_modules/@fontsource/martian-mono/files');
-const SANS_DIR = join(process.cwd(), 'node_modules/@fontsource/ibm-plex-sans/files');
+const FONT_DIR = join(process.cwd(), 'node_modules/@fontsource/geist-sans/files');
 const WIDTH = 1200;
 const HEIGHT = 630;
 // Noise applicato via sharp (composite) DOPO il render, non dentro satori: evita di
@@ -31,11 +30,10 @@ const HEIGHT = 630;
 const NOISE_PATH = join(process.cwd(), 'static/noise.png');
 const NOISE_OPACITY = 0.5;
 
-// satori supporta woff (non woff2): usiamo i .woff di @fontsource (offline e
-// deterministici, niente fetch a build time). Martian Mono per logo/etichette,
-// IBM Plex Sans per titoli/testo (stesso accoppiamento del sito).
-function loadFont(dir: string, family: string, weight: number): Buffer {
-	return readFileSync(join(dir, `${family}-latin-${weight}-normal.woff`));
+// satori supporta woff (non woff2): usiamo i .woff di @fontsource/geist-sans,
+// offline e deterministici, niente fetch a build time.
+function loadFont(weight: number): Buffer {
+	return readFileSync(join(FONT_DIR, `geist-sans-latin-${weight}-normal.woff`));
 }
 
 interface Job {
@@ -46,43 +44,11 @@ interface Job {
 async function main(): Promise<void> {
 	if (!existsSync(OUT_DIR)) mkdirSync(OUT_DIR, { recursive: true });
 
+	const regular = loadFont(400);
+	const bold = loadFont(700);
 	const fonts = [
-		{
-			name: 'Martian Mono',
-			data: loadFont(MONO_DIR, 'martian-mono', 400),
-			weight: 400 as const,
-			style: 'normal' as const
-		},
-		{
-			name: 'Martian Mono',
-			data: loadFont(MONO_DIR, 'martian-mono', 500),
-			weight: 500 as const,
-			style: 'normal' as const
-		},
-		{
-			name: 'Martian Mono',
-			data: loadFont(MONO_DIR, 'martian-mono', 700),
-			weight: 700 as const,
-			style: 'normal' as const
-		},
-		{
-			name: 'IBM Plex Sans',
-			data: loadFont(SANS_DIR, 'ibm-plex-sans', 400),
-			weight: 400 as const,
-			style: 'normal' as const
-		},
-		{
-			name: 'IBM Plex Sans',
-			data: loadFont(SANS_DIR, 'ibm-plex-sans', 500),
-			weight: 500 as const,
-			style: 'normal' as const
-		},
-		{
-			name: 'IBM Plex Sans',
-			data: loadFont(SANS_DIR, 'ibm-plex-sans', 600),
-			weight: 600 as const,
-			style: 'normal' as const
-		}
+		{ name: 'Geist', data: regular, weight: 400 as const, style: 'normal' as const },
+		{ name: 'Geist', data: bold, weight: 700 as const, style: 'normal' as const }
 	];
 
 	const resolver = new OgDataResolver();
@@ -165,15 +131,10 @@ async function main(): Promise<void> {
 		return new Resvg(svg, { fitTo: { mode: 'width', value: WIDTH } }).render().asPng();
 	};
 
-	// Base condivisa (sfondo Laboratorio + noise in overlay), calcolata UNA volta: il
-	// noise sta SOTTO il contenuto. Lo sfondo e' un SVG (grid prospettico + glow) reso
-	// da resvg, non da satori che non gestisce grid/prospettiva.
-	const basePng = new Resvg(createLaboratoryBackgroundSvg(), {
-		fitTo: { mode: 'width', value: WIDTH }
-	})
-		.render()
-		.asPng();
-	const baseImage = await sharp(basePng)
+	// Base condivisa (gradiente + noise in overlay), calcolata UNA volta: il noise sta
+	// SOTTO il contenuto, come la vecchia background CSS. Logo/testo non vengono velati.
+	const gradientPng = await renderPng(createGradientBackgroundHtml());
+	const baseImage = await sharp(gradientPng)
 		.composite([{ input: noiseTile, tile: true, blend: 'overlay' }])
 		.png()
 		.toBuffer();

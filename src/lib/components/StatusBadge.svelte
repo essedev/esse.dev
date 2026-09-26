@@ -6,20 +6,21 @@
 
 	// Badge di stato del progetto. Unica fonte di stile + etichetta, condivisa da
 	// card (listing) e pagina di dettaglio. `class` permette al chiamante di
-	// posizionarlo. Stile "riga di sistema": LED nel colore dello stato + label mono
-	// uppercase neutra. 'idea' usa l'accento del brand.
+	// posizionarlo (es. absolute sulla cover della card, self-start nell'header).
 	let {
 		status,
 		global,
 		class: className = ''
 	}: { status: Status; global: GlobalContent | null | undefined; class?: string } = $props();
 
+	// Colori del badge (coerenti col tema scuro/glassy).
 	const STATUS_STYLE: Record<Status, string> = {
-		completed: 'text-emerald-300',
-		'in-progress': 'text-amber-300',
-		idea: 'text-accent',
-		archived: 'text-gray-400'
+		completed: 'bg-emerald-500/15 text-emerald-200 border-emerald-400/25',
+		'in-progress': 'bg-amber-500/15 text-amber-200 border-amber-400/25',
+		idea: 'bg-violet-500/15 text-violet-200 border-violet-400/25',
+		archived: 'bg-white/10 text-gray-300 border-white/15'
 	};
+	// Status -> chiave di traduzione per l'etichetta.
 	const STATUS_KEY = {
 		completed: 'statusCompleted',
 		'in-progress': 'statusInProgress',
@@ -30,13 +31,10 @@
 	let label = $derived(getTranslation(global, STATUS_KEY[status]));
 </script>
 
-<!-- LED colorato, etichetta neutra: il colore dice lo stato, il testo resta nella
-     scala di grigi come ogni altra etichetta. -->
-<span class="label inline-flex items-center gap-2 text-gray-300 {className}">
-	<span
-		class="h-[7px] w-[7px] rounded-[1px] bg-current shadow-[0_0_6px_currentColor] {STATUS_STYLE[
-			status
-		]}"
-	></span>
+<span
+	class="rounded-full border px-2.5 py-1 text-xs font-medium backdrop-blur-md {STATUS_STYLE[
+		status
+	]} {className}"
+>
 	{label}
 </span>

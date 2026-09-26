@@ -58,14 +58,12 @@ export const load: PageServerLoad = async ({ params, parent, url }) => {
 		isProjectsRoute ? 'projects' : 'articles'
 	);
 
-	// Solo gli articoli sono paginati. I progetti stanno su una pagina sola: sono pochi per
-	// scelta e il listing li divide in due densità (vetrina a card, scaffale a righe), che
-	// una paginazione taglierebbe a metà.
+	// Apply pagination
 	const totalItems = filteredData.length;
-	const perPage = isProjectsRoute ? Math.max(totalItems, 1) : ITEMS_PER_PAGE;
-	const totalPages = Math.ceil(totalItems / perPage);
-	const startIndex = isProjectsRoute ? 0 : (page - 1) * perPage;
-	const paginatedData = filteredData.slice(startIndex, startIndex + perPage);
+	const totalPages = Math.ceil(totalItems / ITEMS_PER_PAGE);
+	const startIndex = (page - 1) * ITEMS_PER_PAGE;
+	const endIndex = startIndex + ITEMS_PER_PAGE;
+	const paginatedData = filteredData.slice(startIndex, endIndex);
 
 	// Return page type and paginated data
 	return {

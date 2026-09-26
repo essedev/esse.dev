@@ -168,7 +168,7 @@
 	);
 </script>
 
-<div class="panel flex flex-col gap-4 p-4 sm:p-5">
+<div class="flex flex-col gap-4 rounded-3xl border border-white/10 bg-black/20 p-6">
 	<!-- Search Input -->
 	<div class="relative">
 		<input
@@ -176,9 +176,9 @@
 			value={filters.query}
 			oninput={handleQueryChange}
 			{placeholder}
-			class="field px-4 py-3 pl-12"
+			class="w-full rounded-2xl border border-white/10 bg-white/2 px-4 py-3 pl-12 text-white placeholder-white/50 backdrop-blur-sm focus:border-white/20 focus:outline-none"
 		/>
-		<Search class="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-accent" />
+		<Search class="absolute top-1/2 left-4 h-5 w-5 -translate-y-1/2 text-white/50" />
 	</div>
 
 	<!-- Filters Row -->
@@ -225,7 +225,10 @@
 
 		<!-- Clear Filters -->
 		{#if hasActiveFilters}
-			<button onclick={clearAllFilters} class="key key--ghost justify-center">
+			<button
+				onclick={clearAllFilters}
+				class="rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-white/80 backdrop-blur-sm transition-colors hover:bg-white/10"
+			>
 				{t.clearFilters}
 			</button>
 		{/if}
@@ -236,19 +239,23 @@
 		<div class="flex flex-wrap gap-2">
 			{#each filters.selectedTags as tag (tag)}
 				{@const originalCaseTag = findOriginalCaseTag(tag)}
-				<span class="chip is-on">
+				<span
+					class="inline-flex items-center gap-1 rounded-full bg-white/15 px-3 py-1 text-sm text-white/80"
+				>
 					{translateTag(global, originalCaseTag)}
 					<button
 						onclick={() => handleTagToggle(originalCaseTag)}
-						class="-mr-1 ml-1 rounded-[3px] p-0.5 align-middle hover:bg-accent/20"
+						class="rounded-full p-1 hover:bg-white/20"
 						aria-label="{t.removeFilter} {originalCaseTag}"
 					>
-						<X class="inline h-3 w-3" />
+						<X class="h-3 w-3" />
 					</button>
 				</span>
 			{/each}
 			{#each filters.selectedStatuses as status (status)}
-				<span class="chip is-on">
+				<span
+					class="inline-flex items-center gap-1 rounded-full border border-blue-400/20 bg-blue-500/20 px-3 py-1 text-sm text-blue-200"
+				>
 					{status === 'completed'
 						? t.statusCompleted
 						: status === 'in-progress'
@@ -260,7 +267,7 @@
 									: status}
 					<button
 						onclick={() => handleStatusToggle(status)}
-						class="-mr-1 ml-1 rounded-[3px] p-0.5 align-middle hover:bg-accent/20"
+						class="rounded-full p-1 hover:bg-blue-400/20"
 						aria-label="{t.removeFilter} {status}"
 					>
 						<X class="h-3 w-3" />

@@ -1,14 +1,10 @@
 <script lang="ts">
 	import { browser } from '$app/environment';
 	import { page } from '$app/state';
+	import FloatingNav from '$lib/components/FloatingNav.svelte';
 	import Footer from '$lib/components/Footer.svelte';
-	import Chassis from '$lib/components/Chassis.svelte';
-	import LanguageSelector from '$lib/components/ui/LanguageSelector.svelte';
 	import Navbar from '$lib/components/Navbar.svelte';
-	import AccentPicker from '$lib/components/ui/AccentPicker.svelte';
 	import BackToTop from '$lib/components/ui/BackToTop.svelte';
-	import { Menu } from '@lucide/svelte';
-	import { fly } from 'svelte/transition';
 	import '$lib/styles/globals.css';
 	import { initializeAnalytics, isAnalyticsReady, trackPageView } from '$lib/utils/analytics';
 	import {
@@ -47,41 +43,6 @@
 			window.addEventListener('scroll', handleScroll);
 			return () => window.removeEventListener('scroll', handleScroll);
 		}
-	});
-
-	// Shortcut da tastiera: 1-4 -> sezione corrispondente (coi numeri della navbar).
-	$effect(() => {
-		if (!browser) return;
-		const onKeydown = (e: KeyboardEvent) => {
-			if (e.metaKey || e.ctrlKey || e.altKey) return;
-			const target = e.target as HTMLElement | null;
-			if (
-				target &&
-				(target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable)
-			)
-				return;
-			const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-			if (e.key === '0' || e.key === 'Home') {
-				e.preventDefault();
-				window.scrollTo({ top: 0, behavior: reduce ? 'auto' : 'smooth' });
-				return;
-			}
-			if (e.key === 'End') {
-				e.preventDefault();
-				window.scrollTo({ top: document.body.scrollHeight, behavior: reduce ? 'auto' : 'smooth' });
-				return;
-			}
-			const idx = ['1', '2', '3', '4'].indexOf(e.key);
-			if (idx === -1) return;
-			const route = data.global?.navigation?.[idx];
-			if (!route) return;
-			const el = document.getElementById(route.link.replace('#', ''));
-			if (!el) return;
-			e.preventDefault();
-			el.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth' });
-		};
-		window.addEventListener('keydown', onKeydown);
-		return () => window.removeEventListener('keydown', onKeydown);
 	});
 
 	// Initialize analytics on mount
@@ -124,15 +85,13 @@
 		return false;
 	});
 
-	// Titolo per route. Il brand va in coda come suffisso: `global.title` contiene gia'
-	// il nome, quindi in home e nei fallback si usa tal quale, senza raddoppiarlo.
-	const BRAND = 'Simone Salerno';
-
+	// Dynamic title based on current route with error handling
 	let pageTitle = $derived.by(() => {
-		if (!data?.global?.title) return BRAND;
+		if (!data?.global?.title) return 'Simone Salerno';
 
+		// If page is in error state, return default title
 		if (isPageError) {
-			return data.global.title;
+			return `Simone Salerno • ${data.global.title}`;
 		}
 
 		const currentRoute = page.route.id;
@@ -140,16 +99,16 @@
 
 		// Home page
 		if (currentRoute === '/[page=lang]') {
-			return data.global.title;
+			return `Simone Salerno • ${data.global.title}`;
 		}
 
 		// Projects/Articles listing pages
 		if (currentRoute === '/[page=lang]/[route=route]' && params.page && params.route) {
 			const routeType = sectionOf(params.route, params.page, data.navigation);
 			if (routeType === 'projects') {
-				return `${data.projectsPage?.title || 'Projects'} • ${BRAND}`;
+				return `Simone Salerno • ${data.projectsPage?.title || 'Projects'}`;
 			} else if (routeType === 'blog') {
-				return `${data.blogPage?.title || 'Blog'} • ${BRAND}`;
+				return `Simone Salerno • ${data.blogPage?.title || 'Blog'}`;
 			}
 		}
 
@@ -157,12 +116,12 @@
 		if (currentRoute === '/[page=lang]/[route=route]/[sub]') {
 			const pageData = page.data;
 			if (pageData?.content?.translations?.[pageData.currentLang]?.title) {
-				return `${pageData.content.translations[pageData.currentLang].title} • ${BRAND}`;
+				return `Simone Salerno • ${pageData.content.translations[pageData.currentLang].title}`;
 			}
 		}
 
 		// Fallback
-		return data.global.title;
+		return `Simone Salerno • ${data.global.title}`;
 	});
 
 	// Dynamic locale for meta tags
@@ -321,13 +280,14 @@
 <a href="#main-content" class="skip-link">{skipLabel}</a>
 
 <div
-	class="mx-auto flex min-h-screen w-full max-w-[90vw] flex-col overflow-x-hidden scroll-smooth pt-[calc(var(--chassis-gutter)+var(--chassis-nav-h))] pb-[var(--chassis-gutter)] text-white antialiased selection:bg-white/10"
+	class="mx-auto flex min-h-screen w-full max-w-[90vw] flex-col overflow-x-hidden scroll-smooth text-white antialiased selection:bg-white/10"
 >
-	<!-- Telaio strumentale attorno al contenuto (solo da lg in su). -->
-	<Chassis {data} {scrollY} />
-
 	<!-- Passa dati come props ai componenti -->
-	<Navbar {data} bind:menuOpen />
+	<Navbar {data} bind:menuOpen isFloatingNavVisible={scrollY > 350} />
+
+	{#if isLanguageCodeValid}
+		<FloatingNav {data} bind:menuOpen {scrollY} />
+	{/if}
 
 	<main id="main-content" class="flex-1">
 		{@render children()}
@@ -337,39 +297,5 @@
 
 	{#if scrollY > 350 && !menuOpen}
 		<BackToTop global={data.global} />
-
-		<!-- Burger flottante solo sotto lg: li' la navbar scorre via col contenuto e
-		     senza questo il menu resterebbe irraggiungibile. Da lg in su la barra dei
-		     link e' fissata nel telaio e non serve. -->
-		<button
-			onclick={() => (menuOpen = true)}
-			aria-label="Menu"
-			aria-expanded="false"
-			class="key key--icon key--float fixed top-6 right-4 z-50 lg:hidden"
-			in:fly={{ y: -10, duration: 300 }}
-			out:fly={{ y: -10, duration: 200 }}
-		>
-			<Menu class="h-5 w-5" />
-		</button>
-	{/if}
-
-	{#if !menuOpen}
-		<AccentPicker accent={data.accent} lang={currentLocale} />
-	{/if}
-
-	<!-- Selettore lingua agganciato al rail superiore del telaio, come gli altri
-	     controlli. Sotto lg il telaio non c'e' e la lingua resta nell'overlay mobile. -->
-	{#if isLanguageCodeValid}
-		<div
-			class="fixed top-[calc(var(--chassis-gutter)+var(--chassis-nav-h)+1.5rem)] left-0 z-50 hidden lg:block"
-		>
-			<LanguageSelector
-				variant="rail"
-				languages={data.languages}
-				selectedLanguage={data.selectedLanguage}
-				navigation={data.navigation}
-				slugMap={data.slugMap}
-			/>
-		</div>
 	{/if}
 </div>

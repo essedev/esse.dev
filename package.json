@@ -6,7 +6,6 @@
 	"scripts": {
 		"dev": "vite dev",
 		"validate-content": "tsx scripts/validate-content.ts",
-		"generate-favicons": "tsx scripts/generate-favicons.ts",
 		"build": "pnpm validate-content && pnpm generate-images && pnpm generate-og-images && vite build",
 		"preview": "pnpm run build && wrangler dev",
 		"prepare": "svelte-kit sync || echo ''",
@@ -27,9 +26,7 @@
 	"devDependencies": {
 		"@eslint/compat": "^2.1.0",
 		"@eslint/js": "^10.0.1",
-		"@fontsource/geist-sans": "^5.2.5",
-		"@fontsource/ibm-plex-sans": "^5.2.8",
-		"@fontsource/martian-mono": "^5.2.7",
+		"@fontsource/geist-sans": "^5.3.0",
 		"@playwright/test": "^1.60.0",
 		"@resvg/resvg-js": "^2.6.2",
 		"@sveltejs/adapter-auto": "^7.0.1",
@@ -52,6 +49,7 @@
 		"sharp": "^0.34.5",
 		"svelte": "^5.55.9",
 		"svelte-check": "^4.4.8",
+		"svelte-inview": "^4.0.4",
 		"tailwindcss": "^4.3.0",
 		"tsx": "^4.22.3",
 		"typescript": "^6.0.3",

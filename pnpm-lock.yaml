@@ -33,14 +33,8 @@ importers:
         specifier: ^10.0.1
         version: 10.0.1(eslint@10.4.0(jiti@2.7.0))
       '@fontsource/geist-sans':
-        specifier: ^5.2.5
-        version: 5.2.5
-      '@fontsource/ibm-plex-sans':
-        specifier: ^5.2.8
-        version: 5.2.8
-      '@fontsource/martian-mono':
-        specifier: ^5.2.7
-        version: 5.2.7
+        specifier: ^5.3.0
+        version: 5.3.0
       '@playwright/test':
         specifier: ^1.60.0
         version: 1.60.0
@@ -107,6 +101,9 @@ importers:
       svelte-check:
         specifier: ^4.4.8
         version: 4.4.8(picomatch@4.0.4)(svelte@5.55.9(@typescript-eslint/types@8.59.4))(typescript@6.0.3)
+      svelte-inview:
+        specifier: ^4.0.4
+        version: 4.0.4(svelte@5.55.9(@typescript-eslint/types@8.59.4))
       tailwindcss:
         specifier: ^4.3.0
         version: 4.3.0
@@ -580,14 +577,8 @@ packages:
     resolution: {integrity: sha512-rZAP3aVgB9ds9KOeUSL+zZ21hPmo8dh6fnIFwRQj5EAZl9gzR7wxYbYXYysAM8CTqGmUGyp2S4kUdV17MnGuWQ==}
     engines: {node: ^20.19.0 || ^22.13.0 || >=24}
 
-  '@fontsource/geist-sans@5.2.5':
-    resolution: {integrity: sha512-anllOHyJbElRs9fV15TeDRqAeb1IKm4bSknPl6ZMoyPTx1BBy7logudcUwpNjmQLkzn4Q0JGQLRCUKJYoyST6A==}
-
-  '@fontsource/ibm-plex-sans@5.2.8':
-    resolution: {integrity: sha512-eztSXjDhPhcpxNIiGTgMebdLP9qS4rWkysuE1V7c+DjOR0qiezaiDaTwQE7bTnG5HxAY/8M43XKDvs3cYq6ZYQ==}
-
-  '@fontsource/martian-mono@5.2.7':
-    resolution: {integrity: sha512-DU0WVmso0FjwnNf7Z80FhnrF/pCMgNi9ZfHTn1Ws7TM6u00CwV6esjaFkn3blnchn0pRwt63/M/2vfBe6J4mFg==}
+  '@fontsource/geist-sans@5.3.0':
+    resolution: {integrity: sha512-AmG7cE1AvE4NHROPaOl1sN+a02cB5xy6pA/ZV76HXqWTCsJTV2SCBc9DTFHfJqnVOODm7HhXIYtUIb75NP5QXQ==}
 
   '@humanfs/core@0.19.2':
     resolution: {integrity: sha512-UhXNm+CFMWcbChXywFwkmhqjs3PRCmcSa/hfBgLIb7oQ5HNb1wS0icWsGtSAUNgefHeI+eBrA8I1fxmbHsGdvA==}
@@ -2044,6 +2035,11 @@ packages:
       svelte:
         optional: true
 
+  svelte-inview@4.0.4:
+    resolution: {integrity: sha512-PlXNSHHijvQ6MhmSYUj6cMyS+39NttoTffk7W5WYF8T2tsyLgJnKhyuAF+/hSujbY0vpsmqXaMd2nolEKvR8Kw==}
+    peerDependencies:
+      svelte: ^3.0.0 || ^4.0.0 || ^5.0.0 || ^5.0.0-next
+
   svelte@5.55.9:
     resolution: {integrity: sha512-fTjjT8cHLDwigcu2j3pv7Jq04LklXevPB8uBgyHNiTXv+RMNvVnrjS4UEYrLMkhuq1vpCodHjiW+z/95SDs/fg==}
     engines: {node: '>=18'}
@@ -2563,11 +2559,7 @@ snapshots:
       '@eslint/core': 1.2.1
       levn: 0.4.1
 
-  '@fontsource/geist-sans@5.2.5': {}
-
-  '@fontsource/ibm-plex-sans@5.2.8': {}
-
-  '@fontsource/martian-mono@5.2.7': {}
+  '@fontsource/geist-sans@5.3.0': {}
 
   '@humanfs/core@0.19.2':
     dependencies:
@@ -3885,6 +3877,10 @@ snapshots:
       postcss-selector-parser: 7.1.1
       semver: 7.8.1
     optionalDependencies:
+      svelte: 5.55.9(@typescript-eslint/types@8.59.4)
+
+  svelte-inview@4.0.4(svelte@5.55.9(@typescript-eslint/types@8.59.4)):
+    dependencies:
       svelte: 5.55.9(@typescript-eslint/types@8.59.4)
 
   svelte@5.55.9(@typescript-eslint/types@8.59.4):

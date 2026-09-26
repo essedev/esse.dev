@@ -45,18 +45,19 @@
 </div>
 -->
 
-<div id="top">
+<div id="top" class="border-b border-white/5">
 	<div
-		class="mx-auto flex min-h-[80vh] w-full max-w-screen-2xl items-center justify-start px-4 sm:px-8 lg:px-14"
+		class="mx-auto flex min-h-[80vh] w-full max-w-screen-2xl items-center justify-center px-4 sm:px-8 lg:px-14"
 	>
 		<WelcomeSection welcome={data.welcome} />
 	</div>
 </div>
 
-<div id={sanitizeId(data.global.navigation[0]?.link || '#')}>
-	<div class="section mx-auto w-full max-w-screen-2xl px-4 sm:px-8 lg:px-14">
+<div id={sanitizeId(data.global.navigation[0]?.link || '#')} class="border-t border-white/5">
+	<div
+		class="mx-auto w-full max-w-screen-2xl px-4 pt-20 pb-24 sm:px-8 sm:pt-28 sm:pb-32 lg:px-14 2xl:py-36"
+	>
 		<ProjectsSection
-			index={1}
 			projects={data.projects}
 			selectedLanguage={data.selectedLanguage}
 			navigation={data.navigation}
@@ -67,16 +68,19 @@
 	</div>
 </div>
 
-<div id={sanitizeId(data.global.navigation[1]?.link || '#')}>
-	<div class="section mx-auto w-full max-w-screen-2xl px-4 sm:px-8 lg:px-14">
-		<AboutSection index={2} about={data.about} />
+<div id={sanitizeId(data.global.navigation[1]?.link || '#')} class="border-t border-white/5">
+	<div
+		class="mx-auto w-full max-w-screen-2xl px-4 pt-20 pb-24 sm:px-8 sm:pt-28 sm:pb-32 lg:px-14 2xl:py-36"
+	>
+		<AboutSection about={data.about} />
 	</div>
 </div>
 
-<div id={sanitizeId(data.global.navigation[2]?.link || '#')}>
-	<div class="section mx-auto w-full max-w-screen-2xl px-4 sm:px-8 lg:px-14">
+<div id={sanitizeId(data.global.navigation[2]?.link || '#')} class="border-t border-white/5">
+	<div
+		class="mx-auto w-full max-w-screen-2xl px-4 pt-20 pb-24 sm:px-8 sm:pt-28 sm:pb-32 lg:px-14 2xl:py-36"
+	>
 		<ArticlesSection
-			index={3}
 			articles={data.articles}
 			selectedLanguage={data.selectedLanguage}
 			navigation={data.navigation}
@@ -87,8 +91,10 @@
 	</div>
 </div>
 
-<div id={sanitizeId(data.global.navigation[3]?.link || '#')}>
-	<div class="section mx-auto w-full max-w-screen-2xl px-4 sm:px-8 lg:px-14">
-		<ContactSection index={4} contact={data.contact} />
+<div id={sanitizeId(data.global.navigation[3]?.link || '#')} class="border-t border-white/5">
+	<div
+		class="mx-auto w-full max-w-screen-2xl px-4 pt-20 pb-24 sm:px-8 sm:pt-28 sm:pb-32 lg:px-14 2xl:py-36"
+	>
+		<ContactSection contact={data.contact} />
 	</div>
 </div>

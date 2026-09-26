@@ -157,6 +157,17 @@ Design system di base, su cui la pixel art si poserà in seguito. Decisioni pres
 - ~~**Contenuti dei progetti**~~: fatto nel blocco 4 (selezione ridotta, copy
   riscritto in prima persona, vetrina + indice).
 
+## Stop e ripartenza (2026-09-26)
+
+Il laboratorio è fermo, non cancellato. Dopo il blocco 5 (token, keycap, telaio come
+dispositivo con schermo) la direzione non convinceva più: l'identità stava negli
+accessori (cornice, tasti, rail, orologio, scanline) e ogni scelta di coerenza fisica
+generava eccezioni da mantenere. Il branch `restyle/base` riparte dal look di `main`
+(semplice, leggibile) tenendo contenuti e schema del laboratorio, e lo migliora senza
+snaturarlo. Cosa del laboratorio vale ancora e si può ripescare: grigi neutri e token
+di linea/raggio, stato come LED con etichetta neutra, listing progetti a due densità,
+scheda tecnica sticky nel dettaglio, placeholder a schermo spento, reveal unificato.
+
 ## Stato (2026-09-22)
 
 - Voce + label "Esplorazione" su `main` (deployate).

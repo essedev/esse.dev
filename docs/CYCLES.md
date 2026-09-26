@@ -630,3 +630,13 @@ diversi per i tre controlli flottanti di mobile, testo a 1300px su desktop.
 - Cantieri grossi: animazioni come sistema. La pixel art autoprodotta è scartata
   (vedi `RESTYLE.md`); contenuti progetti (Blocco 4) e sistema UI (Blocco 5) fatti.
 - Prima del merge/live: `build` + `test:ci` + aggiornare gli E2E + merge su `main`.
+
+## Ciclo 10 - Ripartenza dallo stile base (2026-09-26)
+
+Branch `restyle/base` da `restyle/laboratory`. Il livello di presentazione torna a
+quello di `main` (`app.html`, `globals.css`, componenti, sezioni, route, OG, favicon,
+`svelte-inview` e `FloatingNav` ripristinati); restano contenuti, schema (`eyebrow`),
+loader, `translations.ts` e test unit. Tolti `Chassis`, `EntryIndex`, `SectionHeader`,
+`AccentPicker`, `themes.ts`, `reveal.ts`, `shelf.ts` e lo script favicon. Motivo in
+`RESTYLE.md` ("Stop e ripartenza"). Gate: lint, check 0 errori, build, 193 unit,
+32 e2e. `restyle/laboratory` resta intero per ripescare i pezzi che valgono.

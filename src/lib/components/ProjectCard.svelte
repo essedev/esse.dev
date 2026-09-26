@@ -12,50 +12,51 @@
 		link,
 		tags,
 		status,
-		year,
 		global
 	}: ProjectCardProps = $props();
-
-	// Tre tag al massimo, su una riga sola: se non ci stanno si stringono con l'ellissi,
-	// il conteggio dice quanti ne restano. La lista completa sta nel dettaglio.
-	const MAX_TAGS = 3;
-	let shown = $derived((tags ?? []).slice(0, MAX_TAGS));
-	let hidden = $derived(Math.max(0, (tags ?? []).length - MAX_TAGS));
 </script>
 
-<!-- Sotto sm la miniatura è una fascia 21:9: la card resta una vetrina ma non spende
-     metà schermo in un'immagine sola. Da sm torna 16:9. -->
-<a href={`${base}${link}`} class="panel panel--lift group flex h-full flex-col p-4 sm:p-5">
-	<OptimizedImage
-		src={featuredImage}
-		alt={title}
-		className="panel__media aspect-[21/9] sm:aspect-video"
-		showPlaceholder={Boolean(featuredImagePlaceholder)}
-		sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
-	/>
+<div
+	class="rounded-3xl border border-white/10 bg-white/1 backdrop-blur-md transition-all duration-300 ease-in-out hover:scale-105 hover:rotate-1"
+>
+	<a href={`${base}${link}`} class="relative block">
+		<OptimizedImage
+			src={featuredImage}
+			alt={title}
+			className="aspect-video rounded-t-3xl saturate-[0.8] hover:saturate-100 transition-all duration-300 ease-in-out"
+			showPlaceholder={Boolean(featuredImagePlaceholder)}
+			sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
+		/>
+		{#if status}
+			<StatusBadge {status} {global} class="absolute top-3 left-3" />
+		{/if}
+	</a>
+	<div class="px-6 py-5">
+		<a href={`${base}${link}`}>
+			<h5 class="mb-2 text-2xl font-medium text-gray-100">
+				{title}
+			</h5>
+		</a>
 
-	<div class="mt-4 flex flex-1 flex-col">
-		<div class="mb-2.5 flex items-center justify-between gap-x-3">
-			{#if status}
-				<StatusBadge {status} {global} />
-			{/if}
-			{#if year}
-				<span class="font-mono text-xs text-gray-500 tabular-nums">{year}</span>
-			{/if}
-		</div>
+		<p class="mb-3 text-base text-gray-300 lg:text-xl">
+			{excerpt}
+		</p>
 
-		<h5 class="mb-1.5 text-lg font-medium text-gray-100">{title}</h5>
-		<p class="mb-4 line-clamp-3 text-sm leading-relaxed text-gray-400">{excerpt}</p>
-
-		{#if shown.length > 0}
-			<div class="mt-auto flex min-w-0 gap-1.5">
-				{#each shown as tag (tag)}
-					<span class="chip">{tag}</span>
+		{#if tags && tags.length > 0}
+			<div class="flex flex-wrap items-center gap-2">
+				{#each tags.slice(0, 3) as tag (tag)}
+					<span class="rounded-full bg-white/5 px-3 py-1 text-xs text-gray-400">
+						{tag}
+					</span>
 				{/each}
-				{#if hidden > 0}
-					<span class="chip chip--count shrink-0">+{hidden}</span>
+				{#if tags.length > 3}
+					<span
+						class="flex h-6 w-6 items-center justify-center rounded-full bg-white/5 text-xs text-gray-400"
+					>
+						+{tags.length - 3}
+					</span>
 				{/if}
 			</div>
 		{/if}
 	</div>
-</a>
+</div>

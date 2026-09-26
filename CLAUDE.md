@@ -55,81 +55,21 @@ deploy avviene via Cloudflare Workers Builds al push, il gate di qualità è loc
 - Gotcha satori: font `woff`/`ttf` (mai `woff2`); dimensioni img nello `style`,
   non come attributi `width`/`height`.
 
-## Design system (restyle "Laboratorio")
+## Design system
 
-Rebrand visivo in corso sul branch `restyle/laboratory` (non ancora mergiato). Vision
-e decisioni in `docs/RESTYLE.md`, log in `docs/CYCLES.md` (Ciclo 9). In sintesi:
+Branch `restyle/base`: look di `main` (Geist, fondo a gradiente blu-nero, card e
+pillole) con i contenuti e lo schema del branch `restyle/laboratory` (progetti
+ricurati, `eyebrow` nel welcome, voce). Il tentativo "Laboratorio" con telaio, keycap
+e mono resta intero su `restyle/laboratory`, non mergiato: vision e motivi dello stop
+in `docs/RESTYLE.md`, log in `docs/CYCLES.md` (Ciclo 9 e 10). Da qui si migliora lo
+stile base senza snaturarlo; ogni pezzo del laboratorio si può ripescare da lì.
 
-- Font: **Martian Mono** per lo strumento (hero, nav, titoli di sezione, etichette,
-  tasti, readout) + **IBM Plex Sans** per il contenuto (titoli di card, indice e
-  dettaglio, prosa), via Google Fonts in `app.html`. Il mono ha due registri: minuscolo
-  per il testo "battuto" (nav, tagline, eyebrow), maiuscolo con tracking per le
-  etichette macchina (`.label`, tasti, rail). Pesi: display 400/500, titoli di
-  elemento 500, prosa 300 (dal body). I grigi `gray-*` sono rimappati su neutral nel
-  `@theme`: mai `text-white/NN` per il testo. Icone solo Lucide, niente frecce
-  Unicode. Lo stato è un LED colorato con etichetta neutra (`StatusBadge`).
-- Accento e arrotondamento da token nel `@theme` (`src/lib/styles/globals.css`):
-  `--color-accent` (default azzurro `#2cc3f7`) + `--radius-sm/md/lg/xl`. **L'accento
-  vive in un punto solo:** glow e ombre lo derivano via `color-mix(var(--color-accent))`,
-  non hardcodano l'rgba. La sitemap è un CSS separato (`static/sitemap.css`) col suo
-  `--accent`. Un `AccentPicker` (montato in `+layout.svelte`: sotto `lg` un tasto del
-  dock in basso a sinistra che cicla i temi, sopra una colonna di LED nel rail
-  sinistro) sovrascrive `--color-accent` su `<html>` a runtime (azzurro/arancione/
-  viola, persistito in cookie così l'SSR lo applica pre-paint, crossfade CSS): se
-  aggiungi un colore-accento NON hardcodarlo.
-- Due mondi, in `globals.css` (`@layer components`). **Il telaio è hardware:** la
-  gutter è la scocca a gradiente (`--shell`), i suoi controlli sono keycap rilevati
-  (`.key--hw`: faccia a gradiente, filo di luce, bordo inferiore nero da 2px che
-  sparisce alla pressione; `.key--led` per quelli con il LED dentro). **Lo schermo è
-  software:** dentro tutto è piatto e la profondità è solo luce. `.panel` (card,
-  indice, filtri, dropdown: fondo `--surface`, bordo `line-2`, raggio md;
-  `.panel--lift` accende bordo e fondo in hover, senza spostamento; `.panel__media`
-  riquadro a filo con scanline), `.key` (pulsante: fondo `--surface-raised`, bordo
-  sottile, icona in accento; `.key--primary` e `aria-pressed`/`.is-on` pieni
-  d'accento; `.key--ghost` testo spento; `.key--sm`; `.key--icon` 44px; `.key--float`
-  con ombra per i flottanti mobile; `.key-group` per i segmenti), `.chip` (tag e
-  filtri, `.chip--count` per il conteggio), `.field` (input). Etichette mono maiuscole
-  con `.label`, ritmo delle sezioni con `.section`. Token: due raggi (`--radius-sm`
-  controlli, `--radius-md` pannelli, `--radius-screen` per lo schermo del telaio), tre
-  linee (`line-1/2/accent`), quattro taglie di mono (`text-tele` rail, `text-label`,
-  `text-xs` date, `text-control` tasti). Un valore di bordo, fondo, raggio, ombra o
-  taglia scritto a mano in un componente è un errore: usa il token o la classe. Un
-  keycap dentro lo schermo è un errore di modello: lì si usa `.key`.
-- Controlli: tutto ciò che si clicca è un `.key`. Non ricopiare classi Tailwind di
-  bordo/fondo su un bottone, aggiungi solo larghezza o padding se serve. Sotto `lg` i
-  tre flottanti (menu, torna su, accento che cicla i temi) sono lo stesso
-  `key key--icon key--float` e il footer tiene 6rem di clearance in basso; da `lg`
-  i controlli del telaio (lingua e LED dell'accento nel rail sinistro, torna-su nel
-  destro) sono keycap da 26px (`key key--hw`).
-  Switch animazioni (`MotionToggle`). Le animazioni rispettano il motion toggle; il
-  thumb dello switch è esentato apposta (vedi `.motion-thumb` in globals - Tailwind
-  v4 anima `translate`, non `transform`).
-- Logo testuale `essedev` (`Logo.svelte`), voci nav a indice numerato, menu mobile a
-  overlay numerato dentro `max-w-[90vw]`.
-- **Telaio strumentale** (`Chassis.svelte`, montato nel `+layout.svelte`): cornice fissa
-  che porta stato vivo (sezione corrente, avanzamento scroll, ora di Milano, claim). La
-  gutter è la scocca del dispositivo (`.chassis-matte`, stesso materiale delle card) e lo
-  schermo è incassato (`.chassis-frame`: seam nero, ombra verso dentro, vignetta). La
-  navbar da `lg` è una fascia con la faccia della scocca (`lg:nav-shell`), le celle
-  restano legende piatte: i link sono un menu, non tasti.
-  Vive nella gutter del token `--chassis-gutter`, che vale `0px` sotto `lg` e `34px`
-  sopra: **qualunque elemento `fixed` va staccato dal bordo con quel token** (vedi
-  `AccentPicker`, `BackToTop`), altrimenti finisce sopra un rail. Sotto `lg` il telaio
-  non si monta e il claim torna nella status bar della navbar.
-- Una sola superficie di navigazione: la barra dei link (`Navbar.svelte`) è `fixed` e
-  non `sticky`, perché `overflow-x: hidden` su body e container (serve alla griglia da
-  300vw) ne farebbe lo scrollport e non si aggancerebbe mai. Non c'è più una floating
-  nav: se serve un controllo persistente, va nel telaio.
-- `SectionHeader.svelte`: indice numerato + filo + readout dai dati della sezione. Il
-  readout si passa solo se un dato reale lo sostiene, mai un conteggio di cortesia.
-- Prosa e pagine di dettaglio: i paragrafi di About e Contatti hanno `max-w-prose`.
-  Progetto e articolo: titolo (mono) e sommario a tutta larghezza, poi da `lg` due
-  colonne, scheda tecnica sticky a sinistra (stato, anno, repo, stack; data, lettura,
-  tag) e corpo a destra a tutta colonna: la misura la governa la larghezza della
-  scheda, che cresce con lo schermo (16, 18, 22rem). Niente immagine hero finché non esistono
-  immagini vere (`src/lib/assets/images` è vuota).
-  Il placeholder di `OptimizedImage` è uno schermo spento con griglia, bagliore
-  d'accento ed etichetta, non una lastra grigia.
+- Stile in `src/lib/styles/globals.css` (Tailwind 4, `@theme`). Font via Google Fonts
+  in `app.html`, OG con `@fontsource/geist-sans` (satori vuole woff).
+- Reveal-on-scroll con `svelte-inview` dentro ogni sezione. `MotionToggle` governa le
+  animazioni (`data-motion` su `<html>`); il thumb dello switch è esentato
+  (`.motion-thumb` in globals: Tailwind v4 anima `translate`, non `transform`).
+- Navbar `fixed` più `FloatingNav` che compare allo scroll; `BackToTop` flottante.
 - Shortcut tastiera (`+layout.svelte`): `1-4` -> sezioni, `0`/`Home` -> top,
   `End` -> fondo.
 

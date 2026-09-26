@@ -1,25 +1,26 @@
 import { logoBase64 } from '$lib/assets/logo-base64.js';
+import { noiseBase64 } from '$lib/assets/noise-base64.js';
 
 /**
- * Common styles and constants for OG layouts (restyle "Laboratorio")
+ * Common styles and constants for OG layouts
  */
 export const OG_CONSTANTS = {
 	WIDTH: 1200,
 	HEIGHT: 630,
 	COLORS: {
-		BG: '#0c0c0c',
-		ACCENT: '#2cc3f7',
-		ACCENT_SOFT: '#7dd9fb',
+		GRADIENT: {
+			START: '#0c0c0c',
+			MID: '#131b49',
+			END: '#20327e'
+		},
 		TEXT: {
-			PRIMARY: '#f4f4f5',
-			SECONDARY: '#d4d4d8',
-			MUTED: '#8a8a8a',
-			FAINT: '#5a5a5a'
+			PRIMARY: '#ffffff',
+			SECONDARY: '#e5e5e5',
+			MUTED: '#a1a1aa'
 		}
 	},
 	FONTS: {
-		MONO: 'Martian Mono',
-		SANS: 'IBM Plex Sans'
+		FAMILY: "Geist, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif"
 	}
 } as const;
 
@@ -83,5 +84,26 @@ export function createDetailLayoutData(
 		coverImage,
 		logo: { src: logoBase64, width: 120, height: 120 },
 		hasImage: !!coverImage
+	};
+}
+
+/**
+ * Common background and noise pattern for all layouts
+ */
+export function getCommonBackgroundElements() {
+	return {
+		gradient: {
+			id: 'bg',
+			colors: [
+				{ offset: '0%', color: OG_CONSTANTS.COLORS.GRADIENT.START },
+				{ offset: '50%', color: OG_CONSTANTS.COLORS.GRADIENT.MID },
+				{ offset: '100%', color: OG_CONSTANTS.COLORS.GRADIENT.END }
+			]
+		},
+		noise: {
+			src: noiseBase64,
+			opacity: 0.5,
+			blendMode: 'overlay'
+		}
 	};
 }

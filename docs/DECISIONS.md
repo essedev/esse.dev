@@ -37,7 +37,7 @@ listing resta neutro, ordinato per data e filtrabile.
 
 ## #4 - Una sola superficie di navigazione, barra `fixed`
 
-**Status:** attiva (Ciclo 9, blocco 3)
+**Status:** sospesa su `restyle/base` (Ciclo 10), era attiva (Ciclo 9, blocco 3)
 
 Rimossa la floating nav, che duplicava la navbar; i controlli persistenti vanno nel
 telaio (`Chassis.svelte`). La barra è `fixed` e non `sticky`: `overflow-x: hidden` su
@@ -46,7 +46,7 @@ lo sticky non si aggancerebbe mai. Scartate: floating nav + navbar, sticky.
 
 ## #5 - Listing progetti a due densità, senza paginazione
 
-**Status:** attiva (Ciclo 9, blocco 4)
+**Status:** sospesa su `restyle/base` (Ciclo 10), era attiva (Ciclo 9, blocco 4)
 
 In corso e completati come card con immagine (vetrina), archiviati e idee come indice
 tipografico a una riga (`utils/shelf.ts`, `EntryIndex`). Il listing progetti non è
@@ -64,7 +64,7 @@ cartella del progetto.
 
 ## #7 - Favicon generate da script, output committati fuori dalla build
 
-**Status:** attiva (Ciclo 9, blocco 4)
+**Status:** sospesa su `restyle/base` (Ciclo 10), era attiva (Ciclo 9, blocco 4)
 
 Tutte le taglie (svg, ico, 96px, apple-touch, 192/512, maskable) escono da
 `scripts/generate-favicons.ts` a partire da un solo disegno, così il set non diverge.
@@ -75,7 +75,7 @@ set era divergente).
 
 ## #8 - Token e materiali: nessun valore visivo scritto a mano nei componenti
 
-**Status:** attiva (Ciclo 9, blocco 5)
+**Status:** sospesa su `restyle/base` (Ciclo 10), era attiva (Ciclo 9, blocco 5)
 
 Raggi, linee, superfici e taglie del mono vivono come token nel `@theme` e ogni
 contenitore, chip, campo o etichetta usa una classe di `@layer components`
@@ -87,7 +87,7 @@ componente).
 
 ## #9 - Dispositivo con schermo: hardware fuori, software dentro
 
-**Status:** attiva (Ciclo 9, blocco 5), sostituisce la prima versione (keycap ovunque)
+**Status:** sospesa su `restyle/base` (Ciclo 10), era attiva (Ciclo 9, blocco 5), sostituisce la prima versione (keycap ovunque)
 
 Il telaio è un oggetto fisico: scocca e keycap (rail, lingua, LED, torna-su, fascia
 della navbar). Lo schermo mostra software: pannelli, pulsanti, chip e campi sono

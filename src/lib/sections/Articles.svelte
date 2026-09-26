@@ -1,13 +1,12 @@
 <script lang="ts">
 	import { base } from '$app/paths';
-	import EntryIndex from '$lib/components/EntryIndex.svelte';
+	import ArticleCard from '$lib/components/ArticleCard.svelte';
 	import SearchFilter from '$lib/components/SearchFilter.svelte';
 	import Pagination from '$lib/components/ui/Pagination.svelte';
-	import type { ArticleItem, ArticlesSectionProps, FilterState } from '$lib/types/content';
+	import type { ArticlesSectionProps, FilterState } from '$lib/types/content';
 	import { getTranslations, translateTags, type TranslationKey } from '$lib/utils/translations';
 	import { ArrowRight, FileText } from '@lucide/svelte';
-	import { reveal } from '$lib/actions/reveal';
-	import SectionHeader from '$lib/components/SectionHeader.svelte';
+	import { inview, type Options } from 'svelte-inview';
 
 	// Receive data as props
 	let {
@@ -20,14 +19,18 @@
 		global,
 		pagination,
 		activeFilters,
-		availableTags,
-		index,
-		collection
+		availableTags
 	}: ArticlesSectionProps & {
 		pagination?: { currentPage: number; totalPages: number };
 		activeFilters?: FilterState;
 		availableTags?: string[];
 	} = $props();
+
+	let isInView = $state(false);
+	const options: Options = {
+		rootMargin: '-100px',
+		unobserveOnEnter: true
+	};
 
 	// The `articles` prop now contains only the items for the current page.
 	// We can still apply a language filter for robustness, though data should be pre-filtered.
@@ -51,51 +54,23 @@
 	let blogPageLink = $derived(
 		`${base}/${selectedLanguage}/${navigation[selectedLanguage].articles}`
 	);
-
-	// Il blog è un indice a righe, non una griglia di card: i pezzi sono testo, e una card
-	// con immagine segnaposto non aggiunge niente a titolo, data e una frase.
-	const formatDate = (iso: string) =>
-		new Date(iso).toLocaleDateString(selectedLanguage === 'it' ? 'it-IT' : 'en-US', {
-			year: 'numeric',
-			month: 'short',
-			day: 'numeric'
-		});
-
-	const toEntry = (a: ArticleItem) => {
-		const tr = a.translations[selectedLanguage];
-		return {
-			key: a.meta.id,
-			href: `/${selectedLanguage}/${navigation[selectedLanguage].articles}/${tr.slug}`,
-			meta: formatDate(a.meta.published_date),
-			title: tr.title,
-			excerpt: tr.excerpt,
-			tags: translateTags(global, tr.tags)
-		};
-	};
-
-	// Readout dell'header: sotto i due pezzi resta vuoto, un conteggio a 1 punterebbe
-	// un riflettore sul blog vuoto invece di dire qualcosa.
-	let headerReadout = $derived.by(() => {
-		const source = collection ?? articles;
-		const count = source.length;
-		if (count < 2) return undefined;
-		const years = source
-			.map((a) => a.meta.published_date?.slice(0, 4))
-			.filter((y): y is string => Boolean(y))
-			.sort();
-		const lo = years[0];
-		const hi = years[years.length - 1];
-		if (!lo || !hi) return `${count} items`;
-		return `${count} items \u00b7 ${lo === hi ? lo : `${lo}-${hi}`}`;
-	});
 </script>
 
-<div class="flex flex-col gap-y-10 sm:gap-y-16 2xl:gap-y-[4.5rem]">
-	<SectionHeader {index} title={blogPage.title} readout={headerReadout} />
+<div
+	use:inview={options}
+	oninview_change={(event) => {
+		const { inView } = event.detail;
+		isInView = inView;
+	}}
+	class="flex flex-col gap-y-10 sm:gap-y-16 2xl:gap-y-[4.5rem] {isInView ? 'animate' : 'opacity-0'}"
+>
+	<h2 class="text-[2.5rem] leading-none font-normal sm:text-5xl md:text-6xl 2xl:text-7xl">
+		{blogPage.title}
+	</h2>
 
 	<!-- Search and Filter Component -->
 	{#if showFilters && activeFilters && availableTags}
-		<div use:reveal={{ delay: 80 }} class="reveal relative z-10">
+		<div class="relative z-10">
 			<SearchFilter
 				filters={activeFilters}
 				{availableTags}
@@ -107,7 +82,25 @@
 	{/if}
 
 	{#if currentArticles && currentArticles.length > 0}
-		<EntryIndex entries={currentArticles.map(toEntry)} wideMeta />
+		<div class="grid grid-cols-1 gap-6 sm:gap-10 md:grid-cols-2 xl:grid-cols-3">
+			{#each currentArticles as article (article.meta.id)}
+				<ArticleCard
+					title={article.translations[selectedLanguage].title}
+					excerpt={article.translations[selectedLanguage].excerpt}
+					featuredImage={article.meta.featured_image}
+					featuredImagePlaceholder={article.meta.featuredImagePlaceholder}
+					link={'/' +
+						selectedLanguage +
+						'/' +
+						navigation[selectedLanguage].articles +
+						'/' +
+						article.translations[selectedLanguage].slug}
+					publishedDate={article.meta.published_date}
+					tags={translateTags(global, article.translations[selectedLanguage].tags)}
+					{selectedLanguage}
+				/>
+			{/each}
+		</div>
 
 		<!-- Pagination -->
 		{#if pagination && pagination.totalPages > 1}
@@ -119,17 +112,22 @@
 		<!-- View All Button - only show if in home page and there are more articles -->
 		{#if showViewAllButton && articles.length > 3}
 			<div class="flex justify-center">
-				<a href={blogPageLink} class="group key key--primary px-8 py-4">
-					<span>{t.viewAll}</span>
-					<ArrowRight class="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+				<a
+					href={blogPageLink}
+					class="group flex items-center gap-3 rounded-full border border-white/10 bg-white/[.01] px-8 py-4 backdrop-blur-md transition-all duration-300 ease-in-out hover:scale-105 hover:border-white/20 hover:bg-white/[.05]"
+				>
+					<span class="text-lg font-medium text-gray-300">{t.viewAll}</span>
+					<ArrowRight
+						class="h-5 w-5 text-gray-300 transition-transform duration-300 group-hover:translate-x-1"
+					/>
 				</a>
 			</div>
 		{/if}
 	{:else}
 		<!-- No results found or no articles at all -->
 		<div class="flex flex-col items-center gap-4 py-16 text-center">
-			<FileText class="h-16 w-16 text-gray-700" />
-			<div class="text-gray-400">
+			<FileText class="h-16 w-16 text-white/20" />
+			<div class="text-white/60">
 				{#if activeFilters && (activeFilters.query || activeFilters.selectedTags.length > 0 || activeFilters.dateRange.from || activeFilters.dateRange.to)}
 					<p class="text-lg">{t.noResultsFound}</p>
 					<p class="mt-2 text-sm">{t.tryAdjusting}</p>

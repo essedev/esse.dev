@@ -45,11 +45,15 @@
 	);
 </script>
 
-<div class="flex min-h-[80vh] flex-col items-center justify-center text-center">
-	<h1 class="font-mono text-7xl font-medium text-accent sm:text-8xl">{page.status}</h1>
-	<p class="mt-4 font-mono text-xl text-gray-400 sm:text-2xl">{notFoundText}</p>
-	<a data-sveltekit-reload href={homeUrl} class="key key--ghost mt-8 pl-2.5">
-		<ChevronLeft class="h-4 w-4" />
+<div class="flex min-h-[80vh] flex-col items-center justify-center">
+	<h1 class="text-9xl font-bold">{page.status}</h1>
+	<p class="mt-2 text-4xl">{notFoundText}</p>
+	<a
+		data-sveltekit-reload
+		href={homeUrl}
+		class="mt-8 flex items-center gap-x-1 text-2xl hover:underline"
+	>
+		<ChevronLeft class="h-6 w-6 text-gray-100" style="margin-bottom: -0.2rem;" />
 		{backHomeText}
 	</a>
 </div>

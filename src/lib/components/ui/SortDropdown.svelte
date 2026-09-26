@@ -112,7 +112,7 @@
 		aria-haspopup="menu"
 		aria-controls={dropdownId}
 		onclick={toggleDropdown}
-		class="key w-full"
+		class="flex w-full cursor-pointer items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-white/80 backdrop-blur-md transition-colors hover:bg-white/10"
 		style="touch-action: manipulation;"
 	>
 		<ArrowUpDown class="h-4 w-4" />
@@ -143,21 +143,21 @@
 								: t.sortTitleZA}
 				<button
 					onclick={() => handleSortSelect(option.value)}
-					class="flex w-full cursor-pointer items-center gap-3 rounded-sm px-3 py-3 text-left transition-colors
-						{currentSort === option.value ? 'bg-surface-2' : 'hover:bg-surface-2'} w-full"
+					class="flex w-full cursor-pointer items-center gap-3 rounded-lg px-3 py-3 text-left transition-colors
+						{currentSort === option.value ? 'bg-white/10' : 'hover:bg-white/5 active:bg-white/10'} w-full"
 				>
 					<div
-						class="flex h-8 w-8 items-center justify-center rounded-sm bg-surface-2 text-gray-300"
+						class="flex h-8 w-8 items-center justify-center rounded-md bg-white/10 text-white/80 backdrop-blur-sm"
 					>
 						<option.IconComponent class="h-4 w-4" />
 					</div>
 					<div class="min-w-0 flex-1">
-						<div class="text-gray-200">
+						<div class="text-white/90">
 							{label}
 						</div>
 					</div>
 					{#if currentSort === option.value}
-						<Check class="h-4 w-4 text-accent" />
+						<Check class="h-4 w-4 text-white/70" />
 					{/if}
 				</button>
 			{/each}

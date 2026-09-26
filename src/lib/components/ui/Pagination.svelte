@@ -19,30 +19,30 @@
 </script>
 
 {#if totalPages > 1}
-	<nav class="flex items-center justify-center gap-4 font-mono" aria-label="Pagination">
+	<nav class="flex items-center justify-center gap-4" aria-label="Pagination">
 		<!-- Previous Page -->
 		<a
 			href={currentPage > 1 ? createPageLink(currentPage - 1) : '#'}
-			class="key key--icon"
+			class="flex items-center gap-2 rounded-lg px-4 py-2 text-white/80 transition-colors hover:bg-white/10"
 			class:disabled={currentPage <= 1}
 			aria-label="Previous Page"
 		>
 			<ChevronLeft class="h-4 w-4" />
+			<span>Prev</span>
 		</a>
 
-		<span class="text-xs tracking-label text-gray-500">
-			<span class="text-accent">{String(currentPage).padStart(2, '0')}</span>
-			<span class="px-1 text-gray-600">/</span>
-			{String(totalPages).padStart(2, '0')}
+		<span class="text-sm text-white/60">
+			Page {currentPage} of {totalPages}
 		</span>
 
 		<!-- Next Page -->
 		<a
 			href={currentPage < totalPages ? createPageLink(currentPage + 1) : '#'}
-			class="key key--icon"
+			class="flex items-center gap-2 rounded-lg px-4 py-2 text-white/80 transition-colors hover:bg-white/10"
 			class:disabled={currentPage >= totalPages}
 			aria-label="Next Page"
 		>
+			<span>Next</span>
 			<ChevronRight class="h-4 w-4" />
 		</a>
 	</nav>

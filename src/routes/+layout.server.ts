@@ -1,22 +1,17 @@
 import { ContentLoader } from '$lib/utils/content';
-import { ACCENT_COOKIE, resolveAccentId } from '$lib/themes';
 import type { LayoutServerLoad } from './$types';
 import type { LayoutData, WelcomeContent, AboutContent, ContactContent } from '$lib/types';
 
-export const load: LayoutServerLoad = async ({ url, cookies }): Promise<LayoutData> => {
+export const load: LayoutServerLoad = async ({ url }): Promise<LayoutData> => {
 	const loader = new ContentLoader();
 	const pathParts = url.pathname.split('/');
 	const lang = pathParts[1] || 'en';
-
-	// Tema accento salvato (cookie): passato all'AccentPicker perché parta già
-	// con la selezione corretta in SSR (niente scatto dell'indicatore al load).
-	const accent = resolveAccentId(cookies.get(ACCENT_COOKIE));
 
 	// Verifica che la lingua sia valida (necessaria prima di caricare il resto)
 	const languages = await loader.loadConfig('languages');
 	const validLang = languages.find((l) => l.code === lang)?.code || 'en';
 
-	// Il resto dei caricamenti è indipendente: eseguili in parallelo.
+	// Il resto dei caricamenti e' indipendente: eseguili in parallelo.
 	const [
 		navigation,
 		global,
@@ -53,7 +48,6 @@ export const load: LayoutServerLoad = async ({ url, cookies }): Promise<LayoutDa
 		blogPage,
 		projects,
 		articles,
-		slugMap,
-		accent
+		slugMap
 	};
 };

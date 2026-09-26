@@ -17,6 +17,8 @@
 		[key: string]: unknown;
 	} = $props();
 
+	const placeholderIcon = '/placeholder.svg';
+
 	// Pre-load all images using import.meta.glob for vite-imagetools
 	const articleImages = import.meta.glob('../assets/images/articles/**/*.{jpg,jpeg,png,webp}', {
 		query: '?as=srcset&format=avif;webp;jpg&w=400;800;1200',
@@ -126,32 +128,22 @@
 	});
 </script>
 
-<!-- Placeholder: uno schermo spento, non una lastra grigia con l'icona "immagine". Nero
-     con il bagliore d'accento all'orizzonte (come il pavimento del sito) e l'alt come
-     etichetta di nastro in basso a sinistra: legge come un monitor in attesa del
-     segnale, che è lo stato vero finché le immagini non ci sono. -->
-{#snippet screen()}
-	<div class="absolute inset-0 bg-[#090909]">
-		<!-- La stessa griglia del pavimento del sito, in piccolo e sfumata verso l'alto. -->
-		<div
-			class="absolute inset-0"
-			style="background-image: linear-gradient(to right, rgb(255 255 255 / 0.05) 1px, transparent 1px), linear-gradient(to bottom, rgb(255 255 255 / 0.05) 1px, transparent 1px); background-size: 24px 24px; mask-image: linear-gradient(to top, #000 10%, transparent 85%);"
-		></div>
-		<div
-			class="absolute inset-0"
-			style="background: radial-gradient(ellipse 70% 60% at 50% 110%, color-mix(in srgb, var(--color-accent) 14%, transparent), transparent 70%);"
-		></div>
-		{#if alt}
-			<span class="label absolute bottom-3 left-3 text-gray-600">{alt}</span>
-		{/if}
-	</div>
-{/snippet}
-
 <div class="relative overflow-hidden {className}">
 	{#if showPlaceholder || imageNotFound}
-		{@render screen()}
+		<div class="absolute inset-0 flex items-center justify-center bg-white/10 backdrop-blur-md">
+			<img
+				src={placeholderIcon}
+				alt="Placeholder"
+				class="h-12 w-12 opacity-60"
+				style="filter: brightness(0) saturate(100%) invert(100%);"
+			/>
+		</div>
 	{:else if isLoading}
-		<div class="absolute inset-0 bg-[#090909]"></div>
+		<div class="absolute inset-0 flex items-center justify-center bg-white/10 backdrop-blur-md">
+			<div
+				class="h-6 w-6 animate-spin rounded-full border-2 border-white/20 border-t-white/60"
+			></div>
+		</div>
 	{:else if optimizedImage && optimizedImage.sources}
 		<!-- vite-imagetools generated picture element with AVIF, WebP, and JPEG -->
 		<picture>
@@ -182,6 +174,13 @@
 			{...restProps}
 		/>
 	{:else}
-		{@render screen()}
+		<div class="absolute inset-0 flex items-center justify-center bg-white/10 backdrop-blur-md">
+			<img
+				src={placeholderIcon}
+				alt=""
+				class="h-12 w-12 opacity-60"
+				style="filter: brightness(0) saturate(100%) invert(100%);"
+			/>
+		</div>
 	{/if}
 </div>

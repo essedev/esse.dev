@@ -68,7 +68,7 @@
 		aria-haspopup="dialog"
 		aria-controls={dropdownId}
 		onclick={toggleDropdown}
-		class="key w-full"
+		class="flex w-full cursor-pointer items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-white/80 backdrop-blur-md transition-colors hover:bg-white/10"
 		style="touch-action: manipulation;"
 	>
 		<Calendar class="h-4 w-4" />
@@ -90,28 +90,31 @@
 	>
 		<div class="space-y-4 p-4" bind:this={dropdownContentElement} tabindex="-1">
 			<div class="space-y-2">
-				<label for="date-from" class="label block text-gray-400">{t.from}</label>
+				<label for="date-from" class="block text-sm text-white/70">{t.from}</label>
 				<input
 					id="date-from"
 					type="date"
 					value={dateRange.from || ''}
 					onchange={(e) => onDateChange('from', e.currentTarget.value)}
-					class="date-input field px-3 py-2"
+					class="date-input w-full rounded-lg border border-white/10 bg-white/[0.02] px-3 py-2 text-white backdrop-blur-sm focus:border-white/20 focus:outline-none"
 				/>
 			</div>
 			<div class="space-y-2">
-				<label for="date-to" class="label block text-gray-400">{t.to}</label>
+				<label for="date-to" class="block text-sm text-white/70">{t.to}</label>
 				<input
 					id="date-to"
 					type="date"
 					value={dateRange.to || ''}
 					onchange={(e) => onDateChange('to', e.currentTarget.value)}
-					class="date-input field px-3 py-2"
+					class="date-input w-full rounded-lg border border-white/10 bg-white/[0.02] px-3 py-2 text-white backdrop-blur-sm focus:border-white/20 focus:outline-none"
 				/>
 			</div>
 			{#if hasDateRange && onClearDates}
-				<div class="border-t border-line-1 pt-3">
-					<button onclick={onClearDates} class="key key--ghost w-full justify-center">
+				<div class="border-t border-white/5 pt-3">
+					<button
+						onclick={onClearDates}
+						class="w-full cursor-pointer rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-white/80 backdrop-blur-sm transition-colors hover:bg-white/10"
+					>
 						{t.clearDates}
 					</button>
 				</div>

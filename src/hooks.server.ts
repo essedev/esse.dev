@@ -1,5 +1,4 @@
 import { ContentLoader } from '$lib/utils/content';
-import { ACCENT_COOKIE, accentStyleVars } from '$lib/themes';
 import {
 	findRouteKeyAnyLang,
 	isValidLanguage,
@@ -93,10 +92,6 @@ export const handle: Handle = async ({ event, resolve }) => {
 	}
 
 	const pathSegments = pathname.split('/').filter(Boolean);
-
-	// Tema accento dal cookie -> variabili CSS sull'attributo style di <html>,
-	// applicate pre-paint (niente flash dell'azzurro di default). Vuoto = default.
-	const accentVars = accentStyleVars(event.cookies.get(ACCENT_COOKIE));
 
 	try {
 		const loader = new ContentLoader();
@@ -207,8 +202,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 		return withPageCache(
 			withSecurityHeaders(
 				await resolve(event, {
-					transformPageChunk: ({ html }: { html: string }) =>
-						html.replace('%lang%', currentLang).replace('%accent%', accentVars)
+					transformPageChunk: ({ html }: { html: string }) => html.replace('%lang%', currentLang)
 				})
 			)
 		);
@@ -217,8 +211,7 @@ export const handle: Handle = async ({ event, resolve }) => {
 		// Fallback di sicurezza con lingua di default
 		return withSecurityHeaders(
 			await resolve(event, {
-				transformPageChunk: ({ html }: { html: string }) =>
-					html.replace('%lang%', 'en').replace('%accent%', accentVars)
+				transformPageChunk: ({ html }: { html: string }) => html.replace('%lang%', 'en')
 			})
 		);
 	}

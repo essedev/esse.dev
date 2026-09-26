@@ -29,21 +29,8 @@
 <button
 	type="button"
 	onclick={toggle}
-	role="switch"
-	aria-checked={enabled}
-	aria-label={label}
-	class="group key key--sm"
+	aria-pressed={enabled}
+	class="cursor-pointer transition-colors hover:text-white"
 >
-	<span>{label}</span>
-	<!-- Switch software: pista scura nel pulsante, thumb pieno che scatta a destra e
-	     si accende in accento (mini glow CRT) quando le animazioni sono on. -->
-	<span
-		class="relative inline-flex h-4 w-7 items-center rounded-[3px] border border-line-2 bg-[#0a0a0a] px-[2px]"
-	>
-		<span
-			class="motion-thumb h-2.5 w-2.5 rounded-[2px] transition-all duration-300 ease-[cubic-bezier(0.34,1.45,0.6,1)] {enabled
-				? 'translate-x-[0.7rem] bg-accent shadow-[0_0_6px] shadow-accent/70'
-				: 'translate-x-0 bg-gray-500'}"
-		></span>
-	</span>
+	{label}: {enabled ? 'on' : 'off'}
 </button>

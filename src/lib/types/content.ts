@@ -174,8 +174,6 @@ export interface LayoutData {
 	projects: ProjectItem[];
 	articles: ArticleItem[];
 	slugMap: SlugMapData;
-	/** Id del tema accento scelto (dal cookie), per applicarlo già in SSR. */
-	accent: string;
 }
 
 // ==================================================
@@ -210,7 +208,6 @@ export interface ProjectCardProps {
 	link: string;
 	tags?: string[];
 	status?: 'completed' | 'in-progress' | 'idea' | 'archived';
-	year?: string;
 	global: GlobalContent | null | undefined;
 }
 
@@ -233,10 +230,6 @@ export interface ProjectsSectionProps {
 	showFilters?: boolean;
 	showViewAllButton?: boolean;
 	global?: GlobalContent;
-	/** Indice numerato della sezione, lo stesso della navbar e del rail. */
-	index?: number;
-	/** Collezione completa per il readout: nel listing `projects` e' solo la pagina. */
-	collection?: ProjectItem[];
 }
 
 export interface ArticlesSectionProps {
@@ -247,8 +240,6 @@ export interface ArticlesSectionProps {
 	showFilters?: boolean;
 	showViewAllButton?: boolean;
 	global?: GlobalContent;
-	index?: number;
-	collection?: ArticleItem[];
 }
 
 export interface ProjectSectionProps {
@@ -272,12 +263,10 @@ export interface WelcomeSectionProps {
 
 export interface AboutSectionProps {
 	about: AboutContent;
-	index?: number;
 }
 
 export interface ContactSectionProps {
 	contact: ContactContent;
-	index?: number;
 }
 
 // Navigation Component Props
@@ -288,6 +277,11 @@ export interface NavbarProps {
 
 export interface FooterProps {
 	data: LayoutData;
+}
+
+export interface FloatingNavProps {
+	data: LayoutData;
+	menuOpen: boolean;
 }
 
 // ==================================================

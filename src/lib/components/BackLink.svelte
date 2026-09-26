@@ -26,7 +26,7 @@
 	}
 </script>
 
-<a {href} onclick={handleClick} class="key key--ghost self-start pl-2.5">
-	<ChevronLeft class="h-4 w-4" />
-	<span>{label}</span>
+<a {href} onclick={handleClick} class="flex items-center gap-x-[0.15rem]">
+	<ChevronLeft class="h-6 w-6 text-gray-100" style="margin-bottom: -0.1rem;" />
+	<span class="hover:underline">{label}</span>
 </a>
