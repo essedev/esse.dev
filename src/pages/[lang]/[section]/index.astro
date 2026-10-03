@@ -101,7 +101,7 @@ const ogSection = section === 'projects' ? 'projects' : section === 'articles' ?
 								href={`${path}/${m.text.slug}`}
 								class="group hover:bg-panel grid grid-cols-[2.5rem_minmax(0,1fr)_auto] items-baseline gap-x-4 rounded-[var(--radius-panel)] px-3 py-5 transition-colors"
 							>
-								<span class="text-accent font-mono text-sm tabular-nums">
+								<span class="text-subtle font-mono text-sm tabular-nums">
 									{String(i + 1).padStart(2, '0')}
 								</span>
 								<span class="flex flex-col gap-1.5">
@@ -128,7 +128,7 @@ const ogSection = section === 'projects' ? 'projects' : section === 'articles' ?
 								</time>
 								<div class="flex flex-col gap-2">
 									<h2 class="text-fg text-[1.1875rem] font-medium tracking-tight">{n.title}</h2>
-									<div class="text-text text-[clamp(1rem,0.92rem+0.28vw,1.1875rem)] leading-relaxed">
+									<div class="text-text text-[1.0625rem] leading-relaxed text-pretty">
 										<Body />
 									</div>
 									<a
@@ -147,11 +147,14 @@ const ogSection = section === 'projects' ? 'projects' : section === 'articles' ?
 			)}
 
 			{about && AboutBody && contact && (
-				<div class="grid gap-x-[clamp(2rem,5vw,6rem)] gap-y-12 2xl:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
+				<div class="grid gap-x-[clamp(2rem,5vw,6rem)] gap-y-12 xl:grid-cols-[minmax(0,1fr)_minmax(14rem,19rem)]">
 					<Prose>
 						<AboutBody />
 					</Prose>
-					<section aria-labelledby="contact" class="flex flex-col gap-4">
+					<section
+						aria-labelledby="contact"
+						class="flex flex-col gap-4 xl:sticky xl:top-[clamp(1.5rem,3vw,3.5rem)] xl:self-start xl:pt-2"
+					>
 						<h2 id="contact" class="label">
 							{contact.data.title}
 						</h2>
