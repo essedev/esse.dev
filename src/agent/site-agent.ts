@@ -211,7 +211,8 @@ export class SiteAgent extends DurableObject<Env> {
 	async #triage(text: string): Promise<Triage | null> {
 		const started = Date.now();
 		try {
-			return parseTriage(await this.#jev(jevInput(text)), Date.now() - started);
+			const topics = [...new Set((await this.siteIndex()).map((d) => d.title))];
+			return parseTriage(await this.#jev(jevInput(text, topics)), Date.now() - started);
 		} catch (error) {
 			// Senza triage la richiesta passa: il limite vero è il budget in costo reale.
 			console.error('Jev triage failed', error);

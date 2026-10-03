@@ -66,7 +66,7 @@
 		"agentResult": "risultato",
 		"agentReasoning": "ragionamento del modello",
 		"agentBudget": "budget di oggi",
-		"agentNoticeOfftopic": "Rispondo solo su Simone, i suoi progetti e il suo lavoro: questa domanda la lascio passare.",
+		"agentNoticeOfftopic": "Rispondo solo su Simone, i suoi progetti e il suo lavoro: a questa domanda non rispondo.",
 		"agentNoticeAbuse": "Questa richiesta non la eseguo.",
 		"agentNoticeBudget": "Il budget di oggi per l'agente è finito: riprova domani, oppure scrivimi.",
 		"agentIntentAbout": "su Simone",

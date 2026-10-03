@@ -151,11 +151,25 @@
 		n >= 1000 ? `${(n / 1000).toLocaleString(locale, { maximumFractionDigits: 1 })}k` : String(n);
 </script>
 
+{#snippet verdict(triage: Triage | null | undefined)}
+	{#if triage}
+		<p class="pl-6 font-mono text-[0.7rem] text-subtle">
+			jev · {labels.intent[triage.intent]}
+			{triage.confidence.toLocaleString(locale, { maximumFractionDigits: 2 })} · {labels.weight[
+				triage.weight
+			]} · {triage.lang} · {triage.ms} ms
+		</p>
+	{/if}
+{/snippet}
+
 {#snippet localNotice(item: Local)}
-	<p class="flex gap-3 font-mono text-[0.875rem] text-fg">
-		<span class="text-accent select-none" aria-hidden="true">›</span>
-		<span class="whitespace-pre-wrap">{item.text}</span>
-	</p>
+	<div class="flex flex-col gap-1.5">
+		<p class="flex gap-3 font-mono text-[0.875rem] text-fg">
+			<span class="text-accent select-none" aria-hidden="true">›</span>
+			<span class="whitespace-pre-wrap">{item.text}</span>
+		</p>
+		{@render verdict(triages[item.text])}
+	</div>
 	<p class="pl-6 text-[0.9375rem] text-muted">{labels.notice[item.reason]}</p>
 {/snippet}
 
@@ -173,13 +187,7 @@
 						<span class="text-accent select-none" aria-hidden="true">›</span>
 						<span class="whitespace-pre-wrap">{text}</span>
 					</p>
-					{#if triage}
-						<p class="pl-6 font-mono text-[0.7rem] text-subtle">
-							jev · {labels.intent[triage.intent]}
-							{triage.confidence.toLocaleString(locale, { maximumFractionDigits: 2 })} · {labels
-								.weight[triage.weight]} · {triage.lang} · {triage.ms} ms
-						</p>
-					{/if}
+					{@render verdict(triage)}
 				</div>
 			{:else}
 				<div class="flex flex-col gap-3 pl-6">

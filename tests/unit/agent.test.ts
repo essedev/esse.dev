@@ -2,18 +2,18 @@ import { describe, expect, it } from 'vitest';
 import { costOf, dayKey, remaining, today } from '../../src/agent/budget';
 import { admits, jevInput, parseTriage, type JevOutput } from '../../src/agent/triage';
 
-const output = (intent: string, score: number, lang: string): JevOutput => ({
+const output = (intent: string, score: number, lang: string, p: number = 0.9): JevOutput => ({
 	answers: {
-		intent: { type: 'choice', choice: intent, probabilities: { [intent]: 0.9 } },
+		intent: { type: 'choice', choice: intent, probabilities: { [intent]: p } },
 		weight: { type: 'score', score },
 		lang: { type: 'choice', choice: lang }
 	}
 });
 
 describe('triage', () => {
-	it('asks Jev three typed questions about the message', () => {
-		const input = jevInput('ciao');
-		expect(input.state.visitor_message).toBe('ciao');
+	it('asks Jev three typed questions about the message, with the site topics', () => {
+		const input = jevInput('ciao', ['Relay']);
+		expect(input.state).toEqual({ visitor_message: 'ciao', site_topics: ['Relay'] });
 		expect(Object.keys(input.questions)).toEqual(['intent', 'weight', 'lang']);
 	});
 
@@ -35,6 +35,12 @@ describe('triage', () => {
 	it('fails on an unexpected answer instead of guessing', () => {
 		expect(() => parseTriage(output('weather', 1, 'it'), 0)).toThrow(/intent/);
 		expect(() => parseTriage(output('about', 1, 'fr'), 0)).toThrow(/lang/);
+	});
+
+	it('stops off-topic only when Jev is sure, abuse at a lower bar', () => {
+		expect(admits(parseTriage(output('offtopic', 0, 'it', 0.76), 0))).toBe(true);
+		expect(admits(parseTriage(output('offtopic', 0, 'it', 1), 0))).toBe(false);
+		expect(admits(parseTriage(output('abuse', 0, 'it', 0.65), 0))).toBe(false);
 	});
 
 	it('lets only on-topic requests through', () => {

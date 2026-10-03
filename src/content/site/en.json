@@ -66,7 +66,7 @@
 		"agentResult": "result",
 		"agentReasoning": "model reasoning",
 		"agentBudget": "today's budget",
-		"agentNoticeOfftopic": "I only answer about Simone, his projects and his work, so I will skip this one.",
+		"agentNoticeOfftopic": "I only answer about Simone, his projects and his work, so I will not answer this one.",
 		"agentNoticeAbuse": "I will not run this request.",
 		"agentNoticeBudget": "Today's budget for the agent is used up: try again tomorrow, or write to me.",
 		"agentIntentAbout": "about Simone",

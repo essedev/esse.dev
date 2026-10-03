@@ -18,20 +18,26 @@ export interface Triage {
 	intent: Intent;
 	weight: Weight;
 	lang: Lang;
-	/** Probabilità dell'intento scelto, per mostrarla e per le soglie. */
+	/** Probabilità dell'intento scelto, per mostrarla. */
 	confidence: number;
+	/** Probabilità di ogni intento, per le soglie di `admits`. */
+	probabilities: Partial<Record<Intent, number>>;
 	ms: number;
 }
 
-/** L'input di `env.AI.run('typesafe/jev', …)`. */
-export function jevInput(message: string) {
+/**
+ * L'input di Jev. `site_topics` sono i titoli delle pagine del sito (progetti, metodo,
+ * scritti): senza, Jev non sa che "Relay" o "Portsage" sono progetti di Simone e li
+ * classifica fuori tema.
+ */
+export function jevInput(message: string, topics: readonly string[] = []) {
 	return {
-		state: { visitor_message: message },
+		state: { visitor_message: message, site_topics: topics },
 		questions: {
 			intent: {
 				type: 'choice',
 				instructions:
-					'What does `visitor_message` ask of an agent on the personal site of Simone Salerno, an AI engineer who builds developer tools?',
+					'What does `visitor_message` ask of an agent on the personal site of Simone Salerno, an AI engineer who builds developer tools? `site_topics` are the pages of the site: a message about any of them is about Simone.',
 				criteria: {
 					about: 'Simone, his projects, writing, method, work or how to contact him',
 					code: 'The code, repositories, architecture or implementation of his projects',
@@ -94,11 +100,22 @@ export function parseTriage(output: JevOutput, ms: number): Triage {
 		weight: WEIGHTS[level],
 		lang: lang.choice,
 		confidence: intent.probabilities?.[intent.choice] ?? intent.confidence ?? 0,
+		probabilities: intent.probabilities ?? { [intent.choice]: intent.confidence ?? 1 },
 		ms
 	};
 }
 
-/** Le richieste fuori tema o di abuso non arrivano al modello grande. */
+/**
+ * Soglie per fermare una richiesta: alte, perché fermare una domanda legittima costa più
+ * che lasciarne passare una fuori tema (che il modello rifiuta da sé, e il budget limita).
+ * L'abuso ha una soglia più bassa: è meglio non provarci.
+ */
+export const BLOCK_OFFTOPIC = 0.85;
+export const BLOCK_ABUSE = 0.6;
+
+/** Le richieste fuori tema o di abuso, con abbastanza certezza, non arrivano al modello. */
 export function admits(triage: Triage): boolean {
-	return triage.intent === 'about' || triage.intent === 'code';
+	if ((triage.probabilities.abuse ?? 0) >= BLOCK_ABUSE) return false;
+	if (triage.intent === 'offtopic') return (triage.probabilities.offtopic ?? 0) < BLOCK_OFFTOPIC;
+	return true;
 }
