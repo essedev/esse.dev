@@ -88,6 +88,7 @@
 		"agentAsk3": "Su cosa sta lavorando adesso?",
 		"agentToolsSite": "Sul sito",
 		"agentToolsCode": "Sul codice",
+		"agentToolsMore": "Capacità",
 		"agentToolProjects": "elenca i progetti, per stato o tag",
 		"agentToolShow": "ti mostra una pagina da aprire",
 		"agentToolRepo": "un repo pubblico in breve: linguaggi, README, ultimo push",
@@ -95,6 +96,7 @@
 		"agentToolFile": "legge un file, con i numeri di riga",
 		"agentToolCode": "cerca nel codice di un repo",
 		"agentToolCommits": "gli ultimi commit di un repo",
+		"agentToolRender": "disegna barre, tabelle e linee del tempo",
 		"agentOpen": "apri",
 		"agentAsk4": "Come fa Portsage a sapere quali porte sono occupate? Mostrami il codice"
 	},

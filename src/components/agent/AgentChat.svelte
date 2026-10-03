@@ -3,6 +3,8 @@
 	import { ArrowUpRight } from '@lucide/svelte';
 	import { onMount, tick } from 'svelte';
 	import { renderMarkdown } from '../../agent/markdown';
+	import { parseRender, type RenderView as View } from '../../agent/render';
+	import RenderView from './RenderView.svelte';
 	import type { ServerMessage, TranscriptMessage, TranscriptPart } from '../../agent/protocol';
 	import type { Triage } from '../../agent/triage';
 	import { EMPTY_VIEW, reduceEvents, type PiSessionView } from '../../agent/view';
@@ -229,6 +231,16 @@
 	const resultText = (part: ToolResult) =>
 		part.content.map((c) => (c.type === 'text' ? c.text : '[image]')).join('\n');
 
+	/** La vista di `render`, dagli argomenti, solo se il server l'ha accettata. */
+	function drawn(args: unknown, part: ToolResult | undefined): View | null {
+		if (!part || part.error) return null;
+		try {
+			return parseRender(args);
+		} catch {
+			return null;
+		}
+	}
+
 	/** La scheda di `show_page`, dal risultato del tool; `null` se non è leggibile. */
 	type Card = { path: string; kind: string; title: string; summary: string; status?: string };
 	function card(part: ToolResult | undefined): Card | null {
@@ -348,6 +360,8 @@
 								</summary>
 								<p class="mt-2 font-mono text-xs whitespace-pre-wrap text-subtle">{part.text}</p>
 							</details>
+						{:else if part.type === 'tool-call' && part.name === 'render' && drawn(part.arguments, results.get(part.id))}
+							<RenderView view={drawn(part.arguments, results.get(part.id))!} {locale} />
 						{:else if part.type === 'tool-call' && part.name === 'show_page' && card(results.get(part.id))}
 							{@const page = card(results.get(part.id))!}
 							<a

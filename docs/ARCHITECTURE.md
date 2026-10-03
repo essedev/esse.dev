@@ -143,6 +143,10 @@ stessi sui due lati.
   `read_file` numera le righe, dà il link a GitHub e legge i file lunghi a pezzi. Con
   `GITHUB_TOKEN` (facoltativo) il limite sale a 5.000 richieste l'ora e `search_code`
   cerca nel codice; senza, cerca solo nei nomi dei file. Scelte in #13.
+- **Capacità:** `render` disegna barre, tabelle e linee del tempo. Il modello manda dati,
+  mai HTML; la stessa validazione (`render.ts`) gira nel Durable Object, che rimanda
+  l'errore al modello, e nel browser, che disegna coi token del sito (le barre sono SVG:
+  la CSP blocca gli stili inline).
 - **Il catalogo** che la pagina mostra a conversazione vuota è quello che il server
   annuncia nel `hello`: un tool nuovo compare da solo, i gruppi in pagina lo ordinano.
 - **Triage e limiti:** ogni messaggio passa prima da Jev (`triage.ts`), che ferma fuori
