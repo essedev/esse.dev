@@ -1,0 +1,101 @@
+---
+import { ChevronLeft, Search } from '@lucide/astro';
+import { languages, navigation } from '../../lib/config';
+import { getSlugMap } from '../../lib/content';
+import { getLanguageUrl } from '../../lib/i18n';
+import type { Translate } from '../../lib/site';
+
+interface Props {
+	lang: string;
+	path: string;
+	/** Percorso della pagina, dal generale al particolare. */
+	crumbs: { label: string; href?: string }[];
+	/** Il livello sopra: su mobile è il "‹ indietro" della barra, come in un'app. */
+	up?: { label: string; href: string };
+	t: Translate;
+}
+
+const { lang, path, crumbs, up, t } = Astro.props;
+const slugMap = await getSlugMap();
+
+// La toolbar del riquadro: dice dove sei e porta le azioni sul documento. Ha il tono del
+// contenuto, perché ne fa parte; su mobile resta in cima mentre si scorre.
+---
+
+<header class="bg-bg/90 sticky top-0 z-40 flex h-12 shrink-0 items-center gap-3 px-4 backdrop-blur lg:static lg:bg-transparent lg:px-(--pad) lg:backdrop-blur-none">
+	{up ? (
+		<a
+			href={up.href}
+			data-up
+			class="text-muted hover:text-fg -ml-1.5 flex h-8 min-w-0 items-center gap-1 rounded-[var(--radius-control)] pr-2 font-mono text-[0.8125rem] transition-colors lg:hidden"
+		>
+			<ChevronLeft class="size-4 shrink-0" />
+			<span class="truncate">{up.label}</span>
+		</a>
+	) : (
+		<a href={`/${lang}`} class="text-fg font-mono text-[0.8125rem] whitespace-nowrap lg:hidden">
+			esse.dev<span class="caret" aria-hidden="true"></span>
+		</a>
+	)}
+
+	<nav
+		aria-label="Percorso"
+		class="hidden min-w-0 items-center gap-2 font-mono text-[0.8125rem] lg:flex"
+	>
+		{crumbs.map((c, i) => (
+			<>
+				{i > 0 && (
+					<span class="text-subtle/50" aria-hidden="true">
+						/
+					</span>
+				)}
+				{c.href ? (
+					<a
+						href={c.href}
+						data-up={c.href === up?.href ? '' : undefined}
+						data-scramble
+						class="text-subtle hover:text-fg truncate transition-colors"
+					>
+						{c.label}
+					</a>
+				) : (
+					<span data-scramble class="text-fg truncate" aria-current="page">
+						{c.label}
+					</span>
+				)}
+			</>
+		))}
+	</nav>
+
+	<div class="text-subtle ml-auto flex items-center gap-1 font-mono text-xs">
+		<slot name="actions" />
+		<a
+			href={`/${lang}#search`}
+			aria-label={t('search')}
+			class="hover:text-fg hover:bg-surface flex size-8 items-center justify-center rounded-[var(--radius-control)] transition-colors lg:hidden"
+		>
+			<Search class="size-4" />
+		</a>
+		<ul class="ml-1 flex items-center" aria-label={t('language')}>
+			{languages.map((l) =>
+				l.code === lang ? (
+					<li class="text-fg px-1.5" aria-current="true">
+						{l.code}
+					</li>
+				) : (
+					<li>
+						<a
+							href={getLanguageUrl({ pathname: path, navigation, slugMap, targetLang: l.code })}
+							hreflang={l.code}
+							lang={l.code}
+							title={l.name}
+							class="hover:text-fg px-1.5 transition-colors"
+						>
+							{l.code}
+						</a>
+					</li>
+				)
+			)}
+		</ul>
+	</div>
+</header>

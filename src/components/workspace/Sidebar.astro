@@ -4,17 +4,29 @@ import type { NavGroup } from '../../lib/workspace';
 import type { Translate } from '../../lib/site';
 
 interface Props {
+	lang: string;
 	groups: NavGroup[];
 	/** Chiave della voce aperta (`progetti/relay`) o della sezione (`projects`). */
 	current: string;
 	t: Translate;
 }
 
-const { groups, current, t } = Astro.props;
+const { lang, groups, current, t } = Astro.props;
+const keys: [string[], string][] = [
+	[['j', 'k'], t('keysMove')],
+	[['↵'], t('keysOpen')],
+	[['esc'], t('keysBack')]
+];
 ---
 
 <nav aria-label="Indice" data-sidebar class="flex min-h-0 flex-col lg:h-full">
-	<div class="px-3 pt-3 pb-2 lg:px-4 lg:pt-4">
+	<a
+		href={`/${lang}`}
+		class="text-fg hidden h-12 shrink-0 items-center px-6 font-mono text-[0.8125rem] whitespace-nowrap lg:flex"
+	>
+		esse.dev<span class="caret" aria-hidden="true"></span>
+	</a>
+	<div class="px-3 pt-3 pb-2 lg:px-4 lg:pt-1">
 		<label class="bg-surface focus-within:bg-hover flex h-9 items-center gap-2 rounded-[var(--radius-control)] pr-1.5 pl-2.5 transition-colors">
 			<ListFilter class="text-subtle size-4 shrink-0" />
 			<span class="sr-only">{t('search')}</span>
@@ -31,7 +43,10 @@ const { groups, current, t } = Astro.props;
 		</label>
 	</div>
 
-	<div data-sidebar-scroll class="min-h-0 flex-1 overflow-y-auto px-3 pb-6 lg:px-4">
+	<div
+		data-sidebar-scroll
+		class="min-h-0 flex-1 overflow-y-auto px-3 pb-6 lg:px-4 lg:[mask-image:linear-gradient(to_bottom,black_calc(100%-2.5rem),transparent)]"
+	>
 		{groups.map((group) => (
 			<section data-group={group.section} class="mt-5 first:mt-3">
 				<a
@@ -92,18 +107,44 @@ const { groups, current, t } = Astro.props;
 		</p>
 	</div>
 
-	<div class="text-subtle hidden items-center gap-4 px-5 py-3 font-mono text-[0.7rem] lg:flex">
-		<span class="flex items-center gap-1.5">
-			<span class="led" data-status="in-progress" />
-			{t('statusInProgress').toLowerCase()}
-		</span>
-		<span class="flex items-center gap-1.5">
-			<span class="led" data-status="completed" />
-			{t('statusCompleted').toLowerCase()}
-		</span>
-		<span class="flex items-center gap-1.5">
-			<span class="led" data-status="idea" />
-			{t('statusIdea').toLowerCase()}
-		</span>
+	{/* Riga di stato: legenda dei LED, tasti, e per un attimo la conferma di un'azione. */}
+	<div
+		data-statusline
+		class="group/status text-subtle hidden shrink-0 flex-col gap-2.5 px-6 pt-3 pb-4 font-mono text-[0.7rem] lg:flex"
+	>
+		<div class="flex items-center gap-4">
+			<span class="flex items-center gap-1.5">
+				<span class="led" data-status="in-progress" />
+				{t('statusInProgress').toLowerCase()}
+			</span>
+			<span class="flex items-center gap-1.5">
+				<span class="led" data-status="completed" />
+				{t('statusCompleted').toLowerCase()}
+			</span>
+			<span class="flex items-center gap-1.5">
+				<span class="led" data-status="idea" />
+				{t('statusIdea').toLowerCase()}
+			</span>
+		</div>
+		<div class="grid h-[1.4rem] items-center">
+			<ul
+				class="flex items-center gap-4 transition-opacity duration-150 [grid-area:1/1] group-data-[flash]/status:opacity-0"
+				aria-hidden="true"
+			>
+				{keys.map(([ks, label]) => (
+					<li class="flex items-center gap-1.5">
+						{ks.map((k) => (
+							<span class="kbd">{k}</span>
+						))}
+						{label}
+					</li>
+				))}
+			</ul>
+			<p
+				data-status-text
+				aria-live="polite"
+				class="text-accent flex items-center gap-1.5 opacity-0 transition-opacity duration-150 [grid-area:1/1] group-data-[flash]/status:opacity-100"
+			></p>
+		</div>
 	</div>
 </nav>

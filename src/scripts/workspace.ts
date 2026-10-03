@@ -5,7 +5,8 @@
  * - j/k (o frecce) scorrono le voci della lista, Invio apre, Esc torna al livello sopra.
  * - "/" e Cmd/Ctrl+K portano alla ricerca, l'unica del sito: filtra la lista e il
  *   registro della pagina, se c'è.
- * - i pulsanti `[data-copy]` copiano e confermano nella barra di stato.
+ * - i pulsanti `[data-copy]` copiano e confermano nella riga di stato.
+ * - il livello sopra (Esc, breadcrumb, "‹") torna con la history se si arriva da lì.
  * - la lista ricorda il proprio scroll fra una pagina e l'altra.
  */
 
@@ -17,15 +18,40 @@ const isTyping = (target: EventTarget | null) =>
 	target instanceof HTMLElement &&
 	(target.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName));
 
-// Barra di stato: un messaggio breve, poi torna al testo di riposo.
+// Riga di stato (in fondo alla lista): un messaggio breve al posto dei tasti, poi via.
+const statusLine = document.querySelector<HTMLElement>('[data-statusline]');
 const statusText = document.querySelector<HTMLElement>('[data-status-text]');
 let statusTimer: ReturnType<typeof setTimeout> | undefined;
 export function flashStatus(message: string) {
-	if (!statusText) return;
+	if (!statusLine || !statusText || !message) return;
 	statusText.textContent = message;
+	statusLine.setAttribute('data-flash', '');
 	clearTimeout(statusTimer);
-	statusTimer = setTimeout(() => (statusText.textContent = statusText.dataset.default ?? ''), 1800);
+	statusTimer = setTimeout(() => statusLine.removeAttribute('data-flash'), 1800);
 }
+
+// Il livello sopra (Esc, breadcrumb, "‹" su mobile). Se si arriva proprio da lì, si torna
+// con la history, così il registro ritrova filtri e scroll; altrimenti si apre il link.
+function goUp(href: string) {
+	const target = new URL(href, location.href);
+	const ref = document.referrer ? new URL(document.referrer) : null;
+	if (
+		ref &&
+		ref.origin === location.origin &&
+		ref.pathname === target.pathname &&
+		history.length > 1
+	) {
+		history.back();
+	} else {
+		location.href = target.href;
+	}
+}
+document.addEventListener('click', (event) => {
+	const link = (event.target as HTMLElement).closest<HTMLAnchorElement>('a[data-up]');
+	if (!link || event.metaKey || event.ctrlKey || event.shiftKey || event.button !== 0) return;
+	event.preventDefault();
+	goUp(link.href);
+});
 
 // Il tasto modificatore giusto nelle legende.
 if (!isMac) {
@@ -150,7 +176,7 @@ filter?.addEventListener('keydown', (event) => {
 	}
 });
 
-// Copia con conferma: nel pulsante e nella barra di stato.
+// Copia con conferma: nel pulsante e nella riga di stato.
 async function copy(text: string, message: string, button: HTMLElement) {
 	try {
 		await navigator.clipboard.writeText(text);
@@ -198,7 +224,7 @@ document.addEventListener('keydown', (event) => {
 			break;
 		case 'Escape': {
 			const parent = workspace?.dataset.parent;
-			if (parent && parent !== location.pathname) location.href = parent;
+			if (parent && parent !== location.pathname) goUp(parent);
 			break;
 		}
 	}

@@ -1,0 +1,38 @@
+---
+import { ArrowUpRight, Link2 } from '@lucide/astro';
+import type { Translate } from '../../lib/site';
+
+interface Props {
+	/** Link esterno principale (repo o sito). */
+	external?: { href: string; label: string };
+	t: Translate;
+}
+
+const { external, t } = Astro.props;
+
+// Azioni sul documento aperto, nella toolbar del riquadro: su mobile solo le icone.
+---
+
+<button
+	type="button"
+	data-copy="url"
+	data-copy-message={t('linkCopied')}
+	aria-label={t('copyLink')}
+	class="hover:text-fg hover:bg-surface group flex h-8 items-center gap-1.5 rounded-[var(--radius-control)] px-2 transition-colors"
+>
+	<Link2 class="size-3.5 group-data-[copied]:text-accent" />
+	<span class="hidden sm:inline group-data-[copied]:hidden">{t('copyLink')}</span>
+	<span class="text-accent hidden sm:group-data-[copied]:inline">{t('copied')}</span>
+</button>
+{external && (
+	<a
+		href={external.href}
+		target="_blank"
+		rel="noopener noreferrer"
+		aria-label={external.label}
+		class="hover:text-fg hover:bg-surface flex h-8 items-center gap-1.5 rounded-[var(--radius-control)] px-2 transition-colors"
+	>
+		<ArrowUpRight class="size-3.5" />
+		<span class="hidden sm:inline">{external.label}</span>
+	</a>
+)}

@@ -4,6 +4,7 @@ import { ArrowUpRight } from '@lucide/astro';
 import EntryRow from '../../../components/EntryRow.svelte';
 import CopyCommand from '../../../components/detail/CopyCommand.astro';
 import DetailHeader from '../../../components/detail/DetailHeader.astro';
+import DocActions from '../../../components/detail/DocActions.astro';
 import Pager from '../../../components/detail/Pager.astro';
 import Page from '../../../components/Page.astro';
 import Prose from '../../../components/Prose.astro';
@@ -21,7 +22,7 @@ import { articleItem, formatDate, STATUS_KEY } from '../../../lib/items';
 import { readingMetrics } from '../../../lib/metrics';
 import { relatedByTags } from '../../../lib/related';
 import { blogPostingJsonLd, buildCanonical, creativeWorkJsonLd } from '../../../lib/seo';
-import { getSite, translator } from '../../../lib/site';
+import { translator } from '../../../lib/site';
 import { getNavGroups, neighbours } from '../../../lib/workspace';
 
 type Kind = 'projects' | 'articles' | 'method';
@@ -55,7 +56,6 @@ export async function getStaticPaths() {
 const { lang, section, slug } = Astro.params;
 const { kind, id } = Astro.props;
 const t = await translator(lang);
-const site = await getSite(lang);
 const path = `/${lang}/${section}/${slug}`;
 const listing = `/${lang}/${section}`;
 const origin = Astro.site!.origin;
@@ -134,27 +134,20 @@ const host = (url: string) => url.replace(/^https?:\/\/(www\.)?/, '').replace(/\
 	jsonLd={jsonLd}
 	current={`${kind}/${id}`}
 	crumbs={[{ label: section, href: listing }, { label: slug }]}
-	parent={listing}
 >
+	<DocActions slot="actions" external={external} t={t} />
 	<Page>
 		<div class="grid gap-x-[clamp(2rem,5vw,6rem)] gap-y-10 xl:grid-cols-[minmax(0,1fr)_minmax(14rem,19rem)]">
 			<article class="min-w-0">
-				<DetailHeader
-					title={title}
-					kicker={
-						project && isFeatured
-							? `${site.sections.projects.toLowerCase()} / ${t('featured')}`
-							: site.sections[kind].toLowerCase()
-					}
-					backHref={listing}
-					external={external}
-					t={t}
-				>
+				<DetailHeader title={title}>
 					{project && (
 						<p class="text-muted flex items-center gap-2.5 font-mono text-[0.8125rem]">
 							<span class="led" data-status={project.meta.status} />
 							{t(STATUS_KEY[project.meta.status]).toLowerCase()}
-							<span class="text-subtle">· {project.meta.created.slice(0, 4)}</span>
+							<span class="text-subtle">
+								· {project.meta.created.slice(0, 4)}
+								{isFeatured && <> · {t('featured')}</>}
+							</span>
 						</p>
 					)}
 					{article && metrics && (
@@ -210,7 +203,7 @@ const host = (url: string) => url.replace(/^https?:\/\/(www\.)?/, '').replace(/\
 			</article>
 
 			{project && (
-				<aside class="flex flex-col gap-8 xl:sticky xl:top-[clamp(1.5rem,3vw,3.5rem)] xl:self-start xl:pt-[4.5rem]">
+				<aside class="flex flex-col gap-8 xl:sticky xl:top-[clamp(1.5rem,3vw,3.5rem)] xl:self-start xl:pt-2">
 					<dl class="grid grid-cols-[auto_minmax(0,1fr)] gap-x-6 gap-y-3 text-[0.9375rem] xl:grid-cols-1 xl:gap-y-5">
 						<div class="contents xl:flex xl:flex-col xl:gap-1.5">
 							<dt class="label">{t('status')}</dt>
@@ -294,7 +287,7 @@ const host = (url: string) => url.replace(/^https?:\/\/(www\.)?/, '').replace(/\
 			)}
 
 			{article && (
-				<aside class="flex flex-col gap-2.5 xl:sticky xl:top-[clamp(1.5rem,3vw,3.5rem)] xl:self-start xl:pt-[4.5rem]">
+				<aside class="flex flex-col gap-2.5 xl:sticky xl:top-[clamp(1.5rem,3vw,3.5rem)] xl:self-start xl:pt-2">
 					<p class="label">{t('tags')}</p>
 					<ul class="flex flex-wrap gap-1.5">
 						{article.text.tags.map((tag) => (
