@@ -105,7 +105,8 @@ tastiera in `src/scripts/workspace.ts`.
 - Codice in `src/agent/` e `src/components/agent/`; perché e come in ARCHITECTURE
   (Agente), DECISIONS #11 e #12.
 - Ogni messaggio all'agente in anteprima chiama modelli veri su OpenRouter
-  (`OPENROUTER_API_KEY`). Gli E2E non mandano messaggi.
+  (`OPENROUTER_API_KEY`) e i tool sul codice l'API di GitHub (`GITHUB_TOKEN` facoltativo).
+  Gli E2E non mandano messaggi.
 - Modello, ordine dei provider e timeout in `src/agent/models.ts`; le conversazioni
   esistenti passano al modello nuovo all'avvio dell'oggetto. Limiti di spesa in
   `src/agent/budget.ts`. Triage in `src/agent/triage.ts`, trasporto di Jev in

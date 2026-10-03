@@ -15,8 +15,11 @@ test.describe('agent', () => {
 		await page.goto('/en/agent');
 		await page.getByRole('button', { name: 'new conversation' }).click();
 		await expect(page.getByText('search_site')).toBeVisible({ timeout: 15_000 });
-		await expect(page.getByText('read_page')).toBeVisible();
-		await expect(page.locator('main ul button')).toHaveCount(3);
+		for (const tool of ['read_page', 'list_projects', 'show_page', 'repo_overview', 'read_file']) {
+			await expect(page.getByText(tool, { exact: true })).toBeVisible();
+		}
+		await expect(page.getByRole('heading', { name: 'On the code' })).toBeVisible();
+		await expect(page.locator('main ul button')).toHaveCount(4);
 	});
 
 	test('the input sits at the bottom of the pane', async ({ page }) => {
@@ -32,5 +35,6 @@ test.describe('agent', () => {
 		const docs = (await res.json()) as { lang: string; kind: string }[];
 		expect(new Set(docs.map((d) => d.lang))).toEqual(new Set(['en', 'it']));
 		expect(docs.some((d) => d.kind === 'project')).toBe(true);
+		expect(docs.some((d) => (d as { featured?: boolean }).featured)).toBe(true);
 	});
 });

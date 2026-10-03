@@ -5,3 +5,7 @@ TYPESAFE_API_KEY=
 
 # Modello dell'agente e Jev via OpenRouter (chiave dedicata al sito, con limite mensile).
 OPENROUTER_API_KEY=
+
+# Tool sui repo (facoltativo): token GitHub fine-grained, "Public repositories (read-only)",
+# senza permessi. Senza token: 60 richieste l'ora per IP e search_code solo sui nomi dei file.
+GITHUB_TOKEN=

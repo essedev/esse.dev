@@ -19,7 +19,7 @@ Personal portfolio of Simone Salerno, online at [esse.dev](https://esse.dev). Bu
 - Article reading time and token estimate, related articles
 - Per-language RSS feed, sitemap with alternates, JSON-LD
 - Open Graph images generated at build time, one per page
-- A site agent that answers from the site's own pages and shows its tool calls, tokens and cost, behind a triage step and a real-cost daily budget
+- A site agent that answers from the site's own pages and the public code of the projects, and shows its tool calls, tokens and cost, behind a triage step and a real-cost daily budget
 
 ## Development
 
@@ -32,8 +32,9 @@ pnpm build        # static build + Worker in dist/
 pnpm preview      # build and serve with wrangler on :8787
 ```
 
-The agent needs `OPENROUTER_API_KEY`: copy `.dev.vars.example` to `.dev.vars` locally,
-`wrangler secret put OPENROUTER_API_KEY` in production.
+The agent needs `OPENROUTER_API_KEY`, and reads code on GitHub better with an optional
+`GITHUB_TOKEN`: copy `.dev.vars.example` to `.dev.vars` locally, `wrangler secret put` in
+production.
 
 Quality gate, run before every push:
 

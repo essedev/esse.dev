@@ -1,5 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { searchSite, type SiteDoc } from '../../src/agent/site-index';
+import {
+	listProjects,
+	publicRepos,
+	repoName,
+	searchSite,
+	type SiteDoc
+} from '../../src/agent/site-index';
 
 const doc = (over: Partial<SiteDoc>): SiteDoc => ({
 	path: '/en/projects/x',
@@ -38,5 +44,63 @@ describe('searchSite', () => {
 
 	it('returns nothing for an empty query', () => {
 		expect(searchSite(docs, '   ', { lang: 'en' })).toEqual([]);
+	});
+});
+
+describe('listProjects', () => {
+	const projects = [
+		doc({
+			path: '/en/projects/a',
+			title: 'A',
+			date: '2026-01-01',
+			status: 'completed',
+			tags: ['Swift']
+		}),
+		doc({ path: '/en/projects/b', title: 'B', date: '2026-06-01', status: 'in-progress' }),
+		doc({
+			path: '/en/projects/c',
+			title: 'C',
+			date: '2025-01-01',
+			featured: true,
+			repo: 'https://github.com/essedev/c'
+		}),
+		doc({ path: '/it/progetti/a', lang: 'it', title: 'A' })
+	];
+
+	it('puts the showcase first, then the newest', () => {
+		expect(listProjects(projects, { lang: 'en' }).map((p) => p.title)).toEqual(['C', 'B', 'A']);
+	});
+
+	it('filters by state and by tag, ignoring case', () => {
+		expect(
+			listProjects(projects, { lang: 'en', status: 'in-progress' }).map((p) => p.title)
+		).toEqual(['B']);
+		expect(listProjects(projects, { lang: 'en', tag: 'swift' }).map((p) => p.title)).toEqual(['A']);
+	});
+
+	it('gives the repo as owner/name', () => {
+		expect(listProjects(projects, { lang: 'en' })[0].repo).toBe('essedev/c');
+	});
+});
+
+describe('repos', () => {
+	it('reads owner/name from GitHub URLs only', () => {
+		expect(repoName('https://github.com/essedev/relay')).toBe('essedev/relay');
+		expect(repoName('https://github.com/essedev/didatticaintegrata.it.git')).toBe(
+			'essedev/didatticaintegrata.it'
+		);
+		expect(repoName('https://gitlab.com/essedev/relay')).toBeNull();
+		expect(repoName('https://github.com/essedev')).toBeNull();
+	});
+
+	it('allows the repos of published projects plus the given ones, once each', () => {
+		const docs = [
+			doc({ repo: 'https://github.com/essedev/relay' }),
+			doc({ lang: 'it', repo: 'https://github.com/essedev/relay' })
+		];
+		expect(publicRepos(docs, ['essedev/simonesalerno.it'])).toEqual([
+			'essedev/relay',
+			'essedev/simonesalerno.it'
+		]);
 	});
 });

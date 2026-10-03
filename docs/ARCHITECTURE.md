@@ -133,9 +133,18 @@ stessi sui due lati.
   senza token e nuovi tentativi di pi. Chiave `OPENROUTER_API_KEY` come secret del Worker. Il
   binding `AI` resta solo come trasporto alternativo di Jev. Scelte in
   `docs/DECISIONS.md` #11.
-- **Tool:** `search_site` e `read_page` leggono `/agent/index.json`, un indice del sito
-  generato alla build dalle stesse collection delle pagine e letto dagli asset: l'agente
-  vede solo ciò che il sito pubblica.
+- **Tool sul sito:** `search_site`, `read_page`, `list_projects` e `show_page` leggono
+  `/agent/index.json`, un indice del sito generato alla build dalle stesse collection
+  delle pagine e letto dagli asset: l'agente vede solo ciò che il sito pubblica.
+  `show_page` diventa una scheda nella trascrizione, che il visitatore apre quando vuole.
+- **Tool sul codice:** `repo_overview`, `list_files`, `read_file`, `search_code` e
+  `recent_commits` leggono i repo pubblici dall'API REST di GitHub (`github.ts`). Il repo
+  è un parametro a valori chiusi: i `repo` dei progetti pubblicati più quello del sito.
+  `read_file` numera le righe, dà il link a GitHub e legge i file lunghi a pezzi. Con
+  `GITHUB_TOKEN` (facoltativo) il limite sale a 5.000 richieste l'ora e `search_code`
+  cerca nel codice; senza, cerca solo nei nomi dei file. Scelte in #13.
+- **Il catalogo** che la pagina mostra a conversazione vuota è quello che il server
+  annuncia nel `hello`: un tool nuovo compare da solo, i gruppi in pagina lo ordinano.
 - **Triage e limiti:** ogni messaggio passa prima da Jev (`triage.ts`), che ferma fuori
   tema e abuso e decide la lingua della risposta; la spesa si scala in costo reale per
   visitatore (nel `SiteAgent`) e per tutto il sito (Durable Object `Ledger`), con le soglie

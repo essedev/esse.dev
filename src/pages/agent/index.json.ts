@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { languageCodes, navigation } from '../../lib/config';
+import { featured, languageCodes, navigation } from '../../lib/config';
 import { getArticles, getMethod, getNow, getPage, getProjects } from '../../lib/content';
 import { getSite } from '../../lib/site';
 import type { SiteDoc } from '../../agent/site-index';
@@ -21,6 +21,7 @@ export const GET: APIRoute = async () => {
 				tags: p.text.tags,
 				status: p.meta.status,
 				date: p.meta.created,
+				featured: featured.projects.includes(p.id),
 				repo: p.meta.repo,
 				site: p.meta.site,
 				why: p.text.why,

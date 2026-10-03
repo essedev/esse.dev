@@ -25,7 +25,8 @@ scelte in `docs/DECISIONS.md` #10. Gate verde: lint, check, build, unit, E2E.
 - Per andare online: controllare nelle impostazioni di Cloudflare Workers Builds che
   il comando di build sia `pnpm build`, il deploy `npx wrangler deploy` e Node almeno
   22.12; caricare il secret `OPENROUTER_API_KEY` (`wrangler secret put`), senza il
-  quale l'agente non risponde; poi merge su `main` con squash (vedi Aperte) e push.
+  quale l'agente non risponde, e `GITHUB_TOKEN` (fine-grained, sola lettura dei repo
+  pubblici), senza il quale i tool sul codice hanno 60 richieste l'ora per IP condiviso; poi merge su `main` con squash (vedi Aperte) e push.
 
 ### M15 - Struttura e stile - In corso
 
@@ -61,18 +62,13 @@ Scelte in `docs/DECISIONS.md` #11 e #12.
 - Fatto (Ciclo 14): Durable Object per visitatore con pi-durable, `glm-5.3-flash` da
   OpenRouter, `search_site` e `read_page`, triage con Jev valutato su un set etichettato,
   limite in costo reale per visitatore e per il sito, trascrizione con token e costo.
-- Da valutare: `@cloudflare/computer` (clona i repo in un workspace ed esegue JavaScript
-  in un Dynamic Worker) al posto dei tool sull'API di GitHub, unito a `run_code`.
+- Fatto (Ciclo 15): `list_projects`, `show_page` (scheda da aprire) e i tool sui repo
+  pubblici via API di GitHub (#13). Il repo del sito si legge dal ramo `main`: fino al
+  merge l'agente vede il sito vecchio.
+- Da valutare insieme a `run_code`: `@cloudflare/computer` (clona i repo in un
+  workspace ed esegue JavaScript in un Dynamic Worker).
 - Tool di sola lettura su dati già pubblici. Niente scritture, fetch di URL liberi,
   repo privati, memoria tra visite.
-  - Sito, da un indice JSON generato a build: `search_site`, `list_projects` (filtri
-    del registro), `read_page(path)`. Fatti `search_site` e `read_page`.
-  - Repo pubblici: `repo_overview`, `list_files`, `read_file` (righe limitate),
-    `search_code`, `recent_activity`. Ammessi solo i `repo` dei progetti pubblicati
-    più il repo del sito (l'agente legge le proprie definizioni e il proprio prompt);
-    `beforeToolCall` blocca il resto. Token GitHub di sola lettura, senza privati.
-  - Interfaccia, eseguito dal browser: `open_page(path)` apre la voce nel riquadro e
-    la evidenzia nella lista.
 - Tool dimostrativi, uno per capacità dell'harness, ognuno coi limiti nel codice:
   - `render(spec)`: grafici, tabelle, confronti disegnati dal client coi token del
     sito; specifica dichiarativa, mai HTML (CSP).

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { AgentClient } from 'agents/client';
+	import { ArrowUpRight } from '@lucide/svelte';
 	import { onMount, tick } from 'svelte';
 	import { renderMarkdown } from '../../agent/markdown';
 	import type { ServerMessage, TranscriptMessage, TranscriptPart } from '../../agent/protocol';
@@ -27,6 +28,11 @@
 		toolsNote: string;
 		/** Descrizione per il visitatore; senza, quella che il server dà al modello. */
 		toolLabels: Record<string, string>;
+		/** Come raggruppare il catalogo; un tool fuori dai gruppi finisce in coda. */
+		toolGroups: { label: string; names: string[] }[];
+		/** Il nome della sezione per ogni tipo di pagina, sulle schede di `show_page`. */
+		kinds: Record<string, string>;
+		open: string;
 		tryAsking: string;
 		suggestions: string[];
 		retry: string;
@@ -66,6 +72,19 @@
 			return crypto.randomUUID();
 		}
 	}
+
+	// Il catalogo è quello che il server annuncia: i gruppi lo ordinano, non lo decidono.
+	const groups = $derived.by(() => {
+		const known = new Set(labels.toolGroups.flatMap((g) => g.names));
+		const pick = (names: string[]) => catalog.filter((t) => names.includes(t.name));
+		return [
+			...labels.toolGroups.map((g) => ({
+				label: g.label,
+				tools: g.names.flatMap((n) => pick([n]))
+			})),
+			{ label: '', tools: catalog.filter((t) => !known.has(t.name)) }
+		].filter((g) => g.tools.length > 0);
+	});
 
 	const shown = $derived(
 		[...view.messages, ...(view.live ? [view.live] : [])].filter(
@@ -209,6 +228,18 @@
 	);
 	const resultText = (part: ToolResult) =>
 		part.content.map((c) => (c.type === 'text' ? c.text : '[image]')).join('\n');
+
+	/** La scheda di `show_page`, dal risultato del tool; `null` se non è leggibile. */
+	type Card = { path: string; kind: string; title: string; summary: string; status?: string };
+	function card(part: ToolResult | undefined): Card | null {
+		if (!part || part.error) return null;
+		try {
+			const value = JSON.parse(resultText(part)) as Card;
+			return value.path?.startsWith('/') ? value : null;
+		} catch {
+			return null;
+		}
+	}
 	const userText = (m: TranscriptMessage) =>
 		m.parts.map((p) => (p.type === 'text' ? p.text : '')).join('');
 
@@ -244,14 +275,23 @@
 	{#if empty}
 		<div class="flex flex-col gap-10">
 			{#if catalog.length}
-				<section class="flex flex-col gap-3">
+				<section class="flex flex-col gap-4">
 					<h2 class="label">{labels.tools}</h2>
-					<dl class="grid grid-cols-[auto_minmax(0,1fr)] gap-x-6 gap-y-2 text-[0.9375rem]">
-						{#each catalog as tool (tool.name)}
-							<dt class="font-mono text-sm text-fg">{tool.name}</dt>
-							<dd class="text-muted">{labels.toolLabels[tool.name] ?? tool.description}</dd>
+					<div class="grid gap-x-12 gap-y-6 md:grid-cols-2">
+						{#each groups as group (group.label)}
+							<div class="flex flex-col gap-2">
+								{#if group.label}
+									<h3 class="font-mono text-xs text-subtle">{group.label}</h3>
+								{/if}
+								<dl class="grid grid-cols-[auto_minmax(0,1fr)] gap-x-5 gap-y-1.5 text-[0.9375rem]">
+									{#each group.tools as tool (tool.name)}
+										<dt class="font-mono text-sm text-fg">{tool.name}</dt>
+										<dd class="text-muted">{labels.toolLabels[tool.name] ?? tool.description}</dd>
+									{/each}
+								</dl>
+							</div>
 						{/each}
-					</dl>
+					</div>
 					<p class="text-sm text-pretty text-subtle">{labels.toolsNote}</p>
 				</section>
 			{/if}
@@ -294,7 +334,7 @@
 					{#each message.parts as part, i (i)}
 						{#if part.type === 'text' && part.text.trim()}
 							<div
-								class="agent-prose text-[1.0625rem] leading-relaxed text-text [&_li]:ml-5 [&_li]:list-disc [&_p+p]:mt-3 [&_strong]:text-fg [&_ul]:mt-2"
+								class="prose max-w-none text-[1.0625rem] leading-relaxed prose-invert prose-headings:font-medium prose-headings:text-fg prose-p:my-3 prose-p:text-text prose-a:text-fg prose-a:decoration-subtle prose-a:underline-offset-4 prose-strong:font-medium prose-strong:text-fg prose-code:rounded prose-code:bg-surface prose-code:px-1.5 prose-code:py-0.5 prose-code:font-normal prose-code:text-fg prose-code:before:content-none prose-code:after:content-none prose-pre:rounded-[var(--radius-control)] prose-pre:bg-panel prose-pre:text-xs prose-ol:my-3 prose-ul:my-3 prose-li:my-1 prose-li:text-text prose-li:marker:text-accent [&_pre_code]:bg-transparent [&_pre_code]:p-0 [&>:first-child]:mt-0 [&>:last-child]:mb-0"
 							>
 								<!-- eslint-disable-next-line svelte/no-at-html-tags -- renderMarkdown neutralizza HTML e link (src/agent/markdown.ts, con test) -->
 								{@html renderMarkdown(part.text)}
@@ -308,6 +348,28 @@
 								</summary>
 								<p class="mt-2 font-mono text-xs whitespace-pre-wrap text-subtle">{part.text}</p>
 							</details>
+						{:else if part.type === 'tool-call' && part.name === 'show_page' && card(results.get(part.id))}
+							{@const page = card(results.get(part.id))!}
+							<a
+								href={page.path}
+								class="group flex items-start gap-4 rounded-[var(--radius-control)] bg-surface px-4 py-3 transition-colors hover:bg-hover"
+							>
+								<span class="flex min-w-0 flex-1 flex-col gap-1">
+									<span class="flex items-center gap-2 font-mono text-xs text-subtle">
+										{#if page.status}<span class="led" data-status={page.status}></span>{/if}
+										{labels.kinds[page.kind] ?? page.kind}
+									</span>
+									<span class="text-fg">{page.title}</span>
+									{#if page.summary}
+										<span class="text-sm text-pretty text-muted">{page.summary}</span>
+									{/if}
+								</span>
+								<span
+									class="flex shrink-0 items-center gap-1 font-mono text-xs text-subtle transition-colors group-hover:text-fg"
+								>
+									{labels.open}<ArrowUpRight class="size-3.5" />
+								</span>
+							</a>
 						{:else if part.type === 'tool-call'}
 							{@const result = results.get(part.id)}
 							<details class="rounded-[var(--radius-control)] bg-panel">

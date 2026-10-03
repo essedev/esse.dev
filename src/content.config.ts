@@ -213,6 +213,17 @@ const site = defineCollection({
 					agentAsk1: text,
 					agentAsk2: text,
 					agentAsk3: text,
+					agentToolsSite: text,
+					agentToolsCode: text,
+					agentToolProjects: text,
+					agentToolShow: text,
+					agentToolRepo: text,
+					agentToolFiles: text,
+					agentToolFile: text,
+					agentToolCode: text,
+					agentToolCommits: text,
+					agentOpen: text,
+					agentAsk4: text,
 					prev: text,
 					next: text
 				})

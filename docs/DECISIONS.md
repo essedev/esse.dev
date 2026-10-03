@@ -92,3 +92,18 @@ Jev passa da OpenRouter con la stessa chiave del modello; TypeSafe diretto e Wor
 restano come trasporti alternativi (`JEV_TRANSPORT` in `src/agent/site-agent.ts`).
 Scartati: un numero fisso di messaggi per visitatore (rigido, ignora quanto costa una
 domanda), il solo triage senza tetto (una classificazione si può ingannare).
+
+## #13 - Tool sul codice dall'API di GitHub, pagine come schede
+
+**Status:** attiva (Ciclo 15)
+
+I tool sui repo leggono l'API REST di GitHub (`src/agent/github.ts`): nessun workspace da
+tenere, chiamate da decine di millisecondi, solo lettura. Il repo è un parametro a valori
+chiusi (i `repo` dei progetti pubblicati più quello del sito), e il codice lo ricontrolla
+prima di chiamare GitHub. Il testo dei repo è dato, non istruzione: lo dice il prompt, e
+i tool non hanno effetti da sfruttare. `GITHUB_TOKEN` è facoltativo: senza, 60 richieste
+l'ora per IP e ricerca solo nei nomi dei file.
+`show_page` mostra una scheda invece di aprire la pagina: il sito non ha un router lato
+client, e navigare chiuderebbe la conversazione mentre l'agente risponde.
+Scartati per ora: `@cloudflare/computer` (clona i repo, serve davvero solo per eseguire
+codice: si rivaluta con `run_code`), `open_page` che naviga da solo.

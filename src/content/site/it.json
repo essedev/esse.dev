@@ -85,7 +85,18 @@
 		"agentTry": "Prova a chiedere",
 		"agentAsk1": "Che differenza c'è tra Relay e Portsage?",
 		"agentAsk2": "Come lavora Simone con i coding agent?",
-		"agentAsk3": "Su cosa sta lavorando adesso?"
+		"agentAsk3": "Su cosa sta lavorando adesso?",
+		"agentToolsSite": "Sul sito",
+		"agentToolsCode": "Sul codice",
+		"agentToolProjects": "elenca i progetti, per stato o tag",
+		"agentToolShow": "ti mostra una pagina da aprire",
+		"agentToolRepo": "un repo pubblico in breve: linguaggi, README, ultimo push",
+		"agentToolFiles": "l'albero dei file di un repo",
+		"agentToolFile": "legge un file, con i numeri di riga",
+		"agentToolCode": "cerca nel codice di un repo",
+		"agentToolCommits": "gli ultimi commit di un repo",
+		"agentOpen": "apri",
+		"agentAsk4": "Come fa Portsage a sapere quali porte sono occupate? Mostrami il codice"
 	},
 	"sectionDescriptions": {
 		"projects": "Cose che ho costruito e che sto costruendo: prodotti, strumenti per sviluppatori, esperimenti con l'AI e qualche idea ancora sulla carta.",

@@ -14,6 +14,8 @@ export interface SiteDoc {
 	tags: string[];
 	status?: string;
 	date?: string;
+	/** Solo progetti: in vetrina (`featured.json`). */
+	featured?: boolean;
 	repo?: string;
 	site?: string;
 	why?: string;
@@ -60,4 +62,60 @@ export function searchSite(
 		}
 	}
 	return hits.sort((a, b) => b.score - a.score).slice(0, options.limit ?? 8);
+}
+
+export interface ProjectRow {
+	path: string;
+	title: string;
+	summary: string;
+	status?: string;
+	tags: string[];
+	date?: string;
+	featured: boolean;
+	/** `owner/name` del repo pubblico; senza, il codice è privato. */
+	repo?: string;
+	site?: string;
+}
+
+/**
+ * Il registro dei progetti in una lingua, con i filtri della pagina progetti: stato e
+ * tag (senza distinguere maiuscole). La vetrina prima, poi dal più recente.
+ */
+export function listProjects(
+	docs: readonly SiteDoc[],
+	options: { lang: string; status?: string; tag?: string }
+): ProjectRow[] {
+	const tag = options.tag && normalize(options.tag);
+	return docs
+		.filter((d) => d.kind === 'project' && d.lang === options.lang)
+		.filter((d) => !options.status || d.status === options.status)
+		.filter((d) => !tag || d.tags.some((t) => normalize(t) === tag))
+		.sort(
+			(a, b) =>
+				Number(b.featured ?? false) - Number(a.featured ?? false) ||
+				(b.date ?? '').localeCompare(a.date ?? '')
+		)
+		.map((d) => ({
+			path: d.path,
+			title: d.title,
+			summary: d.summary,
+			status: d.status,
+			tags: d.tags,
+			date: d.date,
+			featured: d.featured ?? false,
+			repo: d.repo ? (repoName(d.repo) ?? undefined) : undefined,
+			site: d.site
+		}));
+}
+
+/** `owner/name` da un URL di GitHub; `null` se non è un repo di GitHub. */
+export function repoName(url: string): string | null {
+	const match = /^https:\/\/github\.com\/([\w.-]+)\/([\w.-]+?)(?:\.git)?\/?$/.exec(url);
+	return match ? `${match[1]}/${match[2]}` : null;
+}
+
+/** I repo che l'agente può leggere: quelli dei progetti pubblicati, più quelli dati. */
+export function publicRepos(docs: readonly SiteDoc[], extra: readonly string[] = []): string[] {
+	const repos = docs.flatMap((d) => (d.repo ? [repoName(d.repo)] : [])).filter(Boolean);
+	return [...new Set([...(repos as string[]), ...extra])].sort();
 }

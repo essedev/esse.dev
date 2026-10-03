@@ -742,3 +742,25 @@ Durable Object per visitatore.
   messaggi, che chiamerebbero un modello vero).
 - **Prossimo passo:** i tool che restano in M17 (`list_projects`, repo pubblici,
   `open_page`, poi i dimostrativi) e Turnstile.
+
+## Ciclo 15 - L'agente legge i progetti e il loro codice (2026-10-03)
+
+Secondo taglio di M17: da 2 a 9 tool, divisi in pagina tra "sul sito" e "sul codice".
+
+- **Sito:** `list_projects` (filtri per stato e tag, vetrina prima; l'indice ora segna i
+  progetti in vetrina) e `show_page`, che diventa una scheda da aprire nella
+  trascrizione invece di navigare (DECISIONS #13).
+- **Codice:** `repo_overview`, `list_files`, `read_file`, `search_code`, `recent_commits`
+  sull'API REST di GitHub, solo sui repo dei progetti pubblicati più quello del sito.
+  `read_file` numera le righe, dà il link a GitHub e legge a pezzi i file lunghi;
+  risposte in memoria per 5 minuti; `GITHUB_TOKEN` facoltativo.
+- **Prove vere:** la prima chiamata sul Worker falliva con "Illegal invocation" (`fetch`
+  salvato in un campo perde il suo `this`; in Node e nei test non succede). Sulla domanda
+  "come fa Portsage a sapere quali porte sono occupate" l'agente trova `scanner.rs` in 7
+  chiamate, per circa 0,2 centesimi; il prompt ora chiede di copiare il codice senza
+  commenti inventati e di citare le righe col link.
+- **Trascrizione:** le risposte usano gli stessi stili di prosa del sito (elenchi, blocchi
+  di codice, link).
+- **Test:** 87 unit e 54 E2E.
+- **Prossimo passo:** `GITHUB_TOKEN` da creare; poi `render` e `run_code`, insieme alla
+  valutazione di `@cloudflare/computer`.
