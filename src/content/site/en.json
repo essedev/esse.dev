@@ -14,7 +14,7 @@
 		"home": "welcome",
 		"backHome": "Back home",
 		"pageNotFound": "Page not found",
-		"pageNotFoundText": "This address doesn't match any page. You'll find everything in the list on the left.",
+		"pageNotFoundText": "This address doesn't match any page. You'll find everything in the list.",
 		"copied": "copied",
 		"copyLink": "link",
 		"linkCopied": "link copied",
