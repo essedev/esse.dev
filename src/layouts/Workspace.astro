@@ -1,5 +1,4 @@
 ---
-import Palette from '../components/workspace/Palette.astro';
 import Sidebar from '../components/workspace/Sidebar.astro';
 import StatusBar from '../components/workspace/StatusBar.astro';
 import TitleBar from '../components/workspace/TitleBar.astro';
@@ -63,7 +62,6 @@ const groups = await getNavGroups(lang, t);
 		</div>
 		<StatusBar path={path} t={t} />
 	</div>
-	<Palette t={t} email="hello@esse.dev" />
 </Layout>
 
 <script>

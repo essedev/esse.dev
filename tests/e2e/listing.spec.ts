@@ -20,9 +20,10 @@ test.describe('listing filters', () => {
 		expect(await cards(page).count()).toBeLessThan(total);
 	});
 
-	test('typing in search narrows the list and writes the query string', async ({ page }) => {
+	test('the one search also narrows the registry and writes the query string', async ({ page }) => {
 		await open(page, '/en/projects');
-		await page.locator('main').getByRole('searchbox').fill('relay');
+		await expect(page.locator('main').getByRole('searchbox')).toHaveCount(0);
+		await page.locator('[data-filter]').fill('relay');
 		await expect(page).toHaveURL(/q=relay/);
 		await expect(cards(page)).toHaveCount(1);
 	});

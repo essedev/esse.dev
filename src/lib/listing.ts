@@ -40,7 +40,10 @@ export function applyFilters(items: ListItem[], f: Filters, locale: string): Lis
 	const q = f.query.trim().toLocaleLowerCase(locale);
 	const filtered = items.filter(
 		(item) =>
-			(!q || `${item.title} ${item.excerpt}`.toLocaleLowerCase(locale).includes(q)) &&
+			(!q ||
+				`${item.title} ${item.excerpt} ${item.tags.join(' ')}`
+					.toLocaleLowerCase(locale)
+					.includes(q)) &&
 			(!f.tags.length || item.tags.some((t) => f.tags.includes(t))) &&
 			(!f.statuses.length || (!!item.status && f.statuses.includes(item.status)))
 	);

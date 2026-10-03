@@ -46,8 +46,6 @@ const AboutBody = about ? (await render(about)).Content : null;
 const nowBodies = await Promise.all(now.map(async (n) => (await render(n.entry)).Content));
 
 const labels = {
-	search: t(section === 'projects' ? 'searchProjects' : 'searchArticles'),
-	clearSearch: t('clearSearch'),
 	status: t('status'),
 	tags: t('tags'),
 	searchTags: t('searchTags'),

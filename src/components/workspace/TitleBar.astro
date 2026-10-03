@@ -51,17 +51,13 @@ const slugMap = await getSlugMap();
 	</nav>
 
 	<div class="ml-auto flex items-center gap-2">
-		<button
-			type="button"
-			data-palette-open
-			class="text-subtle hover:text-fg bg-surface hover:bg-hover flex h-8 items-center gap-2 rounded-[var(--radius-control)] pr-1.5 pl-2.5 font-mono text-xs transition-colors"
+		<a
+			href={`/${lang}#search`}
+			aria-label={t('search')}
+			class="text-subtle hover:text-fg hover:bg-surface flex size-8 items-center justify-center rounded-[var(--radius-control)] transition-colors lg:hidden"
 		>
-			<Search class="size-3.5" />
-			<span class="hidden sm:inline">{t('jumpTo')}</span>
-			<span class="kbd hidden sm:inline-flex" data-modkey>
-				⌘K
-			</span>
-		</button>
+			<Search class="size-4" />
+		</a>
 		<ul class="flex items-center font-mono text-xs" aria-label={t('language')}>
 			{languages.map((l) =>
 				l.code === lang ? (

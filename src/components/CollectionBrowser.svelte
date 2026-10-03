@@ -15,12 +15,9 @@
 		type Status
 	} from '../lib/listing';
 	import EntryRow from './EntryRow.svelte';
-	import SearchField from './ui/SearchField.svelte';
 	import Select from './ui/Select.svelte';
 
 	interface Labels {
-		search: string;
-		clearSearch: string;
 		status: string;
 		tags: string;
 		searchTags: string;
@@ -55,6 +52,13 @@
 	onMount(() => {
 		filters = filtersFromSearch(window.location.search);
 		mounted = true;
+		// La ricerca testuale è quella unica del sito, in cima alla lista: qui arriva
+		// come evento, così il registro e la lista si filtrano insieme.
+		const onSearch = (event: Event) => {
+			filters.query = (event as CustomEvent<string>).detail;
+		};
+		addEventListener('workspace:search', onSearch);
+		return () => removeEventListener('workspace:search', onSearch);
 	});
 
 	$effect(() => {
@@ -107,11 +111,6 @@
 <div class="flex flex-col gap-6">
 	<div class="flex flex-col gap-3">
 		<div class="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
-			<SearchField
-				bind:value={filters.query}
-				label={labels.search}
-				clearLabel={labels.clearSearch}
-			/>
 			<div class="grid grid-cols-2 gap-3 sm:flex sm:flex-wrap">
 				{#if statusOptions.length > 1}
 					<Select
@@ -162,7 +161,10 @@
 				{/each}
 				<button
 					type="button"
-					onclick={() => (filters = { ...DEFAULT_FILTERS })}
+					onclick={() => {
+						filters = { ...DEFAULT_FILTERS };
+						dispatchEvent(new CustomEvent('workspace:set-search', { detail: '' }));
+					}}
 					class="h-7 px-1 text-xs text-muted underline-offset-4 transition-colors hover:text-fg hover:underline"
 				>
 					{labels.clearFilters}

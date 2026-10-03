@@ -53,6 +53,12 @@ describe('applyFilters', () => {
 		expect(ids(statuses)).toEqual(['beta', 'gamma']);
 	});
 
+	it('la ricerca testuale guarda anche i tag, come la lista', () => {
+		expect(ids(applyFilters(items, { ...DEFAULT_FILTERS, query: 'rust' }, 'en'))).toEqual([
+			'gamma'
+		]);
+	});
+
 	it('ordina per data crescente o per titolo', () => {
 		expect(ids(applyFilters(items, { ...DEFAULT_FILTERS, sort: 'oldest' }, 'en'))).toEqual([
 			'alpha',

@@ -3,7 +3,8 @@
  * questo script aggiunge solo quello che rende il sito un'app da usare con la tastiera.
  *
  * - j/k (o frecce) scorrono le voci della lista, Invio apre, Esc torna al livello sopra.
- * - "/" porta al filtro della lista; Cmd/Ctrl+K apre la palette per saltare ovunque.
+ * - "/" e Cmd/Ctrl+K portano alla ricerca, l'unica del sito: filtra la lista e il
+ *   registro della pagina, se c'è.
  * - i pulsanti `[data-copy]` copiano e confermano nella barra di stato.
  * - la lista ricorda il proprio scroll fra una pagina e l'altra.
  */
@@ -106,12 +107,38 @@ function applyFilter() {
 	}
 	if (emptyNote) emptyNote.hidden = anyVisible;
 }
-filter?.addEventListener('input', applyFilter);
+function focusSearch() {
+	filter?.focus();
+	filter?.select();
+}
+
+// Una sola ricerca: filtra la lista e, sulle pagine con un registro (progetti, scritti),
+// anche il registro, che ascolta l'evento `workspace:search`.
+function onSearch() {
+	applyFilter();
+	dispatchEvent(new CustomEvent('workspace:search', { detail: filter?.value ?? '' }));
+}
+filter?.addEventListener('input', onSearch);
+
+// La ricerca riparte da quella nell'URL (?q=) e si apre da #search (icona su mobile).
+const initialQuery = new URLSearchParams(location.search).get('q');
+if (filter && initialQuery) {
+	filter.value = initialQuery;
+	applyFilter();
+}
+if (location.hash === '#search') focusSearch();
+
+// Il registro può azzerare la ricerca ("Azzera filtri"): il campo si allinea.
+addEventListener('workspace:set-search', (event) => {
+	if (!filter) return;
+	filter.value = (event as CustomEvent<string>).detail;
+	applyFilter();
+});
 filter?.addEventListener('keydown', (event) => {
 	if (event.key === 'Escape') {
 		event.preventDefault();
 		filter.value = '';
-		applyFilter();
+		onSearch();
 		filter.blur();
 	} else if (event.key === 'ArrowDown') {
 		event.preventDefault();
@@ -123,152 +150,16 @@ filter?.addEventListener('keydown', (event) => {
 	}
 });
 
-// Palette: voci della lista più alcune azioni, filtrate mentre si scrive.
-const palette = document.querySelector<HTMLDialogElement>('[data-palette]');
-const paletteInput = palette?.querySelector<HTMLInputElement>('[data-palette-input]');
-const paletteList = palette?.querySelector<HTMLUListElement>('[data-palette-list]');
-const paletteEmpty = palette?.querySelector<HTMLElement>('[data-palette-empty]');
-const messages = palette?.querySelector<HTMLElement>('[data-msg-email]')?.dataset;
-
-interface PaletteEntry {
-	label: string;
-	hint: string;
-	group: string;
-	run: () => void;
-}
-
-function paletteEntries(): PaletteEntry[] {
-	const entries: PaletteEntry[] = [];
-	for (const group of document.querySelectorAll<HTMLElement>('[data-sidebar] [data-group]')) {
-		const header = group.querySelector<HTMLAnchorElement>(':scope > [data-nav-item]');
-		const groupLabel = header?.dataset.search ?? '';
-		if (header)
-			entries.push({
-				label: groupLabel,
-				hint: '',
-				group: groupLabel,
-				run: () => (location.href = header.href)
-			});
-		for (const a of group.querySelectorAll<HTMLAnchorElement>('[data-row] [data-nav-item]')) {
-			const title = a.querySelector('[data-title]')?.textContent?.trim() ?? '';
-			entries.push({
-				label: title,
-				hint: groupLabel,
-				group: groupLabel,
-				run: () => (location.href = a.href)
-			});
-		}
-	}
-	const actionsLabel = palette?.querySelector('[data-group-label-actions]')?.textContent ?? '';
-	const template = palette?.querySelector<HTMLTemplateElement>('[data-palette-actions]');
-	for (const li of template?.content.querySelectorAll<HTMLElement>('[data-action]') ?? []) {
-		const action = li.dataset.action ?? '';
-		entries.push({
-			label: li.dataset.label ?? '',
-			hint: li.dataset.hint ?? '',
-			group: actionsLabel,
-			run: () => {
-				if (action === 'copy-email') copy('hello@esse.dev', messages?.msgEmail ?? '');
-				else if (action === 'copy-link') copy(location.href, messages?.msgLink ?? '');
-				else if (action.startsWith('open:')) window.open(action.slice(5), '_blank', 'noopener');
-			}
-		});
-	}
-	return entries;
-}
-
-let entries: PaletteEntry[] = [];
-let visible: PaletteEntry[] = [];
-let activeIndex = 0;
-
-function renderPalette() {
-	if (!paletteList || !paletteInput) return;
-	const q = paletteInput.value.trim().toLowerCase();
-	visible = q ? entries.filter((e) => `${e.label} ${e.hint}`.toLowerCase().includes(q)) : entries;
-	activeIndex = Math.min(activeIndex, Math.max(0, visible.length - 1));
-	paletteList.replaceChildren(
-		...visible.map((entry, i) => {
-			const li = document.createElement('li');
-			li.id = `palette-opt-${i}`;
-			li.setAttribute('role', 'option');
-			li.setAttribute('aria-selected', String(i === activeIndex));
-			li.className =
-				'flex h-10 cursor-pointer items-center justify-between gap-4 rounded-[var(--radius-control)] px-3 text-[0.9375rem] text-text aria-selected:bg-hover aria-selected:text-fg';
-			const label = document.createElement('span');
-			label.className = 'truncate';
-			label.textContent = entry.label;
-			const hint = document.createElement('span');
-			hint.className = 'shrink-0 font-mono text-[0.7rem] text-subtle';
-			hint.textContent = entry.hint;
-			li.append(label, hint);
-			li.addEventListener('pointermove', () => {
-				if (activeIndex !== i) {
-					activeIndex = i;
-					renderPalette();
-				}
-			});
-			li.addEventListener('click', () => runEntry(entry));
-			return li;
-		})
-	);
-	paletteInput.setAttribute(
-		'aria-activedescendant',
-		visible.length ? `palette-opt-${activeIndex}` : ''
-	);
-	if (paletteEmpty) paletteEmpty.hidden = visible.length > 0;
-	paletteList.querySelector('[aria-selected="true"]')?.scrollIntoView({ block: 'nearest' });
-}
-
-function runEntry(entry: PaletteEntry) {
-	palette?.close();
-	entry.run();
-}
-
-function openPalette() {
-	if (!palette || !paletteInput) return;
-	entries = paletteEntries();
-	paletteInput.value = '';
-	activeIndex = 0;
-	renderPalette();
-	palette.showModal();
-	paletteInput.focus();
-}
-
-paletteInput?.addEventListener('input', () => {
-	activeIndex = 0;
-	renderPalette();
-});
-paletteInput?.addEventListener('keydown', (event) => {
-	if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
-		event.preventDefault();
-		const delta = event.key === 'ArrowDown' ? 1 : -1;
-		activeIndex = Math.max(0, Math.min(visible.length - 1, activeIndex + delta));
-		renderPalette();
-	} else if (event.key === 'Enter') {
-		event.preventDefault();
-		if (visible[activeIndex]) runEntry(visible[activeIndex]);
-	}
-});
-palette?.addEventListener('click', (event) => {
-	// Un clic sullo sfondo (fuori dal riquadro) chiude.
-	if (event.target === palette) palette.close();
-});
-for (const btn of document.querySelectorAll('[data-palette-open]')) {
-	btn.addEventListener('click', openPalette);
-}
-
 // Copia con conferma: nel pulsante e nella barra di stato.
-async function copy(text: string, message: string, button?: HTMLElement) {
+async function copy(text: string, message: string, button: HTMLElement) {
 	try {
 		await navigator.clipboard.writeText(text);
 	} catch {
 		return;
 	}
 	flashStatus(message);
-	if (button) {
-		button.setAttribute('data-copied', '');
-		setTimeout(() => button.removeAttribute('data-copied'), 1400);
-	}
+	button.setAttribute('data-copied', '');
+	setTimeout(() => button.removeAttribute('data-copied'), 1400);
 }
 document.addEventListener('click', (event) => {
 	const button = (event.target as HTMLElement).closest<HTMLElement>('[data-copy]');
@@ -283,12 +174,10 @@ document.addEventListener('keydown', (event) => {
 	if (event.defaultPrevented) return;
 	if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
 		event.preventDefault();
-		if (palette?.open) palette.close();
-		else openPalette();
+		focusSearch();
 		return;
 	}
-	if (palette?.open || isTyping(event.target) || event.metaKey || event.ctrlKey || event.altKey)
-		return;
+	if (isTyping(event.target) || event.metaKey || event.ctrlKey || event.altKey) return;
 
 	switch (event.key) {
 		case 'j':
@@ -305,8 +194,7 @@ document.addEventListener('keydown', (event) => {
 			break;
 		case '/':
 			event.preventDefault();
-			filter?.focus();
-			filter?.select();
+			focusSearch();
 			break;
 		case 'Escape': {
 			const parent = workspace?.dataset.parent;

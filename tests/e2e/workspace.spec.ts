@@ -17,7 +17,7 @@ test.describe('workspace keyboard', () => {
 		await expect(page).toHaveURL(new RegExp(`${href}$`));
 	});
 
-	test('"/" focuses the filter, which narrows the list and opens the first match', async ({
+	test('"/" focuses the search, which narrows the list and opens the first match', async ({
 		page
 	}) => {
 		await open(page, '/en');
@@ -30,14 +30,10 @@ test.describe('workspace keyboard', () => {
 		await expect(page).toHaveURL(/\/en\/projects\/portsage$/);
 	});
 
-	test('the command palette jumps to any item', async ({ page }) => {
-		await open(page, '/en');
+	test('Cmd/Ctrl+K also brings you to the one search', async ({ page }) => {
+		await open(page, '/en/projects/relay');
 		await page.keyboard.press('Control+k');
-		const input = page.locator('[data-palette-input]');
-		await expect(input).toBeFocused();
-		await input.fill('nexus');
-		await page.keyboard.press('Enter');
-		await expect(page).toHaveURL(/\/en\/projects\/nexus$/);
+		await expect(page.locator('[data-filter]')).toBeFocused();
 	});
 
 	test('Esc on a detail page goes back to its section', async ({ page }) => {

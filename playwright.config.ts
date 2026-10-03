@@ -17,7 +17,9 @@ export default defineConfig({
 	projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
 	webServer: {
 		command: 'pnpm build && pnpm exec wrangler dev --port 8788',
-		url: 'http://localhost:8788/en',
+		// Pronto quando risponde il Worker, non solo gli asset statici: /en/progetti passa dal
+		// catch-all dei redirect, e la prima risposta del Worker arriva a compilazione finita.
+		url: 'http://localhost:8788/en/progetti',
 		reuseExistingServer: false,
 		timeout: 240_000
 	}

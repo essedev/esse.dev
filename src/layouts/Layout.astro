@@ -80,16 +80,11 @@ const locale = lang === 'it' ? 'it_IT' : 'en_US';
 		<meta name="twitter:site" content="@essesdev" />
 
 		{jsonLd && <script type="application/ld+json" set:html={serializeJsonLd(jsonLd)} />}
-
-		<script
-			is:inline
-			defer
-			src="https://umami.essedev.it/script.js"
-			data-website-id="fcbb5baf-7f04-4667-8289-8ffb42043012"
-			data-domains="esse.dev"
-		></script>
 	</head>
 	<body class="min-h-dvh">
 		<slot />
+		<script>
+			import '../scripts/analytics';
+		</script>
 	</body>
 </html>

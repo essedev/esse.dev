@@ -17,11 +17,12 @@ const { groups, current, t } = Astro.props;
 	<div class="px-3 pt-3 pb-2 lg:px-4 lg:pt-4">
 		<label class="bg-surface focus-within:bg-hover flex h-9 items-center gap-2 rounded-[var(--radius-control)] pr-1.5 pl-2.5 transition-colors">
 			<ListFilter class="text-subtle size-4 shrink-0" />
-			<span class="sr-only">{t('filter')}</span>
+			<span class="sr-only">{t('search')}</span>
 			<input
+				id="search"
 				type="search"
 				data-filter
-				placeholder={t('filter')}
+				placeholder={t('search')}
 				autocomplete="off"
 				spellcheck="false"
 				class="placeholder:text-subtle min-w-0 flex-1 bg-transparent font-mono text-[0.8125rem] outline-none [&::-webkit-search-cancel-button]:hidden"
@@ -63,9 +64,8 @@ const { groups, current, t } = Astro.props;
 								data-nav-item
 								data-search={item.search.toLowerCase()}
 								aria-current={item.key === current ? 'page' : undefined}
-								class="group text-text hover:bg-hover hover:text-fg aria-[current=page]:bg-surface aria-[current=page]:text-fg data-[selected]:bg-hover data-[selected]:text-fg relative flex h-9 items-center gap-3 rounded-[var(--radius-control)] px-2 transition-colors"
+								class="text-text hover:bg-hover hover:text-fg aria-[current=page]:bg-surface aria-[current=page]:text-fg data-[selected]:bg-hover data-[selected]:text-fg flex h-9 items-center gap-3 rounded-[var(--radius-control)] px-2 transition-colors"
 							>
-								<span class="bg-accent absolute top-2 bottom-2 left-0 w-px origin-top scale-y-0 transition-transform duration-200 group-aria-[current=page]:scale-y-100" />
 								{item.index ? (
 									<span class="text-subtle w-[7px] font-mono text-[0.7rem] tabular-nums">
 										{item.index}

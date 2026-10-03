@@ -87,7 +87,7 @@ lista `src/lib/workspace.ts` (unica fonte dell'ordine per lista, pager e palette
   di versioni precedenti (`blog`, `informazioni`) si reindirizzano con `LEGACY_ROUTES`
   in `src/lib/i18n.ts`.
 - Interazione in `src/scripts/workspace.ts`: j/k e frecce, Invio, Esc (torna al livello
-  sopra, da `data-parent`), `/` per il filtro, Cmd/Ctrl+K per la palette, `[data-copy]`
+  sopra, da `data-parent`), `/` e Cmd/Ctrl+K per la ricerca, `[data-copy]`
   con conferma nella barra di stato, scroll della lista ricordato. Le transizioni fra
   pagine sono quelle native (`@view-transition`), niente router.
 - Mobile: la home mostra presentazione e poi la lista; un dettaglio mostra solo il
@@ -102,6 +102,10 @@ lista `src/lib/workspace.ts` (unica fonte dell'ordine per lista, pager e palette
   stanno in una colonna a destra.
 - Controlli mai nativi: `ui/Select.svelte` (singola, multipla, con ricerca) e
   `ui/SearchField.svelte`. Il registro dei progetti usa `EntryRow.svelte`.
+- Una sola ricerca nel sito (il campo in cima alla lista: `/` e Cmd/Ctrl+K ci portano,
+  filtra anche il registro della pagina) e un solo cursore lampeggiante (accanto a
+  `esse.dev`). Mai linee o barre d'accento a sinistra o sopra un elemento per indicare
+  selezione o stato: la selezione si vede dal fondo.
 - Niente stili inline negli attributi: la CSP li blocca (anche `view-transition-name`
   va in una classe). Icone solo Lucide.
 

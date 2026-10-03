@@ -11,8 +11,7 @@ const keys: [string[], string][] = [
 	[['j', 'k'], t('keysMove')],
 	[['↵'], t('keysOpen')],
 	[['esc'], t('keysBack')],
-	[['/'], t('keysFilter')],
-	[['⌘K'], t('keysJump')]
+	[['/'], t('search').toLowerCase()]
 ];
 ---
 
@@ -27,9 +26,7 @@ const keys: [string[], string][] = [
 		{keys.map(([ks, label]) => (
 			<li class="flex items-center gap-1.5">
 				{ks.map((k) => (
-					<span class="kbd" data-modkey={k === '⌘K' ? '' : undefined}>
-						{k}
-					</span>
+					<span class="kbd">{k}</span>
 				))}
 				{label}
 			</li>
