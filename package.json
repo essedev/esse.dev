@@ -32,6 +32,7 @@
 		"@tailwindcss/vite": "^4.3.3",
 		"agents": "^0.26.0",
 		"astro": "^7.3.5",
+		"marked": "^18.0.14",
 		"svelte": "^5.57.1",
 		"tailwindcss": "^4.3.3",
 		"typescript": "^6.0.3",

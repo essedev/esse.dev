@@ -63,7 +63,19 @@
 		"agentOffline": "non connesso",
 		"agentThinking": "ci sto pensando",
 		"agentToolCall": "chiamata",
-		"agentResult": "risultato"
+		"agentResult": "risultato",
+		"agentReasoning": "ragionamento del modello",
+		"agentBudget": "budget di oggi",
+		"agentNoticeOfftopic": "Rispondo solo su Simone, i suoi progetti e il suo lavoro: questa domanda la lascio passare.",
+		"agentNoticeAbuse": "Questa richiesta non la eseguo.",
+		"agentNoticeBudget": "Il budget di oggi per l'agente è finito: riprova domani, oppure scrivimi.",
+		"agentIntentAbout": "su Simone",
+		"agentIntentCode": "sul codice",
+		"agentIntentOfftopic": "fuori tema",
+		"agentIntentAbuse": "abuso",
+		"agentWeightLight": "leggera",
+		"agentWeightMedium": "media",
+		"agentWeightHeavy": "pesante"
 	},
 	"sectionDescriptions": {
 		"projects": "Cose che ho costruito e che sto costruendo: prodotti, strumenti per sviluppatori, esperimenti con l'AI e qualche idea ancora sulla carta.",

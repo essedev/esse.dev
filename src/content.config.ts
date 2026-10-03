@@ -191,6 +191,18 @@ const site = defineCollection({
 					agentThinking: text,
 					agentToolCall: text,
 					agentResult: text,
+					agentReasoning: text,
+					agentBudget: text,
+					agentNoticeOfftopic: text,
+					agentNoticeAbuse: text,
+					agentNoticeBudget: text,
+					agentIntentAbout: text,
+					agentIntentCode: text,
+					agentIntentOfftopic: text,
+					agentIntentAbuse: text,
+					agentWeightLight: text,
+					agentWeightMedium: text,
+					agentWeightHeavy: text,
 					prev: text,
 					next: text
 				})

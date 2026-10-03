@@ -5,8 +5,19 @@ import type { JsonValue } from '@earendil-works/pi-ai';
 import type { AgentEventStream, RegistryReader } from '@earendil-works/pi-durable';
 import type { Connection, ConnectionContext } from 'agents/lifecycle';
 import type { WebSocketMessage, WebSocketsOptions } from 'agents/websockets';
-import { ROOT_SESSION, type PiHarness, type PiSessionId } from 'agents/harness/pi';
+import { ROOT_SESSION, type PiHarness, type PiReceipt, type PiSessionId } from 'agents/harness/pi';
 import type { PiClientMessage, PiServerMessage } from './protocol';
+
+/**
+ * Agganci del sito attorno all'invio (non c'erano nell'esempio): `admit` decide se il
+ * messaggio arriva al modello (triage e budget) e manda al client cosa ha deciso;
+ * `settled` riceve la ricevuta per addebitare il costo reale a risposta finita.
+ */
+export interface SubmitHooks {
+	admit(text: string, reply: (message: PiServerMessage) => void): Promise<boolean>;
+	settled(session: PiSessionId, receipt: PiReceipt): void;
+	status(reply: (message: PiServerMessage) => void): Promise<void>;
+}
 
 const SESSION_TAG_PREFIX = 'pi-session:';
 const SESSION_QUERY = 'session';
@@ -56,13 +67,16 @@ export class PiSessionSockets {
 	readonly #registry: RegistryReader;
 	readonly #getWebSockets: (tag?: string) => WebSocket[];
 	readonly #watches = new Map<WebSocket, AgentEventStream>();
+	readonly #hooks: SubmitHooks | undefined;
 
 	constructor(
 		harness: PiHarness,
 		/** The registry pi was opened with, for the tool list sent on connect. */
 		registry: RegistryReader,
-		getWebSockets: (tag?: string) => WebSocket[]
+		getWebSockets: (tag?: string) => WebSocket[],
+		hooks?: SubmitHooks
 	) {
+		this.#hooks = hooks;
 		this.#harness = harness;
 		this.#registry = registry;
 		this.#getWebSockets = getWebSockets;
@@ -111,6 +125,7 @@ export class PiSessionSockets {
 				.map(({ tool }) => ({ name: tool.name, description: tool.description }))
 		});
 		await this.#watch(connection, session);
+		await this.#hooks?.status((message) => send(connection, message));
 	}
 
 	async #watch(socket: WebSocket, session: PiSessionId): Promise<void> {
@@ -165,11 +180,17 @@ export class PiSessionSockets {
 	): Promise<JsonValue> {
 		const handle = this.#harness.session(session);
 		switch (message.type) {
-			case 'submit':
-				return await handle.submit(message.input, {
+			case 'submit': {
+				const text = typeof message.input === 'string' ? message.input : '';
+				const reply = (out: PiServerMessage) => send(connection, out);
+				if (this.#hooks && !(await this.#hooks.admit(text, reply))) return null;
+				const receipt = await handle.submit(message.input, {
 					...(message.whenBusy ? { whenBusy: message.whenBusy } : {}),
 					...(message.operationId ? { operationId: message.operationId } : {})
 				});
+				this.#hooks?.settled(session, receipt);
+				return receipt;
+			}
 			case 'abort':
 				return await handle.abort();
 			case 'reset':

@@ -61,9 +61,13 @@ Scelte in `docs/DECISIONS.md` #11.
   Object per visitatore con pi-durable dentro (`PiHarness`), modelli dal binding `AI`,
   tool `search_site` sull'indice del sito. Due domande vere: il modello chiama il tool,
   risponde con i path giusti, lo streaming arriva.
-- Visto nella prova: `glm-4.7-flash` è lento (10-15 s) e debole (risponde in italiano a
-  una domanda in inglese, riassume male): il modello vero si sceglie misurando. Il
-  Markdown delle risposte va reso; il ragionamento del modello va chiuso di default.
+- Fatto dopo la prova: modello `glm-5.3-flash` per tutto (indice Artificial Analysis 42,
+  0,15/0,50 $ per milione; una domanda con due tool costa circa 0,07 centesimi);
+  `read_page`; Markdown sicuro nelle risposte, ragionamento chiuso, token e costo per
+  risposta. Triage con Jev e limite in costo reale (`docs/DECISIONS.md` #12).
+- Jev (modello di terze parti su Workers AI) richiede crediti AI Gateway: senza, il
+  triage fallisce ("Insufficient AI Gateway credits") e i messaggi passano senza triage.
+  Da fare da Simone: caricare crediti (unified billing, +5% sull'acquisto).
 - Da valutare: `@cloudflare/computer` (clona i repo in un workspace ed esegue JavaScript
   in un Dynamic Worker) al posto dei tool sull'API di GitHub, unito a `run_code`.
 - Tool di sola lettura su dati già pubblici. Niente scritture, fetch di URL liberi,

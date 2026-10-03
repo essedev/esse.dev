@@ -1,14 +1,17 @@
 <script lang="ts">
 	import { AgentClient } from 'agents/client';
 	import { onMount, tick } from 'svelte';
+	import { renderMarkdown } from '../../agent/markdown';
 	import type { ServerMessage, TranscriptMessage, TranscriptPart } from '../../agent/protocol';
+	import type { Triage } from '../../agent/triage';
 	import { EMPTY_VIEW, reduceEvents, type PiSessionView } from '../../agent/view';
 
 	/**
 	 * La trascrizione dell'agente: un WebSocket verso il Durable Object del visitatore,
-	 * gli eventi di pi piegati da `reduceEvents` (lo stesso riduttore del server), e ogni
-	 * chiamata ai tool visibile e apribile. Il visitatore ha un oggetto suo, ricordato nel
-	 * browser, così ritrova la conversazione.
+	 * gli eventi di pi piegati da `reduceEvents` (lo stesso riduttore del server). Si vede
+	 * come lavora: il triage di Jev su ogni messaggio, ogni chiamata ai tool (apribile),
+	 * token e costo di ogni risposta, il budget che resta. Il visitatore ha un oggetto suo,
+	 * ricordato nel browser, così ritrova la conversazione.
 	 */
 
 	type Labels = {
@@ -19,18 +22,29 @@
 		connecting: string;
 		offline: string;
 		thinking: string;
+		reasoning: string;
 		toolCall: string;
 		result: string;
+		budget: string;
+		notice: Record<'offtopic' | 'abuse' | 'budget', string>;
+		intent: Record<Triage['intent'], string>;
+		weight: Record<Triage['weight'], string>;
 	};
-	let { labels }: { labels: Labels } = $props();
+	let { labels, locale }: { labels: Labels; locale: string } = $props();
 
 	const VISITOR_KEY = 'agent-visitor';
+
+	/** Un messaggio fermato prima del modello: vive solo nel browser. */
+	type Local = { text: string; reason: 'offtopic' | 'abuse' | 'budget'; after: number };
 
 	let view: PiSessionView = $state(EMPTY_VIEW);
 	let status: 'connecting' | 'open' | 'closed' = $state('connecting');
 	let input = $state('');
+	let triages: Record<string, Triage | null> = $state({});
+	let locals: Local[] = $state([]);
+	let budget: { remaining: number; limit: number } | null = $state(null);
 	let client: AgentClient | undefined;
-	let scroller: HTMLElement | undefined = $state();
+	let end: HTMLElement | undefined = $state();
 
 	function visitorId(): string {
 		try {
@@ -45,6 +59,12 @@
 		}
 	}
 
+	const shown = $derived(
+		[...view.messages, ...(view.live ? [view.live] : [])].filter(
+			(m: TranscriptMessage) => m.role === 'user' || m.role === 'assistant'
+		)
+	);
+
 	onMount(() => {
 		client = new AgentClient({ agent: 'SiteAgent', name: visitorId(), host: location.host });
 		client.addEventListener('open', () => (status = 'open'));
@@ -56,17 +76,33 @@
 			} catch {
 				return;
 			}
-			if (message.type === 'events') view = reduceEvents(view, message.events);
-			else if (message.type === 'error') view = { ...view, error: message.message };
+			switch (message.type) {
+				case 'events':
+					view = reduceEvents(view, message.events);
+					break;
+				case 'triage':
+					triages = { ...triages, [message.text]: message.triage };
+					break;
+				case 'notice':
+					locals = [...locals, { text: message.text, reason: message.reason, after: shown.length }];
+					break;
+				case 'budget':
+					budget = { remaining: message.remaining, limit: message.limit };
+					break;
+				case 'error':
+					view = { ...view, error: message.message };
+					break;
+			}
 		});
 		return () => client?.close();
 	});
 
 	// La trascrizione segue l'ultima riga mentre arriva.
 	$effect(() => {
-		void view.messages.length;
+		void shown.length;
 		void view.live;
-		tick().then(() => scroller?.scrollTo({ top: scroller.scrollHeight }));
+		void locals.length;
+		tick().then(() => end?.scrollIntoView({ block: 'end' }));
 	});
 
 	function send(message: object) {
@@ -88,50 +124,87 @@
 		}
 	}
 
+	function reset() {
+		send({ type: 'reset' });
+		triages = {};
+		locals = [];
+	}
+
 	// I risultati dei tool arrivano come messaggi a sé: li si aggancia alla loro chiamata.
+	type ToolResult = Extract<TranscriptPart, { type: 'tool-result' }>;
 	const results = $derived(
 		new Map(
 			view.messages
 				.flatMap((m) => m.parts)
-				.filter(
-					(p): p is Extract<TranscriptPart, { type: 'tool-result' }> => p.type === 'tool-result'
-				)
+				.filter((p): p is ToolResult => p.type === 'tool-result')
 				.map((p) => [p.id, p])
 		)
 	);
-	const shown = $derived(
-		[...view.messages, ...(view.live ? [view.live] : [])].filter(
-			(m: TranscriptMessage) => m.role === 'user' || m.role === 'assistant'
-		)
-	);
-	const text = (part: Extract<TranscriptPart, { type: 'tool-result' }>) =>
+	const resultText = (part: ToolResult) =>
 		part.content.map((c) => (c.type === 'text' ? c.text : '[image]')).join('\n');
+	const userText = (m: TranscriptMessage) =>
+		m.parts.map((p) => (p.type === 'text' ? p.text : '')).join('');
+
+	const cents = (usd: number) =>
+		`${(usd * 100).toLocaleString(locale, { maximumFractionDigits: usd * 100 < 0.1 ? 3 : 2 })}¢`;
+	const tokens = (n: number) =>
+		n >= 1000 ? `${(n / 1000).toLocaleString(locale, { maximumFractionDigits: 1 })}k` : String(n);
 </script>
 
-<div class="flex min-h-[60vh] flex-col">
-	<div bind:this={scroller} class="flex flex-1 flex-col gap-6 font-mono text-[0.875rem]">
-		{#each shown as message (message.id)}
+{#snippet localNotice(item: Local)}
+	<p class="flex gap-3 font-mono text-[0.875rem] text-fg">
+		<span class="text-accent select-none" aria-hidden="true">›</span>
+		<span class="whitespace-pre-wrap">{item.text}</span>
+	</p>
+	<p class="pl-6 text-[0.9375rem] text-muted">{labels.notice[item.reason]}</p>
+{/snippet}
+
+<div class="flex min-h-[55vh] flex-col">
+	<div class="flex flex-1 flex-col gap-6">
+		{#each locals.filter((l) => l.after === 0) as item, i (i)}
+			{@render localNotice(item)}
+		{/each}
+		{#each shown as message, index (message.id)}
 			{#if message.role === 'user'}
-				<p class="flex gap-3 text-fg">
-					<span class="text-accent select-none" aria-hidden="true">›</span>
-					<span class="whitespace-pre-wrap"
-						>{message.parts.map((p) => (p.type === 'text' ? p.text : '')).join('')}</span
-					>
-				</p>
+				{@const text = userText(message)}
+				{@const triage = triages[text]}
+				<div class="flex flex-col gap-1.5">
+					<p class="flex gap-3 font-mono text-[0.875rem] text-fg">
+						<span class="text-accent select-none" aria-hidden="true">›</span>
+						<span class="whitespace-pre-wrap">{text}</span>
+					</p>
+					{#if triage}
+						<p class="pl-6 font-mono text-[0.7rem] text-subtle">
+							jev · {labels.intent[triage.intent]}
+							{triage.confidence.toLocaleString(locale, { maximumFractionDigits: 2 })} · {labels
+								.weight[triage.weight]} · {triage.lang} · {triage.ms} ms
+						</p>
+					{/if}
+				</div>
 			{:else}
 				<div class="flex flex-col gap-3 pl-6">
 					{#each message.parts as part, i (i)}
 						{#if part.type === 'text' && part.text.trim()}
-							<p class="font-sans text-[1.0625rem] leading-relaxed whitespace-pre-wrap text-text">
-								{part.text}
-							</p>
+							<div
+								class="agent-prose text-[1.0625rem] leading-relaxed text-text [&_li]:ml-5 [&_li]:list-disc [&_p+p]:mt-3 [&_strong]:text-fg [&_ul]:mt-2"
+							>
+								<!-- eslint-disable-next-line svelte/no-at-html-tags -- renderMarkdown neutralizza HTML e link (src/agent/markdown.ts, con test) -->
+								{@html renderMarkdown(part.text)}
+							</div>
 						{:else if part.type === 'thinking' && part.text.trim()}
-							<p class="text-xs whitespace-pre-wrap text-subtle">{part.text}</p>
+							<details class="group">
+								<summary
+									class="cursor-pointer font-mono text-[0.7rem] text-subtle transition-colors hover:text-muted"
+								>
+									{labels.reasoning}
+								</summary>
+								<p class="mt-2 font-mono text-xs whitespace-pre-wrap text-subtle">{part.text}</p>
+							</details>
 						{:else if part.type === 'tool-call'}
 							{@const result = results.get(part.id)}
-							<details class="group rounded-[var(--radius-control)] bg-panel">
+							<details class="rounded-[var(--radius-control)] bg-panel">
 								<summary
-									class="flex cursor-pointer items-center gap-2.5 px-3 py-2 text-xs text-muted transition-colors hover:text-fg"
+									class="flex cursor-pointer items-center gap-2.5 px-3 py-2 font-mono text-xs text-muted transition-colors hover:text-fg"
 								>
 									<span
 										class="led"
@@ -140,7 +213,7 @@
 									<span class="text-fg">{part.name}</span>
 									<span class="truncate">{JSON.stringify(part.arguments)}</span>
 								</summary>
-								<div class="flex flex-col gap-2 px-3 pb-3 text-xs">
+								<div class="flex flex-col gap-2 px-3 pb-3 font-mono text-xs">
 									<p class="label">{labels.toolCall}</p>
 									<pre class="overflow-x-auto whitespace-pre-wrap text-muted">{JSON.stringify(
 											part.arguments,
@@ -149,7 +222,7 @@
 										)}</pre>
 									{#if result}
 										<p class="label">{labels.result}</p>
-										<pre class="max-h-64 overflow-auto whitespace-pre-wrap text-muted">{text(
+										<pre class="max-h-64 overflow-auto whitespace-pre-wrap text-muted">{resultText(
 												result
 											)}</pre>
 									{/if}
@@ -158,19 +231,28 @@
 						{/if}
 					{/each}
 					{#if message.error}
-						<p class="text-xs text-danger">{message.error}</p>
+						<p class="font-mono text-xs text-danger">{message.error}</p>
+					{/if}
+					{#if message.usage && message.id !== 'live'}
+						<p class="font-mono text-[0.7rem] text-subtle">
+							{tokens(message.usage.tokens)} token · {cents(message.usage.usd)}
+						</p>
 					{/if}
 				</div>
 			{/if}
+			{#each locals.filter((l) => l.after === index + 1) as item, i (i)}
+				{@render localNotice(item)}
+			{/each}
 		{/each}
 		{#if view.running && !view.live}
-			<p class="flex items-center gap-2.5 pl-6 text-xs text-subtle">
+			<p class="flex items-center gap-2.5 pl-6 font-mono text-xs text-subtle">
 				<span class="led" data-status="in-progress"></span>{labels.thinking}
 			</p>
 		{/if}
 		{#if view.error}
-			<p class="pl-6 text-xs text-danger">{view.error}</p>
+			<p class="pl-6 font-mono text-xs text-danger">{view.error}</p>
 		{/if}
+		<div bind:this={end}></div>
 	</div>
 
 	<form
@@ -191,27 +273,30 @@
 			class="[field-sizing:content] min-h-8 flex-1 resize-none bg-transparent py-1.5 font-mono text-[0.875rem] text-fg outline-none placeholder:text-subtle"
 		></textarea>
 		{#if view.running}
-			<button type="button" onclick={() => send({ type: 'abort' })} class="chip hover:text-fg"
-				>{labels.stop}</button
-			>
+			<button type="button" onclick={() => send({ type: 'abort' })} class="chip hover:text-fg">
+				{labels.stop}
+			</button>
 		{:else}
 			<button
 				type="submit"
 				disabled={status !== 'open'}
-				class="chip hover:text-fg disabled:opacity-40">{labels.send}</button
+				class="chip hover:text-fg disabled:opacity-40"
 			>
+				{labels.send}
+			</button>
 		{/if}
 	</form>
-	<div class="mt-3 flex items-center justify-between font-mono text-[0.7rem] text-subtle">
+	<div class="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 font-mono text-[0.7rem] text-subtle">
 		<span class="flex items-center gap-2">
 			<span class="led" data-status={status === 'open' ? 'in-progress' : 'idea'}></span>
 			{view.model?.modelId ??
 				(status === 'open' ? '' : status === 'connecting' ? labels.connecting : labels.offline)}
 		</span>
-		<button
-			type="button"
-			onclick={() => send({ type: 'reset' })}
-			class="transition-colors hover:text-fg">{labels.reset}</button
-		>
+		{#if budget}
+			<span>{labels.budget} {cents(budget.remaining)} / {cents(budget.limit)}</span>
+		{/if}
+		<button type="button" onclick={reset} class="ml-auto transition-colors hover:text-fg">
+			{labels.reset}
+		</button>
 	</div>
 </div>

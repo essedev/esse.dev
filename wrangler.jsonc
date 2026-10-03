@@ -12,9 +12,15 @@
 	// binding è remoto (le chiamate passano dall'account Cloudflare).
 	"ai": { "binding": "AI", "remote": true },
 	"durable_objects": {
-		"bindings": [{ "name": "SiteAgent", "class_name": "SiteAgent" }]
+		"bindings": [
+			{ "name": "SiteAgent", "class_name": "SiteAgent" },
+			{ "name": "Ledger", "class_name": "Ledger" }
+		]
 	},
-	"migrations": [{ "tag": "v1", "new_sqlite_classes": ["SiteAgent"] }],
+	"migrations": [
+		{ "tag": "v1", "new_sqlite_classes": ["SiteAgent"] },
+		{ "tag": "v2", "new_sqlite_classes": ["Ledger"] }
+	],
 	"observability": {
 		"enabled": true
 	}

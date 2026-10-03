@@ -8,6 +8,7 @@
 		"dist",
 		"src/worker.ts",
 		"src/agent/site-agent.ts",
+		"src/agent/ledger.ts",
 		"src/agent/sockets.ts",
 		"worker-configuration.d.ts"
 	]

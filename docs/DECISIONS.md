@@ -122,3 +122,15 @@ L'interfaccia è un'isola Svelte con `AgentClient`. Scartati: pi-agent-core coll
 mano (il piano iniziale: riscriveva la durabilità che `PiHarness` ha già), OpenRouter
 diretto (una chiave nel Worker, niente log né fallback del gateway), pi-server e
 pi-client (sperimentali), React con assistant-ui (aspetto generico, formato dell'AI SDK).
+
+## #12 - Limiti dell'agente in costo reale, con un triage davanti
+
+**Status:** attiva (Ciclo 13)
+
+Ogni visitatore ha un budget giornaliero in dollari e il sito un tetto globale
+(`src/agent/budget.ts`, `Ledger`): si scala il costo reale di ogni risposta, calcolato da
+pi-ai, non il numero di messaggi. Prima del modello Jev (TypeSafe, su Workers AI)
+classifica intento, peso e lingua in meno di un secondo: fuori tema e abuso si fermano
+lì. Se Jev non risponde la richiesta passa: il tetto in costo reale resta la garanzia.
+Scartati: un numero fisso di messaggi per visitatore (rigido, ignora quanto costa una
+domanda), il solo triage senza tetto (una classificazione si può ingannare).

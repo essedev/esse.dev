@@ -44,6 +44,8 @@ export type PiMessage = {
 	readonly timestamp: number;
 	readonly stopReason?: string;
 	readonly error?: string;
+	/** Token e costo reale della risposta del modello (aggiunto per il sito). */
+	readonly usage?: { readonly tokens: number; readonly usd: number };
 };
 
 function userParts(content: UserMessage['content']): PiMessagePart[] {
@@ -88,6 +90,7 @@ export function projectMessage(message: Message, id: string): PiMessage {
 				parts: assistantParts(message.content),
 				timestamp: message.timestamp,
 				stopReason: message.stopReason,
+				usage: { tokens: message.usage.totalTokens, usd: message.usage.cost.total },
 				...(message.errorMessage === undefined ? {} : { error: message.errorMessage })
 			};
 		case 'toolResult':

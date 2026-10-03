@@ -4,6 +4,7 @@
 import type { JsonValue } from '@earendil-works/pi-ai';
 import type { AgentEvent, UserInput } from '@earendil-works/pi-durable';
 import type { PiSessionId, PiWhenBusy } from 'agents/harness/pi';
+import type { Triage } from './triage';
 
 /**
  * This app's WebSocket protocol, served by `sockets.ts`. The harness knows
@@ -47,6 +48,16 @@ export type PiServerMessage =
 			readonly session: PiSessionId;
 			readonly events: readonly AgentEvent[];
 	  }
+	/** Il triage di Jev su un messaggio, prima del modello; `null` se Jev non ha risposto. */
+	| { readonly type: 'triage'; readonly text: string; readonly triage: Triage | null }
+	/** Un messaggio fermato prima del modello: fuori tema, abuso o budget finito. */
+	| {
+			readonly type: 'notice';
+			readonly text: string;
+			readonly reason: 'offtopic' | 'abuse' | 'budget';
+	  }
+	/** Quanto resta del budget di oggi, in dollari. */
+	| { readonly type: 'budget'; readonly remaining: number; readonly limit: number }
 	| { readonly type: 'result'; readonly id: string; readonly result: JsonValue }
 	| { readonly type: 'error'; readonly id?: string; readonly message: string };
 
