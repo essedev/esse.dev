@@ -1,6 +1,6 @@
 ---
-title: "Available for select freelance opportunities"
-subtitle: "Have an engaging project in mind? Feel free to reach out to me by email or instant message."
+title: "Get in touch"
+subtitle: "Open to talks, article collaborations and selected side projects. For anything else, an email works fine."
 links:
   - name: "hello@esse.dev"
     url: "mailto:hello@esse.dev"

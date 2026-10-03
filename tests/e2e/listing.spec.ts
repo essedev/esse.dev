@@ -81,6 +81,9 @@ test.describe('hardening', () => {
 	test('the 404 page is localized and not indexable', async ({ page }) => {
 		const res = await page.goto('/it/progetti/non-esiste');
 		expect(res?.status()).toBe(404);
+		// Risposta del Worker: gli header arrivano dal middleware, non da _headers.
+		expect(res?.headers()['x-content-type-options']).toBe('nosniff');
+		expect(res?.headers()['content-security-policy']).toContain("frame-ancestors 'none'");
 		await expect(page.getByRole('heading', { level: 1 })).toHaveText('Pagina non trovata');
 		await expect(page.locator('meta[name="robots"]')).toHaveAttribute('content', 'noindex');
 	});

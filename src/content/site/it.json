@@ -1,19 +1,6 @@
 {
-	"title": "Simone Salerno – AI-focused Developer",
-	"description": "Human Vision, AI Execution. Costruisco software AI-native con workflow disciplinato: architettura solida, co-pilot mirato, review rigorosa.",
-	"keywords": [
-		"Simone Salerno",
-		"essedev",
-		"sviluppatore",
-		"programmatore",
-		"portfolio",
-		"sviluppatore web",
-		"sviluppatore software",
-		"freelancer",
-		"sviluppa sito web",
-		"sviluppa app",
-		"sviluppa software"
-	],
+	"title": "Lead AI Engineer",
+	"description": "Lead AI Engineer in Yellow Tech. Progetto l'architettura, l'AI scrive il codice, io verifico e rilascio.",
 	"sections": {
 		"projects": "Progetti",
 		"articles": "Articoli"
@@ -56,5 +43,9 @@
 		"clearSelection": "Deseleziona tutto",
 		"removeFilter": "Rimuovi filtro",
 		"clearSearch": "Cancella ricerca"
+	},
+	"sectionDescriptions": {
+		"projects": "Cose che ho costruito e che sto costruendo: prodotti, strumenti per sviluppatori, esperimenti con l'AI e qualche idea ancora sulla carta.",
+		"articles": "Appunti su architettura, coding agent e su come si lavora quando l'AI scrive il codice."
 	}
 }

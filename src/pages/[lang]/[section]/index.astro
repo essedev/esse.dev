@@ -20,7 +20,8 @@ export function getStaticPaths() {
 const { lang } = Astro.params;
 const { section } = Astro.props as { section: Section };
 const t = translator(lang);
-const title = site(lang).sections[section];
+const text = site(lang);
+const title = text.sections[section];
 const route = navigation[lang][section];
 
 const items =
@@ -53,6 +54,7 @@ const statusLabels = Object.fromEntries(
 	lang={lang}
 	path={`/${lang}/${route}`}
 	title={title}
+	description={text.sectionDescriptions[section]}
 	og={`listing-${section === 'projects' ? 'projects' : 'blog'}-${lang}`}
 >
 	<div class="container-page pt-16">

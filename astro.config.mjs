@@ -8,13 +8,15 @@ import { defineConfig } from 'astro/config';
 // (sceglie la lingua dal browser) e il catch-all dei redirect i18n, che hanno
 // `prerender = false`. Il prerender gira in Node perché le OG usano resvg (nativo).
 export default defineConfig({
-	site: 'https://simonesalerno.it',
+	site: 'https://esse.dev',
 	trailingSlash: 'never',
 	build: { format: 'file' },
 	adapter: cloudflare({ prerenderEnvironment: 'node', imageService: 'compile' }),
 	session: false,
 	// Niente evidenziazione del codice per ora: Shiki usa stili inline che la CSP blocca.
 	markdown: { syntaxHighlight: false },
+	// Immagini responsive anche nel Markdown: srcset generato a build invece dell'originale.
+	image: { layout: 'constrained', responsiveStyles: true },
 	integrations: [svelte()],
 	security: {
 		csp: {

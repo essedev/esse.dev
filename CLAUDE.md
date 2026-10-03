@@ -1,6 +1,8 @@
 # CLAUDE.md - simonesalerno.it
 
-Portfolio personale: Astro 7 + TS strict + Tailwind 4, isole Svelte 5, deploy su
+Portfolio personale, online su `esse.dev` (dominio principale: `site` in
+`astro.config.mjs`; `simonesalerno.it` reindirizza lì con una Redirect Rule di
+Cloudflare, non nel codice). Astro 7 + TS strict + Tailwind 4, isole Svelte 5, deploy su
 Cloudflare Workers. Contenuti file-based (meta JSON + Markdown per lingua), i18n EN/IT
 con route e slug tradotti, OG generate a build. Il perché delle scelte sta in
 `docs/ARCHITECTURE.md`; stato e log in `docs/ROADMAP.md` e `docs/CYCLES.md` (tienili
@@ -105,7 +107,9 @@ vision e motivi dello stop in `docs/RESTYLE.md`.
 
 ## Non toccare senza motivo
 
-- CSP in `astro.config.mjs` (`security.csp`) e header in `public/_headers`: se
+- Header di sicurezza in due posti da tenere allineati: `public/_headers` per gli asset
+  statici, `src/middleware.ts` per le risposte del Worker (root, redirect, 404).
+- CSP in `astro.config.mjs` (`security.csp`): se
   aggiungi domini esterni (script, font, connect) aggiorna la CSP o verranno bloccati.
   `frame-ancestors` deve restare nell'header: nel meta tag è ignorato.
 - Shiki è spento (`markdown.syntaxHighlight: false`): usa stili inline che la CSP

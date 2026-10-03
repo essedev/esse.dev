@@ -24,9 +24,9 @@ export const getStaticPaths: GetStaticPaths = async () => {
 	paths.push({
 		params: { name: 'home' },
 		props: {
-			label: 'essedev',
+			label: 'esse.dev',
 			title: 'Simone Salerno',
-			excerpt: en.title.replace(/^Simone Salerno\s*[–-]\s*/, '')
+			excerpt: en.description
 		}
 	});
 
@@ -34,11 +34,11 @@ export const getStaticPaths: GetStaticPaths = async () => {
 		const text = site(lang);
 		paths.push({
 			params: { name: `listing-projects-${lang}` },
-			props: { label: 'simonesalerno.it', title: text.sections.projects }
+			props: { label: 'esse.dev', title: text.sections.projects }
 		});
 		paths.push({
 			params: { name: `listing-blog-${lang}` },
-			props: { label: 'simonesalerno.it', title: text.sections.articles }
+			props: { label: 'esse.dev', title: text.sections.articles }
 		});
 		for (const p of await getProjects(lang)) {
 			paths.push({

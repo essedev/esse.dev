@@ -57,6 +57,10 @@ endpoint Worker con chiave, cache e tetto di spesa approvato prima.
 
 ## Aperte
 
+- Dominio: `esse.dev` è il principale. Da fare nel pannello Cloudflare: Redirect Rule
+  301 da `simonesalerno.it` e `www.simonesalerno.it` a `https://esse.dev` con il path
+  conservato. `essedev.it` non si rinnova: nessun redirect da mantenere.
+
 - Email `hello@esse.dev`: verificare che la casella riceva prima della messa online.
 - Favicon: da rifare dentro M15. Ora c'è quella di `main` (quella del laboratorio è
   rimasta sul suo branch).

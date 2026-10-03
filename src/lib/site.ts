@@ -12,8 +12,9 @@ export type UiKey = keyof typeof en.ui;
 const SiteSchema = z.object({
 	title: z.string().min(1),
 	description: z.string().min(1),
-	keywords: z.array(z.string()),
 	sections: z.object({ projects: z.string().min(1), articles: z.string().min(1) }),
+	/** Descrizione per i motori di ricerca delle pagine di lista, una per sezione. */
+	sectionDescriptions: z.object({ projects: z.string().min(1), articles: z.string().min(1) }),
 	ui: z.record(z.string(), z.string().min(1))
 });
 

@@ -1,6 +1,6 @@
 ---
-title: "Disponibile per selezionate opportunità freelance"
-subtitle: "Hai in mente un progetto coinvolgente? Sentiti libero di contattarmi tramite e-mail o messaggio."
+title: "Scrivimi"
+subtitle: "Sono aperto a talk, collaborazioni su articoli e side project selezionati. Per tutto il resto, una mail va benissimo."
 links:
   - name: "hello@esse.dev"
     url: "mailto:hello@esse.dev"

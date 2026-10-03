@@ -1,10 +1,8 @@
 ---
-eyebrow: "Simone Salerno"
+eyebrow: "Simone Salerno · Lead AI Engineer in Yellow Tech"
 title: "I write the spells."
 ---
 
-Decido l'architettura. L'AI scrive il codice.
+Progetto l'architettura, l'AI scrive il codice, io verifico e rilascio.
 
-So dove sbaglia, e la imposto perché non lo faccia.
-
-Quello che prima erano settimane ora è un weekend, ed esce production-ready.
+Porto l'AI generativa dentro aziende vere e la tengo in produzione.

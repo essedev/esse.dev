@@ -1,9 +1,15 @@
 ---
-title: "About me"
+title: "About"
 ---
 
-I build AI-native products with the goal of delivering more value in less time, without compromising on design, security, and maintainability. My background spans an EdTech startup (co-founder), full-stack freelancing, and a software house that gave me robust development practices. This trajectory taught me to combine speed and quality: rapid prototyping, architecture refinement, code standardization.
+I'm a Lead AI Engineer at Yellow Tech, in Milan. The technical and architectural decisions behind the AI solutions we build for clients go through me, from feasibility to production. Alongside client work I look after the team's engineering method, the conventions and documentation that make the way we work repeatable, and the internal platforms we use every day.
 
-How I work (AI-first, but with discipline): architecture before code (data model, boundaries, TypeScript strict, testing), targeted co-pilot with context and guidelines to generate boilerplate and documentation, review and hardening where AI doesn't make decisions alone.
+I got here by a non-linear road: teaching kids to code, years of full-stack freelancing, an EdTech platform built from scratch, a software house. In 2021 I attended one of the first Italian degree programmes in Artificial Intelligence, in Pavia, before AI Engineer was a job title.
 
-What I bring: product mindset, clear communication, ownership, and attention to detail. Building fast without breaking the architecture is what I enjoy most.
+How I work:
+
+- **Architecture before code.** Data, boundaries and standards are decided before the first line, then execution speeds up.
+- **The coding agent inside the method.** Not an assistant you ask for snippets, but an executor you give context, constraints and acceptance criteria.
+- **Measure instead of trusting.** Tests, reviews and real numbers, because generated code always looks right, even when it isn't.
+
+The rest of my time goes into building my own things, which you'll find above, and into figuring out which new AI ideas actually hold up in production. I hold the Claude Certified Architect - Foundations certification from Anthropic.

@@ -5,7 +5,7 @@ Il perché delle scelte di questo progetto. Per lo stato corrente vedi
 
 ## Cos'è
 
-Portfolio personale in Astro (TS strict, Tailwind 4, isole Svelte 5) su Cloudflare
+Portfolio personale su `esse.dev`, in Astro (TS strict, Tailwind 4, isole Svelte 5) su Cloudflare
 Workers. Contenuti file-based nel repo, i18n EN/IT con route e slug tradotti,
 immagini Open Graph generate a build. Fino al Ciclo 10 era SvelteKit: la riscrittura è
 in `docs/CYCLES.md` (Ciclo 11) e la scelta in `docs/DECISIONS.md` #10.
@@ -65,7 +65,9 @@ CSP generata da Astro (`security.csp`) come meta tag nelle pagine, con gli hash 
 script inline; Umami è l'unico dominio esterno ammesso. `frame-ancestors` nel meta
 tag è ignorato, quindi va come header in `public/_headers` insieme a
 `X-Content-Type-Options`, `Referrer-Policy`, `X-Frame-Options` e `Permissions-Policy`.
-Gli asset con hash in `/_astro/` sono cacheati come immutabili. Niente endpoint che
+Le risposte del Worker (root, redirect, 404) non passano da `_headers`: gli stessi
+header li aggiunge `src/middleware.ts`. Gli asset con hash in `/_astro/` sono cacheati
+come immutabili. Niente endpoint che
 riflettono input utente.
 
 ## Boundary

@@ -1,6 +1,6 @@
 # simonesalerno.it
 
-Personal portfolio, built with Astro and deployed on Cloudflare Workers.
+Personal portfolio of Simone Salerno, online at [esse.dev](https://esse.dev). Built with Astro and deployed on Cloudflare Workers. The repository keeps its historical name.
 
 ## Tech stack
 

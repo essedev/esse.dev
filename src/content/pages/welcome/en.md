@@ -1,10 +1,8 @@
 ---
-eyebrow: "Simone Salerno"
+eyebrow: "Simone Salerno · Lead AI Engineer at Yellow Tech"
 title: "I write the spells."
 ---
 
-I design the architecture. The AI writes the code.
+I design the architecture, the AI writes the code, I review and ship.
 
-I know where it slips, and I set it up so it doesn't.
-
-What used to take weeks now takes a weekend, and it ships production-ready.
+I bring generative AI into real companies and keep it running in production.

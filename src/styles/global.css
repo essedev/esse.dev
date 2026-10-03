@@ -14,7 +14,8 @@
 	--color-line: #26262a;
 	--color-fg: #ececec;
 	--color-muted: #8b8b90;
-	--color-subtle: #5f5f65;
+	/* subtle è il grigio minimo per il testo: 4,6:1 sulle card, sopra la soglia WCAG AA. */
+	--color-subtle: #7e7e83;
 
 	--color-status-progress: #e0b84f;
 	--color-status-completed: #5fbf8f;
