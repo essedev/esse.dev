@@ -62,10 +62,28 @@ Scelte in `docs/DECISIONS.md` #11.
   Durable Object (classe `Agent` dell'SDK): una conversazione per visitatore, memoria
   in SQLite, ibernazione quando nessuno scrive. Dentro, il ciclo è pi-agent-core 1.x,
   i modelli passano da pi-ai.
-- Tool di sola lettura su dati pubblici: collection del sito (progetti, scritti,
-  metodo, adesso), README e file dei repo pubblici. `beforeToolCall` blocca tutto ciò
-  che non è nella lista dei repo ammessi scritta nel codice. Poi, forse, una sandbox
-  per eseguire codice.
+- Tool di sola lettura su dati già pubblici. Niente scritture, fetch di URL liberi,
+  repo privati, memoria tra visite.
+  - Sito, da un indice JSON generato a build: `search_site`, `list_projects` (filtri
+    del registro), `read_page(path)`.
+  - Repo pubblici: `repo_overview`, `list_files`, `read_file` (righe limitate),
+    `search_code`, `recent_activity`. Ammessi solo i `repo` dei progetti pubblicati
+    più il repo del sito (l'agente legge le proprie definizioni e il proprio prompt);
+    `beforeToolCall` blocca il resto. Token GitHub di sola lettura, senza privati.
+  - Interfaccia, eseguito dal browser: `open_page(path)` apre la voce nel riquadro e
+    la evidenzia nella lista.
+- Tool dimostrativi, uno per capacità dell'harness, ognuno coi limiti nel codice:
+  - `render(spec)`: grafici, tabelle, confronti disegnati dal client coi token del
+    sito; specifica dichiarativa, mai HTML (CSP).
+  - `run_code(code)`: code mode, JavaScript in un isolate usa e getta (Dynamic Workers,
+    piano Workers a pagamento), può chiamare solo gli altri tool, niente rete.
+  - `delegate(tasks[])`: 2-3 sotto-agenti in parallelo costruiti sopra il core (pi non
+    li ha per scelta), con tetto di agenti e token.
+  - `draft_message(text)`: messaggio a Simone che parte solo se chi visita lo approva
+    (gate umano), con Turnstile e limite per visitatore.
+- Ordine: base più auto-lettura, poi `render` e `run_code`, poi `delegate` e
+  `draft_message`. Scartati: un secondo modello da consultare, fetch libero, voce e
+  immagini.
 - Limiti: Turnstile, limite per visitatore, budget giornaliero che spegne l'agente,
   costo misurato su un campione e approvato da Simone prima di attivarlo.
 - Primo passo: prova di mezza giornata (SDK con pi dentro, un tool, streaming verso
