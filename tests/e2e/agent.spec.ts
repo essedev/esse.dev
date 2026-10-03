@@ -5,7 +5,7 @@ import { expect, test } from '@playwright/test';
 test.describe('agent', () => {
 	test('the page connects to its Durable Object and gets a session', async ({ page }) => {
 		await page.goto('/it/agente');
-		await expect(page.getByText('@cf/', { exact: false })).toBeVisible({ timeout: 15_000 });
+		await expect(page.getByText('z-ai/glm-5.3-flash')).toBeVisible({ timeout: 15_000 });
 		await expect(page.getByRole('button', { name: 'invia' })).toBeEnabled();
 	});
 

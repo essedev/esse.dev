@@ -1,43 +1,44 @@
 import { DurableObject } from 'cloudflare:workers';
 import { Type, type AssistantMessage } from '@earendil-works/pi-ai';
-import { createModels } from '@earendil-works/pi-ai/models';
 import { createRegistry, Harness, type ToolRegistration } from '@earendil-works/pi-durable';
 import { PiHarness, ROOT_SESSION, type PiReceipt, type PiSessionId } from 'agents/harness/pi';
 import { Lifecycle } from 'agents/lifecycle';
-import { createAI } from 'agents/models/pi-ai';
 import { WebSockets } from 'agents/websockets';
 import { costOf, remaining, today, VISITOR_DAILY_USD, type Spend } from './budget';
 import type { PiServerMessage } from './protocol';
+import { MODEL, siteModels } from './models';
 import { searchSite, type SiteDoc } from './site-index';
 import { PiSessionSockets } from './sockets';
 import { admits, jevInput, parseTriage, type JevOutput, type Lang, type Triage } from './triage';
 
 /**
  * L'agente del sito: un Durable Object per visitatore, con pi-durable dentro (PiHarness
- * dell'Agents SDK) e i modelli da Workers AI sul binding `AI`. Pi tiene la conversazione
- * nel SQLite dell'oggetto e la riprende se l'oggetto viene sospeso.
+ * dell'Agents SDK) e i modelli da OpenRouter (`models.ts`). Pi tiene la conversazione nel
+ * SQLite dell'oggetto e la riprende se l'oggetto viene sospeso.
  *
  * Prima del modello ogni messaggio passa da Jev (`triage.ts`): fuori tema e abuso si
  * fermano lì, la lingua decide quella della risposta. Il costo reale di ogni risposta si
  * scala dal budget del visitatore e da quello del sito (`Ledger`).
  */
 
-const MODEL_ID = '@cf/zai-org/glm-5.3-flash';
-
 /**
- * Da dove passa Jev. `typesafe`: API di TypeSafe con la chiave `TYPESAFE_API_KEY` (secret
- * del Worker, `.dev.vars` in locale). `workers-ai`: binding `AI`, senza chiavi, ma con
- * crediti AI Gateway sull'account. Stesse domande e stesse risposte: cambia solo il
- * trasporto. Per ora TypeSafe; si passa al binding quando ci sono i crediti.
+ * Da dove passa Jev. Stesse domande e stesse risposte (protocollo System One di TypeSafe),
+ * cambia solo il trasporto:
+ * - `openrouter`: la stessa chiave del modello (`OPENROUTER_API_KEY`);
+ * - `typesafe`: API di TypeSafe con `TYPESAFE_API_KEY`;
+ * - `workers-ai`: binding `AI`, senza chiavi, ma con crediti AI Gateway sull'account.
  */
-const JEV_TRANSPORT: 'typesafe' | 'workers-ai' = 'typesafe';
-const TYPESAFE_URL = 'https://api.typesafe.ai/v1/systemone';
+const JEV_TRANSPORT: 'openrouter' | 'typesafe' | 'workers-ai' = 'openrouter';
+const JEV_ENDPOINTS = {
+	openrouter: { url: 'https://openrouter.ai/api/v1/systemone', model: 'typesafe/jev-1.13' },
+	typesafe: { url: 'https://api.typesafe.ai/v1/systemone', model: 'jev-latest' }
+} as const;
 /** Oltre questo tempo il triage si abbandona e il messaggio passa (il tetto resta). */
 const JEV_TIMEOUT_MS = 3000;
 /** Un file di testo oltre questa misura si taglia: il resto costerebbe token per niente. */
 const PAGE_MAX_CHARS = 12_000;
 
-const PREAMBLE = `You are the agent on esse.dev, the site of Simone Salerno, Lead AI Engineer. You answer questions about his projects, writing and method using your tools: search first, then read the pages you need. Never invent facts about Simone or his work; if the site does not say it, say so. Be concise and concrete. Cite the pages you used by their path, as Markdown links.`;
+const PREAMBLE = `You are the agent on esse.dev, the site of Simone Salerno, Lead AI Engineer. You answer questions about his projects, writing and method using your tools: search first, then read the pages you need. Never invent facts about Simone or his work; if the site does not say it, say so. Be concise and concrete. Cite the pages you used by their path, as Markdown links. Never use the em dash character: use commas, colons or periods.`;
 
 const Lang = Type.Union([Type.Literal('it'), Type.Literal('en')], {
 	description: 'The language of the visitor.'
@@ -59,11 +60,23 @@ const ReadPage = Type.Object({
 type Reply = (message: PiServerMessage) => void;
 
 export class SiteAgent extends DurableObject<Env> {
-	readonly ai = createAI({ binding: this.env.AI });
+	readonly models = siteModels(this.#secret('OPENROUTER_API_KEY'));
 	readonly registry = createRegistry();
 	#index: Promise<SiteDoc[]> | undefined;
 	/** La lingua dell'ultimo messaggio secondo Jev; `null` se il triage non ha risposto. */
 	#lang: Lang | null = null;
+
+	/** Un secret del Worker (`.dev.vars` in locale, `wrangler secret put` in produzione). */
+	#secret(name: 'OPENROUTER_API_KEY' | 'TYPESAFE_API_KEY'): string | undefined {
+		return (this.env as Env & Partial<Record<typeof name, string>>)[name];
+	}
+
+	/** Il modello dell'agente, dal registro: pi lo salva per provider e id. */
+	#model() {
+		const model = this.models.getModel(MODEL.provider, MODEL.id);
+		if (!model) throw new Error(`Model ${MODEL.provider}/${MODEL.id} is not registered`);
+		return model;
+	}
 
 	/** L'indice del sito, letto una volta per isolate dagli asset statici. */
 	siteIndex(): Promise<SiteDoc[]> {
@@ -125,12 +138,10 @@ export class SiteAgent extends DurableObject<Env> {
 				],
 				tools: [this.searchTool, this.readTool]
 			});
-			const models = createModels();
-			models.setProvider(this.ai.provider);
 			return Harness.open(
 				storage,
 				{
-					models,
+					models: this.models,
 					registry: this.registry,
 					settings: { retry: { enabled: true, maxRetries: 3, baseDelayMs: 1000 } },
 					onReport: (error) => console.warn('pi report', error)
@@ -138,7 +149,7 @@ export class SiteAgent extends DurableObject<Env> {
 				context
 			);
 		},
-		defaults: { model: this.ai(MODEL_ID), thinkingLevel: 'low' }
+		defaults: { model: this.#model(), thinkingLevel: 'low' }
 	});
 
 	readonly sockets = new PiSessionSockets(
@@ -166,9 +177,11 @@ export class SiteAgent extends DurableObject<Env> {
 	async #syncModel(): Promise<void> {
 		const session = this.harness.session(ROOT_SESSION);
 		const stream = await session.events();
-		const current = stream.snapshot.agent.model?.modelId;
+		const current = stream.snapshot.agent.model;
 		await stream.stop();
-		if (current !== MODEL_ID) await session.setModel(this.ai(MODEL_ID));
+		if (current?.provider !== MODEL.provider || current.modelId !== MODEL.id) {
+			await session.setModel(this.#model());
+		}
 	}
 
 	#ledger() {
@@ -196,15 +209,17 @@ export class SiteAgent extends DurableObject<Env> {
 			const run = this.env.AI.run as (model: string, input: unknown) => Promise<unknown>;
 			return (await run('typesafe/jev', input)) as JevOutput;
 		}
-		const key = (this.env as Env & { TYPESAFE_API_KEY?: string }).TYPESAFE_API_KEY;
-		if (!key) throw new Error('TYPESAFE_API_KEY is not set');
-		const res = await fetch(TYPESAFE_URL, {
+		const endpoint = JEV_ENDPOINTS[JEV_TRANSPORT];
+		const keyName = JEV_TRANSPORT === 'openrouter' ? 'OPENROUTER_API_KEY' : 'TYPESAFE_API_KEY';
+		const key = this.#secret(keyName);
+		if (!key) throw new Error(`${keyName} is not set`);
+		const res = await fetch(endpoint.url, {
 			method: 'POST',
 			headers: { authorization: `Bearer ${key}`, 'content-type': 'application/json' },
-			body: JSON.stringify({ model: 'jev-latest', ...input }),
+			body: JSON.stringify({ model: endpoint.model, ...input }),
 			signal: AbortSignal.timeout(JEV_TIMEOUT_MS)
 		});
-		if (!res.ok) throw new Error(`TypeSafe: HTTP ${res.status} ${await res.text()}`);
+		if (!res.ok) throw new Error(`Jev (${JEV_TRANSPORT}): HTTP ${res.status} ${await res.text()}`);
 		return (await res.json()) as JevOutput;
 	}
 

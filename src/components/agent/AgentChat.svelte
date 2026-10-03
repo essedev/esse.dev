@@ -22,6 +22,8 @@
 		connecting: string;
 		offline: string;
 		thinking: string;
+		retrying: string;
+		retry: string;
 		reasoning: string;
 		toolCall: string;
 		result: string;
@@ -122,6 +124,20 @@
 			event.preventDefault();
 			(event.currentTarget as HTMLTextAreaElement).form?.requestSubmit();
 		}
+	}
+
+	// "Riprova" dopo un errore: rimanda l'ultimo messaggio del visitatore.
+	const lastUserText = $derived(
+		[...view.messages]
+			.reverse()
+			.find((m) => m.role === 'user')
+			?.parts.map((p) => (p.type === 'text' ? p.text : ''))
+			.join('') ?? ''
+	);
+	function retry() {
+		if (!lastUserText || status !== 'open') return;
+		view = { ...view, error: null };
+		send({ type: 'submit', input: lastUserText, whenBusy: 'followUp' });
 	}
 
 	function reset() {
@@ -257,8 +273,16 @@
 				<span class="led" data-status="in-progress"></span>{labels.thinking}
 			</p>
 		{/if}
+		{#if view.retry}
+			<p class="pl-6 font-mono text-xs text-subtle">{labels.retrying}: {view.retry.error}</p>
+		{/if}
 		{#if view.error}
-			<p class="pl-6 font-mono text-xs text-danger">{view.error}</p>
+			<div class="flex items-center gap-3 pl-6">
+				<p class="font-mono text-xs text-danger">{view.error}</p>
+				{#if !view.running && lastUserText}
+					<button type="button" onclick={retry} class="chip hover:text-fg">{labels.retry}</button>
+				{/if}
+			</div>
 		{/if}
 		<div bind:this={end}></div>
 	</div>

@@ -75,7 +75,9 @@
 		"agentIntentAbuse": "abuso",
 		"agentWeightLight": "leggera",
 		"agentWeightMedium": "media",
-		"agentWeightHeavy": "pesante"
+		"agentWeightHeavy": "pesante",
+		"agentRetrying": "il modello non ha risposto, riprovo",
+		"agentRetry": "riprova"
 	},
 	"sectionDescriptions": {
 		"projects": "Cose che ho costruito e che sto costruendo: prodotti, strumenti per sviluppatori, esperimenti con l'AI e qualche idea ancora sulla carta.",

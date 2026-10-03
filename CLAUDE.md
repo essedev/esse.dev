@@ -142,11 +142,11 @@ lista `src/lib/workspace.ts` (unica fonte dell'ordine per lista e pager).
   `docs/ARCHITECTURE.md` (Agente).
 - In `wrangler dev` il binding `AI` è remoto: ogni messaggio all'agente chiama un modello
   vero sull'account Cloudflare. Gli E2E non mandano messaggi.
-- Modello in `MODEL_ID` di `src/agent/site-agent.ts`: le conversazioni esistenti passano
-  al nuovo all'avvio dell'oggetto. Limiti in `src/agent/budget.ts`, triage in
-  `src/agent/triage.ts`. Jev passa da TypeSafe con `TYPESAFE_API_KEY` (`.dev.vars` in
-  locale, vedi `.dev.vars.example`; `wrangler secret put` in produzione) finché non ci sono
-  crediti AI Gateway: `JEV_TRANSPORT` sceglie il trasporto.
+- Modelli in `src/agent/models.ts` (OpenRouter, ordine dei provider, timeout); le
+  conversazioni esistenti passano al modello nuovo all'avvio dell'oggetto. Limiti in
+  `src/agent/budget.ts`, triage in `src/agent/triage.ts` (Jev via OpenRouter, trasporto in
+  `JEV_TRANSPORT`). Chiave `OPENROUTER_API_KEY`: `.dev.vars` in locale (vedi
+  `.dev.vars.example`), `wrangler secret put` in produzione.
 - Un tool nuovo si scrive come `ToolRegistration` di pi-durable con `replay: 'safe'` solo
   se rieseguirlo non ha effetti; i dati del sito si leggono dall'indice
   `/agent/index.json`, mai da fuori.

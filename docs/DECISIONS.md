@@ -110,18 +110,21 @@ non cambiano), l'i18n di Astro (non traduce segmenti né slug), un JSON per ling
 i campi condivisi duplicati (deriva tra lingue), il corpo a blocchi JSON (illeggibile
 da scrivere e nei diff).
 
-## #11 - Agente del sito: PiHarness dell'Agents SDK, modelli da AI Gateway
+## #11 - Agente del sito: PiHarness dell'Agents SDK, modelli da OpenRouter
 
 **Status:** attiva (Ciclo 13, confermata dalla prova)
 
 L'agente gira sul server, mai nel browser, in un Durable Object per visitatore che ospita
 pi-durable con `PiHarness` (`agents/harness/pi`, beta): conversazione e ripresa dopo una
-sospensione sono di pi, il Durable Object dà storage e risveglio. I modelli passano dal
-binding `AI` (`agents/models/pi-ai`): Workers AI e AI Gateway, nessuna chiave nel Worker.
-L'interfaccia è un'isola Svelte con `AgentClient`. Scartati: pi-agent-core collegato a
-mano (il piano iniziale: riscriveva la durabilità che `PiHarness` ha già), OpenRouter
-diretto (una chiave nel Worker, niente log né fallback del gateway), pi-server e
-pi-client (sperimentali), React con assistant-ui (aspetto generico, formato dell'AI SDK).
+sospensione sono di pi, il Durable Object dà storage e risveglio. I modelli passano da
+OpenRouter (`src/agent/models.ts`): `glm-5.3-flash` sui provider più veloci in ordine
+(BaseTen, Fireworks, Parasail), con passaggio automatico al successivo. Con Workers AI
+la stessa domanda impiegava circa 40 s, con OpenRouter circa 7. L'interfaccia è un'isola
+Svelte con `AgentClient`. Scartati: Workers AI e AI Gateway (catalogo ridotto e a volte
+in ritardo, nessuna scelta del provider, crediti comunque necessari per i modelli di terze
+parti), Cerebras diretto (oggi serve solo due modelli), pi-agent-core collegato a mano
+(riscriveva la durabilità di `PiHarness`), pi-server e pi-client (sperimentali), React con
+assistant-ui (aspetto generico, formato dell'AI SDK).
 
 ## #12 - Limiti dell'agente in costo reale, con un triage davanti
 
@@ -132,7 +135,7 @@ Ogni visitatore ha un budget giornaliero in dollari e il sito un tetto globale
 pi-ai, non il numero di messaggi. Prima del modello Jev (TypeSafe, su Workers AI)
 classifica intento, peso e lingua in meno di un secondo: fuori tema e abuso si fermano
 lì. Se Jev non risponde la richiesta passa: il tetto in costo reale resta la garanzia.
-Per ora Jev si chiama dall'API di TypeSafe con una chiave: è l'unica eccezione al
-"nessuna chiave nel Worker" della #11, finché non ci sono crediti AI Gateway.
+Jev passa da OpenRouter con la stessa chiave del modello; TypeSafe diretto e Workers AI
+restano come trasporti alternativi (`JEV_TRANSPORT`).
 Scartati: un numero fisso di messaggi per visitatore (rigido, ignora quanto costa una
 domanda), il solo triage senza tetto (una classificazione si può ingannare).

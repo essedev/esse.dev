@@ -61,14 +61,14 @@ Scelte in `docs/DECISIONS.md` #11.
   Object per visitatore con pi-durable dentro (`PiHarness`), modelli dal binding `AI`,
   tool `search_site` sull'indice del sito. Due domande vere: il modello chiama il tool,
   risponde con i path giusti, lo streaming arriva.
-- Fatto dopo la prova: modello `glm-5.3-flash` per tutto (indice Artificial Analysis 42,
-  0,15/0,50 $ per milione; una domanda con due tool costa circa 0,07 centesimi);
-  `read_page`; Markdown sicuro nelle risposte, ragionamento chiuso, token e costo per
-  risposta. Triage con Jev e limite in costo reale (`docs/DECISIONS.md` #12).
-- Jev per ora passa dall'API di TypeSafe (`TYPESAFE_API_KEY`, secret del Worker): su
-  Workers AI è un modello di terze parti e richiede crediti AI Gateway ("Insufficient AI
-  Gateway credits" senza). Quando ci sono i crediti si passa al binding cambiando
-  `JEV_TRANSPORT` in `src/agent/site-agent.ts`, e la chiave si toglie.
+- Fatto dopo la prova: `glm-5.3-flash` da OpenRouter sui provider più veloci (una domanda
+  con quattro tool in circa 7 s, contro i 40 di Workers AI; circa 0,08 centesimi);
+  `read_page`; Markdown sicuro, ragionamento chiuso, token e costo per risposta, avviso
+  di nuovo tentativo e "riprova" dopo un errore. Triage con Jev (via OpenRouter) e limite
+  in costo reale (`docs/DECISIONS.md` #12).
+- Ripresa dai guasti, dal basso: OpenRouter cambia provider nella stessa richiesta; pi
+  riprova la chiamata (3 volte, 1-2-4 s; timeout di 30 s senza token); il Durable Object
+  riprende il lavoro dopo una sospensione.
 - Da valutare: `@cloudflare/computer` (clona i repo in un workspace ed esegue JavaScript
   in un Dynamic Worker) al posto dei tool sull'API di GitHub, unito a `run_code`.
 - Tool di sola lettura su dati già pubblici. Niente scritture, fetch di URL liberi,

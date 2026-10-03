@@ -1,3 +1,7 @@
 # Copia in .dev.vars (escluso da git) per lo sviluppo locale. In produzione:
 # pnpm exec wrangler secret put TYPESAFE_API_KEY
+# Solo se JEV_TRANSPORT è 'typesafe'.
 TYPESAFE_API_KEY=
+
+# Modello dell'agente e Jev via OpenRouter (chiave dedicata al sito, con limite mensile).
+OPENROUTER_API_KEY=

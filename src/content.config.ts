@@ -203,6 +203,8 @@ const site = defineCollection({
 					agentWeightLight: text,
 					agentWeightMedium: text,
 					agentWeightHeavy: text,
+					agentRetrying: text,
+					agentRetry: text,
 					prev: text,
 					next: text
 				})
