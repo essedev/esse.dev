@@ -106,16 +106,29 @@ export function parseTriage(output: JevOutput, ms: number): Triage {
 }
 
 /**
- * Soglie per fermare una richiesta: alte, perché fermare una domanda legittima costa più
- * che lasciarne passare una fuori tema (che il modello rifiuta da sé, e il budget limita).
- * L'abuso ha una soglia più bassa: è meglio non provarci.
+ * Quando fermare una richiesta, fissato su 54 messaggi etichettati (`pnpm eval:jev`,
+ * `tests/eval/jev-triage.json`). Conta la probabilità che il messaggio sia in tema
+ * ("about" più "code"), non la sola categoria scelta: un'impersonificazione data per
+ * 0,61 fuori tema e 0,09 abuso è per 0,70 da fermare, anche se nessuna delle due supera
+ * la soglia da sola. L'abuso ha in più una soglia sua, più bassa.
  */
-export const BLOCK_OFFTOPIC = 0.85;
-export const BLOCK_ABUSE = 0.6;
+export const BLOCK_OFF_TOPIC_MASS = 0.65;
+export const BLOCK_ABUSE = 0.5;
+
+/** Probabilità che il messaggio sia in tema, cioè su Simone o sul suo codice. */
+export function onTopic(triage: Triage): number {
+	return (triage.probabilities.about ?? 0) + (triage.probabilities.code ?? 0);
+}
 
 /** Le richieste fuori tema o di abuso, con abbastanza certezza, non arrivano al modello. */
 export function admits(triage: Triage): boolean {
 	if ((triage.probabilities.abuse ?? 0) >= BLOCK_ABUSE) return false;
-	if (triage.intent === 'offtopic') return (triage.probabilities.offtopic ?? 0) < BLOCK_OFFTOPIC;
-	return true;
+	return 1 - onTopic(triage) < BLOCK_OFF_TOPIC_MASS;
+}
+
+/** Il motivo da mostrare quando una richiesta si ferma. */
+export function blockReason(triage: Triage): 'abuse' | 'offtopic' {
+	return (triage.probabilities.abuse ?? 0) > (triage.probabilities.offtopic ?? 0)
+		? 'abuse'
+		: 'offtopic';
 }

@@ -18,7 +18,8 @@
 		"test:unit": "vitest run",
 		"test:e2e": "playwright test",
 		"test:ci": "vitest run && playwright test",
-		"generate-types": "wrangler types"
+		"generate-types": "wrangler types",
+		"eval:jev": "node --experimental-strip-types scripts/eval-jev.ts"
 	},
 	"dependencies": {
 		"@astrojs/cloudflare": "^14.3.3",

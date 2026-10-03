@@ -9,7 +9,15 @@ import type { PiServerMessage } from './protocol';
 import { MODEL, siteModels } from './models';
 import { searchSite, type SiteDoc } from './site-index';
 import { PiSessionSockets } from './sockets';
-import { admits, jevInput, parseTriage, type JevOutput, type Lang, type Triage } from './triage';
+import {
+	admits,
+	blockReason,
+	jevInput,
+	parseTriage,
+	type JevOutput,
+	type Lang,
+	type Triage
+} from './triage';
 
 /**
  * L'agente del sito: un Durable Object per visitatore, con pi-durable dentro (PiHarness
@@ -38,7 +46,7 @@ const JEV_TIMEOUT_MS = 3000;
 /** Un file di testo oltre questa misura si taglia: il resto costerebbe token per niente. */
 const PAGE_MAX_CHARS = 12_000;
 
-const PREAMBLE = `You are the agent on esse.dev, the site of Simone Salerno, Lead AI Engineer. You answer questions about his projects, writing and method using your tools: search first, then read the pages you need. Never invent facts about Simone or his work; if the site does not say it, say so. Be concise and concrete. Cite the pages you used by their path, as Markdown links. Never use the em dash character: use commas, colons or periods.`;
+const PREAMBLE = `You are the agent on esse.dev, the site of Simone Salerno, Lead AI Engineer. You answer questions about his projects, writing and method using your tools: search first, then read the pages you need. Never invent facts about Simone or his work; if the site does not say it, say so. Private repositories, clients and anything not published on the site are not public: say so and do not guess. Be concise and concrete. Cite the pages you used by their path, as Markdown links. Never use the em dash character: use commas, colons or periods.`;
 
 const Lang = Type.Union([Type.Literal('it'), Type.Literal('en')], {
 	description: 'The language of the visitor.'
@@ -244,7 +252,7 @@ export class SiteAgent extends DurableObject<Env> {
 		const triage = await this.#triage(text);
 		reply({ type: 'triage', text, triage });
 		if (triage && !admits(triage)) {
-			reply({ type: 'notice', text, reason: triage.intent === 'abuse' ? 'abuse' : 'offtopic' });
+			reply({ type: 'notice', text, reason: blockReason(triage) });
 			return false;
 		}
 		this.#lang = triage?.lang ?? null;

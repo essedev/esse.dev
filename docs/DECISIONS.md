@@ -134,7 +134,10 @@ Ogni visitatore ha un budget giornaliero in dollari e il sito un tetto globale
 (`src/agent/budget.ts`, `Ledger`): si scala il costo reale di ogni risposta, calcolato da
 pi-ai, non il numero di messaggi. Prima del modello Jev (TypeSafe, su Workers AI)
 classifica intento, peso e lingua in meno di un secondo: fuori tema e abuso si fermano
-lì. Se Jev non risponde la richiesta passa: il tetto in costo reale resta la garanzia.
+lì. Si ferma quando la probabilità di essere fuori tema (fuori tema più abuso) arriva a
+0,65, o quella di abuso a 0,5: soglie fissate su 54 messaggi etichettati (`pnpm eval:jev`),
+con 0 domande legittime fermate e 1 su 19 da fermare passata. Se Jev non risponde la
+richiesta passa: il tetto in costo reale resta la garanzia.
 Jev passa da OpenRouter con la stessa chiave del modello; TypeSafe diretto e Workers AI
 restano come trasporti alternativi (`JEV_TRANSPORT`).
 Scartati: un numero fisso di messaggi per visitatore (rigido, ignora quanto costa una

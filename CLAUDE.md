@@ -15,6 +15,9 @@ aggiornati a fine ciclo).
 - `pnpm preview` - build e `wrangler dev` su :8787 (comportamento di produzione).
 - `pnpm check` - astro check più `tsc -p tsconfig.worker.json` (il codice del Worker ha i
   tipi del runtime Cloudflare, che si scontrano con quelli del DOM).
+- `pnpm eval:jev` - valuta il triage di Jev su `tests/eval/jev-triage.json` (chiamate vere
+  via OpenRouter, dopo una build; fuori da `test:ci`). Da rilanciare se cambiano domande,
+  soglie o modello di Jev.
 - `pnpm generate-types` - rigenera `worker-configuration.d.ts` dopo ogni modifica a
   `wrangler.jsonc`.
 - `pnpm lint` - prettier --check + eslint. `pnpm format` per scrivere.

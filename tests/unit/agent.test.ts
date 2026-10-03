@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { costOf, dayKey, remaining, today } from '../../src/agent/budget';
-import { admits, jevInput, parseTriage, type JevOutput } from '../../src/agent/triage';
+import { admits, blockReason, jevInput, parseTriage, type JevOutput } from '../../src/agent/triage';
 
 const output = (intent: string, score: number, lang: string, p: number = 0.9): JevOutput => ({
 	answers: {
@@ -37,10 +37,28 @@ describe('triage', () => {
 		expect(() => parseTriage(output('about', 1, 'fr'), 0)).toThrow(/lang/);
 	});
 
-	it('stops off-topic only when Jev is sure, abuse at a lower bar', () => {
-		expect(admits(parseTriage(output('offtopic', 0, 'it', 0.76), 0))).toBe(true);
-		expect(admits(parseTriage(output('offtopic', 0, 'it', 1), 0))).toBe(false);
-		expect(admits(parseTriage(output('abuse', 0, 'it', 0.65), 0))).toBe(false);
+	it('blocks on the off-topic mass, not on the chosen category alone', () => {
+		const triage = (p: Record<string, number>, choice: string) =>
+			parseTriage(
+				{
+					answers: {
+						intent: { type: 'choice', choice, probabilities: p },
+						weight: { type: 'score', score: 0 },
+						lang: { type: 'choice', choice: 'it' }
+					}
+				},
+				0
+			);
+		// Fuori tema 0,61 più abuso 0,09: nessuna sopra soglia da sola, insieme sì.
+		const impersonation = triage({ offtopic: 0.61, abuse: 0.09, about: 0.3, code: 0 }, 'offtopic');
+		expect(admits(impersonation)).toBe(false);
+		expect(blockReason(impersonation)).toBe('offtopic');
+		// Domanda di confine data per fuori tema 0,53: in tema per 0,47, passa.
+		expect(admits(triage({ offtopic: 0.53, about: 0.47 }, 'offtopic'))).toBe(true);
+		// L'abuso ha una soglia sua.
+		const passwd = triage({ abuse: 0.55, offtopic: 0.44, code: 0.01 }, 'abuse');
+		expect(admits(passwd)).toBe(false);
+		expect(blockReason(passwd)).toBe('abuse');
 	});
 
 	it('lets only on-topic requests through', () => {
