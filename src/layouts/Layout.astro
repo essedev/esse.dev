@@ -1,12 +1,10 @@
 ---
 import { Font } from 'astro:assets';
 import '../styles/global.css';
-import Footer from '../components/Footer.astro';
-import Header from '../components/Header.astro';
 import { languages, navigation } from '../lib/config';
 import { getSlugMap } from '../lib/content';
 import { buildAlternates, buildCanonical, serializeJsonLd } from '../lib/seo';
-import { getSite, translator } from '../lib/site';
+import { getSite } from '../lib/site';
 
 interface Props {
 	lang: string;
@@ -24,7 +22,6 @@ interface Props {
 
 const { lang, path, title, description, og = 'home', jsonLd, noindex = false } = Astro.props;
 const text = await getSite(lang);
-const t = await translator(lang);
 const origin = Astro.site!.origin;
 
 const pageTitle = title ? `${title} · Simone Salerno` : `Simone Salerno · ${text.title}`;
@@ -92,14 +89,7 @@ const locale = lang === 'it' ? 'it_IT' : 'en_US';
 			data-domains="esse.dev"
 		></script>
 	</head>
-	<body class="flex min-h-dvh flex-col">
-		<a href="#main-content" class="skip-link">
-			{t('skipToContent')}
-		</a>
-		<Header lang={lang} path={path} />
-		<main id="main-content" class="flex-1">
-			<slot />
-		</main>
-		<Footer lang={lang} />
+	<body class="min-h-dvh">
+		<slot />
 	</body>
 </html>

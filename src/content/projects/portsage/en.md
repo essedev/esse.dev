@@ -9,6 +9,7 @@ tags:
   - "macOS"
   - "MCP"
   - "CLI"
+why: "Born from a trivial problem that AI productivity created, five projects open and \"address already in use\" every morning. It ships an MCP server, so the agents ask for ports themselves."
 ---
 
 With four or five projects open in parallel, each with its own Vite, PostgreSQL and Redis, ports collide all the time. Portsage keeps the ledger: which port belongs to whom, which ranges are free, which processes are running without belonging to any project.

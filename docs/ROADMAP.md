@@ -26,13 +26,11 @@ scelte in `docs/DECISIONS.md` #10. Gate verde: lint, check, build, unit, E2E.
   il comando di build sia `pnpm build`, il deploy `npx wrangler deploy` e Node almeno
   22.12; poi merge su `main` con squash (vedi Aperte) e push.
 
-### M15 - Stile - Da fare
+### M15 - Struttura e stile - In corso
 
-Si migliora il look base senza snaturarlo, più un tocco cyberpunk delicato (due o
-tre segnali, non un telaio: accento neon su fondo scuro, glitch leggero in hover,
-mono per i metadati). Varianti A/B/C in un file HTML in `docs/concepts/`, al massimo
-due giri per scelta. Dentro: liste invece della griglia dove i contenuti sono pochi,
-ritmo verticale, dettaglio progetto a due colonne, contatti, testi tradotti ovunque.
+Struttura scelta: il sito come spazio di lavoro (concept A, Ciclo 12), portato in
+Astro. Resta il lavoro di dettaglio su spazi, dimensioni, linee e microanimazioni, a
+giri brevi guardando il sito, e la revisione dei testi nelle due lingue.
 
 ### M16 - Progetti - Da fare
 

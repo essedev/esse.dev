@@ -104,25 +104,25 @@ test.describe('article slug translation (cross-language)', () => {
 	// it: il-mio-nuovo-laboratorio): esercita la traduzione slug del hook, che sui
 	// progetti non scatta mai perche' i loro slug coincidono tra en e it.
 	test('italian article slug under /en redirects to the english slug', async ({ request }) => {
-		const res = await request.get('/en/blog/il-mio-nuovo-laboratorio', { maxRedirects: 0 });
+		const res = await request.get('/en/writing/il-mio-nuovo-laboratorio', { maxRedirects: 0 });
 		expect(res.status()).toBe(302);
-		expect(res.headers()['location']).toMatch(/\/en\/blog\/my-new-laboratory$/);
+		expect(res.headers()['location']).toMatch(/\/en\/writing\/my-new-laboratory$/);
 	});
 
 	test('english article slug under /it redirects to the italian slug', async ({ request }) => {
-		const res = await request.get('/it/blog/my-new-laboratory', { maxRedirects: 0 });
+		const res = await request.get('/it/scritti/my-new-laboratory', { maxRedirects: 0 });
 		expect(res.status()).toBe(302);
-		expect(res.headers()['location']).toMatch(/\/it\/blog\/il-mio-nuovo-laboratorio$/);
+		expect(res.headers()['location']).toMatch(/\/it\/scritti\/il-mio-nuovo-laboratorio$/);
 	});
 
 	test('the english article detail renders at its canonical slug', async ({ page }) => {
-		const res = await page.goto('/en/blog/my-new-laboratory');
+		const res = await page.goto('/en/writing/my-new-laboratory');
 		expect(res?.status()).toBe(200);
 		await expect(page.locator('h1').first()).toBeVisible();
 	});
 
 	test('the italian article detail renders at its canonical slug', async ({ page }) => {
-		const res = await page.goto('/it/blog/il-mio-nuovo-laboratorio');
+		const res = await page.goto('/it/scritti/il-mio-nuovo-laboratorio');
 		expect(res?.status()).toBe(200);
 		await expect(page.locator('h1').first()).toBeVisible();
 	});
@@ -153,6 +153,6 @@ test.describe('rss', () => {
 		expect(body).toContain('<rss');
 		expect(body).toContain('<channel>');
 		expect(body).toContain('<item>');
-		expect(body).toContain('/en/blog/');
+		expect(body).toContain('/en/writing/');
 	});
 });

@@ -1,11 +1,14 @@
 ---
+import { render } from 'astro:content';
+import { ArrowRight, ArrowUpRight, Check, Copy } from '@lucide/astro';
 import CollectionBrowser from '../../../components/CollectionBrowser.svelte';
-import SectionTitle from '../../../components/SectionTitle.astro';
-import Layout from '../../../layouts/Layout.astro';
+import Page from '../../../components/Page.astro';
+import Prose from '../../../components/Prose.astro';
+import Workspace from '../../../layouts/Workspace.astro';
 import { languageCodes, navigation } from '../../../lib/config';
-import { getArticles, getProjects } from '../../../lib/content';
+import { getArticles, getMethod, getNow, getPage, getProjects } from '../../../lib/content';
 import { SECTIONS, type Section } from '../../../lib/i18n';
-import { articleItem, projectItem, STATUS_KEY } from '../../../lib/items';
+import { articleItem, formatDate, projectItem, STATUS_KEY } from '../../../lib/items';
 import { getSite, translator } from '../../../lib/site';
 
 export function getStaticPaths() {
@@ -20,14 +23,27 @@ export function getStaticPaths() {
 const { lang } = Astro.params;
 const { section } = Astro.props as { section: Section };
 const t = await translator(lang);
-const text = await getSite(lang);
-const title = text.sections[section];
-const route = navigation[lang][section];
+const site = await getSite(lang);
+const routes = navigation[lang];
+const title = site.sections[section];
+const description = site.sectionDescriptions[section];
+const path = `/${lang}/${routes[section]}`;
 
-const items =
+// Dati per sezione: si carica solo quello che serve.
+const projectItems =
 	section === 'projects'
-		? (await getProjects(lang)).map((p) => projectItem(p, route, t))
-		: (await getArticles(lang)).map((a) => articleItem(a, route));
+		? (await getProjects(lang)).map((p) => projectItem(p, routes.projects, t))
+		: [];
+const articleItems =
+	section === 'articles'
+		? (await getArticles(lang)).map((a) => articleItem(a, routes.articles))
+		: [];
+const method = section === 'method' ? await getMethod(lang) : [];
+const now = section === 'now' ? await getNow(lang) : [];
+const about = section === 'about' ? await getPage('about', lang) : null;
+const contact = section === 'about' ? await getPage('contact', lang) : null;
+const AboutBody = about ? (await render(about)).Content : null;
+const nowBodies = await Promise.all(now.map(async (n) => (await render(n.entry)).Content));
 
 const labels = {
 	search: t(section === 'projects' ? 'searchProjects' : 'searchArticles'),
@@ -45,26 +61,137 @@ const labels = {
 	noResults: t('noResults'),
 	clearFilters: t('clearFilters')
 };
-const statusLabels = Object.fromEntries(
-	Object.entries(STATUS_KEY).map(([status, key]) => [status, t(key)])
-);
+const statusLabels = Object.fromEntries(Object.entries(STATUS_KEY).map(([s, key]) => [s, t(key)]));
+const ogSection = section === 'projects' ? 'projects' : section === 'articles' ? 'blog' : null;
 ---
 
-<Layout
+<Workspace
 	lang={lang}
-	path={`/${lang}/${route}`}
+	path={path}
 	title={title}
-	description={text.sectionDescriptions[section]}
-	og={`listing-${section === 'projects' ? 'projects' : 'blog'}-${lang}`}
+	description={description}
+	og={ogSection ? `listing-${ogSection}-${lang}` : undefined}
+	current={section}
+	crumbs={[{ label: routes[section] }]}
 >
-	<div class="container-page pt-16">
-		<SectionTitle title={title} as="h1" />
-		<CollectionBrowser
-			client:load
-			items={items}
-			labels={labels}
-			statusLabels={statusLabels}
-			locale={lang}
-		/>
-	</div>
-</Layout>
+	<Page>
+		<header class="flex flex-col gap-4">
+			<h1 class="text-[clamp(2rem,1.2rem+2.6vw,3.5rem)] leading-[1.05] font-medium tracking-[-0.025em]">
+				{title}
+			</h1>
+			<p class="text-muted text-[clamp(1rem,0.92rem+0.28vw,1.1875rem)] text-pretty">
+				{description}
+			</p>
+		</header>
+
+		<div class="mt-[clamp(2rem,4vw,3.5rem)]">
+			{(section === 'projects' || section === 'articles') && (
+				<CollectionBrowser
+					client:load
+					items={section === 'projects' ? projectItems : articleItems}
+					labels={labels}
+					statusLabels={statusLabels}
+					locale={lang}
+				/>
+			)}
+
+			{section === 'method' && (
+				<ol class="-mx-3 flex flex-col">
+					{method.map((m, i) => (
+						<li>
+							<a
+								href={`${path}/${m.text.slug}`}
+								class="group hover:bg-panel grid grid-cols-[2.5rem_minmax(0,1fr)_auto] items-baseline gap-x-4 rounded-[var(--radius-panel)] px-3 py-5 transition-colors"
+							>
+								<span class="text-accent font-mono text-sm tabular-nums">
+									{String(i + 1).padStart(2, '0')}
+								</span>
+								<span class="flex flex-col gap-1.5">
+									<span class="text-fg text-[clamp(1.125rem,1rem+0.4vw,1.375rem)] font-medium tracking-tight">
+										{m.text.title}
+									</span>
+									<span class="text-muted text-[0.9375rem] text-pretty">{m.text.summary}</span>
+								</span>
+								<ArrowRight class="text-subtle size-4 self-center transition-transform group-hover:translate-x-1 group-hover:text-accent" />
+							</a>
+						</li>
+					))}
+				</ol>
+			)}
+
+			{section === 'now' && (
+				<ol class="flex flex-col gap-10">
+					{now.map((n, i) => {
+						const Body = nowBodies[i];
+						return (
+							<li class="grid gap-x-10 gap-y-2 sm:grid-cols-[8rem_minmax(0,1fr)]">
+								<time datetime={n.date} class="text-subtle pt-1 font-mono text-xs tabular-nums">
+									{formatDate(n.date, lang)}
+								</time>
+								<div class="flex flex-col gap-2">
+									<h2 class="text-fg text-[1.1875rem] font-medium tracking-tight">{n.title}</h2>
+									<div class="text-text text-[clamp(1rem,0.92rem+0.28vw,1.1875rem)] leading-relaxed">
+										<Body />
+									</div>
+									<a
+										href={`/${lang}/${routes.projects}/${n.project.text.slug}`}
+										class="text-muted hover:text-fg mt-1 inline-flex items-center gap-2 self-start font-mono text-xs transition-colors"
+									>
+										<span class="led" data-status={n.project.meta.status} />
+										{n.project.text.title}
+										<ArrowRight class="size-3.5" />
+									</a>
+								</div>
+							</li>
+						);
+					})}
+				</ol>
+			)}
+
+			{about && AboutBody && contact && (
+				<div class="grid gap-x-[clamp(2rem,5vw,6rem)] gap-y-12 2xl:grid-cols-[minmax(0,1.5fr)_minmax(0,1fr)]">
+					<Prose>
+						<AboutBody />
+					</Prose>
+					<section aria-labelledby="contact" class="flex flex-col gap-4">
+						<h2 id="contact" class="label">
+							{contact.data.title}
+						</h2>
+						<p class="text-text text-pretty">{contact.data.subtitle}</p>
+						<ul class="mt-2 flex flex-col gap-1">
+							{contact.data.links.map((l) => {
+								const isMail = l.url.startsWith('mailto:');
+								return (
+									<li>
+										{isMail ? (
+											<button
+												type="button"
+												data-copy={l.url.slice(7)}
+												data-copy-message={t('emailCopied')}
+												class="group bg-surface hover:bg-hover flex w-full items-center justify-between gap-3 rounded-[var(--radius-control)] px-3.5 py-3 font-mono text-sm transition-colors"
+											>
+												{l.name}
+												<Copy class="text-subtle size-4 group-data-[copied]:hidden" />
+												<Check class="text-accent hidden size-4 group-data-[copied]:block" />
+											</button>
+										) : (
+											<a
+												href={l.url}
+												target="_blank"
+												rel="noopener noreferrer me"
+												class="group text-text hover:bg-panel hover:text-fg flex items-center justify-between gap-3 rounded-[var(--radius-control)] px-3.5 py-3 transition-colors"
+											>
+												{l.name}
+												<ArrowUpRight class="text-subtle size-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+											</a>
+										)}
+									</li>
+								);
+							})}
+						</ul>
+					</section>
+				</div>
+			)}
+		</div>
+	</Page>
+</Workspace>

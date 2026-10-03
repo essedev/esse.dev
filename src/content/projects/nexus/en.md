@@ -9,6 +9,7 @@ tags:
   - "PostgreSQL"
   - "AI Agents"
   - "MCP"
+why: "Everything is an entity defined by a schema, and a new type needs no code. The agent that operates has minimal privileges, the one that changes the system works in isolation and goes through human approval."
 ---
 
 Nexus is where I keep tasks, projects, notes, books, expenses, meetings and my Claude Code conversations. Instead of one app per thing there is a single engine: you define a schema and the system generates storage, the API, the assistant's tools and an interface with tables, boards, calendars and dashboards.

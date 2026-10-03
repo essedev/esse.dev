@@ -10,7 +10,13 @@ export const LanguagesSchema = z
 	.min(1);
 export const NavigationSchema = z.record(
 	z.string(),
-	z.object({ projects: z.string().min(1), articles: z.string().min(1) })
+	z.object({
+		projects: z.string().min(1),
+		articles: z.string().min(1),
+		method: z.string().min(1),
+		now: z.string().min(1),
+		about: z.string().min(1)
+	})
 );
 export const FeaturedSchema = z.object({ projects: z.array(z.string().min(1)).max(6) });
 

@@ -9,6 +9,7 @@ tags:
   - "macOS"
   - "MCP"
   - "CLI"
+why: "Nato da un problema banale creato dalla produttività con l'AI, cinque progetti aperti e \"address already in use\" ogni mattina. Ha un server MCP, così le porte le chiedono direttamente gli agenti."
 ---
 
 Con quattro o cinque progetti aperti in parallelo, ognuno col suo Vite, il suo PostgreSQL e il suo Redis, le porte collidono di continuo. Portsage tiene il registro: quale porta è di chi, quali range sono liberi, quali processi girano senza appartenere a nessun progetto.

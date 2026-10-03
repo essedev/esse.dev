@@ -1,0 +1,44 @@
+---
+import { ArrowLeft, ArrowRight } from '@lucide/astro';
+import type { NavItem } from '../../lib/workspace';
+import type { Translate } from '../../lib/site';
+
+interface Props {
+	prev?: NavItem;
+	next?: NavItem;
+	t: Translate;
+}
+
+const { prev, next, t } = Astro.props;
+---
+
+{(prev || next) && (
+	<nav aria-label={`${t('prev')} / ${t('next')}`} class="mt-20 grid gap-3 sm:grid-cols-2">
+		{prev ? (
+			<a
+				href={prev.href}
+				class="group bg-panel hover:bg-surface flex flex-col gap-1 rounded-[var(--radius-panel)] p-5 transition-colors"
+			>
+				<span class="label flex items-center gap-1.5">
+					<ArrowLeft class="size-3.5 transition-transform group-hover:-translate-x-0.5" />
+					{t('prev')}
+				</span>
+				<span class="text-text group-hover:text-fg truncate">{prev.title}</span>
+			</a>
+		) : (
+			<span />
+		)}
+		{next && (
+			<a
+				href={next.href}
+				class="group bg-panel hover:bg-surface flex flex-col items-end gap-1 rounded-[var(--radius-panel)] p-5 text-right transition-colors"
+			>
+				<span class="label flex items-center gap-1.5">
+					{t('next')}
+					<ArrowRight class="size-3.5 transition-transform group-hover:translate-x-0.5" />
+				</span>
+				<span class="text-text group-hover:text-fg truncate">{next.title}</span>
+			</a>
+		)}
+	</nav>
+)}

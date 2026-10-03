@@ -3,5 +3,7 @@
 	"published": true,
 	"created": "2026-07-02",
 	"updated": "2026-09-22",
-	"link": "https://github.com/essedev/relay"
+	"repo": "https://github.com/essedev/relay",
+	"license": "MIT",
+	"install": "brew install --cask essedev/relay/relay-terminal"
 }

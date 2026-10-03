@@ -20,18 +20,25 @@ const languages: Language[] = [
 ];
 
 const navigation: NavigationConfig = {
-	en: { projects: 'projects', articles: 'blog' },
-	it: { projects: 'progetti', articles: 'blog' }
+	en: { projects: 'projects', articles: 'writing', method: 'method', now: 'now', about: 'about' },
+	it: {
+		projects: 'progetti',
+		articles: 'scritti',
+		method: 'metodo',
+		now: 'adesso',
+		about: 'chi-sono'
+	}
 };
 
 const slugMap: SlugMap = {
 	projects: { budokan: { en: 'budokan', it: 'budokan' } },
-	articles: { lab: { en: 'my-new-laboratory', it: 'il-mio-nuovo-laboratorio' } }
+	articles: { lab: { en: 'my-new-laboratory', it: 'il-mio-nuovo-laboratorio' } },
+	method: { context: { en: 'context', it: 'contesto' } }
 };
 
 describe('buildCanonical', () => {
 	it('builds an absolute canonical from origin + pathname', () => {
-		expect(buildCanonical(origin, '/en/blog')).toBe('https://simonesalerno.it/en/blog');
+		expect(buildCanonical(origin, '/en/writing')).toBe('https://simonesalerno.it/en/writing');
 	});
 
 	it('returns origin for the root path', () => {
@@ -40,30 +47,36 @@ describe('buildCanonical', () => {
 	});
 
 	it('strips a superfluous trailing slash', () => {
-		expect(buildCanonical(origin, '/en/blog/')).toBe('https://simonesalerno.it/en/blog');
+		expect(buildCanonical(origin, '/en/writing/')).toBe('https://simonesalerno.it/en/writing');
 	});
 });
 
 describe('buildAlternates', () => {
 	it('emits one alternate per language plus x-default', () => {
-		const alts = buildAlternates({ origin, pathname: '/en/blog', navigation, slugMap, languages });
+		const alts = buildAlternates({
+			origin,
+			pathname: '/en/writing',
+			navigation,
+			slugMap,
+			languages
+		});
 		expect(alts).toEqual([
-			{ hreflang: 'en', href: 'https://simonesalerno.it/en/blog' },
-			{ hreflang: 'it', href: 'https://simonesalerno.it/it/blog' },
-			{ hreflang: 'x-default', href: 'https://simonesalerno.it/en/blog' }
+			{ hreflang: 'en', href: 'https://simonesalerno.it/en/writing' },
+			{ hreflang: 'it', href: 'https://simonesalerno.it/it/scritti' },
+			{ hreflang: 'x-default', href: 'https://simonesalerno.it/en/writing' }
 		]);
 	});
 
 	it('translates route + slug on detail pages', () => {
 		const alts = buildAlternates({
 			origin,
-			pathname: '/en/blog/my-new-laboratory',
+			pathname: '/en/writing/my-new-laboratory',
 			navigation,
 			slugMap,
 			languages
 		});
 		expect(alts.find((a) => a.hreflang === 'it')?.href).toBe(
-			'https://simonesalerno.it/it/blog/il-mio-nuovo-laboratorio'
+			'https://simonesalerno.it/it/scritti/il-mio-nuovo-laboratorio'
 		);
 	});
 
@@ -118,7 +131,7 @@ describe('JSON-LD builders', () => {
 
 	it('blogPostingJsonLd maps article fields', () => {
 		const ld = blogPostingJsonLd({
-			canonical: `${origin}/en/blog/lab`,
+			canonical: `${origin}/en/writing/lab`,
 			title: 'My Lab',
 			description: 'desc',
 			image: `${origin}/og/x.png`,
@@ -130,7 +143,7 @@ describe('JSON-LD builders', () => {
 		expect(ld.headline).toBe('My Lab');
 		expect(ld.datePublished).toBe('2025-01-01');
 		expect((ld.mainEntityOfPage as Record<string, unknown>)['@id']).toBe(
-			'https://simonesalerno.it/en/blog/lab'
+			'https://simonesalerno.it/en/writing/lab'
 		);
 	});
 

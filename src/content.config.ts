@@ -21,7 +21,13 @@ const projects = defineCollection({
 		published: z.boolean(),
 		created: isoDate,
 		updated: isoDate,
-		link: z.url().optional()
+		/** Codice pubblico: c'è il repo. Senza, il progetto è privato. */
+		repo: z.url().optional(),
+		/** Il progetto online, se esiste. */
+		site: z.url().optional(),
+		license: z.string().optional(),
+		/** Comando di installazione da copiare, se il progetto si installa. */
+		install: z.string().optional()
 	})
 });
 
@@ -31,7 +37,9 @@ const projectTexts = defineCollection({
 		slug: z.string().min(1),
 		title: z.string().min(1),
 		excerpt: z.string().min(1),
-		tags: z.array(z.string().min(1))
+		tags: z.array(z.string().min(1)),
+		/** La decisione tecnica interessante, per i progetti in vetrina. */
+		why: z.string().min(1).optional()
 	})
 });
 
@@ -55,12 +63,43 @@ const articleTexts = defineCollection({
 	})
 });
 
+// Metodo: i principi, uno per cartella, nell'ordine di `order`.
+const method = defineCollection({
+	loader: glob({ pattern: '*/meta.json', base: './src/content/method', generateId: folderId }),
+	schema: z.object({ order: z.number().int().positive() })
+});
+
+const methodTexts = defineCollection({
+	loader: glob({ pattern: '*/*.md', base: './src/content/method', generateId: textId }),
+	schema: z.object({
+		slug: z.string().min(1),
+		title: z.string().min(1),
+		summary: z.string().min(1)
+	})
+});
+
+// Adesso: voci datate su cosa sto facendo, ognuna legata a un progetto.
+const now = defineCollection({
+	loader: glob({ pattern: '*/meta.json', base: './src/content/now', generateId: folderId }),
+	schema: z.object({ date: isoDate, project: z.string().min(1) })
+});
+
+const nowTexts = defineCollection({
+	loader: glob({ pattern: '*/*.md', base: './src/content/now', generateId: textId }),
+	schema: z.object({ title: z.string().min(1) })
+});
+
 // Pagine della home: un file per lingua, l'id è il codice lingua.
 const langId = ({ entry }: { entry: string }) => entry.replace(/\.md$/, '');
 
 const welcome = defineCollection({
 	loader: glob({ pattern: '*.md', base: './src/content/pages/welcome', generateId: langId }),
-	schema: z.object({ eyebrow: z.string().min(1), title: z.string().min(1) })
+	schema: z.object({
+		eyebrow: z.string().min(1),
+		title: z.string().min(1),
+		/** Righe brevi chiave e valore sotto la presentazione. */
+		facts: z.array(z.object({ label: z.string().min(1), value: z.string().min(1) })).default([])
+	})
 });
 
 const about = defineCollection({
@@ -81,7 +120,9 @@ const contact = defineCollection({
 // Lo schema è rigido: ogni lingua deve avere tutte le chiavi e nessuna in più, così una
 // traduzione mancante ferma la build e le chiavi sono un tipo (`UiKey` in src/lib/site.ts).
 const text = z.string().min(1);
-const sections = z.object({ projects: text, articles: text }).strict();
+const sections = z
+	.object({ projects: text, articles: text, method: text, now: text, about: text })
+	.strict();
 
 const site = defineCollection({
 	loader: glob({
@@ -99,18 +140,41 @@ const site = defineCollection({
 			ui: z
 				.object({
 					skipToContent: text,
-					navAbout: text,
-					navContact: text,
 					language: text,
-					viewAll: text,
+					home: text,
 					back: text,
 					backHome: text,
 					pageNotFound: text,
 					pageNotFoundText: text,
+					filter: text,
+					jumpTo: text,
+					ready: text,
+					copied: text,
+					copy: text,
+					copyLink: text,
+					linkCopied: text,
+					open: text,
+					commandCopied: text,
+					emailCopied: text,
+					keysMove: text,
+					keysOpen: text,
+					keysBack: text,
+					keysFilter: text,
+					keysJump: text,
+					paletteHint: text,
+					paletteEmpty: text,
+					actionCopyEmail: text,
+					actionOpenGithub: text,
+					actionCopyLink: text,
+					actions: text,
+					startHere: text,
+					featured: text,
+					others: text,
+					fullLog: text,
+					allProjects: text,
 					search: text,
 					searchProjects: text,
 					searchArticles: text,
-					all: text,
 					status: text,
 					tags: text,
 					sort: text,
@@ -123,18 +187,29 @@ const site = defineCollection({
 					sortTitle: text,
 					noResults: text,
 					clearFilters: text,
-					published: text,
-					readingTime: text,
-					related: text,
-					repository: text,
-					year: text,
-					stack: text,
-					source: text,
 					searchTags: text,
 					noMatches: text,
 					clearSelection: text,
 					removeFilter: text,
-					clearSearch: text
+					clearSearch: text,
+					published: text,
+					readingTime: text,
+					related: text,
+					year: text,
+					stack: text,
+					public: text,
+					private: text,
+					repository: text,
+					site: text,
+					releases: text,
+					license: text,
+					install: text,
+					why: text,
+					prev: text,
+					next: text,
+					source: text,
+					contact: text,
+					writeMe: text
 				})
 				.strict()
 		})
@@ -146,6 +221,10 @@ export const collections = {
 	projectTexts,
 	articles,
 	articleTexts,
+	method,
+	methodTexts,
+	now,
+	nowTexts,
 	welcome,
 	about,
 	contact,

@@ -1,0 +1,25 @@
+---
+/**
+ * Testo lungo in Markdown. Nessuna larghezza massima fissa: la misura la danno la
+ * colonna e la taglia, che cresce con lo schermo.
+ */
+interface Props {
+	class?: string;
+}
+const { class: className } = Astro.props;
+---
+
+<div
+	class:list={[
+		'prose prose-invert max-w-none text-[clamp(1rem,0.92rem+0.28vw,1.1875rem)] leading-[1.75]',
+		'prose-p:text-text prose-li:text-text prose-strong:text-fg prose-strong:font-medium',
+		'prose-headings:font-medium prose-headings:tracking-tight prose-headings:text-fg',
+		'prose-h2:mt-14 prose-h2:text-[1.35em] prose-a:text-fg prose-a:decoration-subtle prose-a:underline-offset-4',
+		'prose-code:rounded prose-code:bg-surface prose-code:px-1.5 prose-code:py-0.5 prose-code:font-normal prose-code:text-fg',
+		'prose-code:before:content-none prose-code:after:content-none prose-img:rounded-[var(--radius-panel)]',
+		'prose-li:marker:text-accent',
+		className
+	]}
+>
+	<slot />
+</div>

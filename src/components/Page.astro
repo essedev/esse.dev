@@ -1,0 +1,11 @@
+---
+/** Contenitore del dettaglio: margini fluidi, nessuna larghezza massima. */
+interface Props {
+	class?: string;
+}
+const { class: className } = Astro.props;
+---
+
+<div class:list={['px-(--pad) pt-[clamp(1.5rem,3vw,3.5rem)] pb-[clamp(3rem,6vw,6rem)]', className]}>
+	<slot />
+</div>

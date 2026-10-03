@@ -22,7 +22,7 @@ test.describe('listing filters', () => {
 
 	test('typing in search narrows the list and writes the query string', async ({ page }) => {
 		await open(page, '/en/projects');
-		await page.getByRole('searchbox').fill('relay');
+		await page.locator('main').getByRole('searchbox').fill('relay');
 		await expect(page).toHaveURL(/q=relay/);
 		await expect(cards(page)).toHaveCount(1);
 	});

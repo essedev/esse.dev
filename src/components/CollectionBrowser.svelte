@@ -14,7 +14,7 @@
 		type SortKey,
 		type Status
 	} from '../lib/listing';
-	import EntryCard from './EntryCard.svelte';
+	import EntryRow from './EntryRow.svelte';
 	import SearchField from './ui/SearchField.svelte';
 	import Select from './ui/Select.svelte';
 
@@ -174,9 +174,9 @@
 	{#if visible.length === 0}
 		<p class="py-12 text-center text-sm text-muted">{labels.noResults}</p>
 	{:else}
-		<ul class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+		<ul class="-mx-3 flex flex-col sm:-mx-4">
 			{#each visible as item (item.id)}
-				<li><EntryCard {item} /></li>
+				<li><EntryRow {item} /></li>
 			{/each}
 		</ul>
 	{/if}

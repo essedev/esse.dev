@@ -668,3 +668,22 @@ canvas e libertà di non portare tutto 1:1.
   (singola, multipla, con ricerca), con chip dei filtri attivi e filtri multipli in
   OR nella query string. Gli E2E ora girano su :8788 con server sempre nuovo: un
   `workerd` orfano su :8787 serviva una build vecchia e aveva fatto fallire 25 test.
+
+## Ciclo 12 - Struttura: il sito come spazio di lavoro (2026-10-03)
+
+Dopo un ragionamento su testi e struttura (voce e temi da job-seorch e doppia-linkedin,
+siti di ingegneri e tendenze attuali), tre mockup di struttura (`struttura.html`) sono
+sembrati "il solito portfolio di un developer". Due concept con interazione vera,
+fatti da due subagent in parallelo: A spazio di lavoro, B documento. Scelto A.
+
+- **Port in Astro:** shell `Workspace.astro` con lista, dettaglio, barra di stato e
+  palette; ogni voce è una pagina statica. Interazione da tastiera in uno script solo,
+  transizioni native del browser (compatibili con la CSP).
+- **Contenuti:** nuove collection metodo e adesso; i progetti separano `repo` e `site`
+  e hanno `install`, `license` e la riga `why` per quelli in vetrina. I numeri di
+  release non si salvano più (Relay era già a 54 contro i 51 del mockup): si linka la
+  pagina delle release. Articoli da `blog` a `scritti`/`writing`, con redirect delle
+  route vecchie. "Chi sono" senza la lista che duplicava il metodo.
+- **Test:** 57 unit (route legacy, sezioni senza dettaglio) e 45 E2E (tastiera, filtro,
+  palette, Esc, sezioni nelle due lingue).
+- **Da fare (detto da Simone):** molti dettagli di spazi, dimensioni e linee.

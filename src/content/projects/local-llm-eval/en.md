@@ -9,6 +9,7 @@ tags:
   - "AI Agents"
   - "Research"
   - "Python"
+why: "The scope of validity and what I did not measure are written before the results."
 ---
 
 I wanted to know whether a local model can really act as a coding agent, not in a demo but in a harness that writes a whole app. The task is always the same: a CRUD app with a FastAPI and SQLite backend and a React frontend, generated from scratch and scored against a fixed rubric.

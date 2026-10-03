@@ -75,30 +75,35 @@ di queste porte serve asset vecchi e fa fallire tutto con dei 404: va chiuso.
 - Canonical, hreflang e JSON-LD: helper puri in `src/lib/seo.ts`, usati da
   `src/layouts/Layout.astro`.
 
-## Design system
+## Design system: lo spazio di lavoro
 
-Look neutro di partenza (M14 in `docs/ROADMAP.md`): scala di grigi, Geist e Geist
-Mono self-hosted. Lo stile vero arriva in M15. Il tentativo
-"Laboratorio" (telaio, keycap, mono) resta intero sul branch `restyle/laboratory`;
-vision e motivi dello stop in `docs/RESTYLE.md`.
+Il sito si usa come un'app (concept A, `docs/concepts/concept-a-spazio.html`): barra in
+alto, lista di tutto a sinistra, dettaglio a destra, barra di stato. Ogni voce resta una
+pagina statica col suo URL; la shell è `src/layouts/Workspace.astro`, l'indice della
+lista `src/lib/workspace.ts` (unica fonte dell'ordine per lista, pager e palette).
 
-- Font Geist e Geist Mono dal Fonts API (variabili `--font-geist*`). Token in `@theme`
-  in `src/styles/global.css`: colori `bg`, `surface`, `line`,
-  `fg`, `muted`, `subtle` e i quattro colori di stato. Un colore scritto a mano in un
-  componente è un errore: si aggiunge un token.
-- Classi condivise: `container-page` (larghezza e gutter), `link`, `skip-link`. La
-  prosa usa `prose prose-invert` del plugin typography.
-- Componenti: `.astro` per tutto ciò che è statico; Svelte solo dove serve
-  interazione. Progetti e articoli usano la stessa card (`EntryCard`), in home, nelle
-  liste e nei correlati: cambia solo la riga in alto (stato e anno, oppure data).
-- Controlli: mai elementi nativi con l'aspetto del browser. `ui/Select.svelte` copre
-  select singola, multipla e con ricerca (pattern ARIA listbox, tastiera completa,
-  pannello che si riaggancia al bordo libero se esce dallo schermo); `ui/SearchField`
-  per la ricerca testuale. Un controllo nuovo si costruisce su questi.
-- I filtri delle liste vivono nella query string (`?q=`, `?tag=a&tag=b`,
-  `?status=`, `?sort=`); più valori dello stesso filtro valgono in OR. Logica pura e
-  testata in `src/lib/listing.ts`.
-- Icone solo Lucide (`@lucide/astro`, `@lucide/svelte`).
+- Sezioni: progetti, scritti, metodo, adesso, chi sono (`src/config/navigation.json`).
+  Metodo e adesso sono collection come i progetti (meta + testo per lingua). Le route
+  di versioni precedenti (`blog`, `informazioni`) si reindirizzano con `LEGACY_ROUTES`
+  in `src/lib/i18n.ts`.
+- Interazione in `src/scripts/workspace.ts`: j/k e frecce, Invio, Esc (torna al livello
+  sopra, da `data-parent`), `/` per il filtro, Cmd/Ctrl+K per la palette, `[data-copy]`
+  con conferma nella barra di stato, scroll della lista ricordato. Le transizioni fra
+  pagine sono quelle native (`@view-transition`), niente router.
+- Mobile: la home mostra presentazione e poi la lista; un dettaglio mostra solo il
+  contenuto, con "Indietro".
+- Token in `@theme` (`src/styles/global.css`): superfici `bg`, `panel`, `surface`,
+  `hover`; testo `fg`, `text`, `muted`, `subtle` (minimo per il testo, 4,6:1); un
+  accento; raggi `--radius-control` e `--radius-panel`. Profondità dal tono delle
+  superfici, non dai filetti: l'unica linea separa lista e dettaglio. Classi condivise:
+  `.led` (stato), `.kbd`, `.label`, `.chip`, `.ulink`, `.caret`.
+- Nessuna larghezza massima sul contenuto: la misura la danno la colonna e la taglia
+  fluida (`Prose.astro`, `Page.astro`). Nel dettaglio di un progetto, da `xl`, i fatti
+  stanno in una colonna a destra.
+- Controlli mai nativi: `ui/Select.svelte` (singola, multipla, con ricerca) e
+  `ui/SearchField.svelte`. Il registro dei progetti usa `EntryRow.svelte`.
+- Niente stili inline negli attributi: la CSP li blocca (anche `view-transition-name`
+  va in una classe). Icone solo Lucide.
 
 ## Convenzioni
 

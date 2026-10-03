@@ -9,13 +9,15 @@ export const STATUS_KEY: Record<ProjectStatus, UiKey> = {
 	archived: 'statusArchived'
 };
 
-export function formatDate(iso: string, lang: string): string {
-	return new Intl.DateTimeFormat(lang, {
-		day: 'numeric',
-		month: 'short',
-		year: 'numeric',
-		timeZone: 'UTC'
-	}).format(new Date(`${iso}T00:00:00Z`));
+/** Data nella lingua della pagina: completa (`27 gen 2025`) o solo mese (`gen 2025`). */
+export function formatDate(iso: string, lang: string, style: 'full' | 'month' = 'full'): string {
+	const options: Intl.DateTimeFormatOptions =
+		style === 'month'
+			? { month: 'short', year: 'numeric', timeZone: 'UTC' }
+			: { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' };
+	return new Intl.DateTimeFormat(lang, options)
+		.format(new Date(`${iso}T00:00:00Z`))
+		.replace('.', '');
 }
 
 export function projectItem(p: Project, route: string, t: (k: UiKey) => string): ListItem {

@@ -1,8 +1,11 @@
 ---
-eyebrow: "Simone Salerno · Lead AI Engineer at Yellow Tech"
-title: "I write the spells."
+eyebrow: "Lead AI Engineer at Yellow Tech · Milan"
+title: "Simone Salerno"
+facts:
+  - label: "i build"
+    value: "developer tools, almost all open source, and apps of my own"
+  - label: "agents"
+    value: "Claude Code, Codex and OpenCode, with one shared context"
 ---
 
-I design the architecture, the AI writes the code, I review and ship.
-
-I bring generative AI into real companies and keep it running in production.
+I bring generative AI into real companies and keep it running in production. On my own I build tools for working with many coding agents at once, and the method I do it with. I design the architecture, the AI writes the code, I review and ship.

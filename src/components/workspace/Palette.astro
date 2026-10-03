@@ -1,0 +1,56 @@
+---
+import { Search } from '@lucide/astro';
+import type { Translate } from '../../lib/site';
+
+interface Props {
+	t: Translate;
+	email: string;
+}
+
+const { t, email } = Astro.props;
+---
+
+<dialog
+	data-palette
+	aria-label={t('jumpTo')}
+	class="bg-panel text-fg m-auto mt-[12vh] w-[min(36rem,calc(100vw-2rem))] overflow-hidden rounded-[var(--radius-panel)] p-0 shadow-2xl shadow-black/60 backdrop:bg-black/50 backdrop:backdrop-blur-[2px]"
+>
+	<div class="flex items-center gap-3 px-4">
+		<Search class="text-subtle size-4 shrink-0" />
+		<input
+			type="text"
+			data-palette-input
+			role="combobox"
+			aria-expanded="true"
+			aria-controls="palette-list"
+			aria-autocomplete="list"
+			placeholder={t('paletteHint')}
+			autocomplete="off"
+			spellcheck="false"
+			class="placeholder:text-subtle h-13 min-w-0 flex-1 bg-transparent text-[0.9375rem] outline-none"
+		/>
+		<span class="kbd">esc</span>
+	</div>
+	<ul
+		id="palette-list"
+		role="listbox"
+		data-palette-list
+		class="max-h-[50vh] overflow-y-auto px-2 pb-2"
+	></ul>
+	<p data-palette-empty hidden class="text-subtle px-4 pb-4 font-mono text-xs">
+		{t('paletteEmpty')}
+	</p>
+	<template data-palette-actions>
+		<li data-action="copy-email" data-label={t('actionCopyEmail')} data-hint={email}></li>
+		<li data-action="copy-link" data-label={t('actionCopyLink')} data-hint={t('copyLink')}></li>
+		<li
+			data-action="open:https://github.com/essedev"
+			data-label={t('actionOpenGithub')}
+			data-hint="github.com/essedev"
+		></li>
+	</template>
+	<span hidden data-group-label-actions>
+		{t('actions')}
+	</span>
+	<span hidden data-msg-email={t('emailCopied')} data-msg-link={t('linkCopied')}></span>
+</dialog>

@@ -1,31 +1,51 @@
 ---
 import { render } from 'astro:content';
 import { ArrowUpRight } from '@lucide/astro';
-import EntryCard from '../../../components/EntryCard.svelte';
-import BackLink from '../../../components/BackLink.astro';
-import StatusBadge from '../../../components/StatusBadge.svelte';
-import Layout from '../../../layouts/Layout.astro';
-import { languageCodes, navigation } from '../../../lib/config';
-import { getArticles, getProjects, type Article, type Project } from '../../../lib/content';
+import EntryRow from '../../../components/EntryRow.svelte';
+import CopyCommand from '../../../components/detail/CopyCommand.astro';
+import DetailHeader from '../../../components/detail/DetailHeader.astro';
+import Pager from '../../../components/detail/Pager.astro';
+import Page from '../../../components/Page.astro';
+import Prose from '../../../components/Prose.astro';
+import Workspace from '../../../layouts/Workspace.astro';
+import { featured, languageCodes, navigation } from '../../../lib/config';
+import {
+	getArticles,
+	getMethod,
+	getProjects,
+	type Article,
+	type MethodEntry,
+	type Project
+} from '../../../lib/content';
 import { articleItem, formatDate, STATUS_KEY } from '../../../lib/items';
 import { readingMetrics } from '../../../lib/metrics';
 import { relatedByTags } from '../../../lib/related';
 import { blogPostingJsonLd, buildCanonical, creativeWorkJsonLd } from '../../../lib/seo';
-import { translator } from '../../../lib/site';
+import { getSite, translator } from '../../../lib/site';
+import { getNavGroups, neighbours } from '../../../lib/workspace';
+
+type Kind = 'projects' | 'articles' | 'method';
 
 export async function getStaticPaths() {
 	const paths = [];
 	for (const lang of languageCodes) {
-		for (const project of await getProjects(lang)) {
+		const routes = navigation[lang];
+		for (const p of await getProjects(lang)) {
 			paths.push({
-				params: { lang, section: navigation[lang].projects, slug: project.text.slug },
-				props: { kind: 'project' as const, id: project.id }
+				params: { lang, section: routes.projects, slug: p.text.slug },
+				props: { kind: 'projects' as Kind, id: p.id }
 			});
 		}
-		for (const article of await getArticles(lang)) {
+		for (const a of await getArticles(lang)) {
 			paths.push({
-				params: { lang, section: navigation[lang].articles, slug: article.text.slug },
-				props: { kind: 'article' as const, id: article.id }
+				params: { lang, section: routes.articles, slug: a.text.slug },
+				props: { kind: 'articles' as Kind, id: a.id }
+			});
+		}
+		for (const m of await getMethod(lang)) {
+			paths.push({
+				params: { lang, section: routes.method, slug: m.text.slug },
+				props: { kind: 'method' as Kind, id: m.id }
 			});
 		}
 	}
@@ -35,154 +55,255 @@ export async function getStaticPaths() {
 const { lang, section, slug } = Astro.params;
 const { kind, id } = Astro.props;
 const t = await translator(lang);
+const site = await getSite(lang);
 const path = `/${lang}/${section}/${slug}`;
+const listing = `/${lang}/${section}`;
 const origin = Astro.site!.origin;
 const canonical = buildCanonical(origin, path);
-const listing = `/${lang}/${section}`;
 
 let project: Project | undefined;
 let article: Article | undefined;
+let principle: MethodEntry | undefined;
 let related: Article[] = [];
-if (kind === 'project') {
-	project = (await getProjects(lang)).find((p) => p.id === id)!;
-} else {
+if (kind === 'projects') project = (await getProjects(lang)).find((p) => p.id === id);
+if (kind === 'method') principle = (await getMethod(lang)).find((m) => m.id === id);
+if (kind === 'articles') {
 	const articles = await getArticles(lang);
-	article = articles.find((a) => a.id === id)!;
-	const withTags = articles.map((a) => ({ id: a.id, tags: a.text.tags, a }));
+	article = articles.find((a) => a.id === id);
+	const tagged = articles.map((a) => ({ id: a.id, tags: a.text.tags, a }));
 	related = relatedByTags(
-		withTags.find((x) => x.id === id)!,
-		withTags
+		tagged.find((x) => x.id === id)!,
+		tagged
 	).map((x) => x.a);
 }
+const entry = (project ?? article ?? principle)!.entry;
+const { Content } = await render(entry);
+const title = (project ?? article ?? principle)!.text.title;
 
-const item = (project ?? article)!;
-const { Content } = await render(item.entry);
-const og = `detail-${kind === 'project' ? 'projects' : 'blog'}-${id}-${lang}`;
-const ogImage = `${origin}/og/${og}.png`;
+const groups = await getNavGroups(lang, t);
+const { prev, next } = neighbours(groups, `${kind}/${id}`);
+
+const isFeatured = project ? featured.projects.includes(project.id) : false;
 const metrics = article ? readingMetrics(article.entry.body ?? '', lang) : null;
+const og =
+	kind === 'method'
+		? undefined
+		: `detail-${kind === 'projects' ? 'projects' : 'blog'}-${id}-${lang}`;
+const ogImage = og ? `${origin}/og/${og}.png` : `${origin}/og/home.png`;
+const external = project?.meta.repo
+	? { href: project.meta.repo, label: 'github' }
+	: project?.meta.site
+		? { href: project.meta.site, label: t('site') }
+		: undefined;
 
 const jsonLd = project
-	? creativeWorkJsonLd({
-			canonical,
-			title: project.text.title,
-			description: project.text.excerpt,
-			image: ogImage,
-			dateCreated: project.meta.created,
-			dateModified: project.meta.updated,
-			lang
-		})
-	: blogPostingJsonLd({
-			canonical,
-			title: article!.text.title,
-			description: article!.text.description,
-			image: ogImage,
-			datePublished: article!.meta.date,
-			dateModified: article!.meta.updated,
-			lang
-		});
+	? [
+			creativeWorkJsonLd({
+				canonical,
+				title,
+				description: project.text.excerpt,
+				image: ogImage,
+				dateCreated: project.meta.created,
+				dateModified: project.meta.updated,
+				lang
+			})
+		]
+	: article
+		? [
+				blogPostingJsonLd({
+					canonical,
+					title,
+					description: article.text.description,
+					image: ogImage,
+					datePublished: article.meta.date,
+					dateModified: article.meta.updated,
+					lang
+				})
+			]
+		: undefined;
+
+const host = (url: string) => url.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '');
 ---
 
-<Layout
+<Workspace
 	lang={lang}
 	path={path}
-	title={item.text.title}
-	description={article ? article.text.description : item.text.excerpt}
+	title={title}
+	description={project?.text.excerpt ?? article?.text.description ?? principle?.text.summary}
 	og={og}
-	jsonLd={[jsonLd]}
+	jsonLd={jsonLd}
+	current={`${kind}/${id}`}
+	crumbs={[{ label: section, href: listing }, { label: slug }]}
+	parent={listing}
 >
-	<article class="container-page pt-10">
-		<BackLink href={listing} label={t('back')} />
+	<Page>
+		<div class="grid gap-x-[clamp(2rem,5vw,6rem)] gap-y-10 xl:grid-cols-[minmax(0,1fr)_minmax(14rem,19rem)]">
+			<article class="min-w-0">
+				<DetailHeader
+					title={title}
+					kicker={
+						project && isFeatured
+							? `${site.sections.projects.toLowerCase()} / ${t('featured')}`
+							: site.sections[kind].toLowerCase()
+					}
+					backHref={listing}
+					external={external}
+					t={t}
+				>
+					{project && (
+						<p class="text-muted flex items-center gap-2.5 font-mono text-[0.8125rem]">
+							<span class="led" data-status={project.meta.status} />
+							{t(STATUS_KEY[project.meta.status]).toLowerCase()}
+							<span class="text-subtle">· {project.meta.created.slice(0, 4)}</span>
+						</p>
+					)}
+					{article && metrics && (
+						<p class="text-muted flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[0.8125rem]">
+							<time datetime={article.meta.date}>{formatDate(article.meta.date, lang)}</time>
+							<span class="text-subtle">
+								· {metrics.minutes} min · ~{metrics.tokensLabel} token
+							</span>
+						</p>
+					)}
+				</DetailHeader>
 
-		<header class="mt-8 max-w-3xl">
-			<h1 class="text-3xl font-medium tracking-tight sm:text-5xl">{item.text.title}</h1>
-			<p class="text-muted mt-5 text-lg leading-relaxed sm:text-xl">{item.text.excerpt}</p>
-		</header>
+				{(project || article || principle) && (
+					<p class="text-fg mt-8 text-[clamp(1.125rem,0.98rem+0.45vw,1.4375rem)] leading-[1.55] text-pretty">
+						{project?.text.excerpt ?? article?.text.excerpt ?? principle?.text.summary}
+					</p>
+				)}
 
-		<div class="mt-12 grid gap-10 lg:grid-cols-[14rem_minmax(0,1fr)] lg:gap-16">
-			<aside class="flex flex-col gap-6 text-sm lg:sticky lg:top-24 lg:self-start">
-				{project && (
-					<>
-						<dl class="grid grid-cols-2 gap-6 lg:grid-cols-1">
-							<div>
-								<dt class="text-subtle mb-1.5 text-xs">{t('status')}</dt>
-								<dd>
-									<StatusBadge
-										status={project.meta.status}
-										label={t(STATUS_KEY[project.meta.status])}
-									/>
-								</dd>
+				{project && (project.meta.install || project.text.why) && (
+					<div class="mt-8 flex flex-col gap-6">
+						{project.meta.install && (
+							<CopyCommand
+								command={project.meta.install}
+								message={t('commandCopied')}
+								copiedLabel={t('copied')}
+							/>
+						)}
+						{project.text.why && (
+							<div class="bg-panel rounded-[var(--radius-panel)] px-5 py-4">
+								<p class="label">{t('why')}</p>
+								<p class="text-text mt-2 text-pretty">{project.text.why}</p>
 							</div>
-							<div>
-								<dt class="text-subtle mb-1.5 text-xs">{t('year')}</dt>
-								<dd class="font-mono tabular-nums">{project.meta.created.slice(0, 4)}</dd>
-							</div>
-							{project.meta.link && (
-								<div class="col-span-2 lg:col-span-1">
-									<dt class="text-subtle mb-1.5 text-xs">{t('repository')}</dt>
-									<dd>
-										<a
-											href={project.meta.link}
-											target="_blank"
-											rel="noopener noreferrer"
-											class="link inline-flex items-center gap-1 break-all"
-										>
-											{project.meta.link.replace(/^https?:\/\/(www\.)?/, '')}
-											<ArrowUpRight class="text-subtle size-3.5 shrink-0" />
-										</a>
-									</dd>
-								</div>
-							)}
-						</dl>
-					</>
+						)}
+					</div>
 				)}
-				{article && metrics && (
-					<dl class="grid grid-cols-2 gap-6 lg:grid-cols-1">
-						<div>
-							<dt class="text-subtle mb-1.5 text-xs">{t('published')}</dt>
-							<dd>
-								<time datetime={article.meta.date} class="font-mono tabular-nums">
-									{formatDate(article.meta.date, lang)}
-								</time>
-							</dd>
-						</div>
-						<div>
-							<dt class="text-subtle mb-1.5 text-xs">{t('readingTime')}</dt>
-							<dd class="font-mono tabular-nums">
-								{metrics.minutes} min · ~{metrics.tokensLabel} token
-							</dd>
-						</div>
-					</dl>
-				)}
-				{item.text.tags.length > 0 && (
-					<div>
-						<p class="text-subtle mb-2 text-xs">{project ? t('stack') : t('tags')}</p>
-						<ul class="flex flex-wrap gap-1.5">
-							{item.text.tags.map((tag) => (
-								<li class="border-line text-muted rounded border px-1.5 py-0.5 font-mono text-[11px]">
-									{tag}
+
+				<Prose class="mt-10">
+					<Content />
+				</Prose>
+
+				{related.length > 0 && (
+					<section class="mt-16">
+						<h2 class="label">{t('related')}</h2>
+						<ul class="-mx-3 mt-3 flex flex-col">
+							{related.map((a) => (
+								<li>
+									<EntryRow item={articleItem(a, section)} />
 								</li>
 							))}
 						</ul>
-					</div>
+					</section>
 				)}
-			</aside>
+			</article>
 
-			<div class="prose prose-invert prose-neutral min-w-0 max-w-none prose-headings:font-medium prose-headings:tracking-tight prose-a:decoration-subtle prose-a:underline-offset-4 prose-code:rounded prose-code:bg-surface prose-code:px-1 prose-code:py-0.5 prose-code:font-normal prose-code:before:content-none prose-code:after:content-none prose-img:rounded-lg">
-				<Content />
-			</div>
+			{project && (
+				<aside class="flex flex-col gap-8 xl:sticky xl:top-[clamp(1.5rem,3vw,3.5rem)] xl:self-start xl:pt-[4.5rem]">
+					<dl class="grid grid-cols-[auto_minmax(0,1fr)] gap-x-6 gap-y-3 text-[0.9375rem] xl:grid-cols-1 xl:gap-y-5">
+						<div class="contents xl:flex xl:flex-col xl:gap-1.5">
+							<dt class="label">{t('status')}</dt>
+							<dd class="text-text flex items-center gap-2">
+								<span class="led" data-status={project.meta.status} />
+								{t(STATUS_KEY[project.meta.status])}
+							</dd>
+						</div>
+						<div class="contents xl:flex xl:flex-col xl:gap-1.5">
+							<dt class="label">{t('year')}</dt>
+							<dd class="text-text font-mono tabular-nums">{project.meta.created.slice(0, 4)}</dd>
+						</div>
+						<div class="contents xl:flex xl:flex-col xl:gap-1.5">
+							<dt class="label">{t('repository')}</dt>
+							<dd class="text-text min-w-0">
+								{project.meta.repo ? (
+									<a
+										href={project.meta.repo}
+										target="_blank"
+										rel="noopener noreferrer"
+										class="ulink inline-flex max-w-full items-center gap-1.5 font-mono text-sm break-all"
+									>
+										{host(project.meta.repo)}
+										<ArrowUpRight class="text-subtle size-3.5" />
+									</a>
+								) : (
+									<span class="text-muted font-mono text-sm">{t('private')}</span>
+								)}
+							</dd>
+						</div>
+						{project.meta.repo && (
+							<div class="contents xl:flex xl:flex-col xl:gap-1.5">
+								<dt class="label">{t('releases')}</dt>
+								<dd>
+									<a
+										href={`${project.meta.repo}/releases`}
+										target="_blank"
+										rel="noopener noreferrer"
+										class="ulink text-text inline-flex max-w-full items-center gap-1.5 font-mono text-sm break-all"
+									>
+										{host(project.meta.repo)}/releases
+										<ArrowUpRight class="text-subtle size-3.5" />
+									</a>
+								</dd>
+							</div>
+						)}
+						{project.meta.site && (
+							<div class="contents xl:flex xl:flex-col xl:gap-1.5">
+								<dt class="label">{t('site')}</dt>
+								<dd>
+									<a
+										href={project.meta.site}
+										target="_blank"
+										rel="noopener noreferrer"
+										class="ulink text-text inline-flex max-w-full items-center gap-1.5 font-mono text-sm break-all"
+									>
+										{host(project.meta.site)}
+										<ArrowUpRight class="text-subtle size-3.5" />
+									</a>
+								</dd>
+							</div>
+						)}
+						{project.meta.license && (
+							<div class="contents xl:flex xl:flex-col xl:gap-1.5">
+								<dt class="label">{t('license')}</dt>
+								<dd class="text-text font-mono text-sm">{project.meta.license}</dd>
+							</div>
+						)}
+					</dl>
+					{project.text.tags.length > 0 && (
+						<div class="flex flex-col gap-2.5">
+							<p class="label">{t('stack')}</p>
+							<ul class="flex flex-wrap gap-1.5">
+								{project.text.tags.map((tag) => (
+									<li class="chip">{tag}</li>
+								))}
+							</ul>
+						</div>
+					)}
+				</aside>
+			)}
+
+			{article && (
+				<aside class="flex flex-col gap-2.5 xl:sticky xl:top-[clamp(1.5rem,3vw,3.5rem)] xl:self-start xl:pt-[4.5rem]">
+					<p class="label">{t('tags')}</p>
+					<ul class="flex flex-wrap gap-1.5">
+						{article.text.tags.map((tag) => (
+							<li class="chip">{tag}</li>
+						))}
+					</ul>
+				</aside>
+			)}
 		</div>
-
-		{related.length > 0 && (
-			<section class="mt-24">
-				<h2 class="mb-6 text-xl font-medium tracking-tight">{t('related')}</h2>
-				<ul class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-					{related.map((a) => (
-						<li>
-							<EntryCard item={articleItem(a, section)} />
-						</li>
-					))}
-				</ul>
-			</section>
-		)}
-	</article>
-</Layout>
+		<Pager prev={prev} next={next} t={t} />
+	</Page>
+</Workspace>

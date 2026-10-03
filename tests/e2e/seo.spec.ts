@@ -16,9 +16,9 @@ test.describe('canonical & hreflang', () => {
 	});
 
 	test('article detail alternate points to the translated slug', async ({ page }) => {
-		await page.goto('/en/blog/my-new-laboratory');
+		await page.goto('/en/writing/my-new-laboratory');
 		const itAlt = await page.locator('link[rel="alternate"][hreflang="it"]').getAttribute('href');
-		expect(itAlt).toContain('/it/blog/il-mio-nuovo-laboratorio');
+		expect(itAlt).toContain('/it/scritti/il-mio-nuovo-laboratorio');
 	});
 });
 
@@ -32,7 +32,7 @@ test.describe('structured data (JSON-LD)', () => {
 	});
 
 	test('article detail emits BlogPosting with headline and dates', async ({ page }) => {
-		await page.goto('/en/blog/my-new-laboratory');
+		await page.goto('/en/writing/my-new-laboratory');
 		const raw = await page.locator('script[type="application/ld+json"]').first().textContent();
 		const data = JSON.parse(raw!);
 		const post = Array.isArray(data) ? data[0] : data;

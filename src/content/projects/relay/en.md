@@ -9,6 +9,7 @@ tags:
   - "AI Agents"
   - "Claude Code"
   - "Homebrew"
+why: "Each agent's state comes from Claude Code and Codex hooks, not from parsing output, so it stays right even under a wall of logs. I wrote it in Swift starting from zero Swift experience."
 ---
 
 I work with five or six Claude Code and Codex sessions open at once, across different projects. In a regular terminal, finding out which agent is waiting for an answer means going tab by tab. Relay exists to remove that loop.

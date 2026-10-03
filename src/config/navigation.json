@@ -1,10 +1,16 @@
 {
 	"en": {
 		"projects": "projects",
-		"articles": "blog"
+		"articles": "writing",
+		"method": "method",
+		"now": "now",
+		"about": "about"
 	},
 	"it": {
 		"projects": "progetti",
-		"articles": "blog"
+		"articles": "scritti",
+		"method": "metodo",
+		"now": "adesso",
+		"about": "chi-sono"
 	}
 }

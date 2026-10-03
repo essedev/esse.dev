@@ -1,0 +1,109 @@
+---
+import { ListFilter } from '@lucide/astro';
+import type { NavGroup } from '../../lib/workspace';
+import type { Translate } from '../../lib/site';
+
+interface Props {
+	groups: NavGroup[];
+	/** Chiave della voce aperta (`progetti/relay`) o della sezione (`projects`). */
+	current: string;
+	t: Translate;
+}
+
+const { groups, current, t } = Astro.props;
+---
+
+<nav aria-label="Indice" data-sidebar class="flex min-h-0 flex-col lg:h-full">
+	<div class="px-3 pt-3 pb-2 lg:px-4 lg:pt-4">
+		<label class="bg-surface focus-within:bg-hover flex h-9 items-center gap-2 rounded-[var(--radius-control)] pr-1.5 pl-2.5 transition-colors">
+			<ListFilter class="text-subtle size-4 shrink-0" />
+			<span class="sr-only">{t('filter')}</span>
+			<input
+				type="search"
+				data-filter
+				placeholder={t('filter')}
+				autocomplete="off"
+				spellcheck="false"
+				class="placeholder:text-subtle min-w-0 flex-1 bg-transparent font-mono text-[0.8125rem] outline-none [&::-webkit-search-cancel-button]:hidden"
+			/>
+			<span class="kbd">/</span>
+		</label>
+	</div>
+
+	<div data-sidebar-scroll class="min-h-0 flex-1 overflow-y-auto px-3 pb-6 lg:px-4">
+		{groups.map((group) => (
+			<section data-group={group.section} class="mt-5 first:mt-3">
+				<a
+					href={group.href}
+					class:list={[
+						'label flex items-center justify-between rounded-[var(--radius-control)] px-2 py-1.5 transition-colors hover:text-fg',
+						current === group.section && 'text-fg'
+					]}
+					aria-current={current === group.section ? 'page' : undefined}
+					data-nav-item
+					data-search={group.label}
+				>
+					<span data-scramble>{group.label}</span>
+					{group.count > 0 && (
+						<span data-group-count class="tabular-nums">
+							{group.count}
+						</span>
+					)}
+				</a>
+				<ul class="mt-1">
+					{group.items.map((item) => (
+						<li data-row>
+							{item.divider && (
+								<p data-divider class="label mt-3 mb-1 px-2 normal-case tracking-normal">
+									{item.divider}
+								</p>
+							)}
+							<a
+								href={item.href}
+								data-nav-item
+								data-search={item.search.toLowerCase()}
+								aria-current={item.key === current ? 'page' : undefined}
+								class="group text-text hover:bg-hover hover:text-fg aria-[current=page]:bg-surface aria-[current=page]:text-fg data-[selected]:bg-hover data-[selected]:text-fg relative flex h-9 items-center gap-3 rounded-[var(--radius-control)] px-2 transition-colors"
+							>
+								<span class="bg-accent absolute top-2 bottom-2 left-0 w-px origin-top scale-y-0 transition-transform duration-200 group-aria-[current=page]:scale-y-100" />
+								{item.index ? (
+									<span class="text-subtle w-[7px] font-mono text-[0.7rem] tabular-nums">
+										{item.index}
+									</span>
+								) : (
+									<span class="led" data-status={item.status ?? 'none'} />
+								)}
+								<span data-title class="min-w-0 flex-1 truncate text-[0.9375rem]">
+									{item.title}
+								</span>
+								{item.meta && (
+									<span class="text-subtle shrink-0 font-mono text-[0.7rem] tabular-nums">
+										{item.meta}
+									</span>
+								)}
+							</a>
+						</li>
+					))}
+				</ul>
+			</section>
+		))}
+		<p data-filter-empty hidden class="text-subtle px-2 py-6 font-mono text-xs">
+			{t('noMatches')}
+		</p>
+	</div>
+
+	<div class="text-subtle hidden items-center gap-4 px-5 py-3 font-mono text-[0.7rem] lg:flex">
+		<span class="flex items-center gap-1.5">
+			<span class="led" data-status="in-progress" />
+			{t('statusInProgress').toLowerCase()}
+		</span>
+		<span class="flex items-center gap-1.5">
+			<span class="led" data-status="completed" />
+			{t('statusCompleted').toLowerCase()}
+		</span>
+		<span class="flex items-center gap-1.5">
+			<span class="led" data-status="idea" />
+			{t('statusIdea').toLowerCase()}
+		</span>
+	</div>
+</nav>

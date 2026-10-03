@@ -6,11 +6,28 @@ import type { Language, NavigationConfig } from './config';
  * (`progetti`), la "sezione" è la chiave logica (`projects` | `articles`).
  */
 
-export const SECTIONS = ['projects', 'articles'] as const;
+export const SECTIONS = ['projects', 'articles', 'method', 'now', 'about'] as const;
 export type Section = (typeof SECTIONS)[number];
 
-/** id contenuto -> lingua -> slug, per sezione. */
-export type SlugMap = Record<Section, Record<string, Record<string, string>>>;
+/** Sezioni con pagine di dettaglio, cioè con uno slug per voce. */
+export const DETAIL_SECTIONS = ['projects', 'articles', 'method'] as const;
+export type DetailSection = (typeof DETAIL_SECTIONS)[number];
+
+export function isDetailSection(section: Section): section is DetailSection {
+	return (DETAIL_SECTIONS as readonly string[]).includes(section);
+}
+
+/**
+ * Route di versioni precedenti del sito che vanno ancora reindirizzate: link già
+ * condivisi o indicizzati non devono finire su un 404. Valgono in ogni lingua.
+ */
+export const LEGACY_ROUTES: Record<string, Section> = {
+	blog: 'articles',
+	informazioni: 'about'
+};
+
+/** id contenuto -> lingua -> slug, per sezione con dettaglio. */
+export type SlugMap = Record<DetailSection, Record<string, Record<string, string>>>;
 
 export function isValidLanguage(lang: string | undefined, languages: Language[]): boolean {
 	return !!lang && languages.some((l) => l.code === lang);
@@ -47,16 +64,20 @@ export function sectionOf(
 	return SECTIONS.find((s) => map[s] === route) ?? null;
 }
 
-/** Cerca la route in tutte le lingue: sezione e lingua in cui esiste, o null. */
+/**
+ * Cerca la route in tutte le lingue: sezione e lingua in cui esiste, o null. Una route
+ * legacy torna senza lingua, perché valeva per tutte.
+ */
 export function findSectionAnyLang(
 	route: string,
 	navigation: NavigationConfig
-): { section: Section; lang: string } | null {
+): { section: Section; lang: string | null } | null {
 	for (const lang of Object.keys(navigation)) {
 		const section = sectionOf(route, lang, navigation);
 		if (section) return { section, lang };
 	}
-	return null;
+	const legacy = LEGACY_ROUTES[route];
+	return legacy ? { section: legacy, lang: null } : null;
 }
 
 /** Route localizzata di una sezione nella lingua target, o null. */
@@ -71,7 +92,7 @@ export function routeOf(
 /** Slug di un contenuto nella lingua target, partendo da uno slug in qualunque lingua. */
 export function translateSlug(
 	slug: string,
-	section: Section,
+	section: DetailSection,
 	targetLang: string,
 	slugMap: SlugMap
 ): string | null {
@@ -100,7 +121,7 @@ export function getLanguageUrl(params: {
 	const section = sectionOf(route, lang, navigation);
 	const targetRoute = section && routeOf(section, targetLang, navigation);
 	if (!section || !targetRoute) return home;
-	if (!slug) return `/${targetLang}/${targetRoute}${search}`;
+	if (!slug || !isDetailSection(section)) return `/${targetLang}/${targetRoute}${search}`;
 
 	const targetSlug = translateSlug(slug, section, targetLang, slugMap);
 	return targetSlug
@@ -135,19 +156,18 @@ export function resolveRedirect(
 		const [only] = segments;
 		if (isValidLanguage(only, languages)) return null;
 		const found = findSectionAnyLang(only, navigation);
-		return found ? path(found.lang, only) : path(defaultLang);
+		if (!found) return path(defaultLang);
+		const lang = found.lang ?? defaultLang;
+		return path(lang, routeOf(found.section, lang, navigation) ?? only);
 	}
 
 	const [lang, route, slug] = segments;
 	const langOk = isValidLanguage(lang, languages);
-	const found = langOk
-		? sectionOf(route, lang, navigation)
-			? { section: sectionOf(route, lang, navigation)!, lang }
-			: findSectionAnyLang(route, navigation)
-		: findSectionAnyLang(route, navigation);
+	const own = langOk ? sectionOf(route, lang, navigation) : null;
+	const found = own ? { section: own, lang } : findSectionAnyLang(route, navigation);
 	if (!found) return null;
 
-	const targetLang = langOk ? lang : found.lang;
+	const targetLang = langOk ? lang : (found.lang ?? defaultLang);
 	const targetRoute = routeOf(found.section, targetLang, navigation);
 	if (!targetRoute) return null;
 
@@ -156,6 +176,7 @@ export function resolveRedirect(
 		return target === path(...segments) ? null : target;
 	}
 
+	if (!isDetailSection(found.section)) return null;
 	const targetSlug = translateSlug(slug, found.section, targetLang, slugMap);
 	if (!targetSlug) return null;
 	const target = path(targetLang, targetRoute, targetSlug);

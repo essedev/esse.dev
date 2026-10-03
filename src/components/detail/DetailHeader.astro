@@ -1,0 +1,54 @@
+---
+import { ArrowUpRight, Link2 } from '@lucide/astro';
+import BackLink from '../BackLink.astro';
+import type { Translate } from '../../lib/site';
+
+interface Props {
+	title: string;
+	/** Sezione o contesto sopra il titolo (`progetti`, `metodo`). */
+	kicker?: string;
+	/** Dove porta "Indietro" quando non c'è una pagina interna da cui si arriva. */
+	backHref?: string;
+	/** Link esterno principale (repo o sito). */
+	external?: { href: string; label: string };
+	t: Translate;
+}
+
+const { title, kicker, backHref, external, t } = Astro.props;
+---
+
+<header class="flex flex-col gap-5">
+	<div class="flex items-center justify-between gap-4">
+		<div class="flex items-center gap-4">
+			{backHref && <BackLink href={backHref} label={t('back')} />}
+			{kicker && <span class="label">{kicker}</span>}
+		</div>
+		<div class="text-subtle flex items-center gap-1 font-mono text-xs">
+			<button
+				type="button"
+				data-copy="url"
+				data-copy-message={t('linkCopied')}
+				class="hover:text-fg hover:bg-surface group flex h-8 items-center gap-1.5 rounded-[var(--radius-control)] px-2 transition-colors"
+			>
+				<Link2 class="size-3.5" />
+				<span class="group-data-[copied]:hidden">{t('copyLink')}</span>
+				<span class="text-accent hidden group-data-[copied]:inline">{t('copied')}</span>
+			</button>
+			{external && (
+				<a
+					href={external.href}
+					target="_blank"
+					rel="noopener noreferrer"
+					class="hover:text-fg hover:bg-surface flex h-8 items-center gap-1.5 rounded-[var(--radius-control)] px-2 transition-colors"
+				>
+					<ArrowUpRight class="size-3.5" />
+					{external.label}
+				</a>
+			)}
+		</div>
+	</div>
+	<h1 class="text-[clamp(2rem,1.2rem+2.6vw,3.5rem)] leading-[1.05] font-medium tracking-[-0.025em] text-balance">
+		{title}
+	</h1>
+	<slot />
+</header>

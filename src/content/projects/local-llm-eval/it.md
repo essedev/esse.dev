@@ -9,6 +9,7 @@ tags:
   - "AI Agents"
   - "Research"
   - "Python"
+why: "Il perimetro di validità e quello che non ho misurato sono scritti prima dei risultati."
 ---
 
 Volevo sapere se un modello locale può fare davvero da coding agent, non in una demo ma in un harness che scrive un'app intera. Il task è sempre lo stesso: una CRUD con backend FastAPI e SQLite e frontend React, generata da zero e valutata con una rubrica fissa.

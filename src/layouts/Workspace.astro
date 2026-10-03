@@ -1,0 +1,71 @@
+---
+import Palette from '../components/workspace/Palette.astro';
+import Sidebar from '../components/workspace/Sidebar.astro';
+import StatusBar from '../components/workspace/StatusBar.astro';
+import TitleBar from '../components/workspace/TitleBar.astro';
+import { translator } from '../lib/site';
+import { getNavGroups } from '../lib/workspace';
+import Layout from './Layout.astro';
+
+interface Props {
+	lang: string;
+	path: string;
+	title?: string;
+	description?: string;
+	og?: string;
+	jsonLd?: Record<string, unknown>[];
+	noindex?: boolean;
+	/** Voce aperta (`projects/relay`), sezione (`projects`) o `home`. */
+	current: string;
+	crumbs: { label: string; href?: string }[];
+	/**
+	 * `home` mostra la lista anche su mobile, sotto la presentazione; `detail` su mobile
+	 * mostra solo il contenuto, come la seconda schermata di un'app.
+	 */
+	view?: 'home' | 'detail';
+	/** Dove porta Esc: la sezione per un dettaglio, la home per una sezione. */
+	parent?: string;
+}
+
+const { lang, path, current, crumbs, view = 'detail', parent, ...head } = Astro.props;
+const t = await translator(lang);
+const groups = await getNavGroups(lang, t);
+---
+
+<Layout lang={lang} path={path} {...head}>
+	<a href="#main-content" class="skip-link">
+		{t('skipToContent')}
+	</a>
+	<div
+		data-workspace
+		data-view={view}
+		data-parent={parent ?? `/${lang}`}
+		data-lang={lang}
+		class="flex min-h-dvh flex-col lg:grid lg:h-dvh lg:min-h-0 lg:grid-rows-[auto_minmax(0,1fr)_auto]"
+	>
+		<TitleBar lang={lang} path={path} crumbs={crumbs} t={t} />
+		<div class="flex flex-1 flex-col lg:grid lg:min-h-0 lg:grid-cols-[var(--sidebar)_minmax(0,1fr)]">
+			<aside
+				class:list={[
+					'order-2 lg:order-1 lg:bg-panel lg:border-line lg:min-h-0 lg:border-r',
+					view === 'detail' && 'hidden lg:block'
+				]}
+			>
+				<Sidebar groups={groups} current={current} t={t} />
+			</aside>
+			<main
+				id="main-content"
+				data-main-scroll
+				class="order-1 min-w-0 [view-transition-name:detail] lg:order-2 lg:min-h-0 lg:overflow-y-auto"
+			>
+				<slot />
+			</main>
+		</div>
+		<StatusBar path={path} t={t} />
+	</div>
+	<Palette t={t} email="hello@esse.dev" />
+</Layout>
+
+<script>
+	import '../scripts/workspace';
+</script>

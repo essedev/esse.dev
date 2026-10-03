@@ -32,16 +32,16 @@ test.describe('contextual back link - projects', () => {
 
 test.describe('contextual back link - articles', () => {
 	test('blog listing -> article detail -> back returns to the listing', async ({ page }) => {
-		await page.goto('/en/blog');
-		await page.locator('a[href*="/blog/"]').first().click();
-		await page.waitForURL(/\/en\/blog\/[^/]+$/);
+		await page.goto('/en/writing');
+		await page.locator('a[href*="/writing/"]').first().click();
+		await page.waitForURL(/\/en\/writing\/[^/]+$/);
 		await back(page).click();
-		await expect(page).toHaveURL(/\/en\/blog$/);
+		await expect(page).toHaveURL(/\/en\/writing$/);
 	});
 
 	test('direct landing on an article -> back falls back to the listing', async ({ page }) => {
-		await page.goto('/en/blog/my-new-laboratory');
+		await page.goto('/en/writing/my-new-laboratory');
 		await back(page).click();
-		await expect(page).toHaveURL(/\/en\/blog$/);
+		await expect(page).toHaveURL(/\/en\/writing$/);
 	});
 });

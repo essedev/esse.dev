@@ -18,13 +18,20 @@ const languages: Language[] = [
 ];
 
 const navigation: NavigationConfig = {
-	en: { projects: 'projects', articles: 'blog' },
-	it: { projects: 'progetti', articles: 'blog' }
+	en: { projects: 'projects', articles: 'writing', method: 'method', now: 'now', about: 'about' },
+	it: {
+		projects: 'progetti',
+		articles: 'scritti',
+		method: 'metodo',
+		now: 'adesso',
+		about: 'chi-sono'
+	}
 };
 
 const slugMap: SlugMap = {
 	projects: { budokan: { en: 'budokan', it: 'budokan' } },
-	articles: { lab: { en: 'my-new-laboratory', it: 'il-mio-nuovo-laboratorio' } }
+	articles: { lab: { en: 'my-new-laboratory', it: 'il-mio-nuovo-laboratorio' } },
+	method: { context: { en: 'context', it: 'contesto' } }
 };
 
 describe('isValidLanguage', () => {
@@ -38,7 +45,8 @@ describe('isValidLanguage', () => {
 describe('sectionOf / routeOf / findSectionAnyLang', () => {
 	it('mappa la route localizzata alla sezione e ritorno', () => {
 		expect(sectionOf('progetti', 'it', navigation)).toBe('projects');
-		expect(sectionOf('blog', 'en', navigation)).toBe('articles');
+		expect(sectionOf('writing', 'en', navigation)).toBe('articles');
+		expect(sectionOf('adesso', 'it', navigation)).toBe('now');
 		expect(routeOf('projects', 'it', navigation)).toBe('progetti');
 	});
 
@@ -93,7 +101,9 @@ describe('getLanguageUrl', () => {
 		expect(url('/en', 'it')).toBe('/it');
 		expect(url('/en/projects', 'it')).toBe('/it/progetti');
 		expect(url('/en/projects/budokan', 'it')).toBe('/it/progetti/budokan');
-		expect(url('/it/blog/il-mio-nuovo-laboratorio', 'en')).toBe('/en/blog/my-new-laboratory');
+		expect(url('/it/scritti/il-mio-nuovo-laboratorio', 'en')).toBe('/en/writing/my-new-laboratory');
+		expect(url('/it/metodo/contesto', 'en')).toBe('/en/method/context');
+		expect(url('/it/chi-sono', 'en')).toBe('/en/about');
 	});
 
 	it('conserva la query string', () => {
@@ -116,8 +126,20 @@ describe('resolveRedirect', () => {
 	});
 
 	it('slug di un’altra lingua', () => {
-		expect(go('/en/blog/il-mio-nuovo-laboratorio')).toBe('/en/blog/my-new-laboratory');
-		expect(go('/it/blog/my-new-laboratory')).toBe('/it/blog/il-mio-nuovo-laboratorio');
+		expect(go('/en/writing/il-mio-nuovo-laboratorio')).toBe('/en/writing/my-new-laboratory');
+		expect(go('/it/scritti/my-new-laboratory')).toBe('/it/scritti/il-mio-nuovo-laboratorio');
+		expect(go('/en/method/contesto')).toBe('/en/method/context');
+	});
+
+	it('route di versioni precedenti del sito (blog, informazioni)', () => {
+		expect(go('/en/blog')).toBe('/en/writing');
+		expect(go('/it/blog/my-new-laboratory')).toBe('/it/scritti/il-mio-nuovo-laboratorio');
+		expect(go('/it/informazioni')).toBe('/it/chi-sono');
+		expect(go('/blog')).toBe('/en/writing');
+	});
+
+	it('una sezione senza dettaglio non accetta uno slug', () => {
+		expect(go('/it/adesso/qualcosa')).toBeNull();
 	});
 
 	it('lingua sconosciuta: va nella lingua della route, slug compreso', () => {

@@ -31,9 +31,31 @@ export interface Article {
 	entry: CollectionEntry<'articleTexts'>;
 }
 
-type TextEntry = CollectionEntry<'projectTexts'> | CollectionEntry<'articleTexts'>;
+export interface MethodEntry {
+	id: string;
+	lang: string;
+	order: number;
+	text: CollectionEntry<'methodTexts'>['data'];
+	entry: CollectionEntry<'methodTexts'>;
+}
 
-function join<M extends { published: boolean }, E extends TextEntry>(
+export interface NowEntry {
+	id: string;
+	lang: string;
+	date: string;
+	/** Il progetto a cui si riferisce, nella stessa lingua. */
+	project: Project;
+	title: string;
+	entry: CollectionEntry<'nowTexts'>;
+}
+
+type TextEntry =
+	| CollectionEntry<'projectTexts'>
+	| CollectionEntry<'articleTexts'>
+	| CollectionEntry<'methodTexts'>
+	| CollectionEntry<'nowTexts'>;
+
+function join<M extends object, E extends TextEntry>(
 	kind: string,
 	metas: { id: string; data: M }[],
 	texts: E[]
@@ -49,7 +71,10 @@ function join<M extends { published: boolean }, E extends TextEntry>(
 			throw new Error(`${kind}/${id}/${lang}.md: lingua sconosciuta`);
 		item.texts[lang] = text;
 	}
-	const published = [...byId.values()].filter((item) => item.meta.published);
+	// Senza il campo `published` (metodo, adesso) una voce è sempre pubblica.
+	const published = [...byId.values()].filter(
+		(item) => !('published' in item.meta) || item.meta.published !== false
+	);
 	for (const item of published) {
 		const missing = languageCodes.filter((l) => !item.texts[l]);
 		if (missing.length)
@@ -58,7 +83,9 @@ function join<M extends { published: boolean }, E extends TextEntry>(
 	for (const lang of languageCodes) {
 		const seen = new Map<string, string>();
 		for (const item of published) {
-			const slug = item.texts[lang].data.slug;
+			const data = item.texts[lang].data;
+			if (!('slug' in data)) continue;
+			const slug = data.slug;
 			if (seen.has(slug))
 				throw new Error(
 					`${kind}: slug "${slug}" (${lang}) usato da ${seen.get(slug)} e ${item.id}`
@@ -69,28 +96,40 @@ function join<M extends { published: boolean }, E extends TextEntry>(
 	return published;
 }
 
-let cache: Promise<{
-	projects: ReturnType<typeof join<ProjectMeta, CollectionEntry<'projectTexts'>>>;
-	articles: ReturnType<typeof join<ArticleMeta, CollectionEntry<'articleTexts'>>>;
-}> | null = null;
-
-function load() {
-	cache ??= (async () => {
-		const [pm, pt, am, at] = await Promise.all([
+function loadAll() {
+	return (async () => {
+		const [pm, pt, am, at, mm, mt, nm, nt] = await Promise.all([
 			getCollection('projects'),
 			getCollection('projectTexts'),
 			getCollection('articles'),
-			getCollection('articleTexts')
+			getCollection('articleTexts'),
+			getCollection('method'),
+			getCollection('methodTexts'),
+			getCollection('now'),
+			getCollection('nowTexts')
 		]);
 		const projects = join('projects', pm, pt);
 		const articles = join('articles', am, at);
+		const method = join('method', mm, mt);
+		const now = join('now', nm, nt);
 		const publishedIds = new Set(projects.map((p) => p.id));
 		for (const id of featured.projects) {
 			if (!publishedIds.has(id))
 				throw new Error(`featured.json: "${id}" non è un progetto pubblicato`);
 		}
-		return { projects, articles };
+		for (const item of now) {
+			if (!publishedIds.has(item.meta.project)) {
+				throw new Error(`now/${item.id}: "${item.meta.project}" non è un progetto pubblicato`);
+			}
+		}
+		return { projects, articles, method, now };
 	})();
+}
+
+let cache: ReturnType<typeof loadAll> | null = null;
+
+function load() {
+	cache ??= loadAll();
 	return cache;
 }
 
@@ -119,16 +158,48 @@ export async function getShowcase(lang: string): Promise<Project[]> {
 	return orderFeaturedFirst(projects, featured.projects).slice(0, 6);
 }
 
+/** Principi del metodo in una lingua, nell'ordine stabilito. */
+export async function getMethod(lang: string): Promise<MethodEntry[]> {
+	const { method } = await load();
+	return method
+		.map((m) => ({
+			id: m.id,
+			lang,
+			order: m.meta.order,
+			text: m.texts[lang].data,
+			entry: m.texts[lang]
+		}))
+		.sort((a, b) => a.order - b.order);
+}
+
+/** Voci di "adesso" in una lingua, dalla più recente, col progetto collegato. */
+export async function getNow(lang: string): Promise<NowEntry[]> {
+	const [{ now }, projects] = await Promise.all([load(), getProjects(lang)]);
+	const byId = new Map(projects.map((p) => [p.id, p]));
+	return now
+		.map((n) => ({
+			id: n.id,
+			lang,
+			date: n.meta.date,
+			project: byId.get(n.meta.project)!,
+			title: n.texts[lang].data.title,
+			entry: n.texts[lang]
+		}))
+		.sort((a, b) => b.date.localeCompare(a.date));
+}
+
 export async function getSlugMap(): Promise<SlugMap> {
-	const { projects, articles } = await load();
+	const { projects, articles, method } = await load();
 	const toMap = (items: { id: string; texts: Record<string, TextEntry> }[]) =>
 		Object.fromEntries(
 			items.map((item) => [
 				item.id,
-				Object.fromEntries(Object.entries(item.texts).map(([lang, t]) => [lang, t.data.slug]))
+				Object.fromEntries(
+					Object.entries(item.texts).map(([lang, t]) => [lang, 'slug' in t.data ? t.data.slug : ''])
+				)
 			])
 		);
-	return { projects: toMap(projects), articles: toMap(articles) };
+	return { projects: toMap(projects), articles: toMap(articles), method: toMap(method) };
 }
 
 export async function getPage<C extends 'welcome' | 'about' | 'contact'>(
