@@ -90,7 +90,8 @@ lista `src/lib/workspace.ts` (unica fonte dell'ordine per lista, pager e palette
   Metodo e adesso sono collection come i progetti (meta + testo per lingua). Le route
   di versioni precedenti (`blog`, `informazioni`) si reindirizzano con `LEGACY_ROUTES`
   in `src/lib/i18n.ts`.
-- Interazione in `src/scripts/workspace.ts`: j/k e frecce, Invio, Esc, `/` e Cmd/Ctrl+K
+- Interazione in `src/scripts/workspace.ts`: j/k e frecce, Invio, Esc, h/l (precedente e
+  successivo, dal pager), `/` e Cmd/Ctrl+K
   per la ricerca, `[data-copy]` con conferma nella riga di stato, scroll della lista
   ricordato. Il livello sopra (Esc, breadcrumb, `[data-up]`) si calcola in
   `Workspace.astro` dai `crumbs` e torna con la history se si arriva da lì, così il
