@@ -759,6 +759,12 @@ Secondo taglio di M17: da 2 a 9 tool, divisi in pagina tra "sul sito" e "sul cod
   "come fa Portsage a sapere quali porte sono occupate" l'agente trova `scanner.rs` in 7
   chiamate, per circa 0,2 centesimi; il prompt ora chiede di copiare il codice senza
   commenti inventati e di citare le righe col link.
+- **Pagina dell'agente** (afa1abe): si leggeva come un documento, con l'input dove finiva
+  un minimo di 55vh e una conversazione vuota senza niente. Ora l'input sta fermo in fondo
+  al riquadro e la pagina lo riempie (su mobile cresce anche la colonna del contenuto).
+  A conversazione vuota: i tool annunciati dal server, come funzionano triage e costi, tre
+  domande suggerite che partono subito. La trascrizione segue la risposta solo se chi legge
+  è già in fondo.
 - **Trascrizione:** le risposte usano gli stessi stili di prosa del sito (elenchi, blocchi
   di codice, link).
 - **Test:** 87 unit e 54 E2E.

@@ -2,7 +2,7 @@
 
 Stato corrente del progetto. Milestone reali, non wishlist. Aggiornata insieme al codice.
 
-Ultimo aggiornamento: 2026-10-03 (prima versione dell'agente, M17 in corso)
+Ultimo aggiornamento: 2026-10-03 (Ciclo 15: l'agente legge progetti e codice, M17 in corso)
 
 ## Contesto
 
@@ -26,7 +26,8 @@ scelte in `docs/DECISIONS.md` #10. Gate verde: lint, check, build, unit, E2E.
   il comando di build sia `pnpm build`, il deploy `npx wrangler deploy` e Node almeno
   22.12; caricare il secret `OPENROUTER_API_KEY` (`wrangler secret put`), senza il
   quale l'agente non risponde, e `GITHUB_TOKEN` (fine-grained, sola lettura dei repo
-  pubblici), senza il quale i tool sul codice hanno 60 richieste l'ora per IP condiviso; poi merge su `main` con squash (vedi Aperte) e push.
+  pubblici), senza il quale i tool sul codice hanno 60 richieste l'ora per IP condiviso;
+  poi merge su `main` con squash (vedi Aperte) e push.
 
 ### M15 - Struttura e stile - In corso
 
@@ -78,7 +79,7 @@ Scelte in `docs/DECISIONS.md` #11 e #12.
     li ha per scelta), con tetto di agenti e token.
   - `draft_message(text)`: messaggio a Simone che parte solo se chi visita lo approva
     (gate umano), con Turnstile e limite per visitatore.
-- Ordine: base più auto-lettura, poi `render` e `run_code`, poi `delegate` e
+- Ordine: base più auto-lettura (fatte), poi `render` e `run_code`, poi `delegate` e
   `draft_message`. Scartati: un secondo modello da consultare, fetch libero, voce e
   immagini.
 - Limiti: Turnstile (da fare); limite per visitatore e budget giornaliero ci sono già.
