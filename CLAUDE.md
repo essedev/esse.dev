@@ -25,8 +25,10 @@ avviene via Cloudflare Workers Builds al push, il gate è locale.
 Gli E2E girano contro la build servita da `wrangler dev` su :8788 (vedi
 `playwright.config.ts`), non contro il dev server: redirect, header, CSP e 404 esistono
 solo lì. Playwright rifà la build e avvia un server suo ogni volta, così non testa mai
-una build vecchia; l'anteprima su :8787 può restare accesa. Un `workerd` orfano su una
-di queste porte serve asset vecchi e fa fallire tutto con dei 404: va chiuso.
+una build vecchia. Ogni build riscrive `dist/` sotto i piedi di un `wrangler dev` già
+acceso: l'anteprima su :8787 comincia a rispondere 404 e va riavviata dopo la build (anche
+dopo gli E2E). Un `workerd` orfano su una di queste porte serve asset vecchi e fa fallire
+tutto con dei 404: va chiuso.
 
 ## Contenuti
 
