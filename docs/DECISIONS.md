@@ -110,14 +110,15 @@ non cambiano), l'i18n di Astro (non traduce segmenti né slug), un JSON per ling
 i campi condivisi duplicati (deriva tra lingue), il corpo a blocchi JSON (illeggibile
 da scrivere e nei diff).
 
-## #11 - Agente del sito: Agents SDK di Cloudflare con pi-agent-core dentro
+## #11 - Agente del sito: PiHarness dell'Agents SDK, modelli da AI Gateway
 
-**Status:** attiva (Ciclo 13), da confermare con la prova di M17
+**Status:** attiva (Ciclo 13, confermata dalla prova)
 
-L'agente gira sul server, mai nel browser (chiavi segrete), in un Durable Object
-gestito dalla classe `Agent` dell'Agents SDK (WebSocket, stato, SQLite, ibernazione);
-il ciclo modello-tool è pi-agent-core, l'interfaccia un'isola Svelte con `AgentClient`.
-Scartati: pi-server e pi-client (sperimentali, pensati per sessioni di coding con una
-cartella di lavoro), un Durable Object scritto a mano (riscrive riconnessione e
-ibernazione; resta il ripiego), React con assistant-ui o AI Elements (aspetto generico,
-formato dell'AI SDK e non di pi, un secondo framework di isole).
+L'agente gira sul server, mai nel browser, in un Durable Object per visitatore che ospita
+pi-durable con `PiHarness` (`agents/harness/pi`, beta): conversazione e ripresa dopo una
+sospensione sono di pi, il Durable Object dà storage e risveglio. I modelli passano dal
+binding `AI` (`agents/models/pi-ai`): Workers AI e AI Gateway, nessuna chiave nel Worker.
+L'interfaccia è un'isola Svelte con `AgentClient`. Scartati: pi-agent-core collegato a
+mano (il piano iniziale: riscriveva la durabilità che `PiHarness` ha già), OpenRouter
+diretto (una chiave nel Worker, niente log né fallback del gateway), pi-server e
+pi-client (sperimentali), React con assistant-ui (aspetto generico, formato dell'AI SDK).

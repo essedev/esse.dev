@@ -1,6 +1,7 @@
 ---
 import { render } from 'astro:content';
 import { ArrowRight, ArrowUpRight, Check, Copy } from '@lucide/astro';
+import AgentChat from '../../../components/agent/AgentChat.svelte';
 import CollectionBrowser from '../../../components/CollectionBrowser.svelte';
 import Page from '../../../components/Page.astro';
 import Prose from '../../../components/Prose.astro';
@@ -144,6 +145,23 @@ const ogSection = section === 'projects' ? 'projects' : section === 'articles' ?
 						);
 					})}
 				</ol>
+			)}
+
+			{section === 'agent' && (
+				<AgentChat
+					client:only="svelte"
+					labels={{
+						placeholder: t('agentPlaceholder'),
+						send: t('agentSend'),
+						stop: t('agentStop'),
+						reset: t('agentReset'),
+						connecting: t('agentConnecting'),
+						offline: t('agentOffline'),
+						thinking: t('agentThinking'),
+						toolCall: t('agentToolCall'),
+						result: t('agentResult')
+					}}
+				/>
 			)}
 
 			{about && AboutBody && contact && (

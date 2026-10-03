@@ -23,6 +23,7 @@
 	--color-subtle: #7e7e86;
 	--color-accent: #5ef2d0;
 	--color-on-accent: #04150f;
+	--color-danger: #f2857a;
 
 	--color-status-progress: var(--color-accent);
 	--color-status-completed: #ededef;

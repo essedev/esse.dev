@@ -13,7 +13,10 @@ aggiornati a fine ciclo).
 - `pnpm dev` - dev server Astro su :4321.
 - `pnpm build` - build statica + Worker in `dist/`.
 - `pnpm preview` - build e `wrangler dev` su :8787 (comportamento di produzione).
-- `pnpm check` - astro check (type check di `.astro`, `.ts`, `.svelte`).
+- `pnpm check` - astro check più `tsc -p tsconfig.worker.json` (il codice del Worker ha i
+  tipi del runtime Cloudflare, che si scontrano con quelli del DOM).
+- `pnpm generate-types` - rigenera `worker-configuration.d.ts` dopo ogni modifica a
+  `wrangler.jsonc`.
 - `pnpm lint` - prettier --check + eslint. `pnpm format` per scrivere.
 - `pnpm test:unit` - Vitest. `pnpm test:e2e` - Playwright. `pnpm test:ci` - tutti.
 - `pnpm deploy` - build + wrangler deploy.
@@ -131,6 +134,17 @@ lista `src/lib/workspace.ts` (unica fonte dell'ordine per lista e pager).
   apostrofo al posto dell'accento. Niente em dash, mai il carattere section sign,
   neanche nei contenuti.
 - Commit: Conventional Commits in inglese, atomici. Push solo su comando esplicito.
+
+## Agente
+
+- Codice in `src/agent/` (Durable Object `SiteAgent`, tool, protocollo del socket) e
+  `src/components/agent/`. Entry del Worker in `src/worker.ts`. Perché e come in
+  `docs/ARCHITECTURE.md` (Agente).
+- In `wrangler dev` il binding `AI` è remoto: ogni messaggio all'agente chiama un modello
+  vero sull'account Cloudflare. Gli E2E non mandano messaggi.
+- Un tool nuovo si scrive come `ToolRegistration` di pi-durable con `replay: 'safe'` solo
+  se rieseguirlo non ha effetti; i dati del sito si leggono dall'indice
+  `/agent/index.json`, mai da fuori.
 
 ## Non toccare senza motivo
 

@@ -57,11 +57,15 @@ che mostra come lavora: ogni chiamata ai tool, modello, token e costo per rispos
 Prende il posto dell'idea precedente (il sito ridisegnato dal vivo da un modello).
 Scelte in `docs/DECISIONS.md` #11.
 
-- Pagina statica Astro con un'isola Svelte 5: trascrizione in stile terminale.
-- Il browser si collega con `AgentClient` (Agents SDK di Cloudflare) via WebSocket a un
-  Durable Object (classe `Agent` dell'SDK): una conversazione per visitatore, memoria
-  in SQLite, ibernazione quando nessuno scrive. Dentro, il ciclo è pi-agent-core 1.x,
-  i modelli passano da pi-ai.
+- Fatto (prova): pagina `/it/agente` con isola Svelte, WebSocket verso un Durable
+  Object per visitatore con pi-durable dentro (`PiHarness`), modelli dal binding `AI`,
+  tool `search_site` sull'indice del sito. Due domande vere: il modello chiama il tool,
+  risponde con i path giusti, lo streaming arriva.
+- Visto nella prova: `glm-4.7-flash` è lento (10-15 s) e debole (risponde in italiano a
+  una domanda in inglese, riassume male): il modello vero si sceglie misurando. Il
+  Markdown delle risposte va reso; il ragionamento del modello va chiuso di default.
+- Da valutare: `@cloudflare/computer` (clona i repo in un workspace ed esegue JavaScript
+  in un Dynamic Worker) al posto dei tool sull'API di GitHub, unito a `run_code`.
 - Tool di sola lettura su dati già pubblici. Niente scritture, fetch di URL liberi,
   repo privati, memoria tra visite.
   - Sito, da un indice JSON generato a build: `search_site`, `list_projects` (filtri
@@ -86,11 +90,7 @@ Scelte in `docs/DECISIONS.md` #11.
   immagini.
 - Limiti: Turnstile, limite per visitatore, budget giornaliero che spegne l'agente,
   costo misurato su un campione e approvato da Simone prima di attivarlo.
-- Primo passo: prova di mezza giornata (SDK con pi dentro, un tool, streaming verso
-  Svelte). Se non regge, Durable Object scritto a mano con lo stesso core; la UI non
-  cambia. Prima della prova, rileggere la doc della 1.0 (il clone locale è alla 0.84).
-- Da decidere: lo scopo per chi visita (proposta: un agente che lavora sui repo, con
-  dentro le risposte su Simone) e il modello (Qwen su Cerebras o OpenRouter).
+- Deciso: l'agente lavora sui repo e risponde anche su Simone; modelli da AI Gateway.
 
 ## Aperte
 
@@ -98,6 +98,9 @@ Scelte in `docs/DECISIONS.md` #11.
   301 da `simonesalerno.it` e `www.simonesalerno.it` a `https://esse.dev` con il path
   conservato. `essedev.it` non si rinnova: nessun redirect da mantenere.
 
+- Analytics: lo script di Umami punta a `umami.essedev.it`, ma `essedev.it` non si
+  rinnova. Spostare Umami su un sottodominio di `esse.dev` prima della scadenza, o le
+  statistiche si fermano senza errori.
 - Email `hello@esse.dev`: verificare che la casella riceva prima della messa online.
 - Favicon: da rifare dentro M15. Ora c'è quella di `main` (quella del laboratorio è
   rimasta sul suo branch).

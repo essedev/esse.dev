@@ -6,7 +6,7 @@ import type { Language, NavigationConfig } from './config';
  * (`progetti`), la "sezione" è la chiave logica (`projects` | `articles`).
  */
 
-export const SECTIONS = ['projects', 'articles', 'method', 'now', 'about'] as const;
+export const SECTIONS = ['projects', 'articles', 'method', 'now', 'about', 'agent'] as const;
 export type Section = (typeof SECTIONS)[number];
 
 /** Sezioni con pagine di dettaglio, cioè con uno slug per voce. */

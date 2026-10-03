@@ -1,5 +1,5 @@
 ---
-import { ArrowRight, FileText, User } from '@lucide/astro';
+import { ArrowRight, FileText, SquareTerminal, User } from '@lucide/astro';
 import type { NavItem } from '../../lib/workspace';
 
 interface Props {
@@ -39,6 +39,8 @@ const isCurrent = item.key === current;
 				<span class="text-subtle font-mono text-[0.7rem] tabular-nums">{item.index}</span>
 			) : item.icon === 'person' ? (
 				<User class="text-subtle size-3.5" />
+			) : item.icon === 'agent' ? (
+				<SquareTerminal class="text-accent size-3.5" />
 			) : item.icon === 'text' ? (
 				<FileText class="text-subtle size-3.5" />
 			) : (

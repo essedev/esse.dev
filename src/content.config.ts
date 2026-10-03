@@ -121,7 +121,7 @@ const contact = defineCollection({
 // traduzione mancante ferma la build e le chiavi sono un tipo (`UiKey` in src/lib/site.ts).
 const text = z.string().min(1);
 const sections = z
-	.object({ projects: text, articles: text, method: text, now: text, about: text })
+	.object({ projects: text, articles: text, method: text, now: text, about: text, agent: text })
 	.strict();
 
 const site = defineCollection({
@@ -182,6 +182,15 @@ const site = defineCollection({
 					releases: text,
 					license: text,
 					why: text,
+					agentPlaceholder: text,
+					agentSend: text,
+					agentStop: text,
+					agentReset: text,
+					agentConnecting: text,
+					agentOffline: text,
+					agentThinking: text,
+					agentToolCall: text,
+					agentResult: text,
 					prev: text,
 					next: text
 				})

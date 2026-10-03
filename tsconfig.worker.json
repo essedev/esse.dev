@@ -1,0 +1,9 @@
+{
+	"extends": "astro/tsconfigs/strict",
+	"compilerOptions": {
+		"lib": ["ES2024"],
+		"types": [],
+		"noEmit": true
+	},
+	"include": ["worker-configuration.d.ts", "src/worker.ts", "src/agent/**/*.ts"]
+}

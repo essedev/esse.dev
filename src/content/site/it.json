@@ -6,7 +6,8 @@
 		"articles": "Scritti",
 		"method": "Metodo",
 		"now": "Adesso",
-		"about": "Chi sono"
+		"about": "Chi sono",
+		"agent": "Agente"
 	},
 	"ui": {
 		"skipToContent": "Salta al contenuto",
@@ -53,13 +54,23 @@
 		"license": "licenza",
 		"why": "La scelta interessante",
 		"prev": "Precedente",
-		"next": "Successivo"
+		"next": "Successivo",
+		"agentPlaceholder": "Chiedi qualcosa sui miei progetti",
+		"agentSend": "invia",
+		"agentStop": "ferma",
+		"agentReset": "nuova conversazione",
+		"agentConnecting": "connessione…",
+		"agentOffline": "non connesso",
+		"agentThinking": "ci sto pensando",
+		"agentToolCall": "chiamata",
+		"agentResult": "risultato"
 	},
 	"sectionDescriptions": {
 		"projects": "Cose che ho costruito e che sto costruendo: prodotti, strumenti per sviluppatori, esperimenti con l'AI e qualche idea ancora sulla carta.",
 		"articles": "Articoli e appunti su architettura, coding agent e su come si lavora quando l'AI scrive il codice.",
 		"method": "Come lavoro con i coding agent: architettura prima del codice, il contesto come lavoro, misurare invece di fidarsi.",
 		"now": "Su cosa sto lavorando adesso, aggiornato dai progetti.",
-		"about": "Chi sono, da dove arrivo e come scrivermi."
+		"about": "Chi sono, da dove arrivo e come scrivermi.",
+		"agent": "Un agente con tool veri che lavora sui miei progetti e mostra come lo fa: ogni chiamata, i token e il costo."
 	}
 }

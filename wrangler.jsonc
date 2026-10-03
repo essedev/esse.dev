@@ -1,13 +1,20 @@
 {
 	"$schema": "node_modules/wrangler/config-schema.json",
 	"name": "simonesalerno",
-	"main": "@astrojs/cloudflare/entrypoints/server",
+	"main": "./src/worker.ts",
 	"compatibility_date": "2026-09-01",
 	"compatibility_flags": ["nodejs_compat"],
 	"assets": {
 		"directory": "./dist",
 		"binding": "ASSETS"
 	},
+	// Modelli dell'agente: Workers AI e AI Gateway, senza chiavi nel Worker. In dev il
+	// binding è remoto (le chiamate passano dall'account Cloudflare).
+	"ai": { "binding": "AI", "remote": true },
+	"durable_objects": {
+		"bindings": [{ "name": "SiteAgent", "class_name": "SiteAgent" }]
+	},
+	"migrations": [{ "tag": "v1", "new_sqlite_classes": ["SiteAgent"] }],
 	"observability": {
 		"enabled": true
 	}

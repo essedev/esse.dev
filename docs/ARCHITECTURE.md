@@ -10,7 +10,7 @@ Workers. Contenuti file-based nel repo, i18n EN/IT con route e slug tradotti,
 immagini Open Graph generate a build. Fino al Ciclo 10 era SvelteKit: la riscrittura è
 in `docs/CYCLES.md` (Ciclo 11) e la scelta in `docs/DECISIONS.md` #10.
 
-## Rendering: statico, con due eccezioni sul Worker
+## Rendering: statico, con tre eccezioni sul Worker
 
 Tutte le pagine sono prerenderizzate a build e servite da Cloudflare come asset
 statici. Il Worker riceve solo ciò che non è un file:
@@ -18,7 +18,11 @@ statici. Il Worker riceve solo ciò che non è un file:
 - la root `/` (`src/pages/index.ts`), che sceglie la lingua da `Accept-Language`;
 - il catch-all `src/pages/[...path].astro`, che per un URL con lingua, route o slug
   sbagliati fa un solo redirect al canonico (`resolveRedirect` in `src/lib/i18n.ts`)
-  e altrimenti risponde 404 con la pagina localizzata.
+  e altrimenti risponde 404 con la pagina localizzata;
+- `/agents/*`, il WebSocket dell'agente (sotto).
+
+L'entry del Worker è `src/worker.ts`: manda `/agents/*` a `routeAgentRequest` e tutto il
+resto all'handler di Astro, ed esporta il Durable Object dell'agente.
 
 Il prerender gira in Node (`prerenderEnvironment: 'node'`) perché le OG usano resvg,
 che è nativo. Gli E2E girano contro la build servita da `wrangler dev`, non contro il
@@ -81,6 +85,18 @@ Le risposte del Worker (root, redirect, 404) non passano da `_headers`: gli stes
 header li aggiunge `src/middleware.ts`. Gli asset con hash in `/_astro/` sono cacheati
 come immutabili. Niente endpoint che
 riflettono input utente.
+
+## Agente
+
+`/it/agente` è una pagina statica con un'isola Svelte (`AgentChat.svelte`) che apre un
+WebSocket verso un Durable Object per visitatore (`SiteAgent`, `src/agent/`). Dentro gira
+pi-durable tramite `PiHarness` dell'Agents SDK: conversazione nel SQLite dell'oggetto,
+ripresa dopo una sospensione, tool come estensioni di pi. I modelli passano dal binding
+`AI` (Workers AI e AI Gateway): nessuna chiave nel Worker. Il protocollo del socket e il
+riduttore degli eventi (`sockets.ts`, `view.ts`) vengono dall'esempio ufficiale e sono gli
+stessi sui due lati. I tool leggono `/agent/index.json`, un indice del sito generato alla
+build dalle stesse collection delle pagine, dagli asset: l'agente vede solo ciò che il
+sito pubblica. Scelte in `docs/DECISIONS.md` #11.
 
 ## Boundary
 

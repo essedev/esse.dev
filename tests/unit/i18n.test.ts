@@ -18,13 +18,21 @@ const languages: Language[] = [
 ];
 
 const navigation: NavigationConfig = {
-	en: { projects: 'projects', articles: 'writing', method: 'method', now: 'now', about: 'about' },
+	en: {
+		projects: 'projects',
+		articles: 'writing',
+		method: 'method',
+		now: 'now',
+		about: 'about',
+		agent: 'agent'
+	},
 	it: {
 		projects: 'progetti',
 		articles: 'scritti',
 		method: 'metodo',
 		now: 'adesso',
-		about: 'chi-sono'
+		about: 'chi-sono',
+		agent: 'agente'
 	}
 };
 
