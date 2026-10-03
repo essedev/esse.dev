@@ -109,3 +109,15 @@ Scartati: SSR di tutte le pagine come in SvelteKit (compute e latenza per pagine
 non cambiano), l'i18n di Astro (non traduce segmenti né slug), un JSON per lingua con
 i campi condivisi duplicati (deriva tra lingue), il corpo a blocchi JSON (illeggibile
 da scrivere e nei diff).
+
+## #11 - Agente del sito: Agents SDK di Cloudflare con pi-agent-core dentro
+
+**Status:** attiva (Ciclo 13), da confermare con la prova di M17
+
+L'agente gira sul server, mai nel browser (chiavi segrete), in un Durable Object
+gestito dalla classe `Agent` dell'Agents SDK (WebSocket, stato, SQLite, ibernazione);
+il ciclo modello-tool è pi-agent-core, l'interfaccia un'isola Svelte con `AgentClient`.
+Scartati: pi-server e pi-client (sperimentali, pensati per sessioni di coding con una
+cartella di lavoro), un Durable Object scritto a mano (riscrive riconnessione e
+ibernazione; resta il ripiego), React con assistant-ui o AI Elements (aspetto generico,
+formato dell'AI SDK e non di pi, un secondo framework di isole).

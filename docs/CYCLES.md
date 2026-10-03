@@ -687,3 +687,27 @@ fatti da due subagent in parallelo: A spazio di lavoro, B documento. Scelto A.
 - **Test:** 57 unit (route legacy, sezioni senza dettaglio) e 45 E2E (tastiera, filtro,
   palette, Esc, sezioni nelle due lingue).
 - **Da fare (detto da Simone):** molti dettagli di spazi, dimensioni e linee.
+
+## Ciclo 13 - Lo spazio di lavoro, rifinito a giri brevi (2026-10-03)
+
+Giri brevi guardando il sito, ogni correzione di Simone trasformata in regola nel
+`CLAUDE.md` del progetto.
+
+- **Un controllo per tipo:** una sola ricerca (filtra anche il registro, cerca anche
+  nei tag), un solo cursore, nessuna linea d'accento sulla selezione. Palette e campo
+  di ricerca del registro rimossi. Lo script di Umami nell'head tratteneva l'evento
+  load sulla rete lenta ed era la causa vera degli E2E instabili: ora parte dopo il
+  load e solo su esse.dev.
+- **Due colonne:** barra in alto e barra di stato davano una T di due toni che non
+  corrispondeva a nessuna zona. Ora lista e riquadro sono alti tutta la finestra, il
+  riquadro ha una toolbar (percorso, azioni sul documento, lingua) e il "torna su"
+  non sta più nel contenuto: breadcrumb, Esc e "‹ sezione" su mobile, con la history
+  se si arriva dal genitore (i filtri del registro restano).
+- **Pager e lista:** il pager sta in fondo al riquadro anche sulle pagine corte, h/l per
+  sfogliare (non `[`/`]`: sulla tastiera italiana del Mac vogliono Option). La lista va
+  in ordine di importanza e sta in 900 px: chi sono e adesso, poi la vetrina di 6
+  progetti con "tutti i N", metodo, scritti.
+- **Piano dell'agente (M17):** una pagina è un agente vero su Cloudflare (Agents SDK,
+  pi-agent-core 1.x, isola Svelte), al posto dell'idea del sito ridisegnato dal vivo.
+  Scelte in `docs/DECISIONS.md` #11.
+- **Test:** 58 unit e 50 E2E.
