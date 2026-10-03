@@ -1,0 +1,17 @@
+---
+slug: "templator"
+title: "Templator"
+excerpt: "Template Next.js pensato per partire veloce con un coding agent: auth, ruoli, database ed email già pronti, deploy su Cloudflare Workers."
+tags:
+  - "Next.js"
+  - "TypeScript"
+  - "Cloudflare"
+  - "PostgreSQL"
+  - "Auth"
+  - "Template"
+  - "Drizzle"
+---
+
+Il punto di partenza che usavo nel 2025 per i progetti Next.js: autenticazione con Better Auth, ruoli a tre livelli, Drizzle su PostgreSQL, email transazionali e deploy su Cloudflare Workers. Struttura e documentazione erano pensate per un coding agent, così che potesse lavorarci da subito senza indovinare le convenzioni.
+
+Oggi parto dai comandi di init ufficiali e metto le convenzioni in un file di istruzioni per l'agente, ma l'idea è partita da qui.

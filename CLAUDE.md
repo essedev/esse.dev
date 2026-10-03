@@ -1,95 +1,106 @@
 # CLAUDE.md - simonesalerno.it
 
-Portfolio personale: SvelteKit 2 + Svelte 5 (runes) + TS strict + Tailwind 4,
-deploy su Cloudflare Workers. Contenuti file-based JSON, i18n hand-rolled EN/IT,
-OG pre-generate. Il perché delle scelte sta in `docs/ARCHITECTURE.md`; stato e
-log in `docs/ROADMAP.md` e `docs/CYCLES.md` (tienili aggiornati a fine ciclo).
+Portfolio personale: Astro 7 + TS strict + Tailwind 4, isole Svelte 5, deploy su
+Cloudflare Workers. Contenuti file-based (meta JSON + Markdown per lingua), i18n EN/IT
+con route e slug tradotti, OG generate a build. Il perché delle scelte sta in
+`docs/ARCHITECTURE.md`; stato e log in `docs/ROADMAP.md` e `docs/CYCLES.md` (tienili
+aggiornati a fine ciclo).
 
 ## Comandi
 
-- `pnpm dev` - dev server (vite) su :5173.
-- `pnpm build` - catena: `validate-content` -> `generate-images` ->
-  `generate-og-images` -> `vite build`.
-- `pnpm check` - svelte-check (type check).
+- `pnpm dev` - dev server Astro su :4321.
+- `pnpm build` - build statica + Worker in `dist/`.
+- `pnpm preview` - build e `wrangler dev` su :8787 (comportamento di produzione).
+- `pnpm check` - astro check (type check di `.astro`, `.ts`, `.svelte`).
 - `pnpm lint` - prettier --check + eslint. `pnpm format` per scrivere.
 - `pnpm test:unit` - Vitest. `pnpm test:e2e` - Playwright. `pnpm test:ci` - tutti.
 - `pnpm deploy` - build + wrangler deploy.
 
 Giro di qualità prima di un commit non banale e SEMPRE prima di un push:
-`pnpm lint && pnpm check && pnpm build && pnpm test:ci`. Non c'è CI remota: il
-deploy avviene via Cloudflare Workers Builds al push, il gate di qualità è locale.
+`pnpm lint && pnpm check && pnpm build && pnpm test:ci`. Non c'è CI remota: il deploy
+avviene via Cloudflare Workers Builds al push, il gate è locale.
+
+Gli E2E girano contro la build servita da `wrangler dev` su :8787 (vedi
+`playwright.config.ts`), non contro il dev server: redirect, header, CSP e 404 esistono
+solo lì. Se un server su :8787 è già acceso lo riusano, quindi dopo una modifica
+spegnilo o rifai la build, altrimenti testi la build vecchia.
 
 ## Contenuti
 
-- Vivono in `src/lib/content/` (config, pagine, `projects/<id>/`, `articles/<id>/`).
-- Validati da Zod: schemi in `src/lib/schemas/content.ts`, tipi in
-  `src/lib/types/content.ts`. Aggiungendo un campo aggiorna ENTRAMBI (schema +
-  tipo), altrimenti type check o validazione falliscono.
-- `ContentLoader` (`src/lib/utils/content.ts`) è l'unico accesso ai contenuti:
-  cachea per istanza, carica le traduzioni lazy. Progetti e articoli passano per
-  `loadCollection<T>`; non duplicare la logica nei wrapper.
+- Progetti e articoli: una cartella per contenuto in `src/content/projects/` e
+  `src/content/articles/`, con `meta.json` (campi condivisi: stato, date, link,
+  `published`) e `<lang>.md` (frontmatter: slug, titolo, sommario, tag; corpo in
+  Markdown). Pagine della home in `src/content/pages/<pagina>/<lang>.md`.
+- Schemi in `src/content.config.ts`. Il frontmatter e i meta si validano lì: un campo
+  nuovo si aggiunge solo allo schema, i tipi arrivano da `CollectionEntry`.
+- `src/lib/content.ts` è l'unico accesso ai contenuti. Unisce meta e testo e fa
+  fallire la build se un contenuto pubblicato non ha tutte le lingue, se un testo non
+  ha il meta, se uno slug si ripete o se la vetrina punta a un progetto non pubblicato.
+- Un progetto che non si vuole mostrare va a `published: false`, non si cancella.
+- Testi del sito e stringhe della UI in `src/content/site/<lang>.json`, letti da
+  `src/lib/site.ts`: si usa `translator(lang)`. Le chiavi sono quelle dell'inglese;
+  una chiave mancante in un'altra lingua ferma la build. Config in `src/config/`
+  (lingue, route per lingua, vetrina), validata all'import da `src/lib/config.ts`.
+- Nel Markdown, i comandi vanno in backtick: la tipografia di Astro trasforma `--`
+  in un trattino lungo fuori dal codice.
 
-## i18n
+## i18n e routing
 
-- Route `[page=lang]/[route=route]/[sub]`, matcher in `src/params/`.
-- Redirect smart in `src/hooks.server.ts` (lingua/route/slug nella lingua
-  sbagliata -> URL canonico) basati sulla slug map.
-- La slug map (indice id -> slug per lingua) è DERIVATA a runtime dai contenuti in
-  `ContentLoader.loadSlugMap` (memoizzata per isolate), non un file generato: gli
-  slug vivono solo nelle traduzioni, non c'è niente da rigenerare o sincronizzare.
-  In dev, dopo aver cambiato uno slug, riavvia il dev server.
-- URL per lingua: usa `getLanguageUrl` (puro, testato). SEO (canonical/hreflang/
-  JSON-LD): helper puri in `src/lib/utils/seo.ts`, cablati nel `+layout.svelte`.
-- Logica di routing (lingua valida, route -> chiave logica, traduzione route,
-  sezione) in `src/lib/utils/i18n.ts`: funzioni pure, unica fonte usata da layout,
-  hooks e `getLanguageUrl`. Non reimplementarla inline. Il `ContentLoader` fa solo
-  data-access, non routing.
+- Pagine: `src/pages/[lang]/index.astro`, `[lang]/[section]/index.astro` (listing),
+  `[lang]/[section]/[slug].astro` (dettaglio). `section` è la route localizzata
+  (`progetti`, `projects`, `blog`); la sezione logica è `projects` | `articles`.
+- Tutta la logica è in funzioni pure in `src/lib/i18n.ts`: `sectionOf`, `routeOf`,
+  `translateSlug`, `getLanguageUrl` (selettore lingua, hreflang, sitemap) e
+  `resolveRedirect` (catch-all). Non reimplementarla inline.
+- Girano sul Worker solo `src/pages/index.ts` (lingua da `Accept-Language`) e
+  `src/pages/[...path].astro` (redirect al canonico o 404): hanno `prerender = false`.
+  Tutto il resto è statico.
+- La slug map si deriva dai contenuti (`getSlugMap`): gli slug vivono solo nel
+  frontmatter, non c'è niente da rigenerare.
 
-## Open Graph
+## Open Graph e SEO
 
-- PNG statici in `static/og/`, generati da `scripts/generate-og-images.ts`
-  (satori -> resvg -> sharp) via `vite-node --config vite.og.config.ts`.
-- NON committati (gitignored): artefatto di build, rigenerato a ogni build. In CI
-  gli E2E richiedono che `pnpm build` giri prima (servono le OG su disco).
-- Niente endpoint OG runtime. Il layout risolve un filename deterministico.
-- Gotcha satori: font `woff`/`ttf` (mai `woff2`); dimensioni img nello `style`,
-  non come attributi `width`/`height`.
+- OG: endpoint prerenderizzato `src/pages/og/[name].png.ts` (satori + resvg), layout
+  puro in `src/lib/og.ts`. Nomi deterministici: `home`, `listing-<projects|blog>-<lang>`,
+  `detail-<projects|blog>-<id>-<lang>`. Il prerender gira in Node per resvg.
+- Gotcha satori: font `woff`/`ttf`, mai `woff2`; dimensioni nello `style`.
+- Canonical, hreflang e JSON-LD: helper puri in `src/lib/seo.ts`, usati da
+  `src/layouts/Layout.astro`.
 
 ## Design system
 
-Sul branch `astro` il sito si sta rifacendo in Astro a parità di look (M14 in
-`docs/ROADMAP.md`): finché la migrazione non chiude, quanto segue descrive la versione
-SvelteKit. Branch `restyle/base`: look di `main` (Geist, fondo a gradiente blu-nero, card e
-pillole) con i contenuti e lo schema del branch `restyle/laboratory` (progetti
-ricurati, `eyebrow` nel welcome, voce). Il tentativo "Laboratorio" con telaio, keycap
-e mono resta intero su `restyle/laboratory`, non mergiato: vision e motivi dello stop
-in `docs/RESTYLE.md`, log in `docs/CYCLES.md` (Ciclo 9 e 10). Da qui si migliora lo
-stile base senza snaturarlo; ogni pezzo del laboratorio si può ripescare da lì.
+Look neutro di partenza (M14 in `docs/ROADMAP.md`): scala di grigi, Geist e Geist
+Mono self-hosted via fontsource. Lo stile vero arriva in M15. Il tentativo
+"Laboratorio" (telaio, keycap, mono) resta intero sul branch `restyle/laboratory`;
+vision e motivi dello stop in `docs/RESTYLE.md`.
 
-- Stile in `src/lib/styles/globals.css` (Tailwind 4, `@theme`). Font via Google Fonts
-  in `app.html`, OG con `@fontsource/geist-sans` (satori vuole woff).
-- Reveal-on-scroll con `svelte-inview` dentro ogni sezione. `MotionToggle` governa le
-  animazioni (`data-motion` su `<html>`); il thumb dello switch è esentato
-  (`.motion-thumb` in globals: Tailwind v4 anima `translate`, non `transform`).
-- Navbar `fixed` più `FloatingNav` che compare allo scroll; `BackToTop` flottante.
-- Shortcut tastiera (`+layout.svelte`): `1-4` -> sezioni, `0`/`Home` -> top,
-  `End` -> fondo.
+- Token in `@theme` in `src/styles/global.css`: colori `bg`, `surface`, `line`,
+  `fg`, `muted`, `subtle` e i quattro colori di stato. Un colore scritto a mano in un
+  componente è un errore: si aggiunge un token.
+- Classi condivise: `container-page` (larghezza e gutter), `link`, `skip-link`. La
+  prosa usa `prose prose-invert` del plugin typography.
+- Componenti: `.astro` per tutto ciò che è statico; Svelte solo per le isole
+  (`CollectionBrowser`, filtri delle liste). `ProjectCard`, `ArticleRow` e
+  `StatusBadge` sono Svelte perché li usa sia la home (render statico) sia l'isola.
+- I filtri delle liste vivono nella query string (`?q=`, `?tag=`, `?status=`,
+  `?sort=`): logica pura e testata in `src/lib/listing.ts`.
+- Icone solo Lucide (`@lucide/astro`, `@lucide/svelte`).
 
 ## Convenzioni
 
 - `pnpm` sempre (mai npm/yarn). Tab, 100 colonne, single quote, no trailing comma
-  (vedi `.prettierrc`, `.editorconfig`).
-- Tailwind 4 CSS-first (`@theme` in `src/lib/styles/globals.css`), niente
-  `tailwind.config`.
-- Codice e identificatori in inglese, UI in italiano. Accenti italiani corretti
-  (a e i o u con accento), mai apostrofo al posto dell'accento. Niente em dash,
-  mai il carattere section sign.
-- Commit: Conventional Commits in inglese, atomici (un'unità logica per commit).
-  Push solo su comando esplicito.
+  (vedi `.prettierrc`, `.editorconfig`). Il Markdown dei contenuti è escluso da
+  prettier.
+- Tailwind 4 CSS-first, niente `tailwind.config`.
+- Codice e identificatori in inglese, UI in italiano. Accenti italiani corretti, mai
+  apostrofo al posto dell'accento. Niente em dash, mai il carattere section sign,
+  neanche nei contenuti.
+- Commit: Conventional Commits in inglese, atomici. Push solo su comando esplicito.
 
 ## Non toccare senza motivo
 
-- `PixelBlast` e le dipendenze `three`/`postprocessing` sono tenute apposta per
-  una futura riattivazione dell'hero, anche se ora inutilizzate.
-- CSP in `svelte.config.js` e header in `hooks.server.ts`: se aggiungi domini
-  esterni (script/font/connect) aggiorna la CSP o verranno bloccati.
+- CSP in `astro.config.mjs` (`security.csp`) e header in `public/_headers`: se
+  aggiungi domini esterni (script, font, connect) aggiorna la CSP o verranno bloccati.
+  `frame-ancestors` deve restare nell'header: nel meta tag è ignorato.
+- Shiki è spento (`markdown.syntaxHighlight: false`): usa stili inline che la CSP
+  blocca. Se serve evidenziare il codice, Prism con un foglio di stile.

@@ -640,3 +640,26 @@ loader, `translations.ts` e test unit. Tolti `Chassis`, `EntryIndex`, `SectionHe
 `AccentPicker`, `themes.ts`, `reveal.ts`, `shelf.ts` e lo script favicon. Motivo in
 `RESTYLE.md` ("Stop e ripartenza"). Gate: lint, check 0 errori, build, 193 unit,
 32 e2e. `restyle/laboratory` resta intero per ripescare i pezzi che valgono.
+
+## Ciclo 11 - Riscrittura in Astro con look neutro (2026-10-03)
+
+Branch `astro` da `restyle/base`. Simone ha chiesto di rifare il sito in Astro prima di
+lavorare a stile, progetti e tocco AI (`ROADMAP.md`), con un look neutro da usare come
+canvas e libertà di non portare tutto 1:1.
+
+- **Contenuti:** script una tantum dai JSON a blocchi a `meta.json` + `<lang>.md` per
+  progetti, articoli e pagine; nessun warning di sintassi. Campi delle immagini
+  segnaposto tolti, `about` tolto dalla navigazione (non era una pagina), stringhe
+  della UI ridotte a quelle usate. L'immagine dell'articolo torna dal backup.
+- **Piattaforma:** pagine statiche, Worker solo per root e catch-all (DECISIONS #10).
+  La logica dei redirect, prima dentro `hooks.server.ts`, è la funzione pura
+  `resolveRedirect`, testata; ora gestisce anche una route senza lingua (`/progetti`).
+- **Tolti:** FloatingNav, BackToTop, MotionToggle e animazioni, PixelBlast con
+  `three`/`postprocessing`, noise, filtro per intervallo di date, paginazione degli
+  articoli (uno solo), sitemap stilizzata, script di validazione e di immagini (lo fa
+  la build). Restano nella storia di `main`.
+- **Nuovo:** filtri delle liste nella query string, 404 localizzata e `noindex`,
+  font self-hosted (niente Google Fonts nella CSP), Umami limitato ai domini di
+  produzione, OG neutre generate da un endpoint prerenderizzato.
+- **Test:** 55 unit (i18n e redirect, SEO, filtri, metriche dal Markdown, OG, testi)
+  e 36 E2E contro `wrangler dev`, compresi filtri, CSP e 404.

@@ -2,7 +2,7 @@
 
 Stato corrente del progetto. Milestone reali, non wishlist. Aggiornata insieme al codice.
 
-Ultimo aggiornamento: 2026-10-03
+Ultimo aggiornamento: 2026-10-03 (M14 chiusa sul branch)
 
 ## Contesto
 
@@ -16,21 +16,15 @@ può mettere online.
 
 ## Milestone
 
-### M14 - Migrazione ad Astro a parità di sito - In corso (branch `astro`)
+### M14 - Migrazione ad Astro - Fatta sul branch `astro`, da mettere online
 
-Stesso sito di `restyle/base`, rifatto in Astro. Nessun cambio di stile.
+Sito rifatto in Astro con look neutro di partenza (scelta di Simone: un canvas da cui
+partire invece della parità col look base). Log in `docs/CYCLES.md` (Ciclo 11),
+scelte in `docs/DECISIONS.md` #10. Gate verde: lint, check, build, unit, E2E.
 
-- Scaffold con i comandi ufficiali: Astro, adapter Cloudflare, Tailwind 4,
-  integrazione Svelte per le isole interattive (filtri, menu, switch animazioni).
-- Content collections con gli schemi Zod di oggi; i corpi passano da blocchi JSON a
-  Markdown con uno script di migrazione, così il renderer dei blocchi non si porta.
-- i18n: route con prefisso di lingua, slug tradotti e selettore lingua sulla pagina
-  equivalente (Astro non li fa da solo: si portano le funzioni pure di `i18n.ts`),
-  redirect intelligenti in un middleware.
-- OG pre-generate, sitemap, RSS, header di sicurezza e CSP.
-- Test: unit sulle funzioni pure, E2E adattati, confronto a screenshot col sito
-  attuale pagina per pagina.
-- Fatto quando: gate verde e nessuna differenza visibile rispetto a `restyle/base`.
+- Per andare online: controllare nelle impostazioni di Cloudflare Workers Builds che
+  il comando di build sia `pnpm build`, il deploy `npx wrangler deploy` e Node almeno
+  22.12; poi merge su `main` con squash (vedi Aperte) e push.
 
 ### M15 - Stile - Da fare
 
@@ -64,10 +58,11 @@ endpoint Worker con chiave, cache e tetto di spesa approvato prima.
 ## Aperte
 
 - Email `hello@esse.dev`: verificare che la casella riceva prima della messa online.
-- Favicon: da rifare dentro M15 (quella del laboratorio è rimasta sul suo branch).
-- Merge su `main` a fine M14 o M15 con **squash**: i branch del restyle portano in
+- Favicon: da rifare dentro M15. Ora c'è quella di `main` (quella del laboratorio è
+  rimasta sul suo branch).
+- Merge su `main` con **squash**: i branch del restyle portano in
   storia circa 70 MB di PNG della pixel art scartata, che non devono entrare in `main`.
 
 ## Stato deploy
 
-In produzione: `main` (SvelteKit). Nessun branch del restyle è mergiato.
+In produzione: `main` (SvelteKit). Il sito Astro è sul branch `astro`, non mergiato.

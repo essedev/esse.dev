@@ -37,7 +37,7 @@ listing resta neutro, ordinato per data e filtrabile.
 
 ## #4 - Una sola superficie di navigazione, barra `fixed`
 
-**Status:** sospesa su `restyle/base` (Ciclo 10), era attiva (Ciclo 9, blocco 3)
+**Status:** superata da #10 (Ciclo 11): con Astro non c'è più `overflow-x: hidden` sul container, l'header è `sticky` e la floating nav non esiste
 
 Rimossa la floating nav, che duplicava la navbar; i controlli persistenti vanno nel
 telaio (`Chassis.svelte`). La barra è `fixed` e non `sticky`: `overflow-x: hidden` su
@@ -96,3 +96,16 @@ lo schermo ed era uno skeuomorfismo dentro uno skeuomorfismo. Scartati: il tasto
 "illuminato" con fondo d'accento tenue (a riposo leggeva come disabilitato), il
 "pannello di controllo" tutto fisico (non regge la prosa lunga né mobile, dove il
 telaio non c'è). I tre sistemi confrontati sono in `docs/concepts/system-variants.html`.
+
+## #10 - Astro statico, Worker solo per lingua e redirect
+
+**Status:** attiva (Ciclo 11)
+
+Il sito è contenuto, non un'applicazione: tutte le pagine sono prerenderizzate e il
+Worker gira solo per la root (lingua da `Accept-Language`) e per un catch-all che fa
+un solo redirect al canonico o risponde 404. Ogni contenuto è `meta.json` condiviso
+più un Markdown per lingua, in due content collection unite da `src/lib/content.ts`.
+Scartati: SSR di tutte le pagine come in SvelteKit (compute e latenza per pagine che
+non cambiano), l'i18n di Astro (non traduce segmenti né slug), un JSON per lingua con
+i campi condivisi duplicati (deriva tra lingue), il corpo a blocchi JSON (illeggibile
+da scrivere e nei diff).

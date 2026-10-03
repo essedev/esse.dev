@@ -1,0 +1,109 @@
+---
+import { render } from 'astro:content';
+import { ArrowUpRight } from '@lucide/astro';
+import ArticleRow from '../../components/ArticleRow.svelte';
+import ProjectCard from '../../components/ProjectCard.svelte';
+import SectionTitle from '../../components/SectionTitle.astro';
+import Layout from '../../layouts/Layout.astro';
+import { languageCodes, navigation } from '../../lib/config';
+import { getArticles, getPage, getShowcase } from '../../lib/content';
+import { articleItem, projectItem } from '../../lib/items';
+import { personJsonLd, socialLinks, websiteJsonLd } from '../../lib/seo';
+import { site, translator } from '../../lib/site';
+
+export function getStaticPaths() {
+	return languageCodes.map((lang) => ({ params: { lang } }));
+}
+
+const { lang } = Astro.params;
+const t = translator(lang);
+const text = site(lang);
+const routes = navigation[lang];
+
+const [welcome, about, contact, showcase, articles] = await Promise.all([
+	getPage('welcome', lang),
+	getPage('about', lang),
+	getPage('contact', lang),
+	getShowcase(lang),
+	getArticles(lang)
+]);
+const { Content: WelcomeBody } = await render(welcome);
+const { Content: AboutBody } = await render(about);
+
+const origin = Astro.site!.origin;
+const jsonLd = [
+	websiteJsonLd({ origin, lang, description: text.description }),
+	personJsonLd({ origin, sameAs: socialLinks(contact.data.links) })
+];
+---
+
+<Layout lang={lang} path={`/${lang}`} jsonLd={jsonLd}>
+	<section class="container-page pt-20 pb-24 sm:pt-28">
+		<p class="text-muted mb-4 font-mono text-sm">{welcome.data.eyebrow}</p>
+		<h1 class="max-w-3xl text-4xl font-medium tracking-tight sm:text-6xl">{welcome.data.title}</h1>
+		<div class="text-muted mt-8 max-w-2xl space-y-2 text-lg leading-relaxed">
+			<WelcomeBody />
+		</div>
+	</section>
+
+	<section id="projects" class="container-page py-16">
+		<SectionTitle
+			title={text.sections.projects}
+			href={`/${lang}/${routes.projects}`}
+			linkLabel={t('viewAll')}
+		/>
+		<ul class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+			{showcase.map((p) => (
+				<li>
+					<ProjectCard item={projectItem(p, routes.projects, t)} />
+				</li>
+			))}
+		</ul>
+	</section>
+
+	<section id="about" class="container-page py-16">
+		<SectionTitle title={about.data.title} />
+		<div class="prose prose-invert prose-neutral max-w-2xl">
+			<AboutBody />
+		</div>
+	</section>
+
+	{articles.length > 0 && (
+		<section id="articles" class="container-page py-16">
+			<SectionTitle
+				title={text.sections.articles}
+				href={`/${lang}/${routes.articles}`}
+				linkLabel={t('viewAll')}
+			/>
+			<ul class="divide-line border-line divide-y border-y">
+				{articles.slice(0, 3).map((a) => (
+					<li>
+						<ArticleRow item={articleItem(a, routes.articles)} />
+					</li>
+				))}
+			</ul>
+		</section>
+	)}
+
+	<section id="contact" class="container-page py-16">
+		<SectionTitle title={contact.data.title} />
+		<p class="text-muted max-w-2xl text-lg leading-relaxed">{contact.data.subtitle}</p>
+		<ul class="mt-8 flex flex-wrap gap-x-6 gap-y-3">
+			{contact.data.links.map((l) => {
+				const external = /^https?:/.test(l.url);
+				return (
+					<li>
+						<a
+							href={l.url}
+							class="link inline-flex items-center gap-1"
+							{...(external ? { target: '_blank', rel: 'noopener noreferrer me' } : {})}
+						>
+							{l.name}
+							{external && <ArrowUpRight class="text-subtle size-3.5" />}
+						</a>
+					</li>
+				);
+			})}
+		</ul>
+	</section>
+</Layout>

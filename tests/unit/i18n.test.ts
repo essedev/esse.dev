@@ -1,14 +1,16 @@
 import { describe, expect, it } from 'vitest';
+import type { Language, NavigationConfig } from '../../src/lib/config';
 import {
-	findRouteKeyAnyLang,
+	findSectionAnyLang,
+	getLanguageUrl,
 	isValidLanguage,
-	isValidRouteForLang,
 	preferredLanguage,
-	routeKeyOf,
+	resolveRedirect,
+	routeOf,
 	sectionOf,
-	translateRoute
-} from '../../src/lib/utils/i18n';
-import type { Language, NavigationConfig } from '../../src/lib/types';
+	translateSlug,
+	type SlugMap
+} from '../../src/lib/i18n';
 
 const languages: Language[] = [
 	{ code: 'en', name: 'English' },
@@ -16,100 +18,124 @@ const languages: Language[] = [
 ];
 
 const navigation: NavigationConfig = {
-	en: { projects: 'projects', about: 'about', articles: 'blog' },
-	it: { projects: 'progetti', about: 'informazioni', articles: 'blog' }
+	en: { projects: 'projects', articles: 'blog' },
+	it: { projects: 'progetti', articles: 'blog' }
+};
+
+const slugMap: SlugMap = {
+	projects: { budokan: { en: 'budokan', it: 'budokan' } },
+	articles: { lab: { en: 'my-new-laboratory', it: 'il-mio-nuovo-laboratorio' } }
 };
 
 describe('isValidLanguage', () => {
 	it('accetta i codici supportati, rifiuta gli altri e undefined', () => {
 		expect(isValidLanguage('en', languages)).toBe(true);
-		expect(isValidLanguage('it', languages)).toBe(true);
 		expect(isValidLanguage('xx', languages)).toBe(false);
 		expect(isValidLanguage(undefined, languages)).toBe(false);
 	});
 });
 
-describe('routeKeyOf', () => {
-	it('mappa una route localizzata alla sua chiave logica', () => {
-		expect(routeKeyOf('projects', 'en', navigation)).toBe('projects');
-		expect(routeKeyOf('progetti', 'it', navigation)).toBe('projects');
-		expect(routeKeyOf('blog', 'it', navigation)).toBe('articles');
-	});
-
-	it('ritorna null per route o lingua sconosciute', () => {
-		expect(routeKeyOf('nope', 'en', navigation)).toBeNull();
-		expect(routeKeyOf('projects', 'xx', navigation)).toBeNull();
-	});
-});
-
-describe('isValidRouteForLang', () => {
-	it('valida una route dentro una lingua', () => {
-		expect(isValidRouteForLang('progetti', 'it', navigation)).toBe(true);
-		// route inglese sotto la lingua it: non valida
-		expect(isValidRouteForLang('projects', 'it', navigation)).toBe(false);
-		expect(isValidRouteForLang('nonexistent', 'en', navigation)).toBe(false);
-	});
-});
-
-describe('findRouteKeyAnyLang', () => {
-	it('trova chiave e lingua di origine di una route', () => {
-		expect(findRouteKeyAnyLang('progetti', navigation)).toEqual({ key: 'projects', lang: 'it' });
-		expect(findRouteKeyAnyLang('projects', navigation)).toEqual({ key: 'projects', lang: 'en' });
-	});
-
-	it('ritorna null se nessuna lingua ha quella route', () => {
-		expect(findRouteKeyAnyLang('nope', navigation)).toBeNull();
-	});
-});
-
-describe('translateRoute', () => {
-	it('traduce una chiave logica nella route della lingua target', () => {
-		expect(translateRoute('projects', 'it', navigation)).toBe('progetti');
-		expect(translateRoute('projects', 'en', navigation)).toBe('projects');
-	});
-
-	it('ritorna null per chiave o lingua sconosciute', () => {
-		expect(translateRoute('projects', 'xx', navigation)).toBeNull();
-		expect(translateRoute('nope', 'en', navigation)).toBeNull();
-	});
-});
-
-describe('sectionOf', () => {
-	it('mappa la route projects alla sezione projects', () => {
-		expect(sectionOf('projects', 'en', navigation)).toBe('projects');
+describe('sectionOf / routeOf / findSectionAnyLang', () => {
+	it('mappa la route localizzata alla sezione e ritorno', () => {
 		expect(sectionOf('progetti', 'it', navigation)).toBe('projects');
+		expect(sectionOf('blog', 'en', navigation)).toBe('articles');
+		expect(routeOf('projects', 'it', navigation)).toBe('progetti');
 	});
 
-	it('mappa la route articles alla sezione blog', () => {
-		expect(sectionOf('blog', 'en', navigation)).toBe('blog');
-		expect(sectionOf('blog', 'it', navigation)).toBe('blog');
+	it('una route di un’altra lingua non vale nella lingua corrente', () => {
+		expect(sectionOf('projects', 'it', navigation)).toBeNull();
+		expect(sectionOf('nope', 'en', navigation)).toBeNull();
+		expect(routeOf('projects', 'xx', navigation)).toBeNull();
 	});
 
-	it('ritorna null per route che non sono di sezione', () => {
-		expect(sectionOf('about', 'en', navigation)).toBeNull();
+	it('trova sezione e lingua di una route in qualunque lingua', () => {
+		expect(findSectionAnyLang('progetti', navigation)).toEqual({ section: 'projects', lang: 'it' });
+		expect(findSectionAnyLang('nope', navigation)).toBeNull();
+	});
+});
+
+describe('translateSlug', () => {
+	it('traduce partendo dallo slug di qualunque lingua', () => {
+		expect(translateSlug('il-mio-nuovo-laboratorio', 'articles', 'en', slugMap)).toBe(
+			'my-new-laboratory'
+		);
+		expect(translateSlug('my-new-laboratory', 'articles', 'it', slugMap)).toBe(
+			'il-mio-nuovo-laboratorio'
+		);
+	});
+
+	it('null per slug sconosciuti o nella sezione sbagliata', () => {
+		expect(translateSlug('nope', 'projects', 'en', slugMap)).toBeNull();
+		expect(translateSlug('budokan', 'articles', 'en', slugMap)).toBeNull();
 	});
 });
 
 describe('preferredLanguage', () => {
 	const supported = ['en', 'it'];
 
-	it('sceglie la prima lingua supportata per q-value', () => {
+	it('sceglie la prima lingua supportata per q-value, anche fuori ordine', () => {
 		expect(preferredLanguage('it-IT,it;q=0.9,en;q=0.8', supported, 'en')).toBe('it');
-		expect(preferredLanguage('en-US,en;q=0.9,it;q=0.8', supported, 'en')).toBe('en');
-	});
-
-	it('ignora i tag regionali (it-CH -> it)', () => {
+		expect(preferredLanguage('en;q=0.3, it;q=0.9', supported, 'en')).toBe('it');
 		expect(preferredLanguage('it-CH', supported, 'en')).toBe('it');
 	});
 
-	it('usa il fallback se nessuna lingua è supportata o header assente', () => {
+	it('usa il fallback se nessuna lingua è supportata o manca l’header', () => {
 		expect(preferredLanguage('fr-FR,de;q=0.8', supported, 'en')).toBe('en');
-		expect(preferredLanguage('', supported, 'en')).toBe('en');
 		expect(preferredLanguage(null, supported, 'en')).toBe('en');
-		expect(preferredLanguage(undefined, supported, 'en')).toBe('en');
+	});
+});
+
+describe('getLanguageUrl', () => {
+	const url = (pathname: string, targetLang: string, search = '') =>
+		getLanguageUrl({ pathname, search, navigation, slugMap, targetLang });
+
+	it('home, sezione e dettaglio con slug tradotto', () => {
+		expect(url('/en', 'it')).toBe('/it');
+		expect(url('/en/projects', 'it')).toBe('/it/progetti');
+		expect(url('/en/projects/budokan', 'it')).toBe('/it/progetti/budokan');
+		expect(url('/it/blog/il-mio-nuovo-laboratorio', 'en')).toBe('/en/blog/my-new-laboratory');
 	});
 
-	it('rispetta i q-value anche fuori ordine', () => {
-		expect(preferredLanguage('en;q=0.3, it;q=0.9', supported, 'en')).toBe('it');
+	it('conserva la query string', () => {
+		expect(url('/en/projects/budokan', 'it', '?x=1')).toBe('/it/progetti/budokan?x=1');
+	});
+
+	it('ripiega su sezione o home se manca la traduzione', () => {
+		expect(url('/en/projects/unknown', 'it')).toBe('/it/progetti');
+		expect(url('/en/random', 'it')).toBe('/it');
+	});
+});
+
+describe('resolveRedirect', () => {
+	const go = (path: string) =>
+		resolveRedirect(path, { languages, navigation, slugMap, defaultLang: 'en' });
+
+	it('route di un’altra lingua sotto una lingua valida', () => {
+		expect(go('/en/progetti')).toBe('/en/projects');
+		expect(go('/en/progetti/budokan')).toBe('/en/projects/budokan');
+	});
+
+	it('slug di un’altra lingua', () => {
+		expect(go('/en/blog/il-mio-nuovo-laboratorio')).toBe('/en/blog/my-new-laboratory');
+		expect(go('/it/blog/my-new-laboratory')).toBe('/it/blog/il-mio-nuovo-laboratorio');
+	});
+
+	it('lingua sconosciuta: va nella lingua della route, slug compreso', () => {
+		expect(go('/xx/projects')).toBe('/en/projects');
+		expect(go('/xx/progetti/budokan')).toBe('/it/progetti/budokan');
+	});
+
+	it('un segmento solo: route senza lingua o indirizzo a caso', () => {
+		expect(go('/progetti')).toBe('/it/progetti');
+		expect(go('/totally-unknown')).toBe('/en');
+	});
+
+	it('nessun redirect per un URL già canonico o senza canonico (404)', () => {
+		expect(go('/en')).toBeNull();
+		expect(go('/en/projects')).toBeNull();
+		expect(go('/en/projects/budokan')).toBeNull();
+		expect(go('/en/projects/does-not-exist')).toBeNull();
+		expect(go('/en/nope/x')).toBeNull();
+		expect(go('/a/b/c/d')).toBeNull();
 	});
 });

@@ -1,0 +1,65 @@
+---
+import CollectionBrowser from '../../../components/CollectionBrowser.svelte';
+import SectionTitle from '../../../components/SectionTitle.astro';
+import Layout from '../../../layouts/Layout.astro';
+import { languageCodes, navigation } from '../../../lib/config';
+import { getArticles, getProjects } from '../../../lib/content';
+import { SECTIONS, type Section } from '../../../lib/i18n';
+import { articleItem, projectItem, STATUS_KEY } from '../../../lib/items';
+import { site, translator } from '../../../lib/site';
+
+export function getStaticPaths() {
+	return languageCodes.flatMap((lang) =>
+		SECTIONS.map((section) => ({
+			params: { lang, section: navigation[lang][section] },
+			props: { section }
+		}))
+	);
+}
+
+const { lang } = Astro.params;
+const { section } = Astro.props as { section: Section };
+const t = translator(lang);
+const title = site(lang).sections[section];
+const route = navigation[lang][section];
+
+const items =
+	section === 'projects'
+		? (await getProjects(lang)).map((p) => projectItem(p, route, t))
+		: (await getArticles(lang)).map((a) => articleItem(a, route));
+
+const labels = {
+	search: t(section === 'projects' ? 'searchProjects' : 'searchArticles'),
+	all: t('all'),
+	status: t('status'),
+	tags: t('tags'),
+	sort: t('sort'),
+	sortNewest: t('sortNewest'),
+	sortOldest: t('sortOldest'),
+	sortTitle: t('sortTitle'),
+	noResults: t('noResults'),
+	clearFilters: t('clearFilters')
+};
+const statusLabels = Object.fromEntries(
+	Object.entries(STATUS_KEY).map(([status, key]) => [status, t(key)])
+);
+---
+
+<Layout
+	lang={lang}
+	path={`/${lang}/${route}`}
+	title={title}
+	og={`listing-${section === 'projects' ? 'projects' : 'blog'}-${lang}`}
+>
+	<div class="container-page pt-16">
+		<SectionTitle title={title} as="h1" />
+		<CollectionBrowser
+			client:load
+			kind={section}
+			items={items}
+			labels={labels}
+			statusLabels={statusLabels}
+			locale={lang}
+		/>
+	</div>
+</Layout>

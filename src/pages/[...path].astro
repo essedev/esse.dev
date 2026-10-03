@@ -1,0 +1,25 @@
+---
+import NotFound from '../components/NotFound.astro';
+import { defaultLang, languageCodes, languages, navigation } from '../lib/config';
+import { getSlugMap } from '../lib/content';
+import { resolveRedirect } from '../lib/i18n';
+
+// Arriva qui solo ciò che non è una pagina statica: un URL con lingua, route o slug
+// sbagliati va al canonico con un solo redirect, il resto è un 404 vero.
+export const prerender = false;
+
+const pathname = Astro.url.pathname.replace(/\/+$/, '') || '/';
+const target = resolveRedirect(pathname, {
+	languages,
+	navigation,
+	slugMap: await getSlugMap(),
+	defaultLang
+});
+if (target) return Astro.redirect(target, 302);
+
+const first = pathname.split('/')[1];
+const lang = languageCodes.includes(first) ? first : defaultLang;
+Astro.response.status = 404;
+---
+
+<NotFound lang={lang} />

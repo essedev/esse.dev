@@ -1,0 +1,35 @@
+---
+import { ArrowLeft } from '@lucide/astro';
+
+interface Props {
+	/** Ripiego quando non c'è una pagina interna da cui si è arrivati: la listing. */
+	href: string;
+	label: string;
+}
+
+const { href, label } = Astro.props;
+---
+
+<a
+	href={href}
+	data-back-link
+	class="text-muted hover:text-fg inline-flex items-center gap-1.5 text-sm transition-colors"
+>
+	<ArrowLeft class="size-4" />
+	{label}
+</a>
+
+<script>
+	// "Indietro" contestuale: se si arriva da una pagina di questo sito (home, listing,
+	// un filtro) torna lì con la history, conservando scroll e filtri; su atterraggio
+	// diretto (link condiviso, nuova scheda) resta il link alla listing.
+	for (const link of document.querySelectorAll<HTMLAnchorElement>('[data-back-link]')) {
+		link.addEventListener('click', (event) => {
+			const ref = document.referrer ? new URL(document.referrer) : null;
+			if (ref && ref.origin === location.origin && history.length > 1) {
+				event.preventDefault();
+				history.back();
+			}
+		});
+	}
+</script>

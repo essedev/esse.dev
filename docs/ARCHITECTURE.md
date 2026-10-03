@@ -5,90 +5,73 @@ Il perché delle scelte di questo progetto. Per lo stato corrente vedi
 
 ## Cos'è
 
-Portfolio personale (SvelteKit 2 + Svelte 5 runes + TS strict + Tailwind 4)
-deployato su Cloudflare Workers. Contenuti file-based in JSON, i18n hand-rolled
-EN/IT, immagini Open Graph pre-generate.
+Portfolio personale in Astro (TS strict, Tailwind 4, isole Svelte 5) su Cloudflare
+Workers. Contenuti file-based nel repo, i18n EN/IT con route e slug tradotti,
+immagini Open Graph generate a build. Fino al Ciclo 10 era SvelteKit: la riscrittura è
+in `docs/CYCLES.md` (Ciclo 11) e la scelta in `docs/DECISIONS.md` #10.
 
-## Contenuti: JSON file-based, niente DB né CMS
+## Rendering: statico, con due eccezioni sul Worker
 
-I contenuti (progetti, articoli, pagine, config) vivono come file JSON sotto
-`src/lib/content/`, versionati con il codice. Per un portfolio piccolo e a bassa
-frequenza di aggiornamento questo elimina ogni infrastruttura (DB, CMS, API) e
-rende ogni modifica di contenuto un commit, con review e rollback gratis.
+Tutte le pagine sono prerenderizzate a build e servite da Cloudflare come asset
+statici. Il Worker riceve solo ciò che non è un file:
 
-La validazione è doppia e intenzionale:
+- la root `/` (`src/pages/index.ts`), che sceglie la lingua da `Accept-Language`;
+- il catch-all `src/pages/[...path].astro`, che per un URL con lingua, route o slug
+  sbagliati fa un solo redirect al canonico (`resolveRedirect` in `src/lib/i18n.ts`)
+  e altrimenti risponde 404 con la pagina localizzata.
 
-- a build time `scripts/validate-content.ts` fallisce la build se un JSON viola
-  lo schema Zod (`src/lib/schemas/content.ts`);
-- a runtime `ContentLoader` rivalida ciò che carica, così un file malformato dà
-  un errore parlante invece di propagarsi come `undefined`.
+Il prerender gira in Node (`prerenderEnvironment: 'node'`) perché le OG usano resvg,
+che è nativo. Gli E2E girano contro la build servita da `wrangler dev`, non contro il
+dev server, così redirect, header e 404 sono quelli di produzione.
 
-`ContentLoader` cachea in memoria per istanza e carica le traduzioni in modo lazy
-(solo la lingua richiesta nelle pagine, tutte le lingue solo dove serve davvero,
-es. sitemap). La logica comune progetti/articoli è in un unico `loadCollection<T>`
-generico; i due metodi pubblici restano wrapper che forniscono glob, schemi e
-chiave di ordinamento.
+## Contenuti: file nel repo, niente DB né CMS
 
-## i18n: hand-rolled invece di una libreria
+Ogni progetto e articolo è una cartella in `src/content/`: `meta.json` con i campi
+condivisi tra le lingue (stato, date, link, pubblicato) e un `<lang>.md` per lingua
+(frontmatter con slug, titolo, sommario, tag; corpo in Markdown). Le due metà sono
+content collection separate (`src/content.config.ts`, schemi Zod) e si uniscono in
+`src/lib/content.ts`, unico accesso ai contenuti per pagine ed endpoint. Lì si fanno
+rispettare a build le regole che lo schema non vede: un contenuto pubblicato ha il
+testo in ogni lingua, ogni testo ha il suo meta, gli slug sono unici per lingua, la
+vetrina (`src/config/featured.json`) punta a progetti pubblicati. Una violazione fa
+fallire la build.
 
-Due sole lingue (EN/IT) e il bisogno di controllare interamente la struttura
-degli URL (route e slug tradotti: `/en/projects/x` vs `/it/progetti/y`) rendono
-una libreria i18n sovradimensionata. Lo schema:
+Le pagine della home (welcome, chi sono, contatti) sono Markdown per lingua in
+`src/content/pages/`. Titolo del sito, nomi delle sezioni e stringhe della UI stanno
+in `src/content/site/<lang>.json` (`src/lib/site.ts`): le chiavi della UI sono
+quelle dell'inglese e una chiave mancante in un'altra lingua ferma la build.
 
-- routing `[page=lang]/[route=route]/[sub]` con param matcher in `src/params/`;
-- `hooks.server.ts` fa redirect "smart" (lingua sbagliata, route nella lingua
-  sbagliata, slug nella lingua sbagliata) verso l'URL canonico;
-- una slug map leggera (indice id -> slug per lingua) DERIVATA a runtime dai
-  contenuti e memoizzata per isolate, così i redirect e il language switcher non
-  devono caricare tutti i contenuti in tutte le lingue a ogni richiesta. Gli slug
-  vivono solo nelle traduzioni: niente file committato, nessun drift possibile;
-- la logica di routing (validazione lingua, route -> chiave logica, traduzione
-  route, sezione) vive in funzioni pure in `src/lib/utils/i18n.ts`, unica fonte
-  usata da layout, hooks e `getLanguageUrl`: niente reimplementazioni inline.
-  `getLanguageUrl` e gli helper SEO sono anch'essi puri e testabili.
+## i18n: route e slug tradotti, logica pura
 
-## Open Graph: pre-generazione a build time
+Due lingue e il controllo completo degli URL (`/en/projects/x` contro
+`/it/progetti/y`) rendono una libreria sovradimensionata, e l'i18n di Astro non
+traduce i segmenti né gli slug. Le route per lingua sono in `src/config/navigation.json`;
+la slug map (id -> lingua -> slug) è derivata dai contenuti. Tutta la logica (sezione
+di una route, traduzione di route e slug, URL equivalente in un'altra lingua,
+redirect al canonico, lingua preferita) è in funzioni pure in `src/lib/i18n.ts`,
+testate a unità e usate da pagine, header, SEO, sitemap e catch-all.
 
-Le OG sono PNG statici generati durante la build (`scripts/generate-og-images.ts`:
-satori -> resvg -> sharp) e serviti da `static/og/`. Scelta presa rispetto a un
-endpoint runtime perché, per contenuti statici, pre-generare significa zero
-compute a runtime, zero superficie di injection e immagini deterministiche.
+## Open Graph: generate a build
 
-Punti chiave:
+Un endpoint prerenderizzato (`src/pages/og/[name].png.ts`) produce un PNG per pagina
+con satori e resvg: `home`, `listing-<sezione>-<lingua>`,
+`detail-<sezione>-<id>-<lingua>`. Il layout è un albero puro in `src/lib/og.ts`. Zero
+compute a runtime, niente superficie di injection, immagini deterministiche. Gotcha
+di satori: font `woff`/`ttf`, mai `woff2` (si leggono da `@fontsource/geist-sans`).
 
-- gira nel passo di build (Node), che su Cloudflare avviene nei Workers Builds:
-  satori/resvg/sharp non toccano mai il runtime del Worker;
-- le immagini NON sono committate: sono un artefatto di build (gitignored,
-  `static/og/`), rigenerato a ogni build come gli altri output;
-- il layout risolve un filename deterministico per pagina (`home`,
-  `listing-<sezione>-<lang>`, `detail-<sezione>-<id>-<lang>`) con un query param
-  di cache-busting legato al timestamp di build.
+## Sicurezza e header
 
-Le favicon seguono la regola opposta (DECISIONS #7): generate da
-`scripts/generate-favicons.ts` a partire da un solo disegno, ma committate e fuori
-dalla catena di build, perché cambiano solo col disegno o con l'accento default.
-
-Gotcha noti: satori vuole font `woff`/`ttf` (non `woff2`) e ignora gli attributi
-`width`/`height` sulle `<img>` (vanno nello `style`).
-
-## Deploy e caching
-
-Adapter Cloudflare. Le pagine sono deterministiche per path (la lingua è
-nell'URL), quindi cacheabili al CDN: `hooks.server.ts` imposta `Cache-Control`
-con `s-maxage` + `stale-while-revalidate` sulle risposte 2xx, mantenendo
-`max-age=0` perché il browser rivalidi e un nuovo deploy sia visibile subito.
-Redirect ed errori non vengono cacheati.
-
-## Sicurezza
-
-CSP gestita da SvelteKit (`svelte.config.js`, `mode: 'auto'` per hash/nonce sugli
-script inline propri). Gli header di sicurezza (`X-Content-Type-Options`,
-`Referrer-Policy`, `X-Frame-Options`, `Permissions-Policy`) sono applicati in
-`hooks.server.ts`. Niente endpoint dinamici che riflettono input utente.
+CSP generata da Astro (`security.csp`) come meta tag nelle pagine, con gli hash degli
+script inline; Umami è l'unico dominio esterno ammesso. `frame-ancestors` nel meta
+tag è ignorato, quindi va come header in `public/_headers` insieme a
+`X-Content-Type-Options`, `Referrer-Policy`, `X-Frame-Options` e `Permissions-Policy`.
+Gli asset con hash in `/_astro/` sono cacheati come immutabili. Niente endpoint che
+riflettono input utente.
 
 ## Boundary
 
-Route sottili -> `ContentLoader` (accesso dati) -> schemi Zod (validazione) ->
-sezioni/componenti (UI). La logica pura (routing i18n, language url, SEO, escape)
-è estratta in `src/lib/utils/` per poter essere testata senza montare componenti.
-Il `ContentLoader` fa solo data-access: la logica di routing non vive lì.
+Pagine sottili -> `src/lib/content.ts` (dati) -> schemi delle collection
+(validazione) -> componenti (UI). La logica pura (i18n, SEO, filtri delle liste,
+metriche di lettura, vetrina, correlati, layout OG) è in moduli di `src/lib/` senza
+dipendenze da Astro, testabili con vitest in Node. Le isole Svelte ricevono dati già
+serializzati (`ListItem` in `src/lib/listing.ts`) e non leggono contenuti.

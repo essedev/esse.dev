@@ -1,0 +1,37 @@
+---
+import { translator } from '../lib/site';
+
+interface Props {
+	lang: string;
+}
+
+const { lang } = Astro.props;
+const t = translator(lang);
+const year = new Date().getFullYear();
+---
+
+<footer class="border-line mt-24 border-t">
+	<div class="container-page text-muted flex flex-wrap items-center justify-between gap-4 py-8 text-sm">
+		<p>© {year} Simone Salerno</p>
+		<ul class="flex flex-wrap gap-x-5 gap-y-1">
+			<li>
+				<a class="hover:text-fg transition-colors" href={`/${lang}/rss.xml`}>
+					RSS
+				</a>
+			</li>
+			<li>
+				<a class="hover:text-fg transition-colors" href="/sitemap.xml">
+					Sitemap
+				</a>
+			</li>
+			<li>
+				<a
+					class="hover:text-fg transition-colors"
+					href="https://github.com/essedev/simonesalerno.it"
+				>
+					{t('source')}
+				</a>
+			</li>
+		</ul>
+	</div>
+</footer>

@@ -1,0 +1,74 @@
+---
+import { languages, navigation } from '../lib/config';
+import { getSlugMap } from '../lib/content';
+import { getLanguageUrl, sectionOf } from '../lib/i18n';
+import { site, translator } from '../lib/site';
+
+interface Props {
+	lang: string;
+	path: string;
+}
+
+const { lang, path } = Astro.props;
+const t = translator(lang);
+const { sections } = site(lang);
+const slugMap = await getSlugMap();
+const currentSection = sectionOf(path.split('/')[2], lang, navigation);
+
+const links = [
+	{ label: sections.projects, href: `/${lang}/${navigation[lang].projects}`, section: 'projects' },
+	{ label: sections.articles, href: `/${lang}/${navigation[lang].articles}`, section: 'articles' },
+	{ label: t('navAbout'), href: `/${lang}#about`, section: null },
+	{ label: t('navContact'), href: `/${lang}#contact`, section: null }
+];
+---
+
+<header class="border-line bg-bg/85 sticky top-0 z-40 border-b backdrop-blur">
+	<div class="container-page flex flex-wrap items-center justify-between gap-x-6 gap-y-2 py-4">
+		<a href={`/${lang}`} class="font-mono text-sm font-medium tracking-tight">
+			simone salerno
+		</a>
+		<nav class="flex items-center gap-x-5 gap-y-1 text-sm">
+			<ul class="flex flex-wrap items-center gap-x-5 gap-y-1">
+				{links.map((link) => (
+					<li>
+						<a
+							href={link.href}
+							class:list={[
+								'transition-colors hover:text-fg',
+								link.section && link.section === currentSection ? 'text-fg' : 'text-muted'
+							]}
+							aria-current={link.section && link.section === currentSection ? 'page' : undefined}
+						>
+							{link.label}
+						</a>
+					</li>
+				))}
+			</ul>
+			<ul
+				class="border-line flex items-center gap-2 border-l pl-5 font-mono text-xs"
+				aria-label={t('language')}
+			>
+				{languages.map((l) => (
+					<li>
+						{l.code === lang ? (
+							<span class="text-fg" aria-current="true">
+								{l.code}
+							</span>
+						) : (
+							<a
+								href={getLanguageUrl({ pathname: path, navigation, slugMap, targetLang: l.code })}
+								hreflang={l.code}
+								lang={l.code}
+								class="text-muted hover:text-fg transition-colors"
+								title={l.name}
+							>
+								{l.code}
+							</a>
+						)}
+					</li>
+				))}
+			</ul>
+		</nav>
+	</div>
+</header>

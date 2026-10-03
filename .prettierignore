@@ -1,18 +1,16 @@
 # Package Managers
 package-lock.json
 pnpm-lock.yaml
-yarn.lock
-bun.lock
-bun.lockb
 
-# Miscellaneous
-/static/
+# Build e generati
+dist/
+.astro/
+worker-configuration.d.ts
 
-# Auto-generated
-src/lib/content/slug-map.json
-src/lib/assets/image-assets.ts
-.playwright-mcp/
+# Contenuti: il Markdown lo scrivono le persone, non prettier
+src/content/**/*.md
 
 # Mockup di concept: HTML autonomi, si guardano e si buttano
 docs/concepts/
 docs/archive/
+.playwright-mcp/

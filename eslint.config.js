@@ -1,44 +1,32 @@
-import prettier from 'eslint-config-prettier';
-import { includeIgnoreFile } from '@eslint/compat';
 import js from '@eslint/js';
+import prettier from 'eslint-config-prettier';
+import astro from 'eslint-plugin-astro';
+import { defineConfig, includeIgnoreFile } from 'eslint/config';
 import svelte from 'eslint-plugin-svelte';
 import globals from 'globals';
 import { fileURLToPath } from 'node:url';
 import ts from 'typescript-eslint';
-import svelteConfig from './svelte.config.js';
 
 const gitignorePath = fileURLToPath(new URL('./.gitignore', import.meta.url));
 
-export default ts.config(
+export default defineConfig(
 	includeIgnoreFile(gitignorePath),
+	{ ignores: ['worker-configuration.d.ts'] },
 	js.configs.recommended,
 	...ts.configs.recommended,
+	...astro.configs.recommended,
 	...svelte.configs.recommended,
 	prettier,
 	...svelte.configs.prettier,
 	{
-		languageOptions: {
-			globals: { ...globals.browser, ...globals.node }
-		},
-		rules: {
-			// typescript-eslint strongly recommend that you do not use the no-undef lint rule on TypeScript projects.
-			// see: https://typescript-eslint.io/troubleshooting/faqs/eslint/#i-get-errors-from-the-no-undef-rule-about-global-variables-not-being-defined-even-though-there-are-no-typescript-errors
-			'no-undef': 'off',
-			// Disable navigation-without-resolve rule as we're using `base` from $app/paths correctly
-			'svelte/no-navigation-without-resolve': 'off',
-			// Disable no-at-html-tags for content renderer components that handle sanitized CMS content
-			'svelte/no-at-html-tags': 'off'
-		}
+		languageOptions: { globals: { ...globals.browser, ...globals.node } },
+		// typescript-eslint sconsiglia no-undef sui progetti TypeScript.
+		rules: { 'no-undef': 'off' }
 	},
 	{
-		files: ['**/*.svelte', '**/*.svelte.ts', '**/*.svelte.js'],
+		files: ['**/*.svelte', '**/*.svelte.ts'],
 		languageOptions: {
-			parserOptions: {
-				projectService: true,
-				extraFileExtensions: ['.svelte'],
-				parser: ts.parser,
-				svelteConfig
-			}
+			parserOptions: { projectService: true, extraFileExtensions: ['.svelte'], parser: ts.parser }
 		}
 	}
 );

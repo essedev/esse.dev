@@ -8,8 +8,9 @@ import {
 	serializeJsonLd,
 	socialLinks,
 	websiteJsonLd
-} from '../../src/lib/utils/seo';
-import type { Language, LinkItem, NavigationConfig, SlugMapData } from '../../src/lib/types';
+} from '../../src/lib/seo';
+import type { Language, NavigationConfig } from '../../src/lib/config';
+import type { SlugMap } from '../../src/lib/i18n';
 
 const origin = 'https://simonesalerno.it';
 
@@ -19,11 +20,11 @@ const languages: Language[] = [
 ];
 
 const navigation: NavigationConfig = {
-	en: { projects: 'projects', about: 'about', articles: 'blog' },
-	it: { projects: 'progetti', about: 'informazioni', articles: 'blog' }
+	en: { projects: 'projects', articles: 'blog' },
+	it: { projects: 'progetti', articles: 'blog' }
 };
 
-const slugMap: SlugMapData = {
+const slugMap: SlugMap = {
 	projects: { budokan: { en: 'budokan', it: 'budokan' } },
 	articles: { lab: { en: 'my-new-laboratory', it: 'il-mio-nuovo-laboratorio' } }
 };
@@ -82,10 +83,10 @@ describe('buildAlternates', () => {
 });
 
 describe('socialLinks', () => {
-	const links: LinkItem[] = [
-		{ name: 'Email', link: 'mailto:hello@esse.dev' },
-		{ name: 'LinkedIn', link: 'https://www.linkedin.com/in/simone-salerno' },
-		{ name: 'GitHub', link: 'https://github.com/essedev/' }
+	const links: { name: string; url: string }[] = [
+		{ name: 'Email', url: 'mailto:hello@esse.dev' },
+		{ name: 'LinkedIn', url: 'https://www.linkedin.com/in/simone-salerno' },
+		{ name: 'GitHub', url: 'https://github.com/essedev/' }
 	];
 
 	it('keeps only http(s) profiles, dropping mailto', () => {
