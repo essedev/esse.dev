@@ -42,6 +42,23 @@ test.describe('workspace keyboard', () => {
 		await expect(page).toHaveURL(/\/en\/projects$/);
 	});
 
+	test('l opens the next item and h the previous one', async ({ page }) => {
+		await open(page, '/en/projects/nexus');
+		const next = await page.locator('[data-pager="next"]').getAttribute('href');
+		await page.keyboard.press('l');
+		await expect(page).toHaveURL(new RegExp(`${next}$`));
+		await page.waitForLoadState('networkidle');
+		await page.keyboard.press('h');
+		await expect(page).toHaveURL(/\/en\/projects\/nexus$/);
+	});
+
+	test('a short page keeps the pager at the bottom of the pane', async ({ page }) => {
+		await page.setViewportSize({ width: 1440, height: 900 });
+		await open(page, '/en/projects/verbosa');
+		const pager = await page.locator('[data-pager]').first().boundingBox();
+		expect(pager!.y + pager!.height).toBeGreaterThan(900 - 120);
+	});
+
 	test('the item being viewed is marked in the list', async ({ page }) => {
 		await open(page, '/it/progetti/relay');
 		await expect(page.locator('[data-sidebar] [aria-current="page"]')).toHaveAttribute(

@@ -3,6 +3,8 @@
  * questo script aggiunge solo quello che rende il sito un'app da usare con la tastiera.
  *
  * - j/k (o frecce) scorrono le voci della lista, Invio apre, Esc torna al livello sopra.
+ * - h/l (o frecce laterali) aprono la voce precedente e successiva, dove c'è il pager.
+ *   Non `[` e `]`: sulla tastiera italiana del Mac richiedono Option.
  * - "/" e Cmd/Ctrl+K portano alla ricerca, l'unica del sito: filtra la lista e il
  *   registro della pagina, se c'è.
  * - i pulsanti `[data-copy]` copiano e confermano nella riga di stato.
@@ -218,6 +220,17 @@ document.addEventListener('keydown', (event) => {
 			event.preventDefault();
 			move(-1);
 			break;
+		case 'h':
+		case 'l':
+		case 'ArrowLeft':
+		case 'ArrowRight': {
+			const which = event.key === 'h' || event.key === 'ArrowLeft' ? 'prev' : 'next';
+			const link = document.querySelector<HTMLAnchorElement>(`[data-pager="${which}"]`);
+			if (!link) return;
+			event.preventDefault();
+			location.href = link.href;
+			break;
+		}
 		case '/':
 			event.preventDefault();
 			focusSearch();
