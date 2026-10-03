@@ -8,8 +8,8 @@
 		"directory": "./dist",
 		"binding": "ASSETS"
 	},
-	// Modelli dell'agente: Workers AI e AI Gateway, senza chiavi nel Worker. In dev il
-	// binding è remoto (le chiamate passano dall'account Cloudflare).
+	// Workers AI, oggi solo per il trasporto alternativo di Jev (`JEV_TRANSPORT`): i modelli
+	// dell'agente passano da OpenRouter. In dev il binding è remoto (account Cloudflare).
 	"ai": { "binding": "AI", "remote": true },
 	"durable_objects": {
 		"bindings": [

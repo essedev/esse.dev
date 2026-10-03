@@ -1,6 +1,6 @@
 /**
- * Triage di ogni messaggio prima del modello grande, con Jev (TypeSafe, "System One") su
- * Workers AI: in 70-500 ms dice intento, peso e lingua con probabilità calibrate. Logica
+ * Triage di ogni messaggio prima del modello grande, con Jev (TypeSafe, "System One"), via
+ * OpenRouter: in circa 300 ms dice intento, peso e lingua con probabilità calibrate. Logica
  * pura: la richiesta a Jev e la decisione che ne segue si testano senza rete.
  *
  * Il triage non sostituisce il limite di spesa, che resta in costo reale (`budget.ts`):
