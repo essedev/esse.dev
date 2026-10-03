@@ -20,10 +20,11 @@ Giro di qualità prima di un commit non banale e SEMPRE prima di un push:
 `pnpm lint && pnpm check && pnpm build && pnpm test:ci`. Non c'è CI remota: il deploy
 avviene via Cloudflare Workers Builds al push, il gate è locale.
 
-Gli E2E girano contro la build servita da `wrangler dev` su :8787 (vedi
+Gli E2E girano contro la build servita da `wrangler dev` su :8788 (vedi
 `playwright.config.ts`), non contro il dev server: redirect, header, CSP e 404 esistono
-solo lì. Se un server su :8787 è già acceso lo riusano, quindi dopo una modifica
-spegnilo o rifai la build, altrimenti testi la build vecchia.
+solo lì. Playwright rifà la build e avvia un server suo ogni volta, così non testa mai
+una build vecchia; l'anteprima su :8787 può restare accesa. Un `workerd` orfano su una
+di queste porte serve asset vecchi e fa fallire tutto con dei 404: va chiuso.
 
 ## Contenuti
 
@@ -79,11 +80,16 @@ vision e motivi dello stop in `docs/RESTYLE.md`.
   componente è un errore: si aggiunge un token.
 - Classi condivise: `container-page` (larghezza e gutter), `link`, `skip-link`. La
   prosa usa `prose prose-invert` del plugin typography.
-- Componenti: `.astro` per tutto ciò che è statico; Svelte solo per le isole
-  (`CollectionBrowser`, filtri delle liste). `ProjectCard`, `ArticleRow` e
-  `StatusBadge` sono Svelte perché li usa sia la home (render statico) sia l'isola.
-- I filtri delle liste vivono nella query string (`?q=`, `?tag=`, `?status=`,
-  `?sort=`): logica pura e testata in `src/lib/listing.ts`.
+- Componenti: `.astro` per tutto ciò che è statico; Svelte solo dove serve
+  interazione. Progetti e articoli usano la stessa card (`EntryCard`), in home, nelle
+  liste e nei correlati: cambia solo la riga in alto (stato e anno, oppure data).
+- Controlli: mai elementi nativi con l'aspetto del browser. `ui/Select.svelte` copre
+  select singola, multipla e con ricerca (pattern ARIA listbox, tastiera completa,
+  pannello che si riaggancia al bordo libero se esce dallo schermo); `ui/SearchField`
+  per la ricerca testuale. Un controllo nuovo si costruisce su questi.
+- I filtri delle liste vivono nella query string (`?q=`, `?tag=a&tag=b`,
+  `?status=`, `?sort=`); più valori dello stesso filtro valgono in OR. Logica pura e
+  testata in `src/lib/listing.ts`.
 - Icone solo Lucide (`@lucide/astro`, `@lucide/svelte`).
 
 ## Convenzioni

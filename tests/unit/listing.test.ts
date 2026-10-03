@@ -33,13 +33,24 @@ describe('applyFilters', () => {
 
 	it('filtra per testo, tag e stato insieme', () => {
 		expect(ids(applyFilters(items, { ...DEFAULT_FILTERS, query: 'ALP' }, 'en'))).toEqual(['alpha']);
-		expect(ids(applyFilters(items, { ...DEFAULT_FILTERS, tag: 'AI' }, 'en'))).toEqual([
+		expect(ids(applyFilters(items, { ...DEFAULT_FILTERS, tags: ['AI'] }, 'en'))).toEqual([
 			'beta',
 			'alpha'
 		]);
 		expect(
-			ids(applyFilters(items, { ...DEFAULT_FILTERS, tag: 'AI', status: 'completed' }, 'en'))
+			ids(applyFilters(items, { ...DEFAULT_FILTERS, tags: ['AI'], statuses: ['completed'] }, 'en'))
 		).toEqual(['alpha']);
+	});
+
+	it('più valori nello stesso filtro valgono in OR', () => {
+		const tags = applyFilters(items, { ...DEFAULT_FILTERS, tags: ['Rust', 'Svelte'] }, 'en');
+		expect(ids(tags)).toEqual(['gamma', 'alpha']);
+		const statuses = applyFilters(
+			items,
+			{ ...DEFAULT_FILTERS, statuses: ['idea', 'in-progress'] },
+			'en'
+		);
+		expect(ids(statuses)).toEqual(['beta', 'gamma']);
 	});
 
 	it('ordina per data crescente o per titolo', () => {
@@ -69,7 +80,12 @@ describe('tagsByFrequency', () => {
 
 describe('filtri nella query string', () => {
 	it('andata e ritorno senza perdite', () => {
-		const f = { query: 'agent', tag: 'AI', status: 'idea' as const, sort: 'title' as const };
+		const f = {
+			query: 'agent',
+			tags: ['AI', 'Rust'],
+			statuses: ['idea' as const, 'completed' as const],
+			sort: 'title' as const
+		};
 		expect(filtersFromSearch(searchFromFilters(f))).toEqual(f);
 	});
 
@@ -77,7 +93,8 @@ describe('filtri nella query string', () => {
 		expect(searchFromFilters(DEFAULT_FILTERS)).toBe('');
 	});
 
-	it('valori sconosciuti tornano al default', () => {
-		expect(filtersFromSearch('?status=nope&sort=random')).toEqual(DEFAULT_FILTERS);
+	it('valori sconosciuti, vuoti o ripetuti vengono scartati', () => {
+		expect(filtersFromSearch('?status=nope&sort=random&tag=')).toEqual(DEFAULT_FILTERS);
+		expect(filtersFromSearch('?tag=AI&tag=AI').tags).toEqual(['AI']);
 	});
 });

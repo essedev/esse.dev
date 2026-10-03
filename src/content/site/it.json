@@ -50,6 +50,11 @@
 		"repository": "Repository",
 		"year": "Anno",
 		"stack": "Stack",
-		"source": "Codice del sito"
+		"source": "Codice del sito",
+		"searchTags": "Cerca tag",
+		"noMatches": "Nessuna corrispondenza",
+		"clearSelection": "Deseleziona tutto",
+		"removeFilter": "Rimuovi filtro",
+		"clearSearch": "Cancella ricerca"
 	}
 }

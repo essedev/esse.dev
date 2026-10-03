@@ -52,6 +52,11 @@
 		"repository": "Repository",
 		"year": "Year",
 		"stack": "Stack",
-		"source": "Site source"
+		"source": "Site source",
+		"searchTags": "Search tags",
+		"noMatches": "No matches",
+		"clearSelection": "Clear selection",
+		"removeFilter": "Remove filter",
+		"clearSearch": "Clear search"
 	}
 }

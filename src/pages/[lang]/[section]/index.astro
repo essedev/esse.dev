@@ -30,9 +30,13 @@ const items =
 
 const labels = {
 	search: t(section === 'projects' ? 'searchProjects' : 'searchArticles'),
-	all: t('all'),
+	clearSearch: t('clearSearch'),
 	status: t('status'),
 	tags: t('tags'),
+	searchTags: t('searchTags'),
+	noMatches: t('noMatches'),
+	clearSelection: t('clearSelection'),
+	removeFilter: t('removeFilter'),
 	sort: t('sort'),
 	sortNewest: t('sortNewest'),
 	sortOldest: t('sortOldest'),
@@ -55,7 +59,6 @@ const statusLabels = Object.fromEntries(
 		<SectionTitle title={title} as="h1" />
 		<CollectionBrowser
 			client:load
-			kind={section}
 			items={items}
 			labels={labels}
 			statusLabels={statusLabels}

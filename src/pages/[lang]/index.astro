@@ -1,8 +1,7 @@
 ---
 import { render } from 'astro:content';
 import { ArrowUpRight } from '@lucide/astro';
-import ArticleRow from '../../components/ArticleRow.svelte';
-import ProjectCard from '../../components/ProjectCard.svelte';
+import EntryCard from '../../components/EntryCard.svelte';
 import SectionTitle from '../../components/SectionTitle.astro';
 import Layout from '../../layouts/Layout.astro';
 import { languageCodes, navigation } from '../../lib/config';
@@ -55,7 +54,7 @@ const jsonLd = [
 		<ul class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
 			{showcase.map((p) => (
 				<li>
-					<ProjectCard item={projectItem(p, routes.projects, t)} />
+					<EntryCard item={projectItem(p, routes.projects, t)} />
 				</li>
 			))}
 		</ul>
@@ -75,10 +74,10 @@ const jsonLd = [
 				href={`/${lang}/${routes.articles}`}
 				linkLabel={t('viewAll')}
 			/>
-			<ul class="divide-line border-line divide-y border-y">
+			<ul class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
 				{articles.slice(0, 3).map((a) => (
 					<li>
-						<ArticleRow item={articleItem(a, routes.articles)} />
+						<EntryCard item={articleItem(a, routes.articles)} />
 					</li>
 				))}
 			</ul>

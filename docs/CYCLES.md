@@ -663,3 +663,8 @@ canvas e libertà di non portare tutto 1:1.
   produzione, OG neutre generate da un endpoint prerenderizzato.
 - **Test:** 55 unit (i18n e redirect, SEO, filtri, metriche dal Markdown, OG, testi)
   e 36 E2E contro `wrangler dev`, compresi filtri, CSP e 404.
+- **Card unica e controlli custom (stesso ciclo, su richiesta):** articoli e progetti
+  hanno la stessa card. Le select native sono sostituite da `ui/Select.svelte`
+  (singola, multipla, con ricerca), con chip dei filtri attivi e filtri multipli in
+  OR nella query string. Gli E2E ora girano su :8788 con server sempre nuovo: un
+  `workerd` orfano su :8787 serviva una build vecchia e aveva fatto fallire 25 test.
