@@ -77,7 +77,15 @@
 		"agentWeightMedium": "medium",
 		"agentWeightHeavy": "heavy",
 		"agentRetrying": "the model did not answer, retrying",
-		"agentRetry": "retry"
+		"agentRetry": "retry",
+		"agentTools": "Tools",
+		"agentToolsNote": "Before each message Jev decides whether it is on topic, in about 300 ms. Under each answer: tokens and cost.",
+		"agentToolSearch": "searches projects, writing, method and now",
+		"agentToolRead": "reads a whole page of the site",
+		"agentTry": "Try asking",
+		"agentAsk1": "What is the difference between Relay and Portsage?",
+		"agentAsk2": "How does Simone work with coding agents?",
+		"agentAsk3": "What is he working on right now?"
 	},
 	"sectionDescriptions": {
 		"projects": "Things I built and things I'm building: products, developer tools, AI experiments and a few ideas still on paper.",

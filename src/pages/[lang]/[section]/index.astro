@@ -73,7 +73,7 @@ const ogSection = section === 'projects' ? 'projects' : section === 'articles' ?
 	current={section}
 	crumbs={[{ label: routes[section] }]}
 >
-	<Page>
+	<Page class={section === 'agent' ? 'pb-0!' : undefined}>
 		<header class="flex flex-col gap-4">
 			<h1 class="text-[clamp(2rem,1.2rem+2.6vw,3.5rem)] leading-[1.05] font-medium tracking-[-0.025em]">
 				{title}
@@ -83,7 +83,9 @@ const ogSection = section === 'projects' ? 'projects' : section === 'articles' ?
 			</p>
 		</header>
 
-		<div class="mt-[clamp(2rem,4vw,3.5rem)]">
+		<div
+			class:list={['mt-[clamp(2rem,4vw,3.5rem)]', section === 'agent' && 'flex flex-1 flex-col']}
+		>
 			{(section === 'projects' || section === 'articles') && (
 				<CollectionBrowser
 					client:load
@@ -160,6 +162,11 @@ const ogSection = section === 'projects' ? 'projects' : section === 'articles' ?
 						offline: t('agentOffline'),
 						thinking: t('agentThinking'),
 						retrying: t('agentRetrying'),
+						tools: t('agentTools'),
+						toolsNote: t('agentToolsNote'),
+						toolLabels: { search_site: t('agentToolSearch'), read_page: t('agentToolRead') },
+						tryAsking: t('agentTry'),
+						suggestions: [t('agentAsk1'), t('agentAsk2'), t('agentAsk3')],
 						retry: t('agentRetry'),
 						reasoning: t('agentReasoning'),
 						toolCall: t('agentToolCall'),

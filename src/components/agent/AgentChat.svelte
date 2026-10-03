@@ -23,6 +23,12 @@
 		offline: string;
 		thinking: string;
 		retrying: string;
+		tools: string;
+		toolsNote: string;
+		/** Descrizione per il visitatore; senza, quella che il server dà al modello. */
+		toolLabels: Record<string, string>;
+		tryAsking: string;
+		suggestions: string[];
 		retry: string;
 		reasoning: string;
 		toolCall: string;
@@ -45,8 +51,8 @@
 	let triages: Record<string, Triage | null> = $state({});
 	let locals: Local[] = $state([]);
 	let budget: { remaining: number; limit: number } | null = $state(null);
+	let catalog: { name: string; description: string }[] = $state([]);
 	let client: AgentClient | undefined;
-	let end: HTMLElement | undefined = $state();
 
 	function visitorId(): string {
 		try {
@@ -79,6 +85,9 @@
 				return;
 			}
 			switch (message.type) {
+				case 'hello':
+					catalog = [...message.tools];
+					break;
 				case 'events':
 					view = reduceEvents(view, message.events);
 					break;
@@ -99,12 +108,40 @@
 		return () => client?.close();
 	});
 
-	// La trascrizione segue l'ultima riga mentre arriva.
+	// La trascrizione segue l'ultima riga mentre arriva, ma solo se chi legge è già in
+	// fondo: chi è risalito a rileggere non viene riportato giù. Scorre il riquadro su
+	// desktop e la finestra su mobile, dove il riquadro non ha uno scroll suo.
+	const NEAR_BOTTOM = 160;
+	function scroller(): { el: Element; top: number; height: number; client: number } {
+		const main = document.querySelector('[data-main-scroll]');
+		if (main && main.scrollHeight > main.clientHeight) {
+			return {
+				el: main,
+				top: main.scrollTop,
+				height: main.scrollHeight,
+				client: main.clientHeight
+			};
+		}
+		const doc = document.scrollingElement ?? document.documentElement;
+		return { el: doc, top: doc.scrollTop, height: doc.scrollHeight, client: doc.clientHeight };
+	}
+	let following = true;
+	$effect.pre(() => {
+		void shown.length;
+		void view.live;
+		void locals.length;
+		const s = scroller();
+		following = s.height - s.top - s.client < NEAR_BOTTOM;
+	});
 	$effect(() => {
 		void shown.length;
 		void view.live;
 		void locals.length;
-		tick().then(() => end?.scrollIntoView({ block: 'end' }));
+		if (!following) return;
+		tick().then(() => {
+			const s = scroller();
+			s.el.scrollTo({ top: s.height });
+		});
 	});
 
 	function send(message: object) {
@@ -115,6 +152,8 @@
 		event.preventDefault();
 		const text = input.trim();
 		if (!text || status !== 'open') return;
+		sent = true;
+		following = true;
 		send({ type: 'submit', input: text, whenBusy: 'followUp' });
 		input = '';
 	}
@@ -140,8 +179,20 @@
 		send({ type: 'submit', input: lastUserText, whenBusy: 'followUp' });
 	}
 
+	function ask(text: string) {
+		if (status !== 'open') return;
+		sent = true;
+		following = true;
+		send({ type: 'submit', input: text, whenBusy: 'followUp' });
+	}
+
+	// Lo stato vuoto sparisce al primo invio, senza aspettare che il server lo confermi.
+	let sent = $state(false);
+	const empty = $derived(!sent && shown.length === 0 && locals.length === 0 && !view.running);
+
 	function reset() {
 		send({ type: 'reset' });
+		sent = false;
 		triages = {};
 		locals = [];
 	}
@@ -189,7 +240,40 @@
 	<p class="pl-6 text-[0.9375rem] text-muted">{labels.notice[item.reason]}</p>
 {/snippet}
 
-<div class="flex min-h-[55vh] flex-col">
+<div class="flex flex-1 flex-col">
+	{#if empty}
+		<div class="flex flex-col gap-10">
+			{#if catalog.length}
+				<section class="flex flex-col gap-3">
+					<h2 class="label">{labels.tools}</h2>
+					<dl class="grid grid-cols-[auto_minmax(0,1fr)] gap-x-6 gap-y-2 text-[0.9375rem]">
+						{#each catalog as tool (tool.name)}
+							<dt class="font-mono text-sm text-fg">{tool.name}</dt>
+							<dd class="text-muted">{labels.toolLabels[tool.name] ?? tool.description}</dd>
+						{/each}
+					</dl>
+					<p class="text-sm text-pretty text-subtle">{labels.toolsNote}</p>
+				</section>
+			{/if}
+			<section class="flex flex-col gap-3">
+				<h2 class="label">{labels.tryAsking}</h2>
+				<ul class="flex flex-wrap gap-2">
+					{#each labels.suggestions as suggestion (suggestion)}
+						<li>
+							<button
+								type="button"
+								onclick={() => ask(suggestion)}
+								disabled={status !== 'open'}
+								class="rounded-[var(--radius-control)] bg-surface px-3 py-2 text-left text-[0.9375rem] text-text transition-colors hover:bg-hover hover:text-fg disabled:opacity-40"
+							>
+								{suggestion}
+							</button>
+						</li>
+					{/each}
+				</ul>
+			</section>
+		</div>
+	{/if}
 	<div class="flex flex-1 flex-col gap-6">
 		{#each locals.filter((l) => l.after === 0) as item, i (i)}
 			{@render localNotice(item)}
@@ -284,51 +368,57 @@
 				{/if}
 			</div>
 		{/if}
-		<div bind:this={end}></div>
 	</div>
 
-	<form
-		onsubmit={submit}
-		class="mt-8 flex items-end gap-3 rounded-[var(--radius-panel)] bg-surface p-3"
+	<!-- Ancorato in fondo al riquadro: la conversazione scorre sopra e sfuma sul bordo. -->
+	<div
+		class="sticky bottom-0 mt-8 bg-bg pt-2 pb-4 before:pointer-events-none before:absolute before:inset-x-0 before:-top-8 before:h-8 before:bg-linear-to-t before:from-bg before:to-transparent"
 	>
-		<span class="pb-1.5 font-mono text-sm text-accent select-none" aria-hidden="true">›</span>
-		<textarea
-			bind:value={input}
-			onkeydown={onKey}
-			rows="1"
-			placeholder={status === 'open'
-				? labels.placeholder
-				: status === 'connecting'
-					? labels.connecting
-					: labels.offline}
-			aria-label={labels.placeholder}
-			class="[field-sizing:content] min-h-8 flex-1 resize-none bg-transparent py-1.5 font-mono text-[0.875rem] text-fg outline-none placeholder:text-subtle"
-		></textarea>
-		{#if view.running}
-			<button type="button" onclick={() => send({ type: 'abort' })} class="chip hover:text-fg">
-				{labels.stop}
+		<form
+			onsubmit={submit}
+			class="flex items-end gap-3 rounded-[var(--radius-panel)] bg-surface p-3"
+		>
+			<span class="pb-1.5 font-mono text-sm text-accent select-none" aria-hidden="true">›</span>
+			<textarea
+				bind:value={input}
+				onkeydown={onKey}
+				rows="1"
+				placeholder={status === 'open'
+					? labels.placeholder
+					: status === 'connecting'
+						? labels.connecting
+						: labels.offline}
+				aria-label={labels.placeholder}
+				class="[field-sizing:content] min-h-8 flex-1 resize-none bg-transparent py-1.5 font-mono text-[0.875rem] text-fg outline-none placeholder:text-subtle"
+			></textarea>
+			{#if view.running}
+				<button type="button" onclick={() => send({ type: 'abort' })} class="chip hover:text-fg">
+					{labels.stop}
+				</button>
+			{:else}
+				<button
+					type="submit"
+					disabled={status !== 'open'}
+					class="chip hover:text-fg disabled:opacity-40"
+				>
+					{labels.send}
+				</button>
+			{/if}
+		</form>
+		<div
+			class="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 font-mono text-[0.7rem] text-subtle"
+		>
+			<span class="flex items-center gap-2">
+				<span class="led" data-status={status === 'open' ? 'in-progress' : 'idea'}></span>
+				{view.model?.modelId ??
+					(status === 'open' ? '' : status === 'connecting' ? labels.connecting : labels.offline)}
+			</span>
+			{#if budget}
+				<span>{labels.budget} {cents(budget.remaining)} / {cents(budget.limit)}</span>
+			{/if}
+			<button type="button" onclick={reset} class="ml-auto transition-colors hover:text-fg">
+				{labels.reset}
 			</button>
-		{:else}
-			<button
-				type="submit"
-				disabled={status !== 'open'}
-				class="chip hover:text-fg disabled:opacity-40"
-			>
-				{labels.send}
-			</button>
-		{/if}
-	</form>
-	<div class="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 font-mono text-[0.7rem] text-subtle">
-		<span class="flex items-center gap-2">
-			<span class="led" data-status={status === 'open' ? 'in-progress' : 'idea'}></span>
-			{view.model?.modelId ??
-				(status === 'open' ? '' : status === 'connecting' ? labels.connecting : labels.offline)}
-		</span>
-		{#if budget}
-			<span>{labels.budget} {cents(budget.remaining)} / {cents(budget.limit)}</span>
-		{/if}
-		<button type="button" onclick={reset} class="ml-auto transition-colors hover:text-fg">
-			{labels.reset}
-		</button>
+		</div>
 	</div>
 </div>
