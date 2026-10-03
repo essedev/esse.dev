@@ -23,7 +23,17 @@ import { admits, jevInput, parseTriage, type JevOutput, type Lang, type Triage }
  */
 
 const MODEL_ID = '@cf/zai-org/glm-5.3-flash';
-const JEV = 'typesafe/jev';
+
+/**
+ * Da dove passa Jev. `typesafe`: API di TypeSafe con la chiave `TYPESAFE_API_KEY` (secret
+ * del Worker, `.dev.vars` in locale). `workers-ai`: binding `AI`, senza chiavi, ma con
+ * crediti AI Gateway sull'account. Stesse domande e stesse risposte: cambia solo il
+ * trasporto. Per ora TypeSafe; si passa al binding quando ci sono i crediti.
+ */
+const JEV_TRANSPORT: 'typesafe' | 'workers-ai' = 'typesafe';
+const TYPESAFE_URL = 'https://api.typesafe.ai/v1/systemone';
+/** Oltre questo tempo il triage si abbandona e il messaggio passa (il tetto resta). */
+const JEV_TIMEOUT_MS = 3000;
 /** Un file di testo oltre questa misura si taglia: il resto costerebbe token per niente. */
 const PAGE_MAX_CHARS = 12_000;
 
@@ -179,15 +189,29 @@ export class SiteAgent extends DurableObject<Env> {
 		reply({ type: 'budget', remaining: await this.#remaining(), limit: VISITOR_DAILY_USD });
 	}
 
+	/** Una chiamata a Jev sul trasporto scelto; la forma della risposta la valida `parseTriage`. */
+	async #jev(input: ReturnType<typeof jevInput>): Promise<JevOutput> {
+		if (JEV_TRANSPORT === 'workers-ai') {
+			// Jev non ha un tipo nel catalogo dei modelli del binding.
+			const run = this.env.AI.run as (model: string, input: unknown) => Promise<unknown>;
+			return (await run('typesafe/jev', input)) as JevOutput;
+		}
+		const key = (this.env as Env & { TYPESAFE_API_KEY?: string }).TYPESAFE_API_KEY;
+		if (!key) throw new Error('TYPESAFE_API_KEY is not set');
+		const res = await fetch(TYPESAFE_URL, {
+			method: 'POST',
+			headers: { authorization: `Bearer ${key}`, 'content-type': 'application/json' },
+			body: JSON.stringify({ model: 'jev-latest', ...input }),
+			signal: AbortSignal.timeout(JEV_TIMEOUT_MS)
+		});
+		if (!res.ok) throw new Error(`TypeSafe: HTTP ${res.status} ${await res.text()}`);
+		return (await res.json()) as JevOutput;
+	}
+
 	async #triage(text: string): Promise<Triage | null> {
 		const started = Date.now();
 		try {
-			// Jev non ha un tipo nel catalogo dei modelli del binding: la risposta si valida
-			// in `parseTriage`, che fallisce su qualunque forma inattesa.
-			const output = (await (
-				this.env.AI.run as (model: string, input: unknown) => Promise<unknown>
-			)(JEV, jevInput(text))) as JevOutput;
-			return parseTriage(output, Date.now() - started);
+			return parseTriage(await this.#jev(jevInput(text)), Date.now() - started);
 		} catch (error) {
 			// Senza triage la richiesta passa: il limite vero è il budget in costo reale.
 			console.error('Jev triage failed', error);

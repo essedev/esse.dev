@@ -132,5 +132,7 @@ Ogni visitatore ha un budget giornaliero in dollari e il sito un tetto globale
 pi-ai, non il numero di messaggi. Prima del modello Jev (TypeSafe, su Workers AI)
 classifica intento, peso e lingua in meno di un secondo: fuori tema e abuso si fermano
 lì. Se Jev non risponde la richiesta passa: il tetto in costo reale resta la garanzia.
+Per ora Jev si chiama dall'API di TypeSafe con una chiave: è l'unica eccezione al
+"nessuna chiave nel Worker" della #11, finché non ci sono crediti AI Gateway.
 Scartati: un numero fisso di messaggi per visitatore (rigido, ignora quanto costa una
 domanda), il solo triage senza tetto (una classificazione si può ingannare).

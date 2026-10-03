@@ -65,9 +65,10 @@ Scelte in `docs/DECISIONS.md` #11.
   0,15/0,50 $ per milione; una domanda con due tool costa circa 0,07 centesimi);
   `read_page`; Markdown sicuro nelle risposte, ragionamento chiuso, token e costo per
   risposta. Triage con Jev e limite in costo reale (`docs/DECISIONS.md` #12).
-- Jev (modello di terze parti su Workers AI) richiede crediti AI Gateway: senza, il
-  triage fallisce ("Insufficient AI Gateway credits") e i messaggi passano senza triage.
-  Da fare da Simone: caricare crediti (unified billing, +5% sull'acquisto).
+- Jev per ora passa dall'API di TypeSafe (`TYPESAFE_API_KEY`, secret del Worker): su
+  Workers AI è un modello di terze parti e richiede crediti AI Gateway ("Insufficient AI
+  Gateway credits" senza). Quando ci sono i crediti si passa al binding cambiando
+  `JEV_TRANSPORT` in `src/agent/site-agent.ts`, e la chiave si toglie.
 - Da valutare: `@cloudflare/computer` (clona i repo in un workspace ed esegue JavaScript
   in un Dynamic Worker) al posto dei tool sull'API di GitHub, unito a `run_code`.
 - Tool di sola lettura su dati già pubblici. Niente scritture, fetch di URL liberi,

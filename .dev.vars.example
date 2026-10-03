@@ -1,0 +1,3 @@
+# Copia in .dev.vars (escluso da git) per lo sviluppo locale. In produzione:
+# pnpm exec wrangler secret put TYPESAFE_API_KEY
+TYPESAFE_API_KEY=
