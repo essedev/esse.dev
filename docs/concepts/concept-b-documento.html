@@ -1,0 +1,2505 @@
+<!doctype html>
+<html lang="it" data-theme="dark">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Simone Salerno, documento</title>
+		<!--
+			Concept B, "Documento". Il sito come un documento tecnico composto con cura: sezioni
+			numerate, decisioni citabili come #N, note a margine, indice con scroll spy, revisione
+			in testa e registro delle revisioni in fondo.
+			Numero di revisione e voci di "Revisioni" sono dati di esempio del mockup.
+		-->
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Geist:wght@300..600&family=Geist+Mono:wght@400;500&display=swap"
+			rel="stylesheet"
+		/>
+		<script>
+			document.documentElement.classList.add('js');
+			try {
+				const t = localStorage.getItem('esse-theme');
+				if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t;
+			} catch (e) {
+				/* storage non disponibile: resta il tema scuro */
+			}
+		</script>
+		<style>
+			:root {
+				--accent: #5ef2d0;
+				--accent-ink: var(--accent);
+				--accent-soft: color-mix(in srgb, var(--accent) 14%, transparent);
+
+				--bg: #0a0b0c;
+				--bg-2: #0f1112;
+				--fg: #e6e8e9;
+				--fg-2: #c5cacd;
+				--muted: #8c9398;
+				--faint: #5b6267;
+				--rule: #1c2023;
+				--rule-2: #2a3034;
+
+				--s1: 4px;
+				--s2: 8px;
+				--s3: 12px;
+				--s4: 16px;
+				--s5: 24px;
+				--s6: 32px;
+				--s7: 48px;
+				--s8: 64px;
+				--s9: 96px;
+
+				--r1: 2px;
+				--r2: 4px;
+				--r3: 999px;
+
+				--sans: 'Geist', ui-sans-serif, system-ui, sans-serif;
+				--mono: 'Geist Mono', ui-monospace, 'SF Mono', monospace;
+
+				--measure: 40rem;
+				--hang: 4.5rem;
+				--rail: 12.5rem;
+				--gap-rail: 8rem;
+				--note: 13.5rem;
+				--gap-note: 3.5rem;
+
+				--ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+				color-scheme: dark;
+			}
+			:root[data-theme='light'] {
+				--accent-ink: #0a7d66;
+				--accent-soft: color-mix(in srgb, #0a7d66 12%, transparent);
+				--bg: #f3f0e8;
+				--bg-2: #ece8de;
+				--fg: #1a1b1c;
+				--fg-2: #36383b;
+				--muted: #615e57;
+				--faint: #9c978c;
+				--rule: #dcd6c9;
+				--rule-2: #c8c1b1;
+				color-scheme: light;
+			}
+
+			*,
+			*::before,
+			*::after {
+				box-sizing: border-box;
+			}
+			* {
+				margin: 0;
+			}
+			html {
+				scroll-behavior: smooth;
+				-webkit-text-size-adjust: 100%;
+			}
+			body {
+				background: var(--bg);
+				color: var(--fg);
+				font: 380 17px/1.65 var(--sans);
+				-webkit-font-smoothing: antialiased;
+				text-rendering: optimizeLegibility;
+				transition: background-color 240ms var(--ease), color 240ms var(--ease);
+			}
+			ol,
+			ul {
+				padding: 0;
+				list-style: none;
+			}
+			a {
+				color: inherit;
+			}
+			button {
+				font: inherit;
+				color: inherit;
+				background: none;
+				border: 0;
+				padding: 0;
+				cursor: pointer;
+			}
+			svg.i {
+				width: 15px;
+				height: 15px;
+				flex: none;
+				stroke: currentColor;
+				fill: none;
+				stroke-width: 1.75;
+				stroke-linecap: round;
+				stroke-linejoin: round;
+			}
+			::selection {
+				background: var(--accent-soft);
+				color: var(--fg);
+			}
+			:focus-visible {
+				outline: 2px solid var(--accent-ink);
+				outline-offset: 3px;
+				border-radius: var(--r1);
+			}
+			.mono,
+			time,
+			code {
+				font-family: var(--mono);
+				font-variant-numeric: tabular-nums;
+			}
+			.sr-only {
+				position: absolute;
+				width: 1px;
+				height: 1px;
+				overflow: hidden;
+				clip: rect(0 0 0 0);
+				white-space: nowrap;
+			}
+			.skip {
+				position: absolute;
+				left: var(--s4);
+				top: -100px;
+				z-index: 50;
+				padding: var(--s2) var(--s3);
+				background: var(--fg);
+				color: var(--bg);
+				font: 500 13px/1 var(--mono);
+				border-radius: var(--r2);
+			}
+			.skip:focus {
+				top: var(--s4);
+			}
+
+			/* ---------- impianto ---------- */
+			.layout {
+				max-width: calc(
+					var(--rail) + var(--gap-rail) + var(--measure) + var(--gap-note) + var(--note) + 2 *
+						var(--s6)
+				);
+				margin: 0 auto;
+				padding: 0 var(--s6);
+				display: grid;
+				grid-template-columns: var(--rail) minmax(0, 1fr);
+				column-gap: var(--gap-rail);
+			}
+
+			/* ---------- colonna sinistra: marchio, indice, piede ---------- */
+			.rail {
+				position: sticky;
+				top: 0;
+				height: 100vh;
+				height: 100dvh;
+				display: flex;
+				flex-direction: column;
+				gap: var(--s7);
+				padding: var(--s7) 0 var(--s6);
+			}
+			.brand {
+				display: inline-flex;
+				align-items: center;
+				font: 500 15px/1 var(--mono);
+				letter-spacing: -0.01em;
+				text-decoration: none;
+				color: var(--fg);
+				width: max-content;
+			}
+			.caret {
+				display: inline-block;
+				width: 0.55em;
+				height: 1.05em;
+				margin-left: 3px;
+				background: var(--accent-ink);
+				animation: blink 1.1s steps(1) infinite;
+			}
+			@keyframes blink {
+				50% {
+					opacity: 0;
+				}
+			}
+
+			.toc {
+				flex: 1;
+				min-height: 0;
+				overflow-y: auto;
+				scrollbar-width: none;
+			}
+			.toc-toggle {
+				display: none;
+			}
+			.label {
+				font: 500 11px/1 var(--mono);
+				letter-spacing: 0.08em;
+				text-transform: uppercase;
+				color: var(--muted);
+			}
+			.toc > .label {
+				margin-bottom: var(--s4);
+			}
+			.toc-track {
+				position: relative;
+				border-left: 1px solid var(--rule);
+			}
+			.toc-ind {
+				position: absolute;
+				left: -1px;
+				top: 0;
+				width: 1px;
+				height: 0;
+				background: var(--accent-ink);
+				box-shadow: 0 0 8px color-mix(in srgb, var(--accent) 60%, transparent);
+				transition:
+					transform 320ms var(--ease),
+					height 320ms var(--ease),
+					opacity 200ms;
+				opacity: 0;
+			}
+			.toc a {
+				display: grid;
+				grid-template-columns: 2.25rem 1fr;
+				align-items: baseline;
+				padding: 5px 0 5px var(--s4);
+				font-size: 14px;
+				line-height: 1.35;
+				color: var(--muted);
+				text-decoration: none;
+				transition: color 160ms;
+			}
+			.toc a .t-num {
+				font: 400 12px/1 var(--mono);
+				font-variant-numeric: tabular-nums;
+				color: var(--faint);
+				transition: color 160ms;
+			}
+			.toc ol ol a {
+				font-size: 13px;
+				padding-top: 3px;
+				padding-bottom: 3px;
+				padding-left: calc(var(--s4) + 2.25rem);
+				grid-template-columns: 2.25rem 1fr;
+			}
+			.toc a:hover {
+				color: var(--fg);
+			}
+			.toc a.active {
+				color: var(--fg);
+			}
+			.toc a.active .t-num {
+				color: var(--accent-ink);
+			}
+			.toc a.parent {
+				color: var(--fg-2);
+			}
+
+			.rail-foot {
+				display: flex;
+				flex-direction: column;
+				gap: var(--s3);
+				font: 400 12px/1.4 var(--mono);
+				color: var(--muted);
+			}
+			.rail-foot a {
+				text-decoration: none;
+			}
+			.rail-foot a:hover {
+				color: var(--fg);
+			}
+			.rail-row {
+				display: flex;
+				gap: var(--s3);
+				align-items: center;
+			}
+			.btn {
+				display: inline-flex;
+				align-items: center;
+				gap: var(--s2);
+				height: 28px;
+				padding: 0 var(--s3);
+				border: 1px solid var(--rule-2);
+				border-radius: var(--r2);
+				font: 400 12px/1 var(--mono);
+				color: var(--muted);
+				transition:
+					color 160ms,
+					border-color 160ms;
+			}
+			.btn:hover {
+				color: var(--fg);
+				border-color: var(--muted);
+			}
+			.theme .i-sun {
+				display: none;
+			}
+			:root[data-theme='dark'] .theme .i-moon {
+				display: none;
+			}
+			:root[data-theme='dark'] .theme .i-sun {
+				display: block;
+			}
+			.lang a[aria-current] {
+				color: var(--fg);
+			}
+
+			/* ---------- documento ---------- */
+			.doc {
+				min-width: 0;
+				padding: var(--s7) calc(var(--gap-note) + var(--note)) var(--s9) 0;
+			}
+			.doc > *,
+			.doc section > * {
+				max-width: var(--measure);
+			}
+
+			.titleblock {
+				padding-bottom: var(--s7);
+				border-bottom: 1px solid var(--rule);
+			}
+			.eyebrow {
+				display: flex;
+				justify-content: space-between;
+				gap: var(--s4);
+				padding-bottom: var(--s3);
+				margin-bottom: var(--s7);
+				border-bottom: 1px solid var(--rule);
+			}
+			.eyebrow a {
+				text-decoration: none;
+			}
+			.eyebrow a:hover {
+				color: var(--fg);
+			}
+			h1 {
+				font-size: 2.5rem;
+				line-height: 1.1;
+				font-weight: 500;
+				letter-spacing: -0.025em;
+			}
+			.subtitle {
+				margin-top: var(--s3);
+				font-size: 1.125rem;
+				color: var(--fg-2);
+			}
+			.abstract {
+				margin-top: var(--s5);
+				color: var(--muted);
+			}
+			.meta {
+				display: grid;
+				grid-template-columns: repeat(4, auto);
+				justify-content: start;
+				column-gap: var(--s7);
+				row-gap: var(--s4);
+				margin-top: var(--s6);
+			}
+			.meta dd,
+			.spec dd {
+				margin: 6px 0 0;
+				font: 400 13px/1.45 var(--mono);
+				font-variant-numeric: tabular-nums;
+				color: var(--fg-2);
+			}
+			.meta dd a {
+				text-decoration: none;
+			}
+			.meta dd a:hover {
+				color: var(--accent-ink);
+			}
+
+			section {
+				padding-top: var(--s8);
+			}
+			section + section,
+			.titleblock + section {
+				border-top: 0;
+			}
+			section.major + section.major {
+				margin-top: var(--s8);
+				border-top: 1px solid var(--rule);
+			}
+			.titleblock + section.major {
+				padding-top: var(--s8);
+			}
+
+			/* titoli con numero sospeso nel margine */
+			.h {
+				display: grid;
+				grid-template-columns: var(--hang) minmax(0, 1fr);
+				align-items: baseline;
+				margin-left: calc(-1 * var(--hang));
+				max-width: calc(var(--measure) + var(--hang)) !important;
+			}
+			h2.h {
+				font-size: 1.5rem;
+				line-height: 1.25;
+				font-weight: 500;
+				letter-spacing: -0.015em;
+				margin-bottom: var(--s5);
+			}
+			h3.h {
+				font-size: 1.1875rem;
+				line-height: 1.3;
+				font-weight: 500;
+				letter-spacing: -0.01em;
+				margin-bottom: var(--s4);
+			}
+			.h-num {
+				font: 400 0.8125rem/1 var(--mono);
+				font-variant-numeric: tabular-nums;
+				color: var(--muted);
+				letter-spacing: 0.02em;
+				white-space: nowrap;
+			}
+			h2 .h-num {
+				font-size: 0.875rem;
+				color: var(--accent-ink);
+			}
+			.h-text {
+				display: inline;
+			}
+			.anchor {
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+				position: relative;
+				width: 26px;
+				height: 26px;
+				margin-left: var(--s2);
+				vertical-align: 0.1em;
+				border-radius: var(--r2);
+				color: var(--faint);
+				opacity: 0;
+				transition:
+					opacity 160ms,
+					color 160ms,
+					background-color 160ms;
+			}
+			.anchor svg.i {
+				width: 14px;
+				height: 14px;
+			}
+			.h:hover .anchor,
+			.dec:hover .anchor,
+			.anchor:focus-visible,
+			.anchor.copied {
+				opacity: 1;
+			}
+			.anchor:hover {
+				color: var(--fg);
+				background: var(--bg-2);
+			}
+			.anchor .i-check,
+			.copy .i-check {
+				display: none;
+			}
+			.anchor.copied,
+			.copy.copied {
+				color: var(--accent-ink);
+			}
+			.anchor.copied .i-link,
+			.copy.copied .i-copy {
+				display: none;
+			}
+			.anchor.copied .i-check,
+			.copy.copied .i-check {
+				display: block;
+			}
+			.tip {
+				position: absolute;
+				left: 50%;
+				bottom: calc(100% + 6px);
+				transform: translate(-50%, 4px);
+				padding: 4px 8px;
+				border-radius: var(--r2);
+				background: var(--fg);
+				color: var(--bg);
+				font: 500 11px/1 var(--mono);
+				letter-spacing: 0.02em;
+				white-space: nowrap;
+				opacity: 0;
+				pointer-events: none;
+				transition:
+					opacity 160ms,
+					transform 160ms var(--ease);
+			}
+			.copied .tip {
+				opacity: 1;
+				transform: translate(-50%, 0);
+			}
+			@media (hover: none) {
+				.anchor {
+					opacity: 0.6;
+				}
+			}
+
+			.tag {
+				display: inline-block;
+				margin-left: var(--s3);
+				padding: 3px 6px;
+				border: 1px solid var(--rule-2);
+				border-radius: var(--r1);
+				font: 400 11px/1 var(--mono);
+				letter-spacing: 0.02em;
+				color: var(--muted);
+				vertical-align: 0.25em;
+			}
+
+			p + p {
+				margin-top: var(--s4);
+			}
+			.doc p {
+				color: var(--fg-2);
+			}
+			.doc p strong,
+			.doc p b {
+				color: var(--fg);
+				font-weight: 500;
+			}
+			.prose a,
+			a.ul {
+				text-decoration: underline;
+				text-decoration-thickness: 1px;
+				text-underline-offset: 3px;
+				text-decoration-color: var(--rule-2);
+				transition: text-decoration-color 160ms, color 160ms;
+			}
+			.prose a:hover,
+			a.ul:hover {
+				text-decoration-color: var(--accent-ink);
+				color: var(--fg);
+			}
+			a.xref {
+				font: 400 0.82em/1 var(--mono);
+				color: var(--accent-ink);
+				text-decoration: none;
+				border-bottom: 1px dotted color-mix(in srgb, var(--accent-ink) 50%, transparent);
+			}
+			a.xref:hover {
+				border-bottom-style: solid;
+			}
+
+			/* ---------- note a margine ---------- */
+			.ann {
+				position: relative;
+			}
+			.ann + .ann,
+			.ann + p,
+			p + .ann {
+				margin-top: var(--s4);
+			}
+			.sn-ref {
+				font: 500 0.68em/0 var(--mono);
+				vertical-align: super;
+				color: var(--accent-ink);
+				text-decoration: none;
+				padding: 0 1px;
+				margin-left: 1px;
+			}
+			.sn {
+				position: absolute;
+				top: 0.3em;
+				left: calc(100% + var(--gap-note));
+				width: var(--note);
+				font-size: 13px;
+				line-height: 1.55;
+				color: var(--muted);
+				padding-left: var(--s3);
+				border-left: 1px solid var(--rule);
+				transition:
+					border-color 200ms,
+					color 200ms;
+			}
+			.sn .sn-n {
+				font: 500 11px/1 var(--mono);
+				color: var(--accent-ink);
+				margin-right: 6px;
+			}
+			.sn.hl {
+				color: var(--fg-2);
+				border-left-color: var(--accent-ink);
+			}
+
+			/* ---------- 1 adesso: date sospese ---------- */
+			.log li,
+			.rest li,
+			.revs li {
+				display: grid;
+				grid-template-columns: var(--hang) minmax(0, 1fr);
+				align-items: baseline;
+				margin-left: calc(-1 * var(--hang));
+			}
+			.log {
+				margin-top: var(--s5);
+				max-width: calc(var(--measure) + var(--hang)) !important;
+			}
+			.log li {
+				padding: var(--s4) 0;
+				border-top: 1px solid var(--rule);
+			}
+			.log li:last-child {
+				border-bottom: 1px solid var(--rule);
+			}
+			.log time,
+			.revs .rv,
+			.rest .ix {
+				font-size: 12px;
+				color: var(--muted);
+			}
+			.log b {
+				font-weight: 500;
+				color: var(--fg);
+			}
+			.log p {
+				color: var(--fg-2);
+			}
+
+			/* ---------- 2 metodo: decisioni #N ---------- */
+			.decs {
+				margin-top: var(--s6);
+				max-width: calc(var(--measure) + var(--hang)) !important;
+			}
+			.dec {
+				display: grid;
+				grid-template-columns: var(--hang) minmax(0, 1fr);
+				align-items: baseline;
+				margin-left: calc(-1 * var(--hang));
+				padding: var(--s5) 0 var(--s5);
+				border-top: 1px solid var(--rule);
+				scroll-margin-top: var(--s6);
+			}
+			.dec:last-child {
+				border-bottom: 1px solid var(--rule);
+			}
+			.dec-num {
+				font: 500 0.9375rem/1 var(--mono);
+				font-variant-numeric: tabular-nums;
+				color: var(--accent-ink);
+				text-decoration: none;
+				width: max-content;
+			}
+			.dec h3 {
+				font-size: 1.1875rem;
+				font-weight: 500;
+				letter-spacing: -0.01em;
+				line-height: 1.3;
+				margin-bottom: var(--s2);
+				color: var(--fg);
+			}
+			.dec:target {
+				background: linear-gradient(var(--accent-soft), var(--accent-soft)) left / 2px 100%
+					no-repeat;
+			}
+
+			.setup {
+				margin-top: var(--s6);
+				padding: var(--s5);
+				border: 1px solid var(--rule-2);
+				border-radius: var(--r2);
+				background: var(--bg-2);
+			}
+			.setup .label {
+				display: flex;
+				align-items: center;
+				gap: var(--s2);
+				margin-bottom: var(--s3);
+			}
+
+			/* ---------- 3 progetti ---------- */
+			.entry {
+				padding-top: var(--s7);
+				scroll-margin-top: var(--s5);
+			}
+			.entry + .entry {
+				margin-top: var(--s5);
+			}
+			.lede {
+				color: var(--fg) !important;
+				font-size: 1.0625rem;
+			}
+			.spec {
+				display: grid;
+				grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+				margin: var(--s5) 0;
+				border-top: 1px solid var(--rule);
+			}
+			.spec > div {
+				display: grid;
+				grid-template-columns: 6.5rem minmax(0, 1fr);
+				align-items: baseline;
+				padding: 10px 0;
+				border-bottom: 1px solid var(--rule);
+			}
+			.spec > div:nth-child(1) {
+				padding-right: var(--s5);
+			}
+			.spec > div.wide {
+				grid-column: 1 / -1;
+			}
+			.spec dd {
+				margin: 0;
+				overflow-wrap: anywhere;
+			}
+			.spec dd a {
+				text-decoration: none;
+				display: inline-flex;
+				align-items: center;
+				gap: 4px;
+			}
+			.spec dd a:hover {
+				color: var(--accent-ink);
+			}
+			.spec dd a svg.i {
+				width: 12px;
+				height: 12px;
+			}
+
+			.led {
+				display: inline-block;
+				width: 7px;
+				height: 7px;
+				border-radius: var(--r3);
+				margin-right: 8px;
+				vertical-align: 0.05em;
+				background: var(--muted);
+			}
+			.led.on {
+				background: var(--accent-ink);
+				box-shadow:
+					0 0 0 3px color-mix(in srgb, var(--accent-ink) 14%, transparent),
+					0 0 10px color-mix(in srgb, var(--accent) 55%, transparent);
+				animation: breathe 2.8s ease-in-out infinite;
+			}
+			.led.idea {
+				background: transparent;
+				box-shadow: inset 0 0 0 1.5px var(--muted);
+			}
+			.led.arch {
+				background: transparent;
+				box-shadow: inset 0 0 0 1.5px var(--faint);
+			}
+			@keyframes breathe {
+				50% {
+					box-shadow:
+						0 0 0 3px color-mix(in srgb, var(--accent-ink) 8%, transparent),
+						0 0 4px color-mix(in srgb, var(--accent) 30%, transparent);
+				}
+			}
+
+			.receipts {
+				display: flex;
+				flex-wrap: wrap;
+				gap: var(--s2);
+				margin-top: var(--s5);
+			}
+			.chip {
+				display: inline-flex;
+				align-items: center;
+				height: 26px;
+				padding: 0 10px;
+				border: 1px solid var(--rule-2);
+				border-radius: var(--r1);
+				font: 400 12px/1 var(--mono);
+				font-variant-numeric: tabular-nums;
+				color: var(--fg-2);
+			}
+			.chip b {
+				font-weight: 500;
+				color: var(--fg);
+				margin-right: 5px;
+			}
+			.cmd {
+				display: flex;
+				align-items: stretch;
+				width: 100%;
+				margin-top: var(--s1);
+				border: 1px solid var(--rule-2);
+				border-radius: var(--r2);
+				background: var(--bg-2);
+				overflow: hidden;
+			}
+			.cmd code {
+				flex: 1;
+				min-width: 0;
+				display: flex;
+				align-items: center;
+				gap: var(--s3);
+				padding: 10px var(--s3);
+				font-size: 13px;
+				color: var(--fg);
+				white-space: nowrap;
+				overflow-x: auto;
+				scrollbar-width: none;
+			}
+			.cmd code .pr {
+				color: var(--accent-ink);
+				user-select: none;
+			}
+			.copy {
+				position: relative;
+				display: inline-flex;
+				align-items: center;
+				gap: 6px;
+				padding: 0 var(--s3);
+				border-left: 1px solid var(--rule-2);
+				font: 400 12px/1 var(--mono);
+				color: var(--muted);
+				transition:
+					color 160ms,
+					background-color 160ms;
+			}
+			.copy:hover {
+				color: var(--fg);
+				background: var(--bg);
+			}
+			.copy .lbl-done {
+				display: none;
+			}
+			.copy.copied .lbl {
+				display: none;
+			}
+			.copy.copied .lbl-done {
+				display: inline;
+			}
+
+			.rest {
+				margin-top: var(--s5);
+				max-width: calc(var(--measure) + var(--hang)) !important;
+			}
+			.rest li {
+				padding: 14px 0;
+				border-top: 1px solid var(--rule);
+			}
+			.rest li:last-child {
+				border-bottom: 1px solid var(--rule);
+			}
+			.rest .row {
+				display: grid;
+				grid-template-columns: minmax(0, 1fr) auto;
+				column-gap: var(--s5);
+				align-items: baseline;
+			}
+			.rest .name {
+				font-weight: 500;
+				color: var(--fg);
+				text-decoration: none;
+			}
+			.rest a.name {
+				display: inline-flex;
+				align-items: center;
+				gap: 4px;
+			}
+			.rest a.name svg.i {
+				width: 13px;
+				height: 13px;
+				color: var(--faint);
+				transition:
+					color 160ms,
+					transform 200ms var(--ease);
+			}
+			.rest a.name:hover svg.i {
+				color: var(--accent-ink);
+				transform: translate(1px, -1px);
+			}
+			.rest .st {
+				font: 400 12px/1 var(--mono);
+				font-variant-numeric: tabular-nums;
+				color: var(--muted);
+				white-space: nowrap;
+				display: inline-flex;
+				align-items: center;
+				gap: var(--s4);
+			}
+			.rest .st > span {
+				display: inline-flex;
+				align-items: center;
+				min-width: 6.5rem;
+			}
+			.rest p {
+				margin-top: 2px;
+				font-size: 15px;
+				line-height: 1.55;
+				color: var(--muted) !important;
+			}
+
+			/* ---------- 4 scritti ---------- */
+			.writing {
+				display: grid;
+				grid-template-columns: var(--hang) minmax(0, 1fr);
+				align-items: baseline;
+				margin-left: calc(-1 * var(--hang));
+				max-width: calc(var(--measure) + var(--hang)) !important;
+				padding: var(--s4) 0;
+				border-top: 1px solid var(--rule);
+				border-bottom: 1px solid var(--rule);
+				text-decoration: none;
+			}
+			.writing time {
+				font-size: 12px;
+				color: var(--muted);
+			}
+			.writing .t {
+				display: inline-flex;
+				gap: var(--s2);
+				align-items: baseline;
+				color: var(--fg);
+				font-weight: 450;
+			}
+			.writing .t svg.i {
+				align-self: center;
+				color: var(--faint);
+				transition:
+					color 160ms,
+					transform 200ms var(--ease);
+			}
+			.writing:hover .t svg.i {
+				color: var(--accent-ink);
+				transform: translate(1px, -1px);
+			}
+			.writing + p {
+				margin-top: var(--s4);
+			}
+
+			/* ---------- 5 contatti ---------- */
+			.mailrow {
+				display: flex;
+				flex-wrap: wrap;
+				align-items: center;
+				gap: var(--s3);
+				margin-top: var(--s5);
+			}
+			.mail {
+				font: 400 1.25rem/1.2 var(--mono);
+				color: var(--fg);
+				text-decoration: none;
+				border-bottom: 1px solid var(--rule-2);
+				padding-bottom: 2px;
+				transition: border-color 160ms;
+			}
+			.mail:hover {
+				border-bottom-color: var(--accent-ink);
+			}
+			.copy.solo {
+				height: 30px;
+				border: 1px solid var(--rule-2);
+				border-radius: var(--r2);
+			}
+			.links {
+				display: flex;
+				flex-wrap: wrap;
+				gap: var(--s5);
+				margin-top: var(--s5);
+				font: 400 13px/1 var(--mono);
+				color: var(--muted);
+			}
+			.links a {
+				display: inline-flex;
+				align-items: center;
+				gap: 4px;
+				text-decoration: none;
+				transition: color 160ms;
+			}
+			.links a svg.i {
+				width: 13px;
+				height: 13px;
+				color: var(--faint);
+				transition:
+					color 160ms,
+					transform 200ms var(--ease);
+			}
+			.links a:hover {
+				color: var(--fg);
+			}
+			.links a:hover svg.i {
+				color: var(--accent-ink);
+				transform: translate(1px, -1px);
+			}
+
+			/* ---------- revisioni ---------- */
+			.revs {
+				margin-top: var(--s5);
+				max-width: calc(var(--measure) + var(--hang)) !important;
+			}
+			.revs li {
+				padding: 12px 0;
+				border-top: 1px solid var(--rule);
+				font-size: 15px;
+			}
+			.revs li:last-child {
+				border-bottom: 1px solid var(--rule);
+			}
+			.revs .rv-body {
+				display: grid;
+				grid-template-columns: 7rem minmax(0, 1fr);
+				align-items: baseline;
+				color: var(--fg-2);
+			}
+			.revs time {
+				font-size: 12px;
+				color: var(--muted);
+			}
+			.revs li:first-child .rv {
+				color: var(--accent-ink);
+			}
+
+			.colophon {
+				margin-top: var(--s8);
+				padding-top: var(--s4);
+				border-top: 1px solid var(--rule);
+				display: flex;
+				flex-wrap: wrap;
+				justify-content: space-between;
+				gap: var(--s2) var(--s5);
+				font: 400 12px/1.5 var(--mono);
+				color: var(--muted);
+			}
+
+			/* ---------- comparsa ---------- */
+			.js .reveal {
+				opacity: 0;
+				transform: translateY(8px);
+				transition:
+					opacity 520ms var(--ease),
+					transform 520ms var(--ease);
+			}
+			.js .reveal.in {
+				opacity: 1;
+				transform: none;
+			}
+
+			[id] {
+				scroll-margin-top: var(--s6);
+			}
+
+			/* ---------- note in linea sotto i 1240px ---------- */
+			@media (max-width: 1339px) {
+				.doc {
+					padding-right: 0;
+				}
+				.sn {
+					position: static;
+					width: auto;
+					margin: var(--s3) 0 0;
+				}
+				.ann + .ann {
+					margin-top: var(--s5);
+				}
+			}
+
+			/* ---------- mobile: indice in una barra in alto ---------- */
+			@media (max-width: 999px) {
+				.layout {
+					grid-template-columns: minmax(0, 1fr);
+					padding: 0 var(--s4);
+				}
+				.rail {
+					position: sticky;
+					top: 0;
+					z-index: 30;
+					height: auto;
+					flex-direction: row;
+					align-items: center;
+					gap: var(--s3);
+					margin: 0 calc(-1 * var(--s4));
+					padding: 10px var(--s4);
+					background: var(--bg);
+					border-bottom: 1px solid var(--rule);
+					transition: background-color 240ms var(--ease);
+				}
+				.toc {
+					flex: 1;
+					min-width: 0;
+					overflow: visible;
+				}
+				.toc > .label {
+					display: none;
+				}
+				.toc-toggle {
+					display: flex;
+					align-items: center;
+					gap: var(--s2);
+					width: 100%;
+					height: 32px;
+					padding: 0 10px;
+					border: 1px solid var(--rule-2);
+					border-radius: var(--r2);
+					font: 400 12px/1 var(--mono);
+					color: var(--fg-2);
+				}
+				.toc-toggle .cur {
+					flex: 1;
+					min-width: 0;
+					text-align: left;
+					overflow: hidden;
+					text-overflow: ellipsis;
+					white-space: nowrap;
+				}
+				.toc-toggle .cur b {
+					font-weight: 500;
+					color: var(--accent-ink);
+					margin-right: 6px;
+				}
+				.toc-toggle .i-chev {
+					transition: transform 240ms var(--ease);
+				}
+				.toc-toggle[aria-expanded='true'] .i-chev {
+					transform: rotate(180deg);
+				}
+				.toc-track {
+					position: static;
+					border-left: 0;
+				}
+				.toc-list {
+					display: none;
+					position: absolute;
+					top: 100%;
+					left: 0;
+					right: 0;
+					max-height: 70vh;
+					overflow-y: auto;
+					padding: var(--s3) var(--s4) var(--s4);
+					background: var(--bg);
+					border-left: 0;
+					border-bottom: 1px solid var(--rule-2);
+				}
+				.toc-list.open {
+					display: block;
+				}
+				.toc-ind {
+					display: none;
+				}
+				.toc a {
+					padding: 8px 0;
+				}
+				.toc ol ol a {
+					padding: 6px 0 6px 2.25rem;
+				}
+				.toc a.active {
+					color: var(--accent-ink);
+				}
+				.rail-foot .rev,
+				.rail-foot .lang {
+					display: none;
+				}
+				.rail-foot .theme .lbl {
+					display: none;
+				}
+				.rail-foot .theme {
+					width: 32px;
+					height: 32px;
+					padding: 0;
+					justify-content: center;
+				}
+				.doc {
+					padding-top: var(--s6);
+				}
+				[id] {
+					scroll-margin-top: 72px;
+				}
+				.dec,
+				.entry {
+					scroll-margin-top: 72px;
+				}
+				.eyebrow {
+					margin-bottom: var(--s6);
+				}
+				h1 {
+					font-size: 2.125rem;
+				}
+				.meta {
+					grid-template-columns: repeat(2, auto);
+					column-gap: var(--s6);
+				}
+
+				/* il margine sospeso rientra nella colonna */
+				.h,
+				.log li,
+				.rest li,
+				.revs li,
+				.dec,
+				.writing {
+					margin-left: 0;
+					max-width: none !important;
+				}
+				.h {
+					grid-template-columns: auto minmax(0, 1fr);
+					column-gap: var(--s3);
+				}
+				.log li,
+				.dec,
+				.writing {
+					grid-template-columns: minmax(0, 1fr);
+					row-gap: 6px;
+				}
+				.rest li,
+				.revs li {
+					grid-template-columns: 2.25rem minmax(0, 1fr);
+				}
+				.rest .row {
+					grid-template-columns: minmax(0, 1fr);
+					row-gap: 6px;
+				}
+				.rest .st > span {
+					min-width: 0;
+				}
+				.rest p {
+					margin-top: var(--s2);
+				}
+				.cmd code {
+					-webkit-mask-image: linear-gradient(to right, #000 82%, transparent);
+					mask-image: linear-gradient(to right, #000 82%, transparent);
+				}
+				.cmd .copy .lbl,
+				.cmd .copy .lbl-done {
+					display: none !important;
+				}
+				.dec:target {
+					padding-left: var(--s3);
+				}
+				.revs .rv-body {
+					grid-template-columns: minmax(0, 1fr);
+					row-gap: 2px;
+				}
+				.revs li {
+					grid-template-columns: 4rem minmax(0, 1fr);
+				}
+				.spec {
+					grid-template-columns: minmax(0, 1fr);
+				}
+				.spec > div:nth-child(1) {
+					padding-right: 0;
+				}
+				.spec > div {
+					grid-template-columns: 6rem minmax(0, 1fr);
+				}
+				.colophon {
+					flex-direction: column;
+				}
+			}
+
+			@media (prefers-reduced-motion: reduce) {
+				html {
+					scroll-behavior: auto;
+				}
+				*,
+				*::before,
+				*::after {
+					animation: none !important;
+					transition: none !important;
+				}
+				.js .reveal {
+					opacity: 1;
+					transform: none;
+				}
+			}
+		</style>
+	</head>
+	<body>
+		<svg width="0" height="0" style="position: absolute" aria-hidden="true">
+			<symbol id="i-link" viewBox="0 0 24 24">
+				<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+				<path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+			</symbol>
+			<symbol id="i-copy" viewBox="0 0 24 24">
+				<rect width="14" height="14" x="8" y="8" rx="2" ry="2" />
+				<path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" />
+			</symbol>
+			<symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5" /></symbol>
+			<symbol id="i-arrow" viewBox="0 0 24 24">
+				<path d="M7 7h10v10" />
+				<path d="M7 17 17 7" />
+			</symbol>
+			<symbol id="i-sun" viewBox="0 0 24 24">
+				<circle cx="12" cy="12" r="4" />
+				<path d="M12 2v2" />
+				<path d="M12 20v2" />
+				<path d="m4.93 4.93 1.41 1.41" />
+				<path d="m17.66 17.66 1.41 1.41" />
+				<path d="M2 12h2" />
+				<path d="M20 12h2" />
+				<path d="m6.34 17.66-1.41 1.41" />
+				<path d="m19.07 4.93-1.41 1.41" />
+			</symbol>
+			<symbol id="i-moon" viewBox="0 0 24 24"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" /></symbol>
+			<symbol id="i-list" viewBox="0 0 24 24">
+				<path d="M3 12h.01" />
+				<path d="M3 18h.01" />
+				<path d="M3 6h.01" />
+				<path d="M8 12h13" />
+				<path d="M8 18h13" />
+				<path d="M8 6h13" />
+			</symbol>
+			<symbol id="i-chev" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6" /></symbol>
+			<symbol id="i-terminal" viewBox="0 0 24 24">
+				<path d="m4 17 6-6-6-6" />
+				<path d="M12 19h8" />
+			</symbol>
+		</svg>
+
+		<a class="skip" href="#main">Vai al testo</a>
+		<p class="sr-only" aria-live="polite" id="live"></p>
+
+		<div class="layout">
+			<header class="rail">
+				<a class="brand" href="#top" aria-label="esse.dev, torna all'inizio"
+					>esse.dev<span class="caret" aria-hidden="true"></span
+				></a>
+
+				<nav class="toc" aria-label="Indice del documento">
+					<button
+						class="toc-toggle"
+						type="button"
+						aria-expanded="false"
+						aria-controls="toc-list"
+					>
+						<svg class="i" aria-hidden="true"><use href="#i-list" /></svg>
+						<span class="cur" id="toc-cur"><b>0</b>Chi scrive</span>
+						<svg class="i i-chev" aria-hidden="true"><use href="#i-chev" /></svg>
+						<span class="sr-only">Apri l'indice</span>
+					</button>
+					<p class="label">Indice</p>
+					<div class="toc-track">
+					<span class="toc-ind" aria-hidden="true"></span>
+					<ol class="toc-list" id="toc-list">
+						<li><a href="#chi-scrive"><span class="t-num">0</span>Chi scrive</a></li>
+						<li><a href="#adesso"><span class="t-num">1</span>Adesso</a></li>
+						<li>
+							<a href="#metodo"><span class="t-num">2</span>Metodo</a>
+							<ol>
+								<li><a href="#d1"><span class="t-num">#1</span>Architettura prima</a></li>
+								<li><a href="#d2"><span class="t-num">#2</span>Il contesto</a></li>
+								<li><a href="#d3"><span class="t-num">#3</span>Misurare</a></li>
+							</ol>
+						</li>
+						<li>
+							<a href="#progetti"><span class="t-num">3</span>Cose che ho costruito</a>
+							<ol>
+								<li><a href="#relay"><span class="t-num">3.1</span>Relay</a></li>
+								<li><a href="#portsage"><span class="t-num">3.2</span>Portsage</a></li>
+								<li><a href="#nexus"><span class="t-num">3.3</span>Nexus</a></li>
+								<li>
+									<a href="#local-llm-eval"><span class="t-num">3.4</span>Local LLM Eval</a>
+								</li>
+								<li><a href="#il-resto"><span class="t-num">3.5</span>Il resto</a></li>
+							</ol>
+						</li>
+						<li><a href="#scritti"><span class="t-num">4</span>Scritti</a></li>
+						<li><a href="#contatti"><span class="t-num">5</span>Contatti</a></li>
+						<li><a href="#revisioni"><span class="t-num">rev</span>Revisioni</a></li>
+					</ol>
+					</div>
+				</nav>
+
+				<div class="rail-foot">
+					<a class="rev" href="#revisioni">rev. 14, ottobre 2026</a>
+					<div class="rail-row">
+						<button class="btn theme" type="button" aria-label="Passa alla modalità carta">
+							<svg class="i i-sun" aria-hidden="true"><use href="#i-sun" /></svg>
+							<svg class="i i-moon" aria-hidden="true"><use href="#i-moon" /></svg>
+							<span class="lbl">carta</span>
+						</button>
+						<span class="lang"><a href="#" aria-current="true">it</a> / <a href="#">en</a></span>
+					</div>
+				</div>
+			</header>
+
+			<main class="doc" id="main">
+				<header class="titleblock reveal" id="top">
+					<p class="eyebrow label">
+						<span>esse.dev / documento</span>
+						<a href="#revisioni">rev. 14, ottobre 2026</a>
+					</p>
+					<h1>Simone Salerno</h1>
+					<p class="subtitle">Lead AI Engineer in Yellow Tech, Milano.</p>
+					<p class="abstract">
+						Questo è il documento in cui tengo quello che faccio adesso, come lavoro e cosa ho
+						costruito. Lo aggiorno come la documentazione di un progetto, per revisioni, e in fondo
+						c'è l'elenco di cosa è cambiato.
+					</p>
+					<dl class="meta">
+						<div>
+							<dt class="label">Autore</dt>
+							<dd>Simone Salerno</dd>
+						</div>
+						<div>
+							<dt class="label">Revisione</dt>
+							<dd><a href="#revisioni">14, 3 ott 2026</a></dd>
+						</div>
+						<div>
+							<dt class="label">Lettura</dt>
+							<dd><span id="readtime">7</span> min</dd>
+						</div>
+						<div>
+							<dt class="label">Stato</dt>
+							<dd><span class="led on" aria-hidden="true"></span>in revisione</dd>
+						</div>
+					</dl>
+				</header>
+
+				<!-- 0 -->
+				<section class="major" id="chi-scrive" aria-labelledby="h-chi-scrive">
+					<h2 class="h reveal" id="h-chi-scrive">
+						<span class="h-num" data-decode>0</span>
+						<span class="h-text"
+							>Chi scrive<button class="anchor" type="button" data-copy-link="chi-scrive" aria-label="Copia il link alla sezione 0">
+								<svg class="i i-link" aria-hidden="true"><use href="#i-link" /></svg
+								><svg class="i i-check" aria-hidden="true"><use href="#i-check" /></svg
+								><span class="tip" aria-hidden="true">link copiato</span>
+							</button></span
+						>
+					</h2>
+					<div class="prose reveal">
+						<p class="lede">
+							Porto l'AI generativa dentro aziende vere e la tengo in produzione. Per conto mio
+							costruisco strumenti per lavorare con molti coding agent insieme, e il metodo con cui
+							lo faccio. Progetto l'architettura, l'AI scrive il codice, io verifico e rilascio.
+						</p>
+						<p>
+							In Yellow Tech le scelte tecniche e architetturali delle soluzioni AI che costruiamo
+							per i clienti passano da me, dalla valutazione di fattibilità alla messa in
+							produzione. Accanto ai progetti curo il metodo di engineering del team, cioè le
+							convenzioni e la documentazione che rendono ripetibile il modo in cui lavoriamo.
+						</p>
+						<div class="ann">
+							<p>
+								Ci sono arrivato per una strada non lineare, fatta di ragazzi a cui insegnavo a
+								programmare, anni di freelancing full-stack, una piattaforma EdTech costruita da zero
+								e una software house.<a class="sn-ref" href="#n1" id="r1" aria-label="nota 1">1</a>
+							</p>
+							<aside class="sn" id="n1" role="note">
+								<span class="sn-n">1</span>Nel 2021 ho frequentato a Pavia uno dei primi corsi di
+								laurea italiani in Intelligenza Artificiale, quando AI Engineer non era ancora un
+								mestiere.
+							</aside>
+						</div>
+						<div class="ann">
+							<p>
+								Il resto del tempo lo passo a costruire cose mie, che trovi nella sezione
+								<a class="xref" href="#progetti">3</a>, e a capire cosa di nuovo nell'AI regge
+								davvero in produzione. Il modo in cui lavoro è scritto nella sezione
+								<a class="xref" href="#metodo">2</a>, in tre principi numerati.<a
+									class="sn-ref"
+									href="#n2"
+									id="r2"
+									aria-label="nota 2"
+									>2</a
+								>
+							</p>
+							<aside class="sn" id="n2" role="note">
+								<span class="sn-n">2</span>Ho la certificazione Claude Certified Architect,
+								Foundations, di Anthropic.
+							</aside>
+						</div>
+						<div class="links">
+							<a href="https://github.com/essedev">github <svg class="i" aria-hidden="true"><use href="#i-arrow" /></svg></a>
+							<a href="#">linkedin <svg class="i" aria-hidden="true"><use href="#i-arrow" /></svg></a>
+							<a href="mailto:hello@esse.dev">hello@esse.dev</a>
+						</div>
+					</div>
+				</section>
+
+				<!-- 1 -->
+				<section class="major" id="adesso" aria-labelledby="h-adesso">
+					<h2 class="h reveal" id="h-adesso">
+						<span class="h-num" data-decode>1</span>
+						<span class="h-text"
+							>Adesso<span class="tag">agg. rev. 14</span
+							><button class="anchor" type="button" data-copy-link="adesso" aria-label="Copia il link alla sezione 1">
+								<svg class="i i-link" aria-hidden="true"><use href="#i-link" /></svg
+								><svg class="i i-check" aria-hidden="true"><use href="#i-check" /></svg
+								><span class="tip" aria-hidden="true">link copiato</span>
+							</button></span
+						>
+					</h2>
+					<div class="ann reveal">
+						<p>
+							Cosa ho sul banco in questo periodo. È la parte del documento che cambia più spesso, e
+							ogni voce rimanda al progetto a cui appartiene.<a
+								class="sn-ref"
+								href="#n3"
+								id="r3"
+								aria-label="nota 3"
+								>3</a
+							>
+						</p>
+						<aside class="sn" id="n3" role="note">
+							<span class="sn-n">3</span>Le voci più vecchie non spariscono. Escono da qui e restano
+							nel registro delle <a class="xref" href="#revisioni">revisioni</a>.
+						</aside>
+					</div>
+					<ol class="log reveal">
+						<li>
+							<time datetime="2026-09">set 2026</time>
+							<p>
+								<b>Relay</b> è il terminale in cui lavoro ogni giorno, con cinque o sei agenti
+								aperti. Sto lavorando all'astrazione che lascia spazio a libghostty.
+								<a class="xref" href="#relay">3.1</a>
+							</p>
+						</li>
+						<li>
+							<time datetime="2026-09">set 2026</time>
+							<p>
+								<b>Nexus</b> è un'app dove l'agente modifica lo schema del database, dietro un gate
+								umano. Sto capendo fin dove ci si può spingere senza perdere il controllo.
+								<a class="xref" href="#nexus">3.3</a>
+							</p>
+						</li>
+						<li>
+							<time datetime="2026-08">ago 2026</time>
+							<p>
+								<b>Modelli locali</b>, misuro quanto regge il coding agentico su un MacBook rispetto
+								al cloud. Il numero che conta è la banda della memoria, non la RAM.
+								<a class="xref" href="#local-llm-eval">3.4</a>
+							</p>
+						</li>
+					</ol>
+				</section>
+
+				<!-- 2 -->
+				<section class="major" id="metodo" aria-labelledby="h-metodo">
+					<h2 class="h reveal" id="h-metodo">
+						<span class="h-num" data-decode>2</span>
+						<span class="h-text"
+							>Metodo<button class="anchor" type="button" data-copy-link="metodo" aria-label="Copia il link alla sezione 2">
+								<svg class="i i-link" aria-hidden="true"><use href="#i-link" /></svg
+								><svg class="i i-check" aria-hidden="true"><use href="#i-check" /></svg
+								><span class="tip" aria-hidden="true">link copiato</span>
+							</button></span
+						>
+					</h2>
+					<div class="prose reveal">
+						<p>
+							In ogni mio repo le decisioni sono scritte e numerate, in un
+							<code>DECISIONS.md</code> con voci <code>#N</code>, accanto a un log dei cicli e alla
+							documentazione di architettura. Qui tengo le tre che reggono tutte le altre, e si
+							citano con il loro numero come quelle.
+						</p>
+					</div>
+
+					<ol class="decs">
+						<li class="dec reveal" id="d1">
+							<a class="dec-num" href="#d1" data-decode aria-label="Decisione 1">#1</a>
+							<div class="ann">
+								<h3>
+									Architettura prima del codice<button class="anchor" type="button" data-copy-link="d1" aria-label="Copia il link alla decisione 1">
+										<svg class="i i-link" aria-hidden="true"><use href="#i-link" /></svg
+										><svg class="i i-check" aria-hidden="true"><use href="#i-check" /></svg
+										><span class="tip" aria-hidden="true">link copiato</span>
+									</button>
+								</h3>
+								<p>
+									Dati, confini e standard si decidono prima della prima riga. Dopo, l'esecuzione
+									accelera, e un agente che sa dove sta lavorando sbaglia molto meno.<a
+										class="sn-ref"
+										href="#n4"
+										id="r4"
+										aria-label="nota 4"
+										>4</a
+									>
+								</p>
+								<aside class="sn" id="n4" role="note">
+									<span class="sn-n">4</span>In Nexus le decisioni scritte sono 82, dalla prima
+									scelta sul modello dati in poi. Vedi <a class="xref" href="#nexus">3.3</a>.
+								</aside>
+							</div>
+						</li>
+						<li class="dec reveal" id="d2">
+							<a class="dec-num" href="#d2" data-decode aria-label="Decisione 2">#2</a>
+							<div class="ann">
+								<h3>
+									Il contesto è il lavoro<button class="anchor" type="button" data-copy-link="d2" aria-label="Copia il link alla decisione 2">
+										<svg class="i i-link" aria-hidden="true"><use href="#i-link" /></svg
+										><svg class="i i-check" aria-hidden="true"><use href="#i-check" /></svg
+										><span class="tip" aria-hidden="true">link copiato</span>
+									</button>
+								</h3>
+								<p>
+									Convenzioni, regole e documenti dicono all'agente come lavoro io. Una regola scritta
+									in un prompt è una probabilità, la stessa regola in un hook è una garanzia.<a
+										class="sn-ref"
+										href="#n5"
+										id="r5"
+										aria-label="nota 5"
+										>5</a
+									>
+								</p>
+								<aside class="sn" id="n5" role="note">
+									<span class="sn-n">5</span>Lo stesso ragionamento sta dietro Relay, che legge lo
+									stato degli agenti dagli hook e non dall'output. Vedi
+									<a class="xref" href="#relay">3.1</a>.
+								</aside>
+							</div>
+						</li>
+						<li class="dec reveal" id="d3">
+							<a class="dec-num" href="#d3" data-decode aria-label="Decisione 3">#3</a>
+							<div class="ann">
+								<h3>
+									Misurare invece di fidarsi<button class="anchor" type="button" data-copy-link="d3" aria-label="Copia il link alla decisione 3">
+										<svg class="i i-link" aria-hidden="true"><use href="#i-link" /></svg
+										><svg class="i i-check" aria-hidden="true"><use href="#i-check" /></svg
+										><span class="tip" aria-hidden="true">link copiato</span>
+									</button>
+								</h3>
+								<p>
+									Il codice generato sembra giusto anche quando non lo è. Prima si misura, poi si
+									decide cosa dire, e una conclusione sbagliata si ritira per iscritto.<a
+										class="sn-ref"
+										href="#n6"
+										id="r6"
+										aria-label="nota 6"
+										>6</a
+									>
+								</p>
+								<aside class="sn" id="n6" role="note">
+									<span class="sn-n">6</span>In Local LLM Eval il perimetro di validità e quello che
+									non ho misurato sono scritti prima dei risultati. Vedi
+									<a class="xref" href="#local-llm-eval">3.4</a>.
+								</aside>
+							</div>
+						</li>
+					</ol>
+
+					<div class="setup reveal">
+						<p class="label">
+							<svg class="i" aria-hidden="true"><use href="#i-terminal" /></svg>Il mio setup
+						</p>
+						<p>
+							Un solo contesto per Claude Code, Codex e OpenCode, regole che si caricano per tipo di
+							file, hook che fermano un push sull'account sbagliato o un file con un segreto. È un
+							repo, e questo sito è costruito dentro quel metodo.
+						</p>
+					</div>
+				</section>
+
+				<!-- 3 -->
+				<section class="major" id="progetti" aria-labelledby="h-progetti">
+					<h2 class="h reveal" id="h-progetti">
+						<span class="h-num" data-decode>3</span>
+						<span class="h-text"
+							>Cose che ho costruito<button class="anchor" type="button" data-copy-link="progetti" aria-label="Copia il link alla sezione 3">
+								<svg class="i i-link" aria-hidden="true"><use href="#i-link" /></svg
+								><svg class="i i-check" aria-hidden="true"><use href="#i-check" /></svg
+								><span class="tip" aria-hidden="true">link copiato</span>
+							</button></span
+						>
+					</h2>
+					<div class="prose reveal">
+						<p>
+							Quattro progetti per esteso, perché sono quelli su cui lavoro adesso o che hanno
+							lasciato qualcosa di misurabile. Ognuno ha una scheda e le sue prove, cioè dove si
+							vede e cosa si può verificare. Il resto è in <a class="xref" href="#il-resto">3.5</a>,
+							in ordine di anno.
+						</p>
+					</div>
+
+					<!-- 3.1 -->
+					<article class="entry" id="relay" aria-labelledby="h-relay">
+						<h3 class="h reveal" id="h-relay">
+							<span class="h-num" data-decode>3.1</span>
+							<span class="h-text"
+								>Relay<button class="anchor" type="button" data-copy-link="relay" aria-label="Copia il link a Relay">
+									<svg class="i i-link" aria-hidden="true"><use href="#i-link" /></svg
+									><svg class="i i-check" aria-hidden="true"><use href="#i-check" /></svg
+									><span class="tip" aria-hidden="true">link copiato</span>
+								</button></span
+							>
+						</h3>
+						<div class="reveal">
+							<p class="lede">Terminale macOS per far girare tanti coding agent in parallelo.</p>
+							<dl class="spec">
+								<div>
+									<dt class="label">stato</dt>
+									<dd><span class="led on" aria-hidden="true"></span>attivo</dd>
+								</div>
+								<div>
+									<dt class="label">anno</dt>
+									<dd>2026</dd>
+								</div>
+								<div class="wide">
+									<dt class="label">dove si vede</dt>
+									<dd>
+										<a href="https://github.com/essedev/relay"
+											>github.com/essedev/relay<svg class="i" aria-hidden="true"><use href="#i-arrow" /></svg
+										></a>
+									</dd>
+								</div>
+								<div class="wide">
+									<dt class="label">stack</dt>
+									<dd>Swift 6, AppKit</dd>
+								</div>
+							</dl>
+							<div class="ann">
+								<p>
+									Lavoro con cinque o sei sessioni di Claude Code e Codex aperte insieme. Lo stato di
+									ogni agente arriva dagli hook di Claude Code e Codex, non dal parsing dell'output,
+									quindi resta giusto anche sotto un muro di log. Scritto in Swift partendo da zero
+									esperienza di Swift.<a class="sn-ref" href="#n7" id="r7" aria-label="nota 7">7</a>
+								</p>
+								<aside class="sn" id="n7" role="note">
+									<span class="sn-n">7</span>I terminali inattivi vengono scaricati dalla memoria.
+									Circa 90 MB residenti con un terminale vivo, 92 con tredici. Metodo e numeri sono
+									nel repo.
+								</aside>
+							</div>
+							<ul class="receipts" aria-label="Prove">
+								<li class="chip">pubblico, MIT</li>
+								<li class="chip"><b>51</b>release</li>
+								<li class="cmd">
+									<code
+										><span class="pr" aria-hidden="true">$</span
+										><span data-cmd>brew install --cask essedev/relay/relay-terminal</span></code
+									>
+									<button class="copy" type="button" aria-label="Copia il comando di installazione">
+										<svg class="i i-copy" aria-hidden="true"><use href="#i-copy" /></svg
+										><svg class="i i-check" aria-hidden="true"><use href="#i-check" /></svg
+										><span class="lbl">copia</span><span class="lbl-done">copiato</span>
+									</button>
+								</li>
+							</ul>
+						</div>
+					</article>
+
+					<!-- 3.2 -->
+					<article class="entry" id="portsage" aria-labelledby="h-portsage">
+						<h3 class="h reveal" id="h-portsage">
+							<span class="h-num" data-decode>3.2</span>
+							<span class="h-text"
+								>Portsage<button class="anchor" type="button" data-copy-link="portsage" aria-label="Copia il link a Portsage">
+									<svg class="i i-link" aria-hidden="true"><use href="#i-link" /></svg
+									><svg class="i i-check" aria-hidden="true"><use href="#i-check" /></svg
+									><span class="tip" aria-hidden="true">link copiato</span>
+								</button></span
+							>
+						</h3>
+						<div class="reveal">
+							<p class="lede">
+								App per la barra dei menu che gestisce le porte dei progetti in sviluppo.
+							</p>
+							<dl class="spec">
+								<div>
+									<dt class="label">stato</dt>
+									<dd><span class="led on" aria-hidden="true"></span>attivo</dd>
+								</div>
+								<div>
+									<dt class="label">anno</dt>
+									<dd>2026</dd>
+								</div>
+								<div class="wide">
+									<dt class="label">dove si vede</dt>
+									<dd>
+										<a href="https://github.com/essedev/portsage"
+											>github.com/essedev/portsage<svg class="i" aria-hidden="true"><use href="#i-arrow" /></svg
+										></a>
+									</dd>
+								</div>
+								<div class="wide">
+									<dt class="label">stack</dt>
+									<dd>Rust, Tauri, MCP</dd>
+								</div>
+							</dl>
+							<div class="ann">
+								<p>
+									Nata da un problema banale creato dalla produttività con l'AI, cinque progetti
+									aperti e <code>address already in use</code> ogni mattina. Ha un server MCP, così le
+									porte le chiedono direttamente gli agenti quando fanno lo scaffold di un
+									progetto.<a class="sn-ref" href="#n8" id="r8" aria-label="nota 8">8</a>
+								</p>
+								<aside class="sn" id="n8" role="note">
+									<span class="sn-n">8</span>C'è anche una CLI per gli script, e una variante headless
+									per Linux raggiungibile via SSH, con il port forwarding automatico.
+								</aside>
+							</div>
+							<ul class="receipts" aria-label="Prove">
+								<li class="chip">pubblico</li>
+								<li class="chip"><b>29</b>release</li>
+								<li class="chip">Homebrew</li>
+							</ul>
+						</div>
+					</article>
+
+					<!-- 3.3 -->
+					<article class="entry" id="nexus" aria-labelledby="h-nexus">
+						<h3 class="h reveal" id="h-nexus">
+							<span class="h-num" data-decode>3.3</span>
+							<span class="h-text"
+								>Nexus<button class="anchor" type="button" data-copy-link="nexus" aria-label="Copia il link a Nexus">
+									<svg class="i i-link" aria-hidden="true"><use href="#i-link" /></svg
+									><svg class="i i-check" aria-hidden="true"><use href="#i-check" /></svg
+									><span class="tip" aria-hidden="true">link copiato</span>
+								</button></span
+							>
+						</h3>
+						<div class="reveal">
+							<p class="lede">Piattaforma dati personale guidata da un agente.</p>
+							<dl class="spec">
+								<div>
+									<dt class="label">stato</dt>
+									<dd><span class="led on" aria-hidden="true"></span>attivo</dd>
+								</div>
+								<div>
+									<dt class="label">anno</dt>
+									<dd>2026</dd>
+								</div>
+								<div class="wide">
+									<dt class="label">dove si vede</dt>
+									<dd>privato, self-hosted</dd>
+								</div>
+								<div class="wide">
+									<dt class="label">stack</dt>
+									<dd>Python, FastAPI, React</dd>
+								</div>
+							</dl>
+							<div class="ann">
+								<p>
+									Ogni cosa è un'entità definita da uno schema, e un tipo nuovo non richiede codice.
+									L'agente che opera ha privilegi minimi, quello che modifica il sistema lavora
+									isolato e passa da un'approvazione umana. Ogni modifica è versionata e reversibile,
+									e niente viene mai cancellato davvero.<a
+										class="sn-ref"
+										href="#n9"
+										id="r9"
+										aria-label="nota 9"
+										>9</a
+									>
+								</p>
+								<aside class="sn" id="n9" role="note">
+									<span class="sn-n">9</span>È la seconda versione. La prima era in Elixir e Phoenix.
+								</aside>
+							</div>
+							<ul class="receipts" aria-label="Prove">
+								<li class="chip">privato</li>
+								<li class="chip"><b>82</b>decisioni scritte</li>
+								<li class="chip">server MCP con OAuth</li>
+							</ul>
+						</div>
+					</article>
+
+					<!-- 3.4 -->
+					<article class="entry" id="local-llm-eval" aria-labelledby="h-local-llm-eval">
+						<h3 class="h reveal" id="h-local-llm-eval">
+							<span class="h-num" data-decode>3.4</span>
+							<span class="h-text"
+								>Local LLM Eval<button class="anchor" type="button" data-copy-link="local-llm-eval" aria-label="Copia il link a Local LLM Eval">
+									<svg class="i i-link" aria-hidden="true"><use href="#i-link" /></svg
+									><svg class="i i-check" aria-hidden="true"><use href="#i-check" /></svg
+									><span class="tip" aria-hidden="true">link copiato</span>
+								</button></span
+							>
+						</h3>
+						<div class="reveal">
+							<p class="lede">
+								Quanto regge il coding agentico con modelli locali, misurato contro il cloud.
+							</p>
+							<dl class="spec">
+								<div>
+									<dt class="label">stato</dt>
+									<dd><span class="led" aria-hidden="true"></span>concluso</dd>
+								</div>
+								<div>
+									<dt class="label">anno</dt>
+									<dd>2026</dd>
+								</div>
+								<div class="wide">
+									<dt class="label">dove si vede</dt>
+									<dd>
+										<a href="https://github.com/essedev/local-llm-eval"
+											>github.com/essedev/local-llm-eval<svg class="i" aria-hidden="true"><use href="#i-arrow" /></svg
+										></a>
+									</dd>
+								</div>
+								<div class="wide">
+									<dt class="label">stack</dt>
+									<dd>Python, MLX</dd>
+								</div>
+							</dl>
+							<div class="ann">
+								<p>
+									Volevo sapere se un modello locale può fare davvero da coding agent, non in una demo
+									ma in un harness che scrive un'app intera, su un MacBook Pro M5 da 32 GB. Il
+									perimetro di validità e quello che non ho misurato sono scritti prima dei
+									risultati.<a class="sn-ref" href="#n10" id="r10" aria-label="nota 10">10</a>
+								</p>
+								<aside class="sn" id="n10" role="note">
+									<span class="sn-n">10</span>Su uno scaffold piccolo Qwen3.6-35B-A3B a 4 bit ha fatto
+									18 su 18, replicato due volte. Un solo task e quasi tutte le celle con N=1, quindi
+									vale come punto di partenza, non come benchmark.
+								</aside>
+							</div>
+							<ul class="receipts" aria-label="Prove">
+								<li class="chip">pubblico</li>
+								<li class="chip">log, punteggi e costi di ogni run</li>
+								<li class="chip">MLX, benchmark</li>
+							</ul>
+						</div>
+					</article>
+
+					<!-- 3.5 -->
+					<article class="entry" id="il-resto" aria-labelledby="h-il-resto">
+						<h3 class="h reveal" id="h-il-resto">
+							<span class="h-num" data-decode>3.5</span>
+							<span class="h-text"
+								>Il resto<button class="anchor" type="button" data-copy-link="il-resto" aria-label="Copia il link a 3.5">
+									<svg class="i i-link" aria-hidden="true"><use href="#i-link" /></svg
+									><svg class="i i-check" aria-hidden="true"><use href="#i-check" /></svg
+									><span class="tip" aria-hidden="true">link copiato</span>
+								</button></span
+							>
+						</h3>
+						<p class="reveal">
+							Progetti finiti, archiviati o ancora idee, dal più recente. Quelli ancora online hanno
+							il link.
+						</p>
+						<ol class="rest reveal">
+							<li>
+								<span class="ix mono">01</span>
+								<div>
+									<div class="row">
+										<span class="name">mcpbelt</span>
+										<span class="st"><span><span class="led on" aria-hidden="true"></span>attivo</span>2026</span>
+									</div>
+									<p>
+										Un solo server MCP che dà a qualunque agente documenti, audio, pagine web e
+										immagini, cioè quello che non può eseguire in locale.
+									</p>
+								</div>
+							</li>
+							<li>
+								<span class="ix mono">02</span>
+								<div>
+									<div class="row">
+										<span class="name">Milanoz</span>
+										<span class="st"><span><span class="led idea" aria-hidden="true"></span>idea</span>2026</span>
+									</div>
+									<p>
+										Una mappa di Milano quartiere per quartiere, gli 88 NIL con abitanti, redditi,
+										prezzi delle case, verde e caldo urbano.
+									</p>
+								</div>
+							</li>
+							<li>
+								<span class="ix mono">03</span>
+								<div>
+									<div class="row">
+										<a class="name" href="https://heyliber.com"
+											>Liber<svg class="i" aria-hidden="true"><use href="#i-arrow" /></svg
+										></a>
+										<span class="st"><span><span class="led on" aria-hidden="true"></span>attivo</span>2026</span>
+									</div>
+									<p>
+										AI sommelier per ristoranti. Tra i vini davvero in carta sceglie quelli che stanno
+										meglio con quello che il cliente mangia.
+									</p>
+								</div>
+							</li>
+							<li>
+								<span class="ix mono">04</span>
+								<div>
+									<div class="row">
+										<a class="name" href="https://verbosa.it"
+											>Verbosa<svg class="i" aria-hidden="true"><use href="#i-arrow" /></svg
+										></a>
+										<span class="st"><span><span class="led arch" aria-hidden="true"></span>archiviato</span>2025</span>
+									</div>
+									<p>
+										Chat multi-provider per i modelli di OpenAI, Anthropic e Google da un'unica
+										interfaccia, in Flutter con backend Go.
+									</p>
+								</div>
+							</li>
+							<li>
+								<span class="ix mono">05</span>
+								<div>
+									<div class="row">
+										<a class="name" href="https://kebabbivori.it"
+											>Kebabbivori<svg class="i" aria-hidden="true"><use href="#i-arrow" /></svg
+										></a>
+										<span class="st"><span><span class="led arch" aria-hidden="true"></span>archiviato</span>2025</span>
+									</div>
+									<p>
+										Recensioni dei kebab della provincia di Varese, con un voto in dieci categorie che
+										include il fattore unto.
+									</p>
+								</div>
+							</li>
+							<li>
+								<span class="ix mono">06</span>
+								<div>
+									<div class="row">
+										<a class="name" href="https://github.com/essedev/templator"
+											>Templator<svg class="i" aria-hidden="true"><use href="#i-arrow" /></svg
+										></a>
+										<span class="st"><span><span class="led arch" aria-hidden="true"></span>archiviato</span>2025</span>
+									</div>
+									<p>
+										Template Next.js pensato per partire veloce con un coding agent, con auth, ruoli,
+										database ed email già pronti.
+									</p>
+								</div>
+							</li>
+							<li>
+								<span class="ix mono">07</span>
+								<div>
+									<div class="row">
+										<span class="name">Casussy</span>
+										<span class="st"><span><span class="led idea" aria-hidden="true"></span>idea</span>2025</span>
+									</div>
+									<p>
+										App iOS per gestire la casa insieme, con task, spesa, menu della settimana e spese
+										condivisi in tempo reale.
+									</p>
+								</div>
+							</li>
+							<li>
+								<span class="ix mono">08</span>
+								<div>
+									<div class="row">
+										<span class="name">Cosmoscope</span>
+										<span class="st"><span><span class="led idea" aria-hidden="true"></span>idea</span>2025</span>
+									</div>
+									<p>
+										Un assistente di ricerca che trasforma una domanda in una mappa dei concetti, con
+										le fonti attaccate a ogni nodo.
+									</p>
+								</div>
+							</li>
+							<li>
+								<span class="ix mono">09</span>
+								<div>
+									<div class="row">
+										<span class="name">Horizon</span>
+										<span class="st"><span><span class="led idea" aria-hidden="true"></span>idea</span>2025</span>
+									</div>
+									<p>
+										Una dashboard che legge mercati, notizie e geopolitica al posto mio e mi mostra
+										solo le poche cose che contano.
+									</p>
+								</div>
+							</li>
+							<li>
+								<span class="ix mono">10</span>
+								<div>
+									<div class="row">
+										<span class="name">Pigeon</span>
+										<span class="st"><span><span class="led" aria-hidden="true"></span>concluso</span>2024</span>
+									</div>
+									<p>
+										Email transazionali da template con un'API e un pannello, la porta HTTP davanti al
+										tuo server SMTP.
+									</p>
+								</div>
+							</li>
+							<li>
+								<span class="ix mono">11</span>
+								<div>
+									<div class="row">
+										<a class="name" href="https://budokan.it"
+											>Budokan Polisportiva<svg class="i" aria-hidden="true"><use href="#i-arrow" /></svg
+										></a>
+										<span class="st"><span><span class="led" aria-hidden="true"></span>concluso</span>2024</span>
+									</div>
+									<p>
+										Il sito della polisportiva, con corsi, istruttori e richiesta di una lezione di
+										prova, e i contenuti gestiti dalla palestra.
+									</p>
+								</div>
+							</li>
+							<li>
+								<span class="ix mono">12</span>
+								<div>
+									<div class="row">
+										<a class="name" href="https://flux.esse.dev"
+											>Flux<svg class="i" aria-hidden="true"><use href="#i-arrow" /></svg
+										></a>
+										<span class="st"><span><span class="led" aria-hidden="true"></span>concluso</span>2024</span>
+									</div>
+									<p>
+										Lettore di newsletter e feed RSS che estrae gli articoli in markdown pulito, tutto
+										su un solo Worker Cloudflare.
+									</p>
+								</div>
+							</li>
+							<li>
+								<span class="ix mono">13</span>
+								<div>
+									<div class="row">
+										<a class="name" href="https://doppia-os.pages.dev/"
+											>doppia.os<svg class="i" aria-hidden="true"><use href="#i-arrow" /></svg
+										></a>
+										<span class="st"><span><span class="led arch" aria-hidden="true"></span>archiviato</span>2023</span>
+									</div>
+									<p>
+										Un desktop nel browser, finestre e piccole app dentro una pagina web, come
+										esperimento di interfaccia.
+									</p>
+								</div>
+							</li>
+							<li>
+								<span class="ix mono">14</span>
+								<div>
+									<div class="row">
+										<a class="name" href="https://ethicode.eu/"
+											>Ethicode<svg class="i" aria-hidden="true"><use href="#i-arrow" /></svg
+										></a>
+										<span class="st"><span><span class="led arch" aria-hidden="true"></span>archiviato</span>2023</span>
+									</div>
+									<p>
+										Piattaforma di e-learning per imparare a programmare, nata come Let's Code Italia.
+									</p>
+								</div>
+							</li>
+							<li>
+								<span class="ix mono">15</span>
+								<div>
+									<div class="row">
+										<a class="name" href="https://github.com/essedev/didatticaintegrata.it"
+											>Didattica Integrata<svg class="i" aria-hidden="true"><use href="#i-arrow" /></svg
+										></a>
+										<span class="st"><span><span class="led arch" aria-hidden="true"></span>archiviato</span>2022</span>
+									</div>
+									<p>
+										Una web app per valutare le esperienze di stage scolastico compilando dei moduli.
+									</p>
+								</div>
+							</li>
+						</ol>
+					</article>
+				</section>
+
+				<!-- 4 -->
+				<section class="major" id="scritti" aria-labelledby="h-scritti">
+					<h2 class="h reveal" id="h-scritti">
+						<span class="h-num" data-decode>4</span>
+						<span class="h-text"
+							>Scritti<button class="anchor" type="button" data-copy-link="scritti" aria-label="Copia il link alla sezione 4">
+								<svg class="i i-link" aria-hidden="true"><use href="#i-link" /></svg
+								><svg class="i i-check" aria-hidden="true"><use href="#i-check" /></svg
+								><span class="tip" aria-hidden="true">link copiato</span>
+							</button></span
+						>
+					</h2>
+					<div class="reveal">
+						<a class="writing" href="#">
+							<time datetime="2025-01">gen 2025</time>
+							<span class="t"
+								>Il mio nuovo laboratorio, dove le idee di un bambino incontrano il codice<svg
+									class="i"
+									aria-hidden="true"
+									><use href="#i-arrow" /></svg
+							></span>
+						</a>
+						<p class="prose">
+							Le cose più brevi le pubblico su <a href="#">LinkedIn</a>.
+						</p>
+					</div>
+				</section>
+
+				<!-- 5 -->
+				<section class="major" id="contatti" aria-labelledby="h-contatti">
+					<h2 class="h reveal" id="h-contatti">
+						<span class="h-num" data-decode>5</span>
+						<span class="h-text"
+							>Contatti<button class="anchor" type="button" data-copy-link="contatti" aria-label="Copia il link alla sezione 5">
+								<svg class="i i-link" aria-hidden="true"><use href="#i-link" /></svg
+								><svg class="i i-check" aria-hidden="true"><use href="#i-check" /></svg
+								><span class="tip" aria-hidden="true">link copiato</span>
+							</button></span
+						>
+					</h2>
+					<div class="reveal">
+						<p>
+							Sono aperto a talk, collaborazioni su articoli e side project selezionati. Per tutto il
+							resto, una mail va benissimo.
+						</p>
+						<div class="mailrow">
+							<a class="mail" href="mailto:hello@esse.dev" data-mail>hello@esse.dev</a>
+							<button class="copy solo" type="button" aria-label="Copia l'indirizzo email">
+								<svg class="i i-copy" aria-hidden="true"><use href="#i-copy" /></svg
+								><svg class="i i-check" aria-hidden="true"><use href="#i-check" /></svg
+								><span class="lbl">copia</span><span class="lbl-done">copiato</span>
+							</button>
+						</div>
+						<div class="links">
+							<a href="https://github.com/essedev">github <svg class="i" aria-hidden="true"><use href="#i-arrow" /></svg></a>
+							<a href="#">linkedin <svg class="i" aria-hidden="true"><use href="#i-arrow" /></svg></a>
+						</div>
+					</div>
+				</section>
+
+				<!-- Revisioni (dati di esempio) -->
+				<section class="major" id="revisioni" aria-labelledby="h-revisioni">
+					<h2 class="h reveal" id="h-revisioni">
+						<span class="h-num">rev</span>
+						<span class="h-text"
+							>Revisioni<button class="anchor" type="button" data-copy-link="revisioni" aria-label="Copia il link alle revisioni">
+								<svg class="i i-link" aria-hidden="true"><use href="#i-link" /></svg
+								><svg class="i i-check" aria-hidden="true"><use href="#i-check" /></svg
+								><span class="tip" aria-hidden="true">link copiato</span>
+							</button></span
+						>
+					</h2>
+					<ol class="revs reveal" reversed>
+						<li>
+							<span class="rv mono">14</span>
+							<div class="rv-body">
+								<time datetime="2026-10-03">3 ott 2026</time>
+								<span>Aggiornata la sezione <a class="xref" href="#adesso">1</a>, con Relay e Nexus.</span>
+							</div>
+						</li>
+						<li>
+							<span class="rv mono">13</span>
+							<div class="rv-body">
+								<time datetime="2026-09">set 2026</time>
+								<span
+									>Aggiunta la voce <a class="xref" href="#local-llm-eval">3.4</a> e la nota a margine
+									su <a class="xref" href="#d3">#3</a>.</span
+								>
+							</div>
+						</li>
+						<li>
+							<span class="rv mono">12</span>
+							<div class="rv-body">
+								<time datetime="2026-09">set 2026</time>
+								<span>Il metodo diventa tre principi numerati, citabili come le decisioni.</span>
+							</div>
+						</li>
+						<li>
+							<span class="rv mono">11</span>
+							<div class="rv-body">
+								<time datetime="2026-08">ago 2026</time>
+								<span>Il sito diventa un documento unico, con indice e note a margine.</span>
+							</div>
+						</li>
+					</ol>
+
+					<footer class="colophon">
+						<span>© 2026 Simone Salerno</span>
+						<span>Composto in Geist e Geist Mono. Costruito con Astro e Claude Code.</span>
+					</footer>
+				</section>
+			</main>
+		</div>
+
+		<script>
+			(() => {
+				const root = document.documentElement;
+				const reduce = matchMedia('(prefers-reduced-motion: reduce)');
+				const live = document.getElementById('live');
+
+				/* ---- tempo di lettura reale ---- */
+				const words = document.getElementById('main').innerText.split(/\s+/).filter(Boolean).length;
+				document.getElementById('readtime').textContent = String(Math.max(1, Math.round(words / 200)));
+
+				/* ---- decodifica dei numeri di sezione (~280ms) ---- */
+				const DIGITS = '0123456789';
+				function decode(el) {
+					if (reduce.matches || el.dataset.busy) return;
+					const final = el.dataset.final || el.textContent;
+					el.dataset.final = final;
+					el.dataset.busy = '1';
+					const dur = 280;
+					const t0 = performance.now();
+					let lastSwap = 0;
+					const step = (now) => {
+						const p = Math.min(1, (now - t0) / dur);
+						if (now - lastSwap > 40 || p === 1) {
+							lastSwap = now;
+							let out = '';
+							for (let i = 0; i < final.length; i++) {
+								const c = final[i];
+								const settled = i / final.length < p * 1.15 - 0.15;
+								out += /\d/.test(c) && !settled ? DIGITS[(Math.random() * 10) | 0] : c;
+							}
+							el.textContent = p === 1 ? final : out;
+						}
+						if (p < 1) requestAnimationFrame(step);
+						else delete el.dataset.busy;
+					};
+					requestAnimationFrame(step);
+				}
+				document.querySelectorAll('[data-decode]').forEach((el) => {
+					const host = el.closest('.h, .dec') || el;
+					host.addEventListener('mouseenter', () => decode(el));
+				});
+
+				/* ---- comparsa e decodifica all'ingresso ---- */
+				const io = new IntersectionObserver(
+					(entries) => {
+						for (const e of entries) {
+							if (!e.isIntersecting) continue;
+							e.target.classList.add('in');
+							e.target.querySelectorAll('[data-decode]').forEach(decode);
+							io.unobserve(e.target);
+						}
+					},
+					{ rootMargin: '0px 0px -8% 0px', threshold: 0.08 }
+				);
+				document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
+
+				/* ---- indice: scroll spy e indicatore ---- */
+				const tocList = document.getElementById('toc-list');
+				const ind = document.querySelector('.toc-ind');
+				const links = [...tocList.querySelectorAll('a')];
+				const targets = links
+					.map((a) => ({ a, el: document.getElementById(a.hash.slice(1)) }))
+					.filter((t) => t.el);
+				const cur = document.getElementById('toc-cur');
+				let activeId = null;
+
+				function moveIndicator(a) {
+					if (!a || !a.offsetParent) return;
+					ind.style.opacity = '1';
+					ind.style.transform = `translateY(${a.offsetTop}px)`;
+					ind.style.height = `${a.offsetHeight}px`;
+				}
+				function setActive(t) {
+					if (!t || t.el.id === activeId) return;
+					activeId = t.el.id;
+					links.forEach((l) => l.classList.remove('active', 'parent'));
+					t.a.classList.add('active');
+					t.a.setAttribute('aria-current', 'location');
+					links.forEach((l) => l !== t.a && l.removeAttribute('aria-current'));
+					const parentLi = t.a.closest('ol ol')?.closest('li');
+					if (parentLi) parentLi.querySelector(':scope > a').classList.add('parent');
+					moveIndicator(t.a);
+					const num = t.a.querySelector('.t-num').textContent;
+					const name = t.a.textContent.replace(num, '').trim();
+					cur.innerHTML = '';
+					const b = document.createElement('b');
+					b.textContent = num;
+					cur.append(b, document.createTextNode(name));
+				}
+				function spy() {
+					const line = Math.min(innerHeight * 0.3, innerWidth < 1000 ? 110 : 140);
+					let pick = targets[0];
+					for (const t of targets) {
+						if (t.el.getBoundingClientRect().top - line <= 0) pick = t;
+					}
+					if (innerHeight + scrollY >= document.documentElement.scrollHeight - 4) {
+						pick = targets[targets.length - 1];
+					}
+					setActive(pick);
+				}
+				let ticking = false;
+				addEventListener(
+					'scroll',
+					() => {
+						if (ticking) return;
+						ticking = true;
+						requestAnimationFrame(() => {
+							spy();
+							ticking = false;
+						});
+					},
+					{ passive: true }
+				);
+				addEventListener('resize', () => {
+					const a = links.find((l) => l.classList.contains('active'));
+					moveIndicator(a);
+				});
+				spy();
+
+				/* ---- indice su mobile ---- */
+				const toggle = document.querySelector('.toc-toggle');
+				function closeToc() {
+					tocList.classList.remove('open');
+					toggle.setAttribute('aria-expanded', 'false');
+				}
+				toggle.addEventListener('click', () => {
+					const open = !tocList.classList.contains('open');
+					tocList.classList.toggle('open', open);
+					toggle.setAttribute('aria-expanded', String(open));
+				});
+				links.forEach((l) => l.addEventListener('click', closeToc));
+				document.addEventListener('keydown', (e) => {
+					if (e.key === 'Escape' && tocList.classList.contains('open')) {
+						closeToc();
+						toggle.focus();
+					}
+				});
+				document.addEventListener('click', (e) => {
+					if (!e.target.closest('.toc')) closeToc();
+				});
+
+				/* ---- copia: link, comando, email ---- */
+				async function copyText(text) {
+					try {
+						await navigator.clipboard.writeText(text);
+						return true;
+					} catch (err) {
+						const ta = document.createElement('textarea');
+						ta.value = text;
+						ta.setAttribute('readonly', '');
+						ta.style.cssText = 'position:fixed;opacity:0;pointer-events:none';
+						document.body.append(ta);
+						ta.select();
+						let ok = false;
+						try {
+							ok = document.execCommand('copy');
+						} catch (e2) {
+							ok = false;
+						}
+						ta.remove();
+						return ok;
+					}
+				}
+				function flash(btn, msg) {
+					btn.classList.add('copied');
+					live.textContent = msg;
+					clearTimeout(btn._t);
+					btn._t = setTimeout(() => btn.classList.remove('copied'), 1400);
+				}
+				document.querySelectorAll('[data-copy-link]').forEach((btn) => {
+					btn.addEventListener('click', async (e) => {
+						e.preventDefault();
+						const id = btn.dataset.copyLink;
+						const url = `${location.href.split('#')[0]}#${id}`;
+						try {
+							history.replaceState(null, '', `#${id}`);
+						} catch (err) {
+							/* file:// in alcuni browser: l'hash resta quello di prima */
+						}
+						const ok = await copyText(url);
+						flash(btn, ok ? 'Link copiato' : 'Copia non riuscita');
+					});
+				});
+				document.querySelectorAll('.copy').forEach((btn) => {
+					btn.addEventListener('click', async () => {
+						const src =
+							btn.closest('.cmd')?.querySelector('[data-cmd]') ||
+							btn.closest('.mailrow')?.querySelector('[data-mail]');
+						if (!src) return;
+						const ok = await copyText(src.textContent.trim());
+						flash(btn, ok ? 'Copiato negli appunti' : 'Copia non riuscita');
+					});
+				});
+
+				/* ---- note a margine: rimando e nota si illuminano insieme ---- */
+				document.querySelectorAll('.sn-ref').forEach((ref) => {
+					const note = document.getElementById(ref.hash.slice(1));
+					if (!note) return;
+					const on = () => note.classList.add('hl');
+					const off = () => note.classList.remove('hl');
+					ref.addEventListener('mouseenter', on);
+					ref.addEventListener('mouseleave', off);
+					ref.addEventListener('focus', on);
+					ref.addEventListener('blur', off);
+					note.addEventListener('mouseenter', on);
+					note.addEventListener('mouseleave', off);
+				});
+
+				/* ---- tema notte / carta ---- */
+				const themeBtn = document.querySelector('.theme');
+				function syncThemeBtn() {
+					const dark = root.dataset.theme !== 'light';
+					themeBtn.querySelector('.lbl').textContent = dark ? 'carta' : 'notte';
+					themeBtn.setAttribute(
+						'aria-label',
+						dark ? 'Passa alla modalità carta' : 'Passa alla modalità notte'
+					);
+				}
+				themeBtn.addEventListener('click', () => {
+					root.dataset.theme = root.dataset.theme === 'light' ? 'dark' : 'light';
+					try {
+						localStorage.setItem('esse-theme', root.dataset.theme);
+					} catch (e) {
+						/* storage non disponibile: il tema vale solo per questa visita */
+					}
+					syncThemeBtn();
+				});
+				syncThemeBtn();
+			})();
+		</script>
+	</body>
+</html>

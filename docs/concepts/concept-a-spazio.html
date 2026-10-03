@@ -1,0 +1,2506 @@
+<!doctype html>
+<html lang="it">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+		<title>esse.dev · Simone Salerno</title>
+		<!--
+			Concept A, "Spazio di lavoro". Il sito si comporta come le app che Simone costruisce
+			(Relay, Nexus): lista a sinistra, dettaglio a destra, tastiera prima di tutto.
+			Ogni voce ha il suo URL nell'hash (#/progetti/relay). Sotto i 768px diventa lista,
+			poi dettaglio a schermo intero con un controllo per tornare indietro.
+			Mockup autonomo: CSS e JS inline, solo i font arrivano da Google Fonts.
+		-->
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Geist:wght@300..600&family=Geist+Mono:wght@400;500&display=swap"
+			rel="stylesheet"
+		/>
+		<style>
+			:root {
+				--bg: #09090a;
+				--panel: #0c0c0e;
+				--surface: #111113;
+				--hover: #141417;
+				--line: #1f1f23;
+				--line-strong: #2c2c32;
+				--fg: #ededef;
+				--text: #c9c9ce;
+				--muted: #9a9aa2;
+				--subtle: #7e7e86;
+				--accent: #5ef2d0;
+				--accent-dim: color-mix(in srgb, var(--accent) 14%, transparent);
+				--accent-faint: color-mix(in srgb, var(--accent) 6%, transparent);
+
+				/* Una scala di spazi, due raggi, una famiglia di bordi. */
+				--s1: 4px;
+				--s2: 8px;
+				--s3: 12px;
+				--s4: 16px;
+				--s5: 24px;
+				--s6: 32px;
+				--s7: 48px;
+				--s8: 64px;
+				--r1: 3px;
+				--r2: 6px;
+
+				--ease: cubic-bezier(0.16, 1, 0.3, 1);
+				--fast: 150ms;
+				--pane: 220ms;
+				--sans: 'Geist', ui-sans-serif, system-ui, sans-serif;
+				--mono: 'Geist Mono', ui-monospace, 'SF Mono', monospace;
+				--bar: 44px;
+			}
+			:root[data-accent='amber'] {
+				--accent: #f2b45e;
+			}
+			:root[data-accent='violet'] {
+				--accent: #a99bff;
+			}
+
+			*,
+			*::before,
+			*::after {
+				box-sizing: border-box;
+				margin: 0;
+			}
+			html {
+				color-scheme: dark;
+				background: var(--bg);
+			}
+			body {
+				background: var(--bg);
+				color: var(--fg);
+				font-family: var(--sans);
+				font-size: 15px;
+				line-height: 1.6;
+				font-weight: 380;
+				-webkit-font-smoothing: antialiased;
+				height: 100dvh;
+				overflow: hidden;
+			}
+			a {
+				color: inherit;
+				text-decoration: none;
+			}
+			button {
+				font: inherit;
+				color: inherit;
+				background: none;
+				border: 0;
+				padding: 0;
+				cursor: pointer;
+			}
+			svg.i {
+				width: 14px;
+				height: 14px;
+				flex: none;
+				fill: none;
+				stroke: currentColor;
+				stroke-width: 1.75;
+				stroke-linecap: round;
+				stroke-linejoin: round;
+			}
+			::selection {
+				background: var(--accent-dim);
+				color: var(--fg);
+			}
+			:focus-visible {
+				outline: 1px solid var(--accent);
+				outline-offset: 2px;
+				border-radius: var(--r1);
+			}
+			.sr {
+				position: absolute;
+				width: 1px;
+				height: 1px;
+				overflow: hidden;
+				clip: rect(0 0 0 0);
+				white-space: nowrap;
+			}
+			.mono {
+				font-family: var(--mono);
+			}
+			.num {
+				font-variant-numeric: tabular-nums;
+			}
+
+			kbd {
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+				gap: 2px;
+				min-width: 18px;
+				height: 18px;
+				padding: 0 5px;
+				font: 500 10.5px/1 var(--mono);
+				color: var(--muted);
+				background: var(--surface);
+				border: 1px solid var(--line-strong);
+				border-bottom-width: 2px;
+				border-radius: var(--r1);
+			}
+			kbd svg.i {
+				width: 11px;
+				height: 11px;
+			}
+
+			/* LED di stato */
+			.led {
+				display: inline-block;
+				width: 6px;
+				height: 6px;
+				border-radius: 50%;
+				background: var(--subtle);
+				flex: none;
+			}
+			.led.on {
+				background: var(--accent);
+				box-shadow: 0 0 8px var(--accent);
+				animation: pulse 2.6s var(--ease) infinite;
+			}
+			.led.done {
+				background: var(--text);
+			}
+			.led.idea {
+				background: transparent;
+				box-shadow: inset 0 0 0 1px var(--muted);
+			}
+			.led.off {
+				background: var(--line-strong);
+			}
+			@keyframes pulse {
+				50% {
+					opacity: 0.5;
+					box-shadow: 0 0 2px var(--accent);
+				}
+			}
+
+			.caret {
+				display: inline-block;
+				width: 7px;
+				height: 13px;
+				background: var(--accent);
+				margin-left: 3px;
+				vertical-align: -1px;
+				animation: blink 1.1s steps(1) infinite;
+			}
+			@keyframes blink {
+				50% {
+					opacity: 0;
+				}
+			}
+
+			/* Guscio dell'app */
+			.app {
+				display: grid;
+				grid-template-rows: var(--bar) 1fr 28px;
+				height: 100dvh;
+			}
+
+			.titlebar {
+				display: flex;
+				align-items: center;
+				gap: var(--s4);
+				padding: 0 var(--s4);
+				border-bottom: 1px solid var(--line);
+				font: 400 12.5px/1 var(--mono);
+				color: var(--muted);
+				min-width: 0;
+			}
+			.logo {
+				display: inline-flex;
+				align-items: center;
+				color: var(--fg);
+				font-weight: 500;
+				padding: var(--s1) 0;
+			}
+			.path {
+				display: flex;
+				align-items: center;
+				gap: var(--s2);
+				min-width: 0;
+				white-space: nowrap;
+				overflow: hidden;
+				color: var(--subtle);
+			}
+			.path .sep {
+				color: var(--line-strong);
+			}
+			.path .cur {
+				color: var(--text);
+				overflow: hidden;
+				text-overflow: ellipsis;
+			}
+			.titlebar .spacer {
+				flex: 1;
+			}
+			.cmdk {
+				display: inline-flex;
+				align-items: center;
+				gap: var(--s2);
+				height: 28px;
+				padding: 0 var(--s1) 0 var(--s3);
+				border: 1px solid var(--line-strong);
+				border-radius: var(--r2);
+				color: var(--subtle);
+				transition:
+					border-color var(--fast),
+					color var(--fast);
+			}
+			.cmdk:hover {
+				border-color: var(--muted);
+				color: var(--text);
+			}
+			.cmdk .lbl {
+				min-width: 120px;
+				text-align: left;
+			}
+			.lang {
+				display: inline-flex;
+				gap: var(--s2);
+				color: var(--subtle);
+			}
+			.lang [aria-current] {
+				color: var(--fg);
+			}
+
+			.main {
+				display: grid;
+				grid-template-columns: 320px 1fr;
+				min-height: 0;
+			}
+
+			/* Lista */
+			.sidebar {
+				display: grid;
+				grid-template-rows: auto 1fr auto;
+				min-height: 0;
+				background: var(--panel);
+				border-right: 1px solid var(--line);
+			}
+			.filter {
+				display: flex;
+				align-items: center;
+				gap: var(--s2);
+				margin: var(--s3);
+				height: 32px;
+				padding: 0 var(--s2) 0 var(--s3);
+				border: 1px solid var(--line);
+				border-radius: var(--r2);
+				color: var(--subtle);
+				transition: border-color var(--fast);
+			}
+			.filter:focus-within {
+				border-color: var(--accent);
+			}
+			.filter input {
+				flex: 1;
+				min-width: 0;
+				background: none;
+				border: 0;
+				outline: 0;
+				color: var(--fg);
+				font: 400 13px/1 var(--mono);
+			}
+			.filter input::placeholder {
+				color: var(--subtle);
+			}
+			.filter:focus-within kbd {
+				opacity: 0;
+			}
+
+			.list {
+				position: relative;
+				overflow-y: auto;
+				overscroll-behavior: contain;
+				padding: 0 var(--s2) var(--s4);
+				outline: 0;
+				scrollbar-width: thin;
+				scrollbar-color: var(--line-strong) transparent;
+			}
+			.list:focus-visible {
+				outline: 0;
+			}
+			.cursor {
+				position: absolute;
+				left: var(--s2);
+				right: var(--s2);
+				top: 0;
+				height: 32px;
+				border-radius: var(--r1);
+				background: var(--hover);
+				border: 1px solid var(--line-strong);
+				pointer-events: none;
+				transition:
+					transform 180ms var(--ease),
+					height 180ms var(--ease),
+					border-color var(--fast);
+			}
+			.list:focus-visible .cursor {
+				border-color: color-mix(in srgb, var(--accent) 55%, var(--line-strong));
+				box-shadow: 0 0 0 3px var(--accent-faint);
+			}
+			.cursor[hidden] {
+				display: none;
+			}
+			.group + .group {
+				margin-top: var(--s3);
+			}
+			.ghead {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				height: 32px;
+				padding: 0 var(--s3);
+				font: 500 11px/1 var(--mono);
+				letter-spacing: 0.08em;
+				text-transform: uppercase;
+				color: var(--subtle);
+			}
+			.ghead .count {
+				letter-spacing: 0;
+				color: var(--subtle);
+				font-variant-numeric: tabular-nums;
+			}
+			.sub {
+				display: flex;
+				align-items: center;
+				gap: var(--s2);
+				height: 24px;
+				padding: 0 var(--s3);
+				font: 400 10.5px/1 var(--mono);
+				color: var(--subtle);
+			}
+			.sub::after {
+				content: '';
+				flex: 1;
+				height: 1px;
+				background: var(--line);
+			}
+			.row {
+				position: relative;
+				z-index: 1;
+				display: grid;
+				grid-template-columns: 16px 1fr auto;
+				align-items: center;
+				gap: var(--s2);
+				height: 32px;
+				padding: 0 var(--s3);
+				border-radius: var(--r1);
+				color: var(--text);
+				cursor: pointer;
+				user-select: none;
+				transition: color var(--fast);
+			}
+			.row:hover {
+				color: var(--fg);
+			}
+			.row .slot {
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				font: 400 10.5px/1 var(--mono);
+				color: var(--subtle);
+			}
+			.row .t {
+				white-space: nowrap;
+				overflow: hidden;
+				text-overflow: ellipsis;
+				font-size: 14px;
+			}
+			.row .m {
+				font: 400 11.5px/1 var(--mono);
+				color: var(--subtle);
+				font-variant-numeric: tabular-nums;
+			}
+			.row[aria-selected='true'] {
+				color: var(--fg);
+			}
+			.row[aria-selected='true']::before {
+				content: '';
+				position: absolute;
+				left: 0;
+				top: 8px;
+				bottom: 8px;
+				width: 2px;
+				border-radius: 1px;
+				background: var(--accent);
+				box-shadow: 0 0 6px var(--accent);
+			}
+			.row[aria-selected='true'] .m {
+				color: var(--accent);
+			}
+			.row[hidden],
+			.group[hidden],
+			.sub[hidden] {
+				display: none;
+			}
+			.row mark {
+				background: none;
+				color: var(--accent);
+			}
+			.empty {
+				padding: var(--s5) var(--s3);
+				font: 400 12.5px/1.6 var(--mono);
+				color: var(--subtle);
+			}
+
+			.legend {
+				display: flex;
+				flex-wrap: wrap;
+				gap: var(--s2) var(--s3);
+				padding: var(--s3) var(--s4);
+				border-top: 1px solid var(--line);
+				font: 400 10.5px/1 var(--mono);
+				color: var(--subtle);
+			}
+			.legend span {
+				display: inline-flex;
+				align-items: center;
+				gap: 6px;
+			}
+
+			/* Introduzione compatta, solo su mobile in testa alla lista */
+			.m-intro {
+				display: none;
+			}
+
+			/* Dettaglio */
+			.detail {
+				position: relative;
+				min-height: 0;
+				overflow-y: auto;
+				scrollbar-width: thin;
+				scrollbar-color: var(--line-strong) transparent;
+			}
+			.detail-bar {
+				display: none;
+			}
+			.doc {
+				max-width: 828px;
+				margin-inline: auto;
+				padding: var(--s7) var(--s8) var(--s8);
+			}
+			.doc.enter {
+				animation: enter var(--pane) var(--ease) both;
+			}
+			@keyframes enter {
+				from {
+					opacity: 0;
+					transform: translateY(6px);
+				}
+			}
+			.eyebrow {
+				display: flex;
+				align-items: center;
+				gap: var(--s2);
+				font: 400 12px/1 var(--mono);
+				color: var(--subtle);
+				font-variant-numeric: tabular-nums;
+			}
+			.eyebrow .sep {
+				color: var(--line-strong);
+			}
+			.doc-head {
+				position: relative;
+				margin-top: var(--s4);
+				padding-bottom: var(--s5);
+			}
+			.doc-head::after {
+				content: '';
+				position: absolute;
+				left: 0;
+				right: 0;
+				bottom: 0;
+				height: 1px;
+				background: var(--line);
+			}
+			.doc-head::before {
+				content: '';
+				position: absolute;
+				left: 0;
+				right: 0;
+				bottom: 0;
+				height: 1px;
+				z-index: 1;
+				background: var(--accent);
+				transform-origin: left;
+				transform: scaleX(0);
+				opacity: 0;
+			}
+			.doc.enter .doc-head::before {
+				animation: scan 700ms var(--ease) both;
+			}
+			@keyframes scan {
+				0% {
+					transform: scaleX(0);
+					opacity: 1;
+				}
+				55% {
+					transform: scaleX(1);
+					opacity: 1;
+				}
+				100% {
+					transform: scaleX(1);
+					opacity: 0;
+				}
+			}
+			.doc h1 {
+				font-size: 34px;
+				line-height: 1.12;
+				font-weight: 480;
+				letter-spacing: -0.022em;
+				outline: 0;
+			}
+			.doc-meta {
+				display: flex;
+				flex-wrap: wrap;
+				align-items: center;
+				gap: var(--s2) var(--s4);
+				margin-top: var(--s3);
+				font: 400 12.5px/1 var(--mono);
+				color: var(--muted);
+				font-variant-numeric: tabular-nums;
+			}
+			.status {
+				display: inline-flex;
+				align-items: center;
+				gap: var(--s2);
+			}
+			.head-actions {
+				position: absolute;
+				top: 0;
+				right: 0;
+				display: flex;
+				gap: var(--s1);
+			}
+			.icon-btn {
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+				gap: 6px;
+				height: 28px;
+				min-width: 28px;
+				padding: 0 var(--s2);
+				border: 1px solid transparent;
+				border-radius: var(--r2);
+				color: var(--subtle);
+				font: 400 11.5px/1 var(--mono);
+				transition:
+					color var(--fast),
+					border-color var(--fast);
+			}
+			.icon-btn:hover {
+				color: var(--fg);
+				border-color: var(--line-strong);
+			}
+			.icon-btn.ok {
+				color: var(--accent);
+			}
+
+			.lead {
+				margin-top: var(--s5);
+				font-size: 18px;
+				line-height: 1.6;
+				color: var(--fg);
+				font-weight: 400;
+				max-width: 60ch;
+			}
+			.prose {
+				margin-top: var(--s5);
+				color: var(--text);
+				max-width: 64ch;
+			}
+			.prose > * + * {
+				margin-top: var(--s4);
+			}
+			.prose h2 {
+				margin-top: var(--s6);
+				font: 500 11px/1 var(--mono);
+				letter-spacing: 0.08em;
+				text-transform: uppercase;
+				color: var(--subtle);
+			}
+			.prose ul {
+				list-style: none;
+				padding: 0;
+				display: grid;
+				gap: var(--s2);
+			}
+			.prose li {
+				position: relative;
+				padding-left: var(--s5);
+			}
+			.prose li::before {
+				content: '';
+				position: absolute;
+				left: 4px;
+				top: 0.8em;
+				width: 8px;
+				height: 1px;
+				background: var(--accent);
+			}
+			.prose code {
+				font: 400 13px/1 var(--mono);
+				color: var(--fg);
+				background: var(--surface);
+				border: 1px solid var(--line);
+				border-radius: var(--r1);
+				padding: 2px 5px;
+			}
+			.prose strong {
+				font-weight: 500;
+				color: var(--fg);
+			}
+
+			.receipts {
+				display: flex;
+				flex-wrap: wrap;
+				gap: 6px;
+				margin-top: var(--s5);
+			}
+			.chip {
+				display: inline-flex;
+				align-items: center;
+				height: 24px;
+				font: 400 11.5px/1 var(--mono);
+				color: var(--muted);
+				border: 1px solid var(--line-strong);
+				border-radius: var(--r1);
+				padding: 0 var(--s2);
+			}
+			.chip.k {
+				color: var(--subtle);
+				border-style: dashed;
+			}
+			.copy {
+				display: inline-flex;
+				align-items: center;
+				gap: var(--s3);
+				max-width: 100%;
+				height: 32px;
+				padding: 0 var(--s2) 0 var(--s3);
+				font: 400 12.5px/1 var(--mono);
+				color: var(--fg);
+				background: var(--surface);
+				border: 1px solid var(--line-strong);
+				border-radius: var(--r2);
+				transition: border-color var(--fast);
+			}
+			.copy:hover {
+				border-color: var(--accent);
+			}
+			.copy .p {
+				color: var(--accent);
+			}
+			.copy .txt {
+				white-space: nowrap;
+				overflow: hidden;
+				text-overflow: ellipsis;
+			}
+			.copy .st {
+				display: inline-flex;
+				align-items: center;
+				gap: 6px;
+				min-width: 74px;
+				justify-content: flex-end;
+				color: var(--subtle);
+				font-size: 11px;
+			}
+			.copy.ok {
+				border-color: var(--accent);
+			}
+			.copy.ok .st {
+				color: var(--accent);
+			}
+			.cmd-wrap {
+				margin-top: var(--s4);
+			}
+
+			.kv {
+				display: grid;
+				grid-template-columns: 112px 1fr;
+				margin-top: var(--s6);
+				border-top: 1px solid var(--line);
+				font-size: 14px;
+			}
+			.kv dt,
+			.kv dd {
+				padding: var(--s3) 0;
+				border-bottom: 1px solid var(--line);
+				min-width: 0;
+			}
+			.kv dt {
+				font: 400 12px/1.9 var(--mono);
+				color: var(--subtle);
+			}
+			.kv dd {
+				color: var(--text);
+				overflow-wrap: anywhere;
+			}
+			.kv dd .chip {
+				margin: 0 var(--s1) var(--s1) 0;
+			}
+
+			.ulink {
+				position: relative;
+				display: inline-flex;
+				align-items: center;
+				gap: 6px;
+				color: var(--text);
+				padding-bottom: 2px;
+				transition: color var(--fast);
+			}
+			.ulink::after {
+				content: '';
+				position: absolute;
+				left: 0;
+				right: 0;
+				bottom: 0;
+				height: 1px;
+				background: var(--accent);
+				transform: scaleX(0);
+				transform-origin: left;
+				transition: transform 260ms var(--ease);
+			}
+			.ulink:hover {
+				color: var(--fg);
+			}
+			.ulink:hover::after {
+				transform: scaleX(1);
+			}
+			.ulink svg.i {
+				color: var(--subtle);
+				transition:
+					transform 260ms var(--ease),
+					color var(--fast);
+			}
+			.ulink:hover svg.i {
+				color: var(--accent);
+				transform: translate(2px, -2px);
+			}
+
+			/* Righe di collegamento interno (altre voci, log, inizia da) */
+			.links {
+				margin-top: var(--s6);
+			}
+			.links-h {
+				font: 500 11px/1 var(--mono);
+				letter-spacing: 0.08em;
+				text-transform: uppercase;
+				color: var(--subtle);
+				margin-bottom: var(--s2);
+			}
+			.jump {
+				display: grid;
+				grid-template-columns: 16px 1fr auto;
+				align-items: baseline;
+				gap: var(--s3);
+				width: 100%;
+				padding: var(--s3) 0;
+				border-bottom: 1px solid var(--line);
+				text-align: left;
+				color: var(--text);
+				transition: padding-left 260ms var(--ease);
+			}
+			.jump:first-of-type {
+				border-top: 1px solid var(--line);
+			}
+			.jump .slot {
+				align-self: center;
+				display: flex;
+				justify-content: center;
+			}
+			.jump b {
+				font-weight: 500;
+				color: var(--fg);
+			}
+			.jump .d {
+				color: var(--muted);
+			}
+			.jump .m {
+				font: 400 11.5px/1 var(--mono);
+				color: var(--subtle);
+				font-variant-numeric: tabular-nums;
+				align-self: center;
+				display: inline-flex;
+				align-items: center;
+				gap: 6px;
+			}
+			.jump .m svg.i {
+				transition:
+					transform 260ms var(--ease),
+					color var(--fast);
+			}
+			.jump:hover {
+				padding-left: var(--s2);
+			}
+			.jump:hover .m svg.i {
+				color: var(--accent);
+				transform: translateX(3px);
+			}
+			.jump.here b {
+				color: var(--accent);
+			}
+
+			.pager {
+				display: flex;
+				justify-content: space-between;
+				gap: var(--s4);
+				margin-top: var(--s7);
+				padding-top: var(--s4);
+				border-top: 1px dashed var(--line-strong);
+			}
+			.pager button {
+				display: grid;
+				gap: 6px;
+				text-align: left;
+				max-width: 48%;
+				padding: var(--s1) 0;
+			}
+			.pager button:last-child {
+				text-align: right;
+				justify-items: end;
+			}
+			.pager .k {
+				display: inline-flex;
+				align-items: center;
+				gap: 6px;
+				font: 400 11px/1 var(--mono);
+				color: var(--subtle);
+			}
+			.pager .t {
+				color: var(--text);
+				transition: color var(--fast);
+			}
+			.pager button:hover .t {
+				color: var(--accent);
+			}
+
+			/* Introduzione */
+			.prompt {
+				font: 400 13px/1 var(--mono);
+				color: var(--subtle);
+			}
+			.prompt .p {
+				color: var(--accent);
+			}
+			.intro h1 {
+				margin-top: var(--s5);
+				font-size: 44px;
+				line-height: 1.05;
+				letter-spacing: -0.028em;
+			}
+			.role {
+				display: flex;
+				flex-wrap: wrap;
+				align-items: center;
+				gap: 6px var(--s3);
+				margin-top: var(--s4);
+				font: 400 13px/1.4 var(--mono);
+				color: var(--muted);
+			}
+			.howto {
+				display: flex;
+				flex-wrap: wrap;
+				align-items: center;
+				gap: var(--s2) var(--s4);
+				margin-top: var(--s6);
+				padding: var(--s3) var(--s4);
+				border: 1px dashed var(--line-strong);
+				border-radius: var(--r2);
+				font: 400 12px/1.4 var(--mono);
+				color: var(--subtle);
+			}
+			.howto span {
+				display: inline-flex;
+				align-items: center;
+				gap: 6px;
+			}
+			.social {
+				display: flex;
+				flex-wrap: wrap;
+				gap: var(--s2) var(--s5);
+				margin-top: var(--s5);
+				font: 400 13px/1 var(--mono);
+			}
+
+			.setup-box {
+				margin-top: var(--s5);
+				border: 1px solid var(--line-strong);
+				border-radius: var(--r2);
+				background: var(--surface);
+				font: 400 13px/1.6 var(--mono);
+				overflow: hidden;
+			}
+			.setup-box .h {
+				display: flex;
+				align-items: center;
+				gap: var(--s2);
+				padding: var(--s2) var(--s3);
+				border-bottom: 1px solid var(--line);
+				color: var(--subtle);
+				font-size: 11.5px;
+			}
+			.setup-box .h .dots {
+				display: inline-flex;
+				gap: 5px;
+				margin-right: var(--s2);
+			}
+			.setup-box .h .dots i {
+				width: 7px;
+				height: 7px;
+				border-radius: 50%;
+				border: 1px solid var(--line-strong);
+			}
+			.setup-box dl {
+				display: grid;
+				grid-template-columns: 96px 1fr;
+				gap: var(--s2) var(--s4);
+				padding: var(--s4);
+			}
+			.setup-box dt {
+				color: var(--accent);
+			}
+			.setup-box dd {
+				color: var(--text);
+			}
+
+			/* Barra di stato */
+			.statusbar {
+				display: flex;
+				align-items: center;
+				gap: var(--s5);
+				padding: 0 var(--s4);
+				border-top: 1px solid var(--line);
+				background: var(--panel);
+				font: 400 11px/1 var(--mono);
+				color: var(--subtle);
+				white-space: nowrap;
+				overflow: hidden;
+			}
+			.statusbar .msg {
+				display: inline-flex;
+				align-items: center;
+				gap: var(--s2);
+				min-width: 150px;
+			}
+			.statusbar .msg.ok {
+				color: var(--accent);
+			}
+			.statusbar .hints {
+				display: flex;
+				gap: var(--s4);
+			}
+			.statusbar .hints span {
+				display: inline-flex;
+				align-items: center;
+				gap: 6px;
+			}
+			.statusbar kbd {
+				height: 16px;
+				min-width: 16px;
+				font-size: 10px;
+				border-bottom-width: 1px;
+			}
+			.statusbar .right {
+				margin-left: auto;
+				font-variant-numeric: tabular-nums;
+			}
+
+			/* Palette dei comandi */
+			.palette {
+				position: fixed;
+				inset: 0;
+				z-index: 40;
+				display: flex;
+				justify-content: center;
+				align-items: flex-start;
+				padding: 14vh var(--s4) var(--s4);
+			}
+			.palette[hidden] {
+				display: none;
+			}
+			.pal-backdrop {
+				position: absolute;
+				inset: 0;
+				background: rgb(0 0 0 / 0.62);
+				opacity: 0;
+				transition: opacity var(--fast) var(--ease);
+			}
+			.pal-box {
+				position: relative;
+				width: min(600px, 100%);
+				max-height: min(520px, 72vh);
+				display: grid;
+				grid-template-rows: auto 1fr auto;
+				background: var(--panel);
+				border: 1px solid var(--line-strong);
+				border-radius: var(--r2);
+				box-shadow:
+					0 0 0 1px rgb(0 0 0 / 0.6),
+					0 24px 64px rgb(0 0 0 / 0.6);
+				opacity: 0;
+				transform: translateY(-6px) scale(0.985);
+				transition:
+					opacity var(--fast) var(--ease),
+					transform 200ms var(--ease);
+				overflow: hidden;
+			}
+			.palette.open .pal-backdrop {
+				opacity: 1;
+			}
+			.palette.open .pal-box {
+				opacity: 1;
+				transform: none;
+			}
+			.pal-input {
+				display: flex;
+				align-items: center;
+				gap: var(--s3);
+				padding: 0 var(--s4);
+				height: 52px;
+				border-bottom: 1px solid var(--line);
+				color: var(--subtle);
+			}
+			.pal-input svg.i {
+				width: 16px;
+				height: 16px;
+			}
+			.pal-input input {
+				flex: 1;
+				min-width: 0;
+				background: none;
+				border: 0;
+				outline: 0;
+				color: var(--fg);
+				font: 400 15px/1 var(--sans);
+			}
+			.pal-input input::placeholder {
+				color: var(--subtle);
+			}
+			.pal-list {
+				overflow-y: auto;
+				padding: var(--s2);
+				scrollbar-width: thin;
+				scrollbar-color: var(--line-strong) transparent;
+			}
+			.pal-h {
+				padding: var(--s3) var(--s3) var(--s2);
+				font: 500 10.5px/1 var(--mono);
+				letter-spacing: 0.08em;
+				text-transform: uppercase;
+				color: var(--subtle);
+			}
+			.pal-opt {
+				display: grid;
+				grid-template-columns: 16px 1fr auto;
+				align-items: center;
+				gap: var(--s3);
+				height: 36px;
+				padding: 0 var(--s3);
+				border-radius: var(--r1);
+				border: 1px solid transparent;
+				color: var(--text);
+				cursor: pointer;
+			}
+			.pal-opt .slot {
+				display: flex;
+				justify-content: center;
+				color: var(--subtle);
+			}
+			.pal-opt .t {
+				white-space: nowrap;
+				overflow: hidden;
+				text-overflow: ellipsis;
+			}
+			.pal-opt .m {
+				font: 400 11px/1 var(--mono);
+				color: var(--subtle);
+			}
+			.pal-opt[aria-selected='true'] {
+				background: var(--hover);
+				border-color: var(--line-strong);
+				color: var(--fg);
+			}
+			.pal-opt[aria-selected='true'] .slot {
+				color: var(--accent);
+			}
+			.pal-opt mark {
+				background: none;
+				color: var(--accent);
+			}
+			.pal-foot {
+				display: flex;
+				gap: var(--s4);
+				padding: var(--s2) var(--s4);
+				border-top: 1px solid var(--line);
+				font: 400 11px/1 var(--mono);
+				color: var(--subtle);
+			}
+			.pal-foot span {
+				display: inline-flex;
+				align-items: center;
+				gap: 6px;
+			}
+
+			/* Mobile: lista, poi dettaglio a schermo intero */
+			@media (max-width: 767px) {
+				.app {
+					grid-template-rows: var(--bar) 1fr;
+				}
+				.statusbar,
+				.path,
+				.lang,
+				.cmdk .lbl,
+				.cmdk kbd {
+					display: none;
+				}
+				.cmdk {
+					width: 36px;
+					height: 32px;
+					padding: 0;
+					justify-content: center;
+				}
+				.main {
+					display: block;
+					position: relative;
+					overflow: hidden;
+				}
+				.sidebar {
+					display: block;
+					height: 100%;
+					overflow-y: auto;
+					border-right: 0;
+					background: var(--bg);
+				}
+				.filter {
+					position: sticky;
+					top: 0;
+					z-index: 3;
+					margin: 0;
+					height: 52px;
+					padding: 0 var(--s4);
+					border: 0;
+					border-bottom: 1px solid var(--line);
+					border-radius: 0;
+					background: var(--bg);
+				}
+				.filter:focus-within {
+					border-color: var(--accent);
+				}
+				.filter kbd {
+					display: none;
+				}
+				.list {
+					overflow: visible;
+					padding-top: var(--s2);
+					padding-bottom: var(--s4);
+				}
+				.cursor {
+					display: none;
+				}
+				.legend {
+					position: sticky;
+					bottom: 0;
+					z-index: 3;
+					background: var(--bg);
+				}
+				.row {
+					height: 44px;
+				}
+				.row .t {
+					font-size: 15px;
+				}
+				.ghead {
+					height: 36px;
+				}
+				.legend {
+					padding-bottom: calc(var(--s3) + env(safe-area-inset-bottom));
+				}
+				.m-intro {
+					display: block;
+					padding: var(--s5) var(--s4);
+				}
+				.m-intro h1 {
+					font-size: 28px;
+					line-height: 1.1;
+					font-weight: 480;
+					letter-spacing: -0.022em;
+				}
+				.m-intro .role {
+					margin-top: var(--s2);
+					font-size: 12px;
+				}
+				.m-intro p {
+					margin-top: var(--s3);
+					color: var(--text);
+					font-size: 15px;
+				}
+				.m-intro[hidden] {
+					display: none;
+				}
+				.m-intro .social {
+					margin-top: var(--s4);
+					font-size: 12.5px;
+					gap: var(--s2) var(--s4);
+				}
+				.detail {
+					position: absolute;
+					inset: 0;
+					z-index: 10;
+					background: var(--bg);
+					transform: translateX(100%);
+					visibility: hidden;
+					transition:
+						transform 240ms var(--ease),
+						visibility 0s linear 240ms;
+				}
+				body[data-view='detail'] .detail {
+					transform: none;
+					visibility: visible;
+					transition:
+						transform 240ms var(--ease),
+						visibility 0s;
+				}
+				.detail-bar {
+					position: sticky;
+					top: 0;
+					z-index: 2;
+					display: flex;
+					align-items: center;
+					gap: var(--s2);
+					height: 44px;
+					padding: 0 var(--s2);
+					background: var(--bg);
+					border-bottom: 1px solid var(--line);
+					font: 400 12px/1 var(--mono);
+					color: var(--subtle);
+				}
+				.back {
+					display: inline-flex;
+					align-items: center;
+					gap: var(--s1);
+					height: 36px;
+					padding: 0 var(--s3) 0 var(--s1);
+					color: var(--fg);
+					border-radius: var(--r2);
+				}
+				.back svg.i {
+					width: 18px;
+					height: 18px;
+				}
+				.detail-bar .where {
+					overflow: hidden;
+					text-overflow: ellipsis;
+					white-space: nowrap;
+				}
+				.doc {
+					padding: var(--s5) var(--s4) var(--s7);
+				}
+				.doc h1 {
+					font-size: 28px;
+				}
+				.head-actions {
+					position: static;
+					margin-top: var(--s3);
+					margin-left: calc(var(--s2) * -1);
+				}
+				.lead {
+					font-size: 17px;
+				}
+				.kv {
+					grid-template-columns: 92px 1fr;
+				}
+				.setup-box dl {
+					grid-template-columns: 1fr;
+					gap: 2px;
+				}
+				.setup-box dd {
+					margin-bottom: var(--s2);
+				}
+				.copy {
+					width: 100%;
+				}
+				.copy .txt {
+					flex: 1;
+				}
+				.palette {
+					padding-top: var(--s3);
+				}
+				.pal-foot {
+					display: none;
+				}
+			}
+
+			@media (prefers-reduced-motion: reduce) {
+				*,
+				*::before,
+				*::after {
+					animation: none !important;
+					transition: none !important;
+				}
+			}
+		</style>
+	</head>
+	<body data-view="list">
+		<div class="app">
+			<header class="titlebar">
+				<a class="logo" href="#/" aria-label="esse.dev, torna all'inizio"
+					>esse.dev<span class="caret" aria-hidden="true"></span
+				></a>
+				<nav class="path" aria-label="Posizione" id="path"></nav>
+				<span class="spacer"></span>
+				<button class="cmdk" type="button" id="open-palette" aria-label="Apri la palette dei comandi" aria-haspopup="dialog">
+					<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
+					<span class="lbl">Salta a</span>
+					<kbd class="modkey">⌘K</kbd>
+				</button>
+				<span class="lang mono" aria-label="Lingua"><span aria-current="true">it</span><span>en</span></span>
+			</header>
+
+			<div class="main">
+				<aside class="sidebar" aria-label="Indice del sito">
+					<div class="m-intro">
+						<p class="prompt"><span class="p">~</span> whoami<span class="caret" aria-hidden="true"></span></p>
+						<h1 style="margin-top: 12px">Simone Salerno</h1>
+						<div class="role"><span class="led on" aria-hidden="true"></span>Lead AI Engineer in Yellow Tech · Milano</div>
+						<p>
+							Porto l’AI generativa dentro aziende vere e la tengo in produzione. Per conto mio
+							costruisco strumenti per lavorare con molti coding agent insieme, e il metodo con cui
+							lo faccio.
+						</p>
+						<div class="social">
+							<a class="ulink" href="https://github.com/essedev/">github</a>
+							<a class="ulink" href="https://www.linkedin.com/in/simone-salerno">linkedin</a>
+							<a class="ulink" href="mailto:hello@esse.dev">hello@esse.dev</a>
+						</div>
+					</div>
+					<label class="filter">
+						<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 6h18" /><path d="M7 12h10" /><path d="M10 18h4" /></svg>
+						<span class="sr">Filtra la lista</span>
+						<input id="filter" type="text" placeholder="Filtra" autocomplete="off" spellcheck="false" aria-controls="list" />
+						<kbd>/</kbd>
+					</label>
+					<div class="list" id="list" role="listbox" tabindex="0" aria-label="Tutto il sito">
+						<div class="cursor" id="cursor" aria-hidden="true"></div>
+						<div id="groups"></div>
+						<p class="empty" id="empty" hidden></p>
+					</div>
+					<div class="legend" aria-label="Legenda degli stati">
+						<span><i class="led on"></i>attivo</span>
+						<span><i class="led done"></i>rilasciato</span>
+						<span><i class="led idea"></i>idea</span>
+						<span><i class="led off"></i>archiviato</span>
+					</div>
+				</aside>
+
+				<main class="detail" id="detail" aria-live="off">
+					<div class="detail-bar">
+						<button class="back" type="button" id="back" aria-label="Torna alla lista">
+							<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="m15 18-6-6 6-6" /></svg>
+							<span>Indietro</span>
+						</button>
+						<span class="where" id="where"></span>
+					</div>
+					<div id="doc"></div>
+				</main>
+			</div>
+
+			<footer class="statusbar">
+				<span class="msg" id="msg" role="status" aria-live="polite"><span class="led on" aria-hidden="true"></span><span id="msg-t">pronto</span></span>
+				<span class="hints" aria-hidden="true">
+					<span><kbd>j</kbd><kbd>k</kbd>muovi</span>
+					<span><kbd><svg class="i" viewBox="0 0 24 24"><polyline points="9 10 4 15 9 20" /><path d="M20 4v7a4 4 0 0 1-4 4H4" /></svg></kbd>apri</span>
+					<span><kbd>esc</kbd>indietro</span>
+					<span><kbd>/</kbd>filtra</span>
+					<span><kbd class="modkey">⌘K</kbd>salta</span>
+				</span>
+				<span class="right" id="sb-right"></span>
+			</footer>
+		</div>
+
+		<div class="palette" id="palette" hidden>
+			<div class="pal-backdrop" data-close></div>
+			<div class="pal-box" role="dialog" aria-modal="true" aria-label="Palette dei comandi">
+				<div class="pal-input">
+					<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></svg>
+					<input
+						id="pal-q"
+						type="text"
+						role="combobox"
+						aria-expanded="true"
+						aria-controls="pal-list"
+						aria-autocomplete="list"
+						aria-label="Cerca una voce o un comando"
+						placeholder="Vai a un progetto, una sezione o un comando"
+						autocomplete="off"
+						spellcheck="false"
+					/>
+					<kbd>esc</kbd>
+				</div>
+				<div class="pal-list" id="pal-list" role="listbox" aria-label="Risultati"></div>
+				<div class="pal-foot" aria-hidden="true">
+					<span
+						><kbd><svg class="i" viewBox="0 0 24 24"><path d="m5 12 7-7 7 7" /><path d="M12 19V5" /></svg></kbd
+						><kbd><svg class="i" viewBox="0 0 24 24"><path d="M12 5v14" /><path d="m19 12-7 7-7-7" /></svg></kbd>muovi</span
+					>
+					<span><kbd><svg class="i" viewBox="0 0 24 24"><polyline points="9 10 4 15 9 20" /><path d="M20 4v7a4 4 0 0 1-4 4H4" /></svg></kbd>esegui</span>
+					<span><kbd>esc</kbd>chiudi</span>
+				</div>
+			</div>
+		</div>
+
+		<script>
+			'use strict';
+
+			// Icone Lucide, inline.
+			const ICON = {
+				up: '<path d="M7 7h10v10"/><path d="M7 17 17 7"/>',
+				right: '<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>',
+				left: '<path d="m12 19-7-7 7-7"/><path d="M19 12H5"/>',
+				copy: '<rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>',
+				check: '<path d="M20 6 9 17l-5-5"/>',
+				link: '<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>',
+				terminal: '<polyline points="4 17 10 11 4 5"/><line x1="12" x2="20" y1="19" y2="19"/>',
+				mail: '<rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>',
+				home: '<path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
+				palette: '<circle cx="13.5" cy="6.5" r=".5" fill="currentColor"/><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"/><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"/><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/>',
+				file: '<path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/>'
+			};
+			const svg = (name) => `<svg class="i" viewBox="0 0 24 24" aria-hidden="true">${ICON[name]}</svg>`;
+
+			const EMAIL = 'hello@esse.dev';
+			const BREW = 'brew install --cask essedev/relay/relay-terminal';
+
+			const STATUS = {
+				'in-progress': { led: 'on', label: 'attivo' },
+				completed: { led: 'done', label: 'rilasciato' },
+				idea: { led: 'idea', label: 'idea' },
+				archived: { led: 'off', label: 'archiviato' }
+			};
+
+			// Progetti: i quattro in evidenza con le ricevute, poi gli altri per anno.
+			const PROJECTS = [
+				{
+					slug: 'relay',
+					title: 'Relay',
+					status: 'in-progress',
+					year: 2026,
+					featured: true,
+					link: 'https://github.com/essedev/relay',
+					lead: 'Terminale macOS per far girare tanti coding agent in parallelo, con lo stato di ogni agente letto dagli hook e non dall’output.',
+					receipts: [['pubblico · MIT'], ['51 release'], ['Swift 6 · AppKit', 'k']],
+					cmd: BREW,
+					tags: ['Swift', 'AppKit', 'macOS', 'AI Agents', 'Claude Code', 'Homebrew'],
+					body: `
+<p>Lavoro con cinque o sei sessioni di Claude Code e Codex aperte insieme, su progetti diversi. In un terminale normale, per capire quale agente sta aspettando una risposta, devo passare tab per tab. Relay nasce per togliere quel giro.</p>
+<h2>Come funziona</h2>
+<ul>
+<li>Lo stato di ogni agente (in esecuzione, in attesa di input, errore, finito) arriva dagli hook nativi di Claude Code e Codex, non dal parsing dell’output. Resta giusto anche sotto un muro di log di build.</li>
+<li>Un modello di attenzione in tre passi. Una sessione che ti vuole si fa notare, una che hai visto resta in sottofondo, rispondere la spegne.</li>
+<li>Una dashboard di triage (Cmd+D) mette tutte le sessioni su uno schermo, in quattro corsie per urgenza.</li>
+<li>Workspace con gruppi e archivio, pane divisi con i propri tab, finestre multiple e un layout che sopravvive al riavvio.</li>
+</ul>
+<p>È scritto in Swift 6 e AppKit, partendo da zero esperienza di Swift, con SwiftTerm come motore dietro un’astrazione che lascia spazio a libghostty. I terminali inattivi vengono scaricati dalla memoria, circa 90 MB residenti con un terminale vivo, 92 con tredici, e 2,4 µs aggiunti nel caso peggiore su un tasto. Metodo e numeri sono nel repo.</p>
+<p>È open source con licenza MIT e si installa con Homebrew.</p>`
+				},
+				{
+					slug: 'portsage',
+					title: 'Portsage',
+					status: 'completed',
+					year: 2026,
+					featured: true,
+					link: 'https://github.com/essedev/portsage',
+					lead: 'App per la barra dei menu che gestisce le porte dei progetti in sviluppo, con un server MCP e una CLI per gli agenti.',
+					receipts: [['pubblico'], ['29 release'], ['Rust · Tauri · MCP', 'k']],
+					tags: ['Rust', 'Tauri', 'React', 'macOS', 'MCP', 'CLI'],
+					body: `
+<p>Nata da un problema banale creato dalla produttività con l’AI. Con quattro o cinque progetti aperti in parallelo, ognuno col suo Vite, il suo PostgreSQL e il suo Redis, le porte collidono di continuo. Portsage tiene il registro di quale porta è di chi, quali range sono liberi e quali processi girano senza appartenere a nessun progetto.</p>
+<ul>
+<li>Un popover nella barra dei menu per lo stato a colpo d’occhio, e una finestra per gestire progetti e impostazioni.</li>
+<li>Un server MCP, con cui Claude Code, Cursor, Codex e gli altri agenti prenotano le porte e registrano i servizi da soli quando fanno lo scaffold di un progetto.</li>
+<li>Una CLI per gli script e il terminale, e una variante headless per Linux raggiungibile via SSH, con il port forwarding automatico.</li>
+</ul>
+<p>Tauri 2 con backend in Rust e interfaccia React. È open source e si installa con Homebrew.</p>`
+				},
+				{
+					slug: 'nexus',
+					title: 'Nexus',
+					status: 'in-progress',
+					year: 2026,
+					featured: true,
+					lead: 'Piattaforma dati personale guidata da un agente. Ogni cosa è un’entità definita da uno schema, e un tipo nuovo non richiede codice.',
+					receipts: [['privato'], ['82 decisioni scritte'], ['Python · FastAPI · React', 'k']],
+					tags: ['Python', 'FastAPI', 'React', 'PostgreSQL', 'AI Agents', 'MCP'],
+					body: `
+<p>Nexus è dove tengo task, progetti, note, libri, spese, riunioni e le mie conversazioni con Claude Code. Invece di un’app per ogni cosa c’è un solo motore. Definisci uno schema e il sistema genera storage, API, i tool per l’assistente e un’interfaccia con tabelle, board, calendari e dashboard.</p>
+<p>L’assistente non si limita a leggere i dati. Li gestisce mentre ci parlo, e fa evolvere lo schema. Se gli dico che voglio tenere traccia dei film che guardo, crea il tipo, i campi e la vista. Ogni modifica è versionata e reversibile, e niente viene mai cancellato davvero. L’agente che opera ha privilegi minimi, quello che modifica il sistema lavora isolato e passa da un’approvazione umana.</p>
+<ul>
+<li>Automazioni a cron o a evento, compresi agenti che girano su un prompt.</li>
+<li>Trascrizione delle riunioni con i parlanti separati, OCR, ricerca web e vision come capability generiche.</li>
+<li>Un server MCP con OAuth, così qualunque coding agent può leggere e scrivere nei miei dati.</li>
+<li>Le chat di Claude Code sincronizzate dal laptop e collegate al progetto giusto, così l’attività di un progetto la ricava da lì e non la scrivo a mano.</li>
+</ul>
+<p>Backend Python con FastAPI, SQLAlchemy async e PostgreSQL con pgvector, frontend React. È self-hosted e single-user, con deploy blue-green. È la seconda versione, la prima era in Elixir e Phoenix.</p>`
+				},
+				{
+					slug: 'local-llm-eval',
+					title: 'Local LLM Eval',
+					status: 'completed',
+					statusLabel: 'concluso',
+					year: 2026,
+					featured: true,
+					link: 'https://github.com/essedev/local-llm-eval',
+					lead: 'Quanto regge il coding agentico con modelli locali su un MacBook Pro M5 da 32 GB, misurato contro i modelli cloud.',
+					receipts: [['pubblico'], ['MLX · benchmark', 'k']],
+					tags: ['LLM', 'MLX', 'Benchmark', 'AI Agents', 'Research', 'Python'],
+					body: `
+<p>Volevo sapere se un modello locale può fare davvero da coding agent, non in una demo ma in un harness che scrive un’app intera. Il task è sempre lo stesso, una CRUD con backend FastAPI e SQLite e frontend React, generata da zero e valutata con una rubrica fissa.</p>
+<ul>
+<li>Su uno scaffold piccolo, Qwen3.6-35B-A3B quantizzato a 4 bit con MLX ha fatto 18 su 18 in 3,5-7 minuti, senza correzioni umane. Replicato due volte.</li>
+<li>Sullo stesso task Opus 4.7 ha fatto 17 su 18 a 0,76 dollari a run, DeepSeek V4 Flash 17 su 18 a 0,002. Il costo cambia di quattro ordini di grandezza, il risultato resta nel rumore della rubrica.</li>
+<li>Per il tool calling in locale servono tre cose allineate, cioè il training del modello, il chat template e il parser del server. Se un anello è rotto, il modello fallisce appena installato.</li>
+<li>Spezzare il lavoro in una roadmap salva i modelli fragili ma rompe quelli capaci, perché il reset del contesto fra un task e l’altro fa perdere coerenza.</li>
+</ul>
+<p>Il perimetro di validità e quello che non ho misurato sono scritti prima dei risultati. Un solo task, quasi tutte le celle con N=1, nessun dato su refactor o contesti lunghi. Vale come punto di partenza qualitativo, non come benchmark. Log, codice generato, punteggi e costi di ogni run sono pubblici.</p>`
+				},
+				{
+					slug: 'mcpbelt',
+					title: 'mcpbelt',
+					status: 'in-progress',
+					year: 2026,
+					lead: 'Un solo server MCP che dà a qualunque agente le capability che non può eseguire in locale, cioè documenti, audio, pagine web e immagini.',
+					tags: ['Python', 'FastAPI', 'MCP', 'AI Agents', 'OAuth', 'Astro'],
+					body: `
+<p>Un coding agent sa scrivere codice, ma non sa leggere un PDF scansionato, trascrivere una registrazione o guardare un’immagine, a meno che qualcuno non gli colleghi un servizio per ciascuna cosa. mcpbelt le mette tutte dietro una connessione, un credito e uno schema.</p>
+<p>Le singole capability sono commodity. Quello che conta è averle tutte in una connessione sola, scegliere fra fornitori diversi per costo e qualità, e tenere i risultati fuori dal contesto dell’agente, sul server, da interrogare quando servono.</p>
+<ul>
+<li>459 token invece di 6.355 per un documento di quaranta pagine, che resta interamente interrogabile.</li>
+<li>Al primo giro a scala vera, 50 pagine e 56 minuti di registrazione consegnati in 35 secondi, per 1,14 euro pagati ai fornitori.</li>
+<li>Lo stesso giro ha trovato un difetto che nessun test poteva vedere. Un OCR che valeva 200 millesimi ne incassava 84, e adesso le unità si contano dal file.</li>
+</ul>
+<p>Backend FastAPI con OAuth 2.1 e una coda di lavori separata, sito pubblico in Astro, ricariche via Stripe.</p>`
+				},
+				{
+					slug: 'milanoz',
+					title: 'Milanoz',
+					status: 'idea',
+					year: 2026,
+					lead: 'Una mappa di Milano quartiere per quartiere, gli 88 NIL con dati su abitanti, redditi, prezzi delle case, verde e caldo urbano.',
+					tags: ['Python', 'ETL', 'Maps', 'Open Data'],
+					body: `
+<p>Milano è divisa in 88 NIL, i nuclei di identità locale. L’idea è una mappa in cui ognuno si apre e racconta com’è, quanti ci vivono, i redditi, i prezzi delle case, quanto verde c’è e quanto scalda d’estate, più i luoghi con una storia e un testo su come ci si vive.</p>
+<p>C’è un primo prototipo, con una pipeline ETL in Python che scarica e prepara i dati aperti del Comune e un frontend con la mappa a più livelli.</p>`
+				},
+				{
+					slug: 'liber',
+					title: 'Liber',
+					status: 'in-progress',
+					year: 2026,
+					link: 'https://heyliber.com',
+					lead: 'AI sommelier per ristoranti. Il cliente descrive cosa mangia e Liber sceglie, tra i vini davvero in carta, quelli che ci stanno meglio.',
+					tags: ['Python', 'FastAPI', 'React', 'PostgreSQL', 'Knowledge Graph', 'AI'],
+					body: `
+<p>Al tavolo il cliente scrive cosa sta mangiando. Liber propone i vini della carta del locale che ci si abbinano meglio e li argomenta come farebbe un sommelier, senza mai suggerire una bottiglia che il ristorante non ha.</p>
+<p>Non è un wrapper attorno a un LLM. Il ragionamento enologico gira su un knowledge graph costruito con Apache AGE dentro PostgreSQL, con vitigni, zone, stili e abbinamenti. Il modello fa da ranker e pesca solo dai vini effettivamente disponibili, quindi non può inventarsi un’etichetta.</p>
+<p>Backend FastAPI con SQLAlchemy async, frontend React 19 con TanStack Query, modelli via OpenRouter. Gira in Docker su una VPS, su heyliber.com.</p>`
+				},
+				{
+					slug: 'verbosa',
+					title: 'Verbosa',
+					status: 'archived',
+					year: 2025,
+					link: 'https://verbosa.it',
+					lead: 'Chat multi-provider per usare i modelli di OpenAI, Anthropic e Google da un’unica interfaccia, in Flutter con backend Go.',
+					tags: ['Flutter', 'Go', 'AI', 'Chat', 'Multi-Provider', 'WebSocket'],
+					body: `<p>Nel 2025 volevo un’unica chat per usare i modelli di OpenAI, Anthropic, Google e OpenRouter, scegliendo il modello messaggio per messaggio. Frontend Flutter per desktop e mobile, backend Go con WebSocket per lo streaming, conversazioni organizzate per progetto.</p>`
+				},
+				{
+					slug: 'kebabbivori',
+					title: 'Kebabbivori',
+					status: 'archived',
+					year: 2025,
+					link: 'https://kebabbivori.it',
+					lead: 'Recensioni dei kebab della provincia di Varese, con un voto in dieci categorie che include il fattore unto.',
+					tags: ['Next.js', 'React', 'Supabase', 'Maps', 'TypeScript'],
+					body: `<p>Recensire sul serio i kebab della provincia di Varese, con un gruppo di recensori amatori. Dieci categorie di voto (carne, pane, salse, patatine, servizio e, ovviamente, il fattore unto), una mappa dei locali e i profili di chi recensisce.</p><p>Next.js e Supabase. Il sito è ancora online.</p>`
+				},
+				{
+					slug: 'casussy',
+					title: 'Casussy',
+					status: 'idea',
+					year: 2025,
+					lead: 'App iOS per gestire la casa insieme, con task, spesa, menu della settimana e spese condivisi in tempo reale.',
+					tags: ['iOS', 'Swift', 'SwiftUI', 'Sync'],
+					body: `<p>Un’app nativa per chi vive insieme. I task di casa, la lista della spesa, il menu della settimana e le spese condivise sono visibili a tutti appena qualcuno aggiunge o spunta qualcosa.</p><p>L’ho pensata in SwiftUI con persistenza offline e un backend leggero per la sincronizzazione, con un sistema di inviti per aggiungere chi abita con te.</p>`
+				},
+				{
+					slug: 'cosmoscope',
+					title: 'Cosmoscope',
+					status: 'idea',
+					year: 2025,
+					lead: 'Un assistente di ricerca che trasforma una domanda in una mappa dei concetti, con le fonti attaccate a ogni nodo.',
+					tags: ['React', 'React Flow', 'AI', 'Search', 'Knowledge Graph'],
+					body: `<p>Fai una domanda, per esempio cos’è l’entanglement quantistico, e invece di un paragrafo ottieni una mappa. Il concetto al centro, attorno i temi collegati, e su ogni nodo le fonti da cui viene, con un peso per quanto sono affidabili.</p><p>Mi interessa perché una risposta lineare nasconde la struttura dell’argomento, ed è la struttura che serve per capire da dove continuare. L’ho abbozzata con React Flow e una ricerca web a monte.</p>`
+				},
+				{
+					slug: 'horizon',
+					title: 'Horizon',
+					status: 'idea',
+					year: 2025,
+					lead: 'Una dashboard che legge mercati, notizie e geopolitica al posto mio e mi mostra solo le poche cose che contano davvero.',
+					tags: ['AI', 'Dashboard', 'News', 'LLM'],
+					body: `<p>L’idea è l’opposto di un feed. Una dashboard che ogni giorno legge mercati, crypto, notizie, meteo e geopolitica, dà un punteggio di rilevanza a ogni segnale e me ne mostra una decina al massimo.</p><p>Un LLM classifica, raggruppa per tema e scarta il rumore, io leggo solo quello che supera la soglia. È parente di Flux. Lì leggo quello che scelgo io, qui qualcuno sceglie per me cosa vale la pena sapere.</p>`
+				},
+				{
+					slug: 'templator',
+					title: 'Templator',
+					status: 'archived',
+					year: 2025,
+					link: 'https://github.com/essedev/templator',
+					lead: 'Template Next.js pensato per partire veloce con un coding agent, con auth, ruoli, database ed email già pronti e deploy su Cloudflare Workers.',
+					tags: ['Next.js', 'TypeScript', 'Cloudflare', 'PostgreSQL', 'Drizzle'],
+					body: `<p>Il punto di partenza che usavo nel 2025 per i progetti Next.js. Autenticazione con Better Auth, ruoli a tre livelli, Drizzle su PostgreSQL, email transazionali e deploy su Cloudflare Workers. Struttura e documentazione erano pensate per un coding agent, così che potesse lavorarci da subito senza indovinare le convenzioni.</p><p>Oggi parto dai comandi di init ufficiali e metto le convenzioni in un file di istruzioni per l’agente, ma l’idea è partita da qui.</p>`
+				},
+				{
+					slug: 'pigeon',
+					title: 'Pigeon',
+					status: 'completed',
+					year: 2024,
+					lead: 'Invio di email transazionali da template, con un’API e un pannello. È la porta HTTP davanti al tuo server SMTP.',
+					tags: ['TypeScript', 'Fastify', 'PostgreSQL', 'Docker', 'Email', 'API'],
+					body: `
+<p>Nei runtime serverless ed edge non si può aprire la connessione TCP che una libreria SMTP si aspetta. Pigeon risolve il problema senza passare da un servizio esterno. L’applicazione chiama la sua API con un template e i dati, e Pigeon spedisce dal server SMTP della casella che hai già, registrando l’esito.</p>
+<ul>
+<li>Progetti con le proprie impostazioni SMTP e il proprio mittente.</li>
+<li>Template HTML con segnaposto sostituiti all’invio, e allegati.</li>
+<li>API autenticata con chiave, pannello per scrivere i template e vedere cosa è partito.</li>
+</ul>
+<p>Fastify e TypeScript, PostgreSQL con Drizzle, tutto in Docker. È nato nel 2024 come S-Mail, e oggi spedisce le email dei miei progetti.</p>`
+				},
+				{
+					slug: 'budokan',
+					title: 'Budokan Polisportiva',
+					status: 'completed',
+					year: 2024,
+					link: 'https://budokan.it',
+					lead: 'Il sito della polisportiva Budokan, con corsi, istruttori e richiesta di una lezione di prova, e i contenuti gestiti dalla palestra.',
+					tags: ['SvelteKit', 'Sanity', 'CMS', 'TypeScript'],
+					body: `<p>La palestra aggiorna da sola corsi, orari, istruttori e galleria tramite Sanity, e chi vuole provare una disciplina prenota una lezione gratuita direttamente dal sito.</p><p>SvelteKit e TypeScript per il frontend, Sanity come CMS headless.</p>`
+				},
+				{
+					slug: 'flux',
+					title: 'Flux',
+					status: 'completed',
+					year: 2024,
+					link: 'https://flux.esse.dev',
+					lead: 'Lettore di newsletter e feed RSS che estrae gli articoli in markdown pulito e fedele all’originale, tutto su un solo Worker Cloudflare.',
+					tags: ['Cloudflare Workers', 'Hono', 'D1', 'React', 'PWA', 'AI'],
+					body: `
+<p>Flux è nato come TLDR Checker, uno scraper per leggere i digest di TLDR senza aprire la mail. La seconda versione è diventata un lettore agnostico, per qualunque feed e qualunque newsletter, con gli articoli ben separati e il contenuto fedele all’originale.</p>
+<p>L’estrazione usa ricette generate da un LLM per ogni fonte, ma il modello non riscrive mai il testo. Individua dove sta il contenuto, e il contenuto viene copiato così com’è. È la regola che tiene lontane le allucinazioni e fa sì che non si perda niente.</p>
+<ul>
+<li>Un cron cattura i feed e salva subito l’originale, poi una coda di Cloudflare Queues fa l’estrazione, così se qualcosa fallisce il dato grezzo c’è già.</li>
+<li>PWA con lettura offline, salvati, collezioni, ricerca e notifiche push con un digest due volte al giorno.</li>
+<li>Worker in Hono, D1 con Drizzle, better-auth. Frontend React 19 con Tailwind e shadcn/ui.</li>
+</ul>
+<p>È in produzione dal 6 giugno 2026. La prima versione, uno scraper Node con PocketBase e React, è conservata in un branch.</p>`
+				},
+				{
+					slug: 'doppia-os',
+					title: 'doppia.os',
+					status: 'archived',
+					year: 2023,
+					link: 'https://doppia-os.pages.dev/',
+					lead: 'Un desktop nel browser, con finestre e piccole app dentro una pagina web, costruito in SvelteKit come esperimento di interfaccia.',
+					tags: ['SvelteKit', 'Experimental', 'UI/UX'],
+					body: `<p>Un esperimento del 2023 per ricreare l’esperienza di un sistema operativo desktop dentro una pagina web, con finestre e piccole app. Nessun obiettivo di prodotto, solo capire fin dove si può spingere un’interfaccia nel browser. È ancora online.</p>`
+				},
+				{
+					slug: 'ethicode',
+					title: 'Ethicode',
+					status: 'archived',
+					year: 2023,
+					link: 'https://ethicode.eu/',
+					lead: 'Piattaforma di e-learning per imparare a programmare, nata come Let’s Code Italia.',
+					tags: ['SvelteKit', 'TailwindCSS', 'PocketBase', 'E-learning'],
+					body: `<p>Una piattaforma per imparare a programmare con percorsi semplici e pratici, nata nel 2023 come Let’s Code Italia. SvelteKit, Tailwind e PocketBase.</p>`
+				},
+				{
+					slug: 'didattica-integrata',
+					title: 'Didattica Integrata',
+					status: 'archived',
+					year: 2022,
+					link: 'https://github.com/essedev/didatticaintegrata.it',
+					lead: 'Una web app per valutare le esperienze di stage scolastico compilando dei moduli.',
+					tags: ['Flask', 'Bootstrap', 'SQLite', 'Education'],
+					body: `<p>Uno dei miei primi progetti, del 2022. Una web app per raccogliere le valutazioni degli stage scolastici tramite moduli, in Flask, Bootstrap e SQLite. Il codice è pubblico.</p>`
+				}
+			];
+
+			const NOW = [
+				{
+					slug: '2026-09-relay',
+					title: 'Relay e libghostty',
+					date: 'set 2026',
+					subject: 'Relay',
+					project: 'relay',
+					rest: 'è il terminale in cui lavoro ogni giorno, con cinque o sei agenti aperti.',
+					text: 'Relay è il terminale in cui lavoro ogni giorno, con cinque o sei agenti aperti. Sto lavorando all’astrazione che lascia spazio a libghostty.'
+				},
+				{
+					slug: '2026-09-nexus',
+					title: 'Nexus e il gate umano',
+					date: 'set 2026',
+					subject: 'Nexus',
+					project: 'nexus',
+					rest: 'è un’app dove l’agente modifica lo schema del database, dietro un gate umano.',
+					text: 'Nexus è un’app dove l’agente modifica lo schema del database, dietro un gate umano. Sto capendo fin dove ci si può spingere senza perdere il controllo.'
+				},
+				{
+					slug: '2026-08-modelli-locali',
+					title: 'Modelli locali su MacBook',
+					date: 'ago 2026',
+					subject: 'Modelli locali',
+					project: 'local-llm-eval',
+					rest: 'misuro quanto regge il coding agentico su un MacBook rispetto al cloud.',
+					text: 'Misuro quanto regge il coding agentico su un MacBook rispetto al cloud. Il numero che conta è la banda della memoria, non la RAM.'
+				}
+			];
+
+			const METHOD = [
+				{
+					slug: 'architettura',
+					title: 'Architettura prima del codice',
+					paras: [
+						'Dati, confini e standard si decidono prima della prima riga. Dopo, l’esecuzione accelera, e un agente che sa dove sta lavorando sbaglia molto meno.',
+						'Per questo un progetto parte da un data model e da documenti che dicono dove finisce una parte e dove inizia l’altra. Il codice arriva dopo, ed è la parte che l’agente fa meglio di me.'
+					]
+				},
+				{
+					slug: 'contesto',
+					title: 'Il contesto è il lavoro',
+					paras: [
+						'Convenzioni, regole e documenti dicono all’agente come lavoro io. Una regola scritta in un prompt è una probabilità, la stessa regola in un hook è una garanzia.',
+						'Il coding agent sta dentro il metodo. Non è un assistente a cui chiedere frammenti, ma un esecutore a cui dare contesto, vincoli e criteri di verifica.'
+					]
+				},
+				{
+					slug: 'misurare',
+					title: 'Misurare invece di fidarsi',
+					paras: [
+						'Il codice generato sembra giusto anche quando non lo è. Prima si misura, poi si decide cosa dire, e una conclusione sbagliata si ritira per iscritto.',
+						'Test, review e numeri veri. Nei miei progetti il perimetro di quello che ho misurato e di quello che no è scritto accanto ai risultati.'
+					]
+				},
+				{
+					slug: 'setup',
+					title: 'Il mio setup',
+					setup: true
+				}
+			];
+
+			// Voci della lista, nell'ordine in cui j e k le percorrono.
+			const ITEMS = [];
+			for (const n of NOW)
+				ITEMS.push({ id: 'adesso/' + n.slug, section: 'adesso', title: n.title, meta: n.date, led: 'on', data: n, kind: 'now' });
+			for (const p of PROJECTS)
+				ITEMS.push({
+					id: 'progetti/' + p.slug,
+					section: 'progetti',
+					title: p.title,
+					meta: String(p.year),
+					led: STATUS[p.status].led,
+					data: p,
+					kind: 'project',
+					search: [p.lead, p.tags.join(' '), STATUS[p.status].label].join(' ')
+				});
+			METHOD.forEach((m, i) =>
+				ITEMS.push({ id: 'metodo/' + m.slug, section: 'metodo', title: m.title, index: '0' + (i + 1), data: m, kind: 'method' })
+			);
+			ITEMS.push({
+				id: 'scritti/il-mio-nuovo-laboratorio',
+				section: 'scritti',
+				title: 'Il mio nuovo laboratorio',
+				meta: 'gen 2025',
+				led: 'done',
+				kind: 'article'
+			});
+			ITEMS.push({ id: 'contatti/chi-sono', section: 'contatti', title: 'Chi sono', led: 'done', kind: 'about' });
+			ITEMS.push({ id: 'contatti/scrivimi', section: 'contatti', title: 'Scrivimi', meta: 'email', led: 'on', kind: 'contact' });
+
+			const SECTIONS = [
+				['adesso', 'Adesso'],
+				['progetti', 'Progetti'],
+				['metodo', 'Metodo'],
+				['scritti', 'Scritti'],
+				['contatti', 'Contatti']
+			];
+			const byId = new Map(ITEMS.map((it) => [it.id, it]));
+			const sectionLabel = Object.fromEntries(SECTIONS);
+			const activeCount = PROJECTS.filter((p) => p.status === 'in-progress').length;
+
+			const $ = (s, r = document) => r.querySelector(s);
+			const esc = (s) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+			const reduce = matchMedia('(prefers-reduced-motion: reduce)');
+			const mobile = matchMedia('(max-width: 767px)');
+			const isMac = /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent);
+			if (!isMac) document.querySelectorAll('.modkey').forEach((k) => (k.textContent = 'Ctrl K'));
+
+			const listEl = $('#list');
+			const groupsEl = $('#groups');
+			const cursorEl = $('#cursor');
+			const filterEl = $('#filter');
+			const docEl = $('#doc');
+			const detailEl = $('#detail');
+
+			// Lista
+			function rowHTML(it) {
+				const slot = it.index ? it.index : `<span class="led ${it.led}" aria-hidden="true"></span>`;
+				const status = it.kind === 'project' ? `, ${STATUS[it.data.status].label}` : '';
+				return `<div class="row" role="option" id="opt-${it.id.replace('/', '-')}" data-id="${it.id}" aria-selected="false" aria-label="${esc(it.title)}${status}${it.meta && it.kind !== 'project' ? ', ' + it.meta : it.kind === 'project' ? ', ' + it.meta : ''}">
+					<span class="slot">${slot}</span><span class="t">${esc(it.title)}</span><span class="m">${it.meta || ''}</span></div>`;
+			}
+			function buildList() {
+				let html = '';
+				for (const [key, label] of SECTIONS) {
+					const items = ITEMS.filter((it) => it.section === key);
+					let rows = '';
+					if (key === 'progetti') {
+						const feat = items.filter((it) => it.data.featured);
+						const rest = items.filter((it) => !it.data.featured);
+						rows =
+							feat.map(rowHTML).join('') +
+							`<div class="sub" aria-hidden="true" data-sub>altri ${rest.length}</div>` +
+							rest.map(rowHTML).join('');
+					} else rows = items.map(rowHTML).join('');
+					html += `<div class="group" role="group" aria-labelledby="g-${key}" data-group="${key}">
+						<div class="ghead" id="g-${key}"><span data-scramble>${label}</span><span class="count" data-count>${items.length}</span></div>${rows}</div>`;
+				}
+				groupsEl.innerHTML = html;
+			}
+			buildList();
+
+			let cursor = 0; // indice in ITEMS
+			let openId = null;
+			const rowOf = (it) => document.getElementById('opt-' + it.id.replace('/', '-'));
+			const visible = () => ITEMS.filter((it) => !rowOf(it).hidden);
+
+			function placeCursor(scroll = true) {
+				const it = ITEMS[cursor];
+				const row = it && rowOf(it);
+				if (!row || row.hidden) {
+					cursorEl.hidden = true;
+					listEl.removeAttribute('aria-activedescendant');
+					return;
+				}
+				cursorEl.hidden = false;
+				cursorEl.style.transform = `translateY(${row.offsetTop}px)`;
+				cursorEl.style.height = row.offsetHeight + 'px';
+				listEl.setAttribute('aria-activedescendant', row.id);
+				if (scroll) row.scrollIntoView({ block: 'nearest' });
+			}
+			function move(delta) {
+				const vis = visible();
+				if (!vis.length) return;
+				let pos = vis.indexOf(ITEMS[cursor]);
+				pos = pos === -1 ? 0 : Math.max(0, Math.min(vis.length - 1, pos + delta));
+				cursor = ITEMS.indexOf(vis[pos]);
+				placeCursor();
+			}
+
+			groupsEl.addEventListener('click', (e) => {
+				const row = e.target.closest('.row');
+				if (!row) return;
+				cursor = ITEMS.indexOf(byId.get(row.dataset.id));
+				placeCursor(false);
+				open(row.dataset.id);
+			});
+
+			// Filtro
+			function highlight(text, q) {
+				if (!q) return esc(text);
+				const i = text.toLowerCase().indexOf(q);
+				if (i === -1) return esc(text);
+				return esc(text.slice(0, i)) + '<mark>' + esc(text.slice(i, i + q.length)) + '</mark>' + esc(text.slice(i + q.length));
+			}
+			function applyFilter() {
+				const q = filterEl.value.trim().toLowerCase();
+				let total = 0;
+				for (const it of ITEMS) {
+					const hay = (it.title + ' ' + sectionLabel[it.section] + ' ' + (it.search || '') + ' ' + (it.meta || '')).toLowerCase();
+					const hit = !q || hay.includes(q);
+					const row = rowOf(it);
+					row.hidden = !hit;
+					$('.t', row).innerHTML = highlight(it.title, q);
+					if (hit) total++;
+				}
+				for (const g of groupsEl.querySelectorAll('.group')) {
+					const n = g.querySelectorAll('.row:not([hidden])').length;
+					g.hidden = n === 0;
+					$('[data-count]', g).textContent = n;
+					const sub = $('[data-sub]', g);
+					if (sub) {
+						const rest = [...g.querySelectorAll('.row')].filter((r) => !byId.get(r.dataset.id).data.featured && !r.hidden).length;
+						sub.hidden = rest === 0 || !!q;
+						sub.textContent = 'altri ' + rest;
+					}
+				}
+				const empty = $('#empty');
+				empty.hidden = total > 0;
+				if (!total) empty.textContent = `Nessuna voce contiene "${filterEl.value.trim()}". Esc per pulire il filtro.`;
+				const vis = visible();
+				if (vis.length && !vis.includes(ITEMS[cursor])) cursor = ITEMS.indexOf(vis[0]);
+				placeCursor();
+				$('.m-intro').hidden = !!q;
+			}
+			filterEl.addEventListener('input', applyFilter);
+			filterEl.addEventListener('keydown', (e) => {
+				if (e.key === 'Escape') {
+					e.preventDefault();
+					e.stopPropagation();
+					if (filterEl.value) {
+						filterEl.value = '';
+						applyFilter();
+					} else listEl.focus();
+				} else if (e.key === 'ArrowDown') {
+					e.preventDefault();
+					listEl.focus();
+					move(0);
+				} else if (e.key === 'Enter') {
+					e.preventDefault();
+					const vis = visible();
+					if (vis.length) {
+						listEl.focus();
+						open(ITEMS[cursor].id);
+					}
+				}
+			});
+
+			// Effetto decodifica sulle etichette mono: 280 ms, poi il testo vero.
+			const GLYPHS = '01<>/_-=+*#[]';
+			function scramble(el, text) {
+				if (text !== undefined) el.dataset.final = text;
+				const final = el.dataset.final ?? (el.dataset.final = el.textContent);
+				if (reduce.matches) {
+					el.textContent = final;
+					return;
+				}
+				cancelAnimationFrame(el._raf);
+				const start = performance.now();
+				const tick = (now) => {
+					const p = Math.min(1, (now - start) / 280);
+					const keep = Math.floor(final.length * p);
+					el.textContent =
+						final.slice(0, keep) +
+						[...final.slice(keep)].map((c) => (c === ' ' ? ' ' : GLYPHS[(Math.random() * GLYPHS.length) | 0])).join('');
+					if (p < 1) el._raf = requestAnimationFrame(tick);
+					else el.textContent = final;
+				};
+				el._raf = requestAnimationFrame(tick);
+			}
+			document.addEventListener('pointerover', (e) => {
+				const el = e.target.closest('[data-scramble]');
+				if (!el || el.contains(e.relatedTarget)) return;
+				scramble(el);
+			});
+
+			// Copia con conferma breve, nel bottone e nella barra di stato.
+			async function copy(text) {
+				try {
+					await navigator.clipboard.writeText(text);
+					return true;
+				} catch (err) {
+					const ta = document.createElement('textarea');
+					ta.value = text;
+					ta.setAttribute('readonly', '');
+					ta.style.position = 'fixed';
+					ta.style.opacity = '0';
+					document.body.append(ta);
+					ta.select();
+					const ok = document.execCommand('copy');
+					ta.remove();
+					if (!ok) console.warn('Copia non riuscita', err);
+					return ok;
+				}
+			}
+			let msgTimer;
+			function flash(text, ok = true) {
+				const msg = $('#msg');
+				$('#msg-t').textContent = text;
+				msg.classList.toggle('ok', ok);
+				clearTimeout(msgTimer);
+				msgTimer = setTimeout(() => {
+					$('#msg-t').textContent = 'pronto';
+					msg.classList.remove('ok');
+				}, 1800);
+			}
+			async function copyAndConfirm(text, what, btn) {
+				const ok = await copy(text);
+				flash(ok ? what + ' copiato' : 'copia non riuscita', ok);
+				if (!btn) return;
+				const st = $('[data-state]', btn);
+				btn.classList.toggle('ok', ok);
+				if (st) st.innerHTML = ok ? svg('check') + 'copiato' : 'non riuscito';
+				clearTimeout(btn._t);
+				btn._t = setTimeout(() => {
+					btn.classList.remove('ok');
+					if (st) st.innerHTML = st.dataset.state;
+				}, 1400);
+			}
+			document.addEventListener('click', (e) => {
+				const b = e.target.closest('[data-copy]');
+				if (b) {
+					const v = b.dataset.copy === 'url' ? location.href : b.dataset.copy;
+					copyAndConfirm(v, b.dataset.what || 'testo', b);
+					return;
+				}
+				const go = e.target.closest('[data-go]');
+				if (go) {
+					const id = go.dataset.go;
+					if (id) {
+						cursor = ITEMS.indexOf(byId.get(id));
+						placeCursor();
+					}
+					open(id);
+				}
+			});
+
+			// Frammenti del dettaglio
+			const copyBtn = (text, what, extra = '') =>
+				`<button class="copy${extra}" type="button" data-copy="${esc(text)}" data-what="${what}" aria-label="Copia ${what}">
+					<span class="p" aria-hidden="true">$</span><span class="txt">${esc(text)}</span>
+					<span class="st" data-state="${esc(svg('copy'))}copia">${svg('copy')}copia</span></button>`;
+			const linkBtn = () =>
+				`<button class="icon-btn" type="button" data-copy="url" data-what="link" aria-label="Copia il link di questa voce">${svg('link')}<span data-state="link">link</span></button>`;
+			const ext = (href, label) =>
+				`<a class="ulink" href="${href}" target="_blank" rel="noopener">${esc(label)}${svg('up')}</a>`;
+			const prettyUrl = (u) => u.replace(/^https?:\/\//, '').replace(/\/$/, '');
+
+			function jump(id, title, desc, meta, slot) {
+				const here = id === openId ? ' here' : '';
+				return `<button class="jump${here}" type="button" data-go="${id}">
+					<span class="slot">${slot || ''}</span>
+					<span><b>${esc(title)}</b>${desc ? ` <span class="d">${esc(desc)}</span>` : ''}</span>
+					<span class="m">${meta || ''}${svg('right')}</span></button>`;
+			}
+
+			function pager(it) {
+				const i = ITEMS.indexOf(it);
+				const prev = ITEMS[i - 1];
+				const next = ITEMS[i + 1];
+				const b = (x, dir) =>
+					x
+						? `<button type="button" data-go="${x.id}"><span class="k">${dir === 'prev' ? svg('left') + 'precedente' : 'successivo' + svg('right')}</span><span class="t">${esc(x.title)}</span></button>`
+						: '<span></span>';
+				return `<nav class="pager" aria-label="Voce precedente e successiva">${b(prev, 'prev')}${b(next, 'next')}</nav>`;
+			}
+
+			function head(eyebrow, title, metaHTML, actions = linkBtn()) {
+				return `<div class="eyebrow"><span data-scramble>${eyebrow[0]}</span><span class="sep">/</span><span>${eyebrow[1]}</span></div>
+					<header class="doc-head"><h1 tabindex="-1">${esc(title)}</h1>${metaHTML ? `<div class="doc-meta">${metaHTML}</div>` : ''}
+					<div class="head-actions">${actions}</div></header>`;
+			}
+
+			const RENDER = {
+				intro() {
+					return `<article class="doc intro">
+						<p class="prompt"><span class="p">~</span> whoami<span class="caret" aria-hidden="true"></span></p>
+						<h1 tabindex="-1">Simone Salerno</h1>
+						<div class="role"><span class="led on" aria-hidden="true"></span><span>Lead AI Engineer in Yellow Tech · Milano</span></div>
+						<p class="lead">Porto l’AI generativa dentro aziende vere e la tengo in produzione. Per conto mio costruisco strumenti per lavorare con molti coding agent insieme, e il metodo con cui lo faccio. Progetto l’architettura, l’AI scrive il codice, io verifico e rilascio.</p>
+						<dl class="kv">
+							<dt>costruisco</dt><dd>strumenti per sviluppatori, quasi tutti open source, e app mie</dd>
+							<dt>agenti</dt><dd>Claude Code, Codex e OpenCode, con un solo contesto condiviso</dd>
+							<dt>progetti</dt><dd class="num">${PROJECTS.length} pubblicati, ${activeCount} attivi adesso</dd>
+							<dt>email</dt><dd>${copyBtn(EMAIL, 'email')}</dd>
+						</dl>
+						<div class="links">
+							<p class="links-h">Da dove iniziare</p>
+							${jump('progetti/relay', 'Relay', 'il terminale per molti agenti in cui lavoro ogni giorno', '', '<span class="led on"></span>')}
+							${jump('metodo/architettura', 'Il metodo', 'tre principi e un setup', '', '<span class="mono" style="font-size:10.5px;color:var(--subtle)">01</span>')}
+							${jump('contatti/chi-sono', 'Chi sono', 'la strada fin qui', '', '<span class="led done"></span>')}
+						</div>
+						<div class="howto" aria-label="Come muoversi">
+							<span><kbd>j</kbd><kbd>k</kbd>muovi nella lista</span>
+							<span><kbd><svg class="i" viewBox="0 0 24 24"><polyline points="9 10 4 15 9 20"/><path d="M20 4v7a4 4 0 0 1-4 4H4"/></svg></kbd>apri</span>
+							<span><kbd>/</kbd>filtra</span>
+							<span><kbd>${isMac ? '⌘K' : 'Ctrl K'}</kbd>salta ovunque</span>
+						</div>
+						<div class="social">
+							${ext('https://github.com/essedev/', 'github')}
+							${ext('https://www.linkedin.com/in/simone-salerno', 'linkedin')}
+						</div>
+					</article>`;
+				},
+				now(it) {
+					const n = it.data;
+					const p = byId.get('progetti/' + n.project);
+					return `<article class="doc">
+						${head(['adesso', n.date], n.title, `<span class="status"><span class="led on"></span>in corso</span><span>${n.subject}</span>`)}
+						<p class="lead">${n.text}</p>
+						<div class="links">
+							<p class="links-h">Progetto collegato</p>
+							${jump(p.id, p.title, p.data.lead, p.meta, `<span class="led ${p.led}"></span>`)}
+						</div>
+						<div class="links">
+							<p class="links-h">Tutto il log</p>
+							${NOW.map((x) => jump('adesso/' + x.slug, x.subject, x.rest, x.date, '<span class="led on"></span>')).join('')}
+						</div>
+						${pager(it)}
+					</article>`;
+				},
+				project(it) {
+					const p = it.data;
+					const st = STATUS[p.status];
+					const receipts = p.receipts
+						? `<div class="receipts">${p.receipts.map(([t, k]) => `<span class="chip${k ? ' k' : ''}">${t}</span>`).join('')}</div>`
+						: '';
+					const cmd = p.cmd ? `<div class="cmd-wrap">${copyBtn(p.cmd, 'comando')}</div>` : '';
+					const actions = linkBtn() + (p.link ? `<a class="icon-btn" href="${p.link}" target="_blank" rel="noopener" aria-label="Apri ${esc(prettyUrl(p.link))}">${svg('up')}apri</a>` : '');
+					return `<article class="doc">
+						${head(['progetti', p.featured ? 'in evidenza' : String(p.year)], p.title, `<span class="status"><span class="led ${st.led}"></span>${p.statusLabel || st.label}</span><span>dal ${p.year}</span>`, actions)}
+						<p class="lead">${p.lead}</p>
+						${receipts}${cmd}
+						<div class="prose">${p.body}</div>
+						<dl class="kv">
+							<dt>stato</dt><dd><span class="status"><span class="led ${st.led}"></span>${p.statusLabel || st.label}</span></dd>
+							<dt>anno</dt><dd class="num">${p.year}</dd>
+							<dt>stack</dt><dd>${p.tags.map((t) => `<span class="chip">${t}</span>`).join('')}</dd>
+							${p.link ? `<dt>link</dt><dd>${ext(p.link, prettyUrl(p.link))}</dd>` : '<dt>link</dt><dd style="color:var(--subtle)">privato</dd>'}
+						</dl>
+						${pager(it)}
+					</article>`;
+				},
+				method(it) {
+					const m = it.data;
+					const others = ITEMS.filter((x) => x.section === 'metodo' && x !== it);
+					const body = m.setup
+						? `<p class="lead">Un solo contesto per Claude Code, Codex e OpenCode, regole che si caricano per tipo di file, hook che fermano un push sull’account sbagliato o un file con un segreto.</p>
+							<div class="setup-box" role="group" aria-label="Il setup in breve">
+								<div class="h"><span class="dots" aria-hidden="true"><i></i><i></i><i></i></span>claude-setup</div>
+								<dl>
+									<dt>contesto</dt><dd>uno solo, generato per Claude Code, Codex e OpenCode</dd>
+									<dt>regole</dt><dd>si caricano da sole per tipo di file</dd>
+									<dt>hook</dt><dd>fermano un push sull’account sbagliato o un file con un segreto</dd>
+								</dl>
+							</div>
+							<div class="prose"><p>È un repo, e questo sito è costruito dentro quel metodo.</p></div>`
+						: `<p class="lead">${m.paras[0]}</p><div class="prose">${m.paras.slice(1).map((p) => `<p>${p}</p>`).join('')}</div>`;
+					return `<article class="doc">
+						${head(['metodo', it.index], m.title, m.setup ? '<span>come lavoro ogni giorno</span>' : '<span>principio</span>')}
+						${body}
+						<div class="links"><p class="links-h">Nel resto del metodo</p>
+							${others.map((o) => jump(o.id, o.title, '', '', `<span class="mono" style="font-size:10.5px;color:var(--subtle)">${o.index}</span>`)).join('')}
+						</div>
+						${pager(it)}
+					</article>`;
+				},
+				article(it) {
+					return `<article class="doc">
+						${head(['scritti', 'gen 2025'], 'Il mio nuovo laboratorio', '<span>articolo</span><span>gen 2025</span>')}
+						<p class="lead">Dal raccoglitore arancione pieno di progetti di robot al codice, la storia di come il mio laboratorio di scienziato pazzo si è trasformato in questo sito web.</p>
+						<div class="prose">
+							<p>Da bambino, la mia ambizione era chiara. Da grande avrei fatto lo “scienziato pazzo”. Passavo i pomeriggi a riempire un raccoglitore arancione con progetti strampalati, robot di ogni forma, macchine complesse e invenzioni improbabili.</p>
+							<p>Quell’energia e quella curiosità non si sono mai spente. Si sono solo evolute.</p>
+						</div>
+						<div class="receipts">${['SvelteKit', 'Software Architecture', 'Multilingual', 'Portfolio'].map((t) => `<span class="chip k">${t}</span>`).join('')}</div>
+						<div class="links"><p class="links-h">Leggi</p>
+							<a class="jump" href="https://www.linkedin.com/in/simone-salerno" target="_blank" rel="noopener">
+								<span class="slot">${svg('file')}</span>
+								<span><b>Articolo completo</b> <span class="d">pubblicato su LinkedIn</span></span>
+								<span class="m">gen 2025${svg('up')}</span></a>
+						</div>
+						${pager(it)}
+					</article>`;
+				},
+				about(it) {
+					return `<article class="doc">
+						${head(['contatti', 'chi sono'], 'Chi sono', '<span class="status"><span class="led on"></span>Milano</span><span>Lead AI Engineer</span>')}
+						<p class="lead">Sono Lead AI Engineer in Yellow Tech, a Milano. Le scelte tecniche e architetturali delle soluzioni AI che costruiamo passano da me, dalla valutazione di fattibilità alla messa in produzione.</p>
+						<div class="prose">
+							<p>Accanto ai progetti curo il metodo di engineering del team, cioè le convenzioni e la documentazione che rendono ripetibile il modo in cui lavoriamo.</p>
+							<p>Ci sono arrivato per una strada non lineare. Insegnare a programmare ai ragazzi, anni di freelancing full-stack, una piattaforma EdTech costruita da zero, una software house. Nel 2021 ho frequentato a Pavia uno dei primi corsi di laurea italiani in Intelligenza Artificiale, quando AI Engineer non era ancora un mestiere.</p>
+							<p>Lavoro con tre principi, che trovi nel metodo. Architettura prima del codice, il coding agent dentro il metodo, misurare invece di fidarsi.</p>
+							<p>Il resto del tempo lo passo a costruire cose mie, che trovi nella lista, e a capire cosa di nuovo nell’AI regge davvero in produzione.</p>
+						</div>
+						<dl class="kv">
+							<dt>ruolo</dt><dd>Lead AI Engineer, Yellow Tech</dd>
+							<dt>base</dt><dd>Milano</dd>
+							<dt>studi</dt><dd>Intelligenza Artificiale, Pavia, dal 2021</dd>
+							<dt>certificato</dt><dd>Claude Certified Architect, Foundations (Anthropic)</dd>
+						</dl>
+						${pager(it)}
+					</article>`;
+				},
+				contact(it) {
+					const links = [
+						['https://www.linkedin.com/in/simone-salerno', 'LinkedIn', 'in/simone-salerno'],
+						['https://github.com/essedev/', 'GitHub', 'essedev'],
+						['https://www.instagram.com/essesdev/', 'Instagram', 'essesdev'],
+						['https://x.com/essesdev/', 'X', 'essesdev']
+					];
+					return `<article class="doc">
+						${head(['contatti', 'scrivimi'], 'Scrivimi', '<span class="status"><span class="led on"></span>aperto a talk e collaborazioni</span>')}
+						<p class="lead">Sono aperto a talk, collaborazioni su articoli e side project selezionati. Per tutto il resto, una mail va benissimo.</p>
+						<div class="cmd-wrap">${copyBtn(EMAIL, 'email')}</div>
+						<dl class="kv">
+							${links.map(([h, n, u]) => `<dt>${n.toLowerCase()}</dt><dd>${ext(h, u)}</dd>`).join('')}
+						</dl>
+						${pager(it)}
+					</article>`;
+				}
+			};
+
+			// Percorso in alto e titolo della pagina
+			function setPath(it) {
+				const path = $('#path');
+				const parts = it ? [sectionLabel[it.section].toLowerCase(), it.id.split('/')[1]] : [];
+				path.innerHTML =
+					`<span class="sep">/</span>` +
+					(parts.length
+						? `<a href="#/${it.section}">${parts[0]}</a><span class="sep">/</span><span class="cur" data-scramble>${parts[1]}</span>`
+						: `<span class="cur" data-scramble>benvenuto</span>`);
+				const cur = $('.cur', path);
+				scramble(cur, cur.textContent);
+				$('#where').textContent = it ? `${parts[0]} / ${parts[1]}` : '';
+				document.title = it ? `${it.title} · esse.dev` : 'esse.dev · Simone Salerno';
+				$('#sb-right').textContent = location.hash || '#/';
+			}
+
+			// Apertura: l'hash è la fonte di verità, così avanti e indietro del browser funzionano.
+			function open(id) {
+				const target = id ? '#/' + id : '#/';
+				if (location.hash === target) render();
+				else location.hash = target;
+			}
+			function goHome() {
+				open('');
+			}
+
+			function render() {
+				const raw = decodeURIComponent(location.hash.replace(/^#\/?/, '')).replace(/\/$/, '');
+				let it = byId.get(raw) || null;
+				// Un hash di sezione (#/progetti) apre la prima voce di quella sezione.
+				if (!it && raw && sectionLabel[raw]) it = ITEMS.find((x) => x.section === raw);
+				if (it && it.id !== raw) {
+					history.replaceState(null, '', '#/' + it.id);
+				}
+				const changed = (it ? it.id : null) !== openId || !docEl.firstElementChild;
+				openId = it ? it.id : null;
+
+				for (const x of ITEMS) rowOf(x).setAttribute('aria-selected', String(x.id === openId));
+				if (it) {
+					cursor = ITEMS.indexOf(it);
+					placeCursor();
+				}
+				if (changed) {
+					docEl.innerHTML = it ? RENDER[it.kind](it) : RENDER.intro();
+					const doc = docEl.firstElementChild;
+					doc.classList.add('enter');
+					detailEl.scrollTop = 0;
+				}
+				document.body.dataset.view = it ? 'detail' : 'list';
+				setPath(it);
+				if (mobile.matches && it && changed) {
+					// Su mobile il dettaglio è una schermata: il fuoco passa al titolo.
+					setTimeout(() => $('h1', docEl)?.focus({ preventScroll: true }), 30);
+				}
+			}
+
+			window.addEventListener('hashchange', render);
+			$('#back').addEventListener('click', () => {
+				goHome();
+				listEl.focus({ preventScroll: true });
+			});
+			window.addEventListener('resize', () => placeCursor(false));
+
+			// Palette dei comandi
+			const pal = $('#palette');
+			const palQ = $('#pal-q');
+			const palList = $('#pal-list');
+			let palSel = 0;
+			let palResults = [];
+			let palReturn = null;
+
+			const ACTIONS = [
+				{ title: 'Torna all’inizio', icon: 'home', meta: 'home', run: () => goHome() },
+				{ title: 'Copia l’email', icon: 'mail', meta: EMAIL, run: () => copyAndConfirm(EMAIL, 'email') },
+				{ title: 'Copia il comando per installare Relay', icon: 'terminal', meta: 'brew', run: () => copyAndConfirm(BREW, 'comando') },
+				{ title: 'Copia il link di questa voce', icon: 'link', meta: 'url', run: () => copyAndConfirm(location.href, 'link') },
+				{ title: 'Apri GitHub', icon: 'up', meta: 'essedev', run: () => window.open('https://github.com/essedev/', '_blank', 'noopener') },
+				{ title: 'Accento menta', icon: 'palette', meta: 'tema', run: () => setAccent('') },
+				{ title: 'Accento ambra', icon: 'palette', meta: 'tema', run: () => setAccent('amber') },
+				{ title: 'Accento viola', icon: 'palette', meta: 'tema', run: () => setAccent('violet') }
+			];
+			function setAccent(a) {
+				if (a) document.documentElement.dataset.accent = a;
+				else delete document.documentElement.dataset.accent;
+				flash('accento cambiato');
+			}
+
+			function score(text, q) {
+				const t = text.toLowerCase();
+				if (t.startsWith(q)) return 3;
+				if (t.split(/\s+/).some((w) => w.startsWith(q))) return 2;
+				if (t.includes(q)) return 1;
+				return 0;
+			}
+			function palRender() {
+				const q = palQ.value.trim().toLowerCase();
+				const goTo = ITEMS.map((it) => ({
+					group: 'Vai a',
+					title: it.title,
+					meta: sectionLabel[it.section].toLowerCase(),
+					slot: it.index ? `<span class="mono" style="font-size:10.5px">${it.index}</span>` : `<span class="led ${it.led}"></span>`,
+					s: q ? Math.max(score(it.title, q) * 2, score(sectionLabel[it.section] + ' ' + (it.search || ''), q)) : 1,
+					run: () => open(it.id)
+				}));
+				const acts = ACTIONS.map((a) => ({
+					group: 'Azioni',
+					title: a.title,
+					meta: a.meta,
+					slot: svg(a.icon),
+					s: q ? score(a.title + ' ' + a.meta, q) * 2 : 1,
+					run: a.run
+				}));
+				let res;
+				if (!q) {
+					const pick = ['progetti/relay', 'progetti/nexus', 'metodo/architettura', 'contatti/chi-sono', 'contatti/scrivimi'];
+					res = [...goTo.filter((g, i) => pick.includes(ITEMS[i].id)).map((g) => ({ ...g, group: 'Suggeriti' })), ...acts];
+				} else {
+					res = [...goTo, ...acts].filter((r) => r.s > 0).sort((a, b) => b.s - a.s);
+					res = [...res.filter((r) => r.group === 'Vai a'), ...res.filter((r) => r.group === 'Azioni')];
+				}
+				palResults = res;
+				palSel = 0;
+				let html = '';
+				let last = '';
+				res.forEach((r, i) => {
+					if (r.group !== last) {
+						html += `<div class="pal-h" role="presentation">${r.group}</div>`;
+						last = r.group;
+					}
+					html += `<div class="pal-opt" role="option" id="pal-${i}" data-i="${i}" aria-selected="${i === 0}">
+						<span class="slot">${r.slot}</span><span class="t">${highlight(r.title, q)}</span><span class="m">${esc(r.meta)}</span></div>`;
+				});
+				if (!res.length) html = `<p class="empty">Niente per "${esc(palQ.value.trim())}".</p>`;
+				palList.innerHTML = html;
+				palQ.setAttribute('aria-activedescendant', res.length ? 'pal-0' : '');
+			}
+			function palMove(d) {
+				if (!palResults.length) return;
+				palSel = (palSel + d + palResults.length) % palResults.length;
+				palList.querySelectorAll('.pal-opt').forEach((o, i) => o.setAttribute('aria-selected', String(i === palSel)));
+				const el = document.getElementById('pal-' + palSel);
+				palQ.setAttribute('aria-activedescendant', el.id);
+				el.scrollIntoView({ block: 'nearest' });
+			}
+			function palOpen() {
+				if (!pal.hidden) return;
+				palReturn = document.activeElement;
+				pal.hidden = false;
+				palQ.value = '';
+				palRender();
+				requestAnimationFrame(() => pal.classList.add('open'));
+				palQ.focus();
+			}
+			function palClose(restore = true) {
+				if (pal.hidden) return;
+				pal.classList.remove('open');
+				const done = () => (pal.hidden = true);
+				reduce.matches ? done() : setTimeout(done, 160);
+				if (restore && palReturn && palReturn !== document.body) palReturn.focus({ preventScroll: true });
+				else listEl.focus({ preventScroll: true });
+			}
+			function palRun(i) {
+				const r = palResults[i];
+				if (!r) return;
+				palClose(false);
+				r.run();
+			}
+			palQ.addEventListener('input', palRender);
+			palQ.addEventListener('keydown', (e) => {
+				if (e.key === 'ArrowDown' || (e.ctrlKey && e.key === 'n')) {
+					e.preventDefault();
+					palMove(1);
+				} else if (e.key === 'ArrowUp' || (e.ctrlKey && e.key === 'p')) {
+					e.preventDefault();
+					palMove(-1);
+				} else if (e.key === 'Enter') {
+					e.preventDefault();
+					palRun(palSel);
+				} else if (e.key === 'Escape') {
+					e.preventDefault();
+					palClose();
+				} else if (e.key === 'Tab') e.preventDefault();
+			});
+			palList.addEventListener('click', (e) => {
+				const o = e.target.closest('.pal-opt');
+				if (o) palRun(+o.dataset.i);
+			});
+			palList.addEventListener('pointermove', (e) => {
+				const o = e.target.closest('.pal-opt');
+				if (o && +o.dataset.i !== palSel) palMove(+o.dataset.i - palSel);
+			});
+			pal.addEventListener('click', (e) => {
+				if (e.target.hasAttribute('data-close')) palClose();
+			});
+			$('#open-palette').addEventListener('click', palOpen);
+
+			// Tastiera globale
+			document.addEventListener('keydown', (e) => {
+				if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+					e.preventDefault();
+					pal.hidden ? palOpen() : palClose();
+					return;
+				}
+				if (!pal.hidden) return;
+				const t = e.target;
+				const typing = t.matches?.('input, textarea, [contenteditable]');
+				if (typing || e.metaKey || e.ctrlKey || e.altKey) return;
+				const inList = t === listEl;
+				const free = inList || t === document.body || t.closest?.('.detail');
+
+				if (e.key === '/') {
+					e.preventDefault();
+					filterEl.focus();
+					filterEl.select();
+				} else if (e.key === 'j' || (e.key === 'ArrowDown' && inList)) {
+					e.preventDefault();
+					if (!inList) listEl.focus({ preventScroll: true });
+					move(1);
+				} else if (e.key === 'k' || (e.key === 'ArrowUp' && inList)) {
+					e.preventDefault();
+					if (!inList) listEl.focus({ preventScroll: true });
+					move(-1);
+				} else if ((e.key === 'Home' || e.key === 'End') && inList) {
+					e.preventDefault();
+					move(e.key === 'Home' ? -999 : 999);
+				} else if (e.key === 'Enter' && (inList || t === document.body)) {
+					e.preventDefault();
+					if (visible().length) open(ITEMS[cursor].id);
+				} else if (e.key === 'Escape' && free) {
+					if (openId) {
+						e.preventDefault();
+						goHome();
+						listEl.focus({ preventScroll: true });
+					} else if (filterEl.value) {
+						filterEl.value = '';
+						applyFilter();
+					}
+				}
+			});
+			listEl.addEventListener('focus', () => placeCursor(false));
+
+			// Avvio
+			$('#sb-right').textContent = '#/';
+			render();
+			placeCursor(false);
+			document.fonts?.ready.then(() => placeCursor(false));
+		</script>
+	</body>
+</html>
