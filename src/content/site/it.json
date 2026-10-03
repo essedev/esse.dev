@@ -98,6 +98,9 @@
 		"agentToolCommits": "gli ultimi commit di un repo",
 		"agentToolRender": "disegna barre, tabelle e linee del tempo",
 		"agentToolRun": "scrive ed esegue JavaScript che chiama gli altri tool, in un sandbox senza rete",
+		"agentToolDelegate": "divide una domanda ampia tra 2 o 3 sotto-agenti in parallelo",
+		"agentSubagents": "sotto-agenti in parallelo",
+		"agentAnswer": "risposta",
 		"agentOpen": "apri",
 		"agentAsk4": "Come fa Portsage a sapere quali porte sono occupate? Mostrami il codice"
 	},

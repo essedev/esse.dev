@@ -1,11 +1,17 @@
 import { DurableObject } from 'cloudflare:workers';
 import { Type, type AssistantMessage } from '@earendil-works/pi-ai';
-import { createRegistry, Harness, type ToolRegistration } from '@earendil-works/pi-durable';
+import {
+	configure,
+	createRegistry,
+	Harness,
+	type ToolRegistration
+} from '@earendil-works/pi-durable';
 import { PiHarness, ROOT_SESSION, type PiReceipt, type PiSessionId } from 'agents/harness/pi';
 import { Lifecycle } from 'agents/lifecycle';
 import { WebSockets } from 'agents/websockets';
 import { costOf, remaining, today, VISITOR_DAILY_USD, type Spend } from './budget';
 import type { PiServerMessage } from './protocol';
+import { CHILD_INSTRUCTIONS, childReport, DELEGATE_LIMITS, type ChildReport } from './delegate';
 import { GitHubReader } from './github';
 import { MODEL, siteModels } from './models';
 import { parseRender, RENDER_LIMITS } from './render';
@@ -164,6 +170,22 @@ const RunCode = Type.Object({
 	})
 });
 
+const Delegate = Type.Object({
+	tasks: Type.Array(
+		Type.Object({
+			title: Type.String({
+				maxLength: DELEGATE_LIMITS.titleChars,
+				description: 'A few words, shown to the visitor.'
+			}),
+			task: Type.String({
+				maxLength: DELEGATE_LIMITS.taskChars,
+				description: 'Self-contained instructions: what to find, where to look, what to report.'
+			})
+		}),
+		{ minItems: DELEGATE_LIMITS.min, maxItems: DELEGATE_LIMITS.max }
+	)
+});
+
 const json = (value: unknown) => ({
 	content: [{ type: 'text' as const, text: JSON.stringify(value) }]
 });
@@ -290,6 +312,68 @@ export class SiteAgent extends DurableObject<Env> {
 		};
 	}
 
+	/**
+	 * `delegate`: un figlio per compito, posseduto da questa chiamata. I figli partono come
+	 * copia dell'agente del padre, meno i tool in `exclude`, con istruzioni da sotto-agente.
+	 */
+	#delegateTool(exclude: () => readonly ToolRegistration[]): ToolRegistration<typeof Delegate> {
+		return {
+			name: 'delegate',
+			description: `Split a broad question into ${DELEGATE_LIMITS.min}-${DELEGATE_LIMITS.max} independent parts and give each to a sub-agent that works in parallel with the read-only tools, then combine their findings. Use it only when the parts are really independent, such as comparing several projects or repos in depth; each sub-agent costs a full answer.`,
+			parameters: Delegate,
+			// Una ripresa ritrova i figli (indice di possesso) e le richieste (requestId).
+			replay: 'safe',
+			execute: async ({ tasks }, api, context) => {
+				const ids = await api.commit(async (tx) => {
+					const ids = (
+						await tx.scanConversations({ ownerTaskId: api.taskId }, DELEGATE_LIMITS.max)
+					).items.map((c) => c.id);
+					while (ids.length < tasks.length) {
+						const child = await tx.createConversation({
+							ownership: { kind: 'task', taskId: api.taskId }
+						});
+						await configure(tx, child.id, {
+							tools: { remove: [...exclude()] },
+							instructions: CHILD_INSTRUCTIONS
+						});
+						ids.push(child.id);
+					}
+					return ids;
+				}, context);
+				const reports = await Promise.all(
+					tasks.map(async ({ title, task }, i): Promise<ChildReport> => {
+						try {
+							const child = (await api.conversation(ids[i], context))!;
+							const request = {
+								type: 'input',
+								content: task,
+								requestId: `delegate:${api.taskId}:${i}`
+							} as const;
+							const settled = await (await child.submit(request, context)).wait(context);
+							const entries = await api.commit(
+								async (tx) => (await tx.scanEntries({ conversationId: ids[i] }, 200)).items,
+								context
+							);
+							const report = childReport(
+								title,
+								[...entries].sort((a, b) => a.id - b.id)
+							);
+							return settled.status === 'done' ? report : { ...report, error: settled.status };
+						} catch (error) {
+							return { title, answer: '', calls: [], tokens: 0, usd: 0, error: String(error) };
+						}
+					})
+				);
+				// I figli non sono nella conversazione principale: il loro costo si scala qui, una volta.
+				if (!(await api.memo<boolean>('charged', context))) {
+					await this.#charge(reports.reduce((sum, r) => sum + r.usd, 0));
+					await api.memo('charged', true, context);
+				}
+				return json({ reports });
+			}
+		};
+	}
+
 	/** I tool sui repo pubblici, con l'elenco dei repo ammessi nei parametri. */
 	#repoTools(repos: readonly string[]): ToolRegistration[] {
 		const schemas = repoSchemas(repos);
@@ -360,6 +444,13 @@ export class SiteAgent extends DurableObject<Env> {
 				this.listTool,
 				...repoTools
 			] as ToolRegistration[];
+			const runTool = this.#runTool(readOnly);
+			const delegateTool = this.#delegateTool(() => [
+				delegateTool as unknown as ToolRegistration,
+				runTool as unknown as ToolRegistration,
+				this.renderTool as unknown as ToolRegistration,
+				this.showTool as unknown as ToolRegistration
+			]);
 			this.registry.install({
 				name: 'site',
 				sections: [
@@ -380,7 +471,8 @@ export class SiteAgent extends DurableObject<Env> {
 					this.showTool,
 					this.renderTool,
 					...repoTools,
-					this.#runTool(readOnly)
+					runTool,
+					delegateTool
 				]
 			});
 			return Harness.open(
@@ -511,6 +603,11 @@ export class SiteAgent extends DurableObject<Env> {
 			entries.map((e) => e.model?.[0]).filter((m): m is AssistantMessage => m?.role === 'assistant')
 		);
 		await this.ctx.storage.put('charged-through', Math.max(...entries.map((e) => e.id)));
+		await this.#charge(usd);
+	}
+
+	/** Scala una spesa dal budget del visitatore e da quello del sito, e lo dice alle pagine aperte. */
+	async #charge(usd: number): Promise<void> {
 		if (usd <= 0) return;
 		const spend = await this.#spend();
 		await this.ctx.storage.put('spend', { day: spend.day, usd: spend.usd + usd });

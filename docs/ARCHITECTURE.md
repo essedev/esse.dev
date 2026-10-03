@@ -153,6 +153,12 @@ stessi sui due lati.
   descrizione del tool. Gira in un Dynamic Worker (binding `LOADER`, piano a pagamento)
   senza rete né ambiente, con tetti su tempo, chiamate e dimensione del risultato; ogni
   chiamata passa dalla stessa validazione e dallo stesso `execute` dei tool normali.
+- **`delegate`:** 2 o 3 sotto-agenti in parallelo, con lo schema dei sotto-agenti di
+  pi-durable: ogni figlio è una conversazione posseduta dalla chiamata (fermare il padre
+  ferma i figli, una ripresa li ritrova), con i soli tool di sola lettura e istruzioni da
+  sotto-agente. Il loro costo non è nella conversazione principale: lo scala il tool, una
+  volta sola (`memo`). La pagina mostra per ogni figlio chiamate, token, costo e risposta
+  (`delegate.ts`, `DelegateView.svelte`); gli eventi dei figli non arrivano dal vivo.
 - **Il catalogo** che la pagina mostra a conversazione vuota è quello che il server
   annuncia nel `hello`: un tool nuovo compare da solo, i gruppi in pagina lo ordinano.
 - **Triage e limiti:** ogni messaggio passa prima da Jev (`triage.ts`), che ferma fuori

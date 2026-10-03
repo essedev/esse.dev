@@ -4,6 +4,8 @@
 	import { onMount, tick } from 'svelte';
 	import { renderMarkdown } from '../../agent/markdown';
 	import { parseRender, type RenderView as View } from '../../agent/render';
+	import type { ChildReport } from '../../agent/delegate';
+	import DelegateView from './DelegateView.svelte';
 	import RenderView from './RenderView.svelte';
 	import type { ServerMessage, TranscriptMessage, TranscriptPart } from '../../agent/protocol';
 	import type { Triage } from '../../agent/triage';
@@ -35,6 +37,8 @@
 		/** Il nome della sezione per ogni tipo di pagina, sulle schede di `show_page`. */
 		kinds: Record<string, string>;
 		open: string;
+		subagents: string;
+		answer: string;
 		tryAsking: string;
 		suggestions: string[];
 		retry: string;
@@ -244,6 +248,22 @@
 			.map((l) => l.trim())
 			.find((l) => l && !/^async\s*\(.*\)\s*=>\s*\{$/.test(l));
 
+	/** I compiti di `delegate` dagli argomenti, e i resoconti dal risultato quando c'è. */
+	function delegated(
+		args: unknown,
+		part: ToolResult | undefined
+	): { tasks: { title: string; task: string }[]; reports: ChildReport[] | null } | null {
+		const tasks = (args as { tasks?: unknown } | null)?.tasks;
+		if (!Array.isArray(tasks) || part?.error) return null;
+		if (!part) return { tasks, reports: null };
+		try {
+			const reports = (JSON.parse(resultText(part)) as { reports?: ChildReport[] }).reports;
+			return Array.isArray(reports) ? { tasks, reports } : null;
+		} catch {
+			return null;
+		}
+	}
+
 	/** La vista di `render`, dagli argomenti, solo se il server l'ha accettata. */
 	function drawn(args: unknown, part: ToolResult | undefined): View | null {
 		if (!part || part.error) return null;
@@ -359,7 +379,7 @@
 					{#each message.parts as part, i (i)}
 						{#if part.type === 'text' && part.text.trim()}
 							<div
-								class="prose max-w-none text-[1.0625rem] leading-relaxed prose-invert prose-headings:font-medium prose-headings:text-fg prose-p:my-3 prose-p:text-text prose-a:text-fg prose-a:decoration-subtle prose-a:underline-offset-4 prose-strong:font-medium prose-strong:text-fg prose-code:rounded prose-code:bg-surface prose-code:px-1.5 prose-code:py-0.5 prose-code:font-normal prose-code:text-fg prose-code:before:content-none prose-code:after:content-none prose-pre:rounded-[var(--radius-control)] prose-pre:bg-panel prose-pre:text-xs prose-ol:my-3 prose-ul:my-3 prose-li:my-1 prose-li:text-text prose-li:marker:text-accent [&_pre_code]:bg-transparent [&_pre_code]:p-0 [&>:first-child]:mt-0 [&>:last-child]:mb-0"
+								class="prose max-w-none text-[1.0625rem] leading-relaxed prose-invert prose-headings:mt-6 prose-headings:mb-2 prose-headings:font-medium prose-headings:text-fg prose-h1:text-[1.2em] prose-h2:text-[1.1em] prose-h3:text-[1em] prose-p:my-3 prose-p:text-text prose-a:text-fg prose-a:decoration-subtle prose-a:underline-offset-4 prose-strong:font-medium prose-strong:text-fg prose-code:rounded prose-code:bg-surface prose-code:px-1.5 prose-code:py-0.5 prose-code:font-normal prose-code:text-fg prose-code:before:content-none prose-code:after:content-none prose-pre:rounded-[var(--radius-control)] prose-pre:bg-panel prose-pre:text-xs prose-ol:my-3 prose-ul:my-3 prose-li:my-1 prose-li:text-text prose-li:marker:text-accent [&_pre_code]:bg-transparent [&_pre_code]:p-0 [&>:first-child]:mt-0 [&>:last-child]:mb-0"
 							>
 								<!-- eslint-disable-next-line svelte/no-at-html-tags -- renderMarkdown neutralizza HTML e link (src/agent/markdown.ts, con test) -->
 								{@html renderMarkdown(part.text)}
@@ -373,6 +393,15 @@
 								</summary>
 								<p class="mt-2 font-mono text-xs whitespace-pre-wrap text-subtle">{part.text}</p>
 							</details>
+						{:else if part.type === 'tool-call' && part.name === 'delegate' && delegated(part.arguments, results.get(part.id))}
+							{@const work = delegated(part.arguments, results.get(part.id))!}
+							<DelegateView
+								tasks={work.tasks}
+								reports={work.reports}
+								labels={{ subagents: labels.subagents, answer: labels.answer }}
+								{tokens}
+								{cents}
+							/>
 						{:else if part.type === 'tool-call' && part.name === 'render' && drawn(part.arguments, results.get(part.id))}
 							<RenderView view={drawn(part.arguments, results.get(part.id))!} {locale} />
 						{:else if part.type === 'tool-call' && part.name === 'show_page' && card(results.get(part.id))}

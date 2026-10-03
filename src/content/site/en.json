@@ -98,6 +98,9 @@
 		"agentToolCommits": "the latest commits of a repo",
 		"agentToolRender": "draws bars, tables and timelines",
 		"agentToolRun": "writes and runs JavaScript that calls the other tools, in a sandbox with no network",
+		"agentToolDelegate": "splits a broad question between 2 or 3 sub-agents in parallel",
+		"agentSubagents": "sub-agents in parallel",
+		"agentAnswer": "answer",
 		"agentOpen": "open",
 		"agentAsk4": "How does Portsage know which ports are taken? Show me the code"
 	},
