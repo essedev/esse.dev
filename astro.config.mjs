@@ -2,7 +2,7 @@
 import cloudflare from '@astrojs/cloudflare';
 import svelte from '@astrojs/svelte';
 import tailwindcss from '@tailwindcss/vite';
-import { defineConfig } from 'astro/config';
+import { defineConfig, fontProviders } from 'astro/config';
 
 // Sito statico: tutte le pagine sono prerenderizzate. Girano sul Worker solo la root
 // (sceglie la lingua dal browser) e il catch-all dei redirect i18n, che hanno
@@ -18,6 +18,12 @@ export default defineConfig({
 	// Immagini responsive anche nel Markdown: srcset generato a build invece dell'originale.
 	image: { layout: 'constrained', responsiveStyles: true },
 	integrations: [svelte()],
+	// Font self-hosted con il Fonts API: file scaricati a build, preload e fallback tarati
+	// per ridurre il salto di layout. Le variabili CSS si usano nel @theme di global.css.
+	fonts: [
+		{ provider: fontProviders.fontsource(), name: 'Geist', cssVariable: '--font-geist' },
+		{ provider: fontProviders.fontsource(), name: 'Geist Mono', cssVariable: '--font-geist-mono' }
+	],
 	security: {
 		csp: {
 			directives: [

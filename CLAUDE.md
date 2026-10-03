@@ -40,10 +40,15 @@ di queste porte serve asset vecchi e fa fallire tutto con dei 404: va chiuso.
   fallire la build se un contenuto pubblicato non ha tutte le lingue, se un testo non
   ha il meta, se uno slug si ripete o se la vetrina punta a un progetto non pubblicato.
 - Un progetto che non si vuole mostrare va a `published: false`, non si cancella.
-- Testi del sito e stringhe della UI in `src/content/site/<lang>.json`, letti da
-  `src/lib/site.ts`: si usa `translator(lang)`. Le chiavi sono quelle dell'inglese;
-  una chiave mancante in un'altra lingua ferma la build. Config in `src/config/`
-  (lingue, route per lingua, vetrina), validata all'import da `src/lib/config.ts`.
+- Testi del sito e stringhe della UI: collection `site` (`src/content/site/<lang>.json`),
+  lette con `getSite(lang)` e `translator(lang)` di `src/lib/site.ts` (asincrone). Lo
+  schema è rigido: una chiave nuova si aggiunge allo schema in `src/content.config.ts`
+  e in ogni lingua, e diventa un tipo (`UiKey`). Config in `src/config/` (lingue, route
+  per lingua, vetrina), validata all'import da `src/lib/config.ts`: è configurazione, non
+  contenuto.
+- Standard di Astro dove esistono: content collections, `@astrojs/rss`, Fonts API
+  (`fonts` in `astro.config.mjs`, componente `<Font>` nel layout). La sitemap è scritta a
+  mano perché `@astrojs/sitemap` non sa gli slug tradotti e sbaglierebbe gli hreflang.
 - Nel Markdown, i comandi vanno in backtick: la tipografia di Astro trasforma `--`
   in un trattino lungo fuori dal codice.
 
@@ -73,11 +78,12 @@ di queste porte serve asset vecchi e fa fallire tutto con dei 404: va chiuso.
 ## Design system
 
 Look neutro di partenza (M14 in `docs/ROADMAP.md`): scala di grigi, Geist e Geist
-Mono self-hosted via fontsource. Lo stile vero arriva in M15. Il tentativo
+Mono self-hosted. Lo stile vero arriva in M15. Il tentativo
 "Laboratorio" (telaio, keycap, mono) resta intero sul branch `restyle/laboratory`;
 vision e motivi dello stop in `docs/RESTYLE.md`.
 
-- Token in `@theme` in `src/styles/global.css`: colori `bg`, `surface`, `line`,
+- Font Geist e Geist Mono dal Fonts API (variabili `--font-geist*`). Token in `@theme`
+  in `src/styles/global.css`: colori `bg`, `surface`, `line`,
   `fg`, `muted`, `subtle` e i quattro colori di stato. Un colore scritto a mano in un
   componente è un errore: si aggiunge un token.
 - Classi condivise: `container-page` (larghezza e gutter), `link`, `skip-link`. La

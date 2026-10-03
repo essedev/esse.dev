@@ -77,6 +77,70 @@ const contact = defineCollection({
 	})
 });
 
+// Testi del sito per lingua: titolo, descrizione, nomi delle sezioni e stringhe della UI.
+// Lo schema è rigido: ogni lingua deve avere tutte le chiavi e nessuna in più, così una
+// traduzione mancante ferma la build e le chiavi sono un tipo (`UiKey` in src/lib/site.ts).
+const text = z.string().min(1);
+const sections = z.object({ projects: text, articles: text }).strict();
+
+const site = defineCollection({
+	loader: glob({
+		pattern: '*.json',
+		base: './src/content/site',
+		generateId: ({ entry }) => entry.replace(/\.json$/, '')
+	}),
+	schema: z
+		.object({
+			title: text,
+			description: text,
+			sections,
+			/** Descrizione per i motori di ricerca delle pagine di lista. */
+			sectionDescriptions: sections,
+			ui: z
+				.object({
+					skipToContent: text,
+					navAbout: text,
+					navContact: text,
+					language: text,
+					viewAll: text,
+					back: text,
+					backHome: text,
+					pageNotFound: text,
+					pageNotFoundText: text,
+					search: text,
+					searchProjects: text,
+					searchArticles: text,
+					all: text,
+					status: text,
+					tags: text,
+					sort: text,
+					statusCompleted: text,
+					statusInProgress: text,
+					statusIdea: text,
+					statusArchived: text,
+					sortNewest: text,
+					sortOldest: text,
+					sortTitle: text,
+					noResults: text,
+					clearFilters: text,
+					published: text,
+					readingTime: text,
+					related: text,
+					repository: text,
+					year: text,
+					stack: text,
+					source: text,
+					searchTags: text,
+					noMatches: text,
+					clearSelection: text,
+					removeFilter: text,
+					clearSearch: text
+				})
+				.strict()
+		})
+		.strict()
+});
+
 export const collections = {
 	projects,
 	projectTexts,
@@ -84,5 +148,6 @@ export const collections = {
 	articleTexts,
 	welcome,
 	about,
-	contact
+	contact,
+	site
 };

@@ -6,7 +6,7 @@ import { languageCodes, navigation } from '../../../lib/config';
 import { getArticles, getProjects } from '../../../lib/content';
 import { SECTIONS, type Section } from '../../../lib/i18n';
 import { articleItem, projectItem, STATUS_KEY } from '../../../lib/items';
-import { site, translator } from '../../../lib/site';
+import { getSite, translator } from '../../../lib/site';
 
 export function getStaticPaths() {
 	return languageCodes.flatMap((lang) =>
@@ -19,8 +19,8 @@ export function getStaticPaths() {
 
 const { lang } = Astro.params;
 const { section } = Astro.props as { section: Section };
-const t = translator(lang);
-const text = site(lang);
+const t = await translator(lang);
+const text = await getSite(lang);
 const title = text.sections[section];
 const route = navigation[lang][section];
 

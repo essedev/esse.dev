@@ -6,7 +6,7 @@ import satori from 'satori';
 import { languageCodes } from '../../lib/config';
 import { getArticles, getProjects } from '../../lib/content';
 import { OG_HEIGHT, OG_WIDTH, ogLayout } from '../../lib/og';
-import { site } from '../../lib/site';
+import { getSite } from '../../lib/site';
 
 // Immagini OG generate a build, una per pagina: `home`, `listing-<sezione>-<lingua>`,
 // `detail-<sezione>-<id>-<lingua>`. Il nome è deterministico e il layout lo ricostruisce
@@ -20,7 +20,7 @@ type OgProps = {
 
 export const getStaticPaths: GetStaticPaths = async () => {
 	const paths: { params: { name: string }; props: OgProps }[] = [];
-	const en = site('en');
+	const en = await getSite('en');
 	paths.push({
 		params: { name: 'home' },
 		props: {
@@ -31,7 +31,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 	});
 
 	for (const lang of languageCodes) {
-		const text = site(lang);
+		const text = await getSite(lang);
 		paths.push({
 			params: { name: `listing-projects-${lang}` },
 			props: { label: 'esse.dev', title: text.sections.projects }

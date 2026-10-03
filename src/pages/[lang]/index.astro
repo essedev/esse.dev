@@ -8,15 +8,15 @@ import { languageCodes, navigation } from '../../lib/config';
 import { getArticles, getPage, getShowcase } from '../../lib/content';
 import { articleItem, projectItem } from '../../lib/items';
 import { personJsonLd, socialLinks, websiteJsonLd } from '../../lib/seo';
-import { site, translator } from '../../lib/site';
+import { getSite, translator } from '../../lib/site';
 
 export function getStaticPaths() {
 	return languageCodes.map((lang) => ({ params: { lang } }));
 }
 
 const { lang } = Astro.params;
-const t = translator(lang);
-const text = site(lang);
+const t = await translator(lang);
+const text = await getSite(lang);
 const routes = navigation[lang];
 
 const [welcome, about, contact, showcase, articles] = await Promise.all([

@@ -34,7 +34,7 @@ export async function getStaticPaths() {
 
 const { lang, section, slug } = Astro.params;
 const { kind, id } = Astro.props;
-const t = translator(lang);
+const t = await translator(lang);
 const path = `/${lang}/${section}/${slug}`;
 const origin = Astro.site!.origin;
 const canonical = buildCanonical(origin, path);

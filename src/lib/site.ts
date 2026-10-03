@@ -1,45 +1,22 @@
-import { z } from 'astro/zod';
+import { getEntry, type CollectionEntry } from 'astro:content';
 import { languageCodes } from './config';
 
-// Testi del sito per lingua (titolo, descrizione, nomi delle sezioni, stringhe della UI).
-// Le chiavi della UI sono quelle dell'inglese: ogni lingua deve averle tutte, e una
-// chiave mancante fa fallire la build invece di comparire come segnaposto in pagina.
+// Testi del sito per lingua, dalla collection `site` (src/content.config.ts). Lo schema
+// rigido garantisce che ogni lingua abbia tutte le chiavi della UI.
 
-import en from '../content/site/en.json';
+export type SiteText = CollectionEntry<'site'>['data'];
+export type UiKey = keyof SiteText['ui'];
+export type Translate = (key: UiKey) => string;
 
-export type UiKey = keyof typeof en.ui;
-
-const SiteSchema = z.object({
-	title: z.string().min(1),
-	description: z.string().min(1),
-	sections: z.object({ projects: z.string().min(1), articles: z.string().min(1) }),
-	/** Descrizione per i motori di ricerca delle pagine di lista, una per sezione. */
-	sectionDescriptions: z.object({ projects: z.string().min(1), articles: z.string().min(1) }),
-	ui: z.record(z.string(), z.string().min(1))
-});
-
-export type SiteText = z.infer<typeof SiteSchema> & { ui: Record<UiKey, string> };
-
-const files = import.meta.glob<{ default: unknown }>('../content/site/*.json', { eager: true });
-
-const sites: Record<string, SiteText> = {};
-for (const code of languageCodes) {
-	const file = files[`../content/site/${code}.json`];
-	if (!file) throw new Error(`content/site/${code}.json mancante`);
-	const parsed = SiteSchema.parse(file.default);
-	const missing = Object.keys(en.ui).filter((k) => !(k in parsed.ui));
-	if (missing.length) throw new Error(`content/site/${code}.json: mancano ${missing.join(', ')}`);
-	sites[code] = parsed as SiteText;
+export async function getSite(lang: string): Promise<SiteText> {
+	const entry = await getEntry('site', lang);
+	if (!entry)
+		throw new Error(`content/site/${lang}.json mancante (lingue: ${languageCodes.join(', ')})`);
+	return entry.data;
 }
 
-export function site(lang: string): SiteText {
-	const s = sites[lang];
-	if (!s) throw new Error(`Lingua senza testi: ${lang}`);
-	return s;
-}
-
-/** Traduttore per una lingua: `const t = translator('it'); t('back')`. */
-export function translator(lang: string): (key: UiKey) => string {
-	const { ui } = site(lang);
+/** Traduttore per una lingua: `const t = await translator('it'); t('back')`. */
+export async function translator(lang: string): Promise<Translate> {
+	const { ui } = await getSite(lang);
 	return (key) => ui[key];
 }

@@ -2,7 +2,7 @@
 import { languages, navigation } from '../lib/config';
 import { getSlugMap } from '../lib/content';
 import { getLanguageUrl, sectionOf } from '../lib/i18n';
-import { site, translator } from '../lib/site';
+import { getSite, translator } from '../lib/site';
 
 interface Props {
 	lang: string;
@@ -10,8 +10,8 @@ interface Props {
 }
 
 const { lang, path } = Astro.props;
-const t = translator(lang);
-const { sections } = site(lang);
+const t = await translator(lang);
+const { sections } = await getSite(lang);
 const slugMap = await getSlugMap();
 const currentSection = sectionOf(path.split('/')[2], lang, navigation);
 

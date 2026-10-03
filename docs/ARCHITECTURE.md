@@ -36,10 +36,22 @@ testo in ogni lingua, ogni testo ha il suo meta, gli slug sono unici per lingua,
 vetrina (`src/config/featured.json`) punta a progetti pubblicati. Una violazione fa
 fallire la build.
 
+Perché due file per contenuto: `meta.json` tiene i fatti, `<lang>.md` la prosa. I
+fatti sono condivisi tra le lingue (copiarli in ogni Markdown li farebbe divergere) e
+sono quelli che uno script può aggiornare dalle fonti (repo, date, stato) senza toccare
+un testo scritto a mano. Lo standard di Astro sarebbe un Markdown per lingua con tutto
+il frontmatter: si paga in duplicazione, e cresce con i campi delle cover in arrivo.
+
 Le pagine della home (welcome, chi sono, contatti) sono Markdown per lingua in
-`src/content/pages/`. Titolo del sito, nomi delle sezioni e stringhe della UI stanno
-in `src/content/site/<lang>.json` (`src/lib/site.ts`): le chiavi della UI sono
-quelle dell'inglese e una chiave mancante in un'altra lingua ferma la build.
+`src/content/pages/`. Titolo del sito, nomi delle sezioni e stringhe della UI sono la
+collection `site`, con schema rigido: ogni lingua ha tutte le chiavi e nessuna in più,
+e le chiavi sono un tipo. Config (lingue, route, vetrina) resta JSON importato e
+validato da `src/lib/config.ts`, perché è configurazione e non contenuto.
+
+Dove Astro ha uno standard si usa quello: content collections, `@astrojs/rss`, Fonts
+API per i font self-hosted con preload e fallback tarati. La sitemap no:
+`@astrojs/sitemap` ricava le alternate sostituendo il prefisso di lingua e con gli slug
+tradotti sbaglierebbe gli hreflang.
 
 ## i18n: route e slug tradotti, logica pura
 

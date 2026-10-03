@@ -1,13 +1,11 @@
 @import 'tailwindcss';
-@import '@fontsource-variable/geist';
-@import '@fontsource-variable/geist-mono';
 @plugin '@tailwindcss/typography';
 
 /* Look neutro di partenza (M14): scala di grigi, una famiglia sans e una mono. Lo stile
    vero arriva in M15; qui i colori vivono solo nei token, così si cambiano in un punto. */
 @theme {
-	--font-sans: 'Geist Variable', ui-sans-serif, system-ui, sans-serif;
-	--font-mono: 'Geist Mono Variable', ui-monospace, monospace;
+	--font-sans: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
+	--font-mono: var(--font-geist-mono), ui-monospace, monospace;
 
 	--color-bg: #0b0b0c;
 	--color-surface: #131315;

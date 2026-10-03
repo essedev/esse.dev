@@ -1,11 +1,12 @@
 ---
+import { Font } from 'astro:assets';
 import '../styles/global.css';
 import Footer from '../components/Footer.astro';
 import Header from '../components/Header.astro';
 import { languages, navigation } from '../lib/config';
 import { getSlugMap } from '../lib/content';
 import { buildAlternates, buildCanonical, serializeJsonLd } from '../lib/seo';
-import { site, translator } from '../lib/site';
+import { getSite, translator } from '../lib/site';
 
 interface Props {
 	lang: string;
@@ -22,8 +23,8 @@ interface Props {
 }
 
 const { lang, path, title, description, og = 'home', jsonLd, noindex = false } = Astro.props;
-const text = site(lang);
-const t = translator(lang);
+const text = await getSite(lang);
+const t = await translator(lang);
 const origin = Astro.site!.origin;
 
 const pageTitle = title ? `${title} · Simone Salerno` : `Simone Salerno · ${text.title}`;
@@ -41,6 +42,8 @@ const locale = lang === 'it' ? 'it_IT' : 'en_US';
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<Font cssVariable="--font-geist" preload />
+		<Font cssVariable="--font-geist-mono" />
 		<title>{pageTitle}</title>
 		<meta name="description" content={pageDescription} />
 		<meta name="author" content="Simone Salerno" />

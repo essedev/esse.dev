@@ -7,7 +7,7 @@ interface Props {
 }
 
 const { lang } = Astro.props;
-const t = translator(lang);
+const t = await translator(lang);
 ---
 
 <Layout lang={lang} path={`/${lang}`} title={t('pageNotFound')} noindex>
