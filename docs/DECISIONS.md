@@ -6,7 +6,7 @@ numerate e citabili come `#N`; status: `proposta`, `attiva`, `superata da #M`,
 
 Le scelte strutturali di fondo (contenuti JSON senza DB, i18n hand-rolled, slug map
 derivata, OG a build time) sono spiegate in `docs/ARCHITECTURE.md`; quelle di identità
-visiva (palette, font, hero, pixel art scartata) in `docs/RESTYLE.md`.
+visiva (palette, font, hero, pixel art scartata) in `docs/archive/RESTYLE.md`.
 
 Le voci non più attive (superate o sospese con il ritorno allo stile base e la
 riscrittura in Astro) stanno in `docs/decisions-archive.md`, con la stessa numerazione.

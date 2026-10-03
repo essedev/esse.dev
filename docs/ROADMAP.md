@@ -8,7 +8,7 @@ Ultimo aggiornamento: 2026-10-03 (prima versione dell'agente, M17 in corso)
 
 In produzione su `main` c'è il sito SvelteKit (M1-M10, storia in `docs/CYCLES.md`).
 Il restyle "Laboratorio" (M11) è fermo e resta intero sul branch `restyle/laboratory`:
-da lì si ripescano i pezzi che valgono (motivi in `docs/RESTYLE.md`). Il lavoro
+da lì si ripescano i pezzi che valgono (motivi in `docs/archive/RESTYLE.md`). Il lavoro
 riparte sul branch `astro`, creato da `restyle/base` (look di `main` più i contenuti
 nuovi), con quattro milestone in sequenza: prima la piattaforma, poi lo stile, poi i
 progetti, infine l'agente. La messa online aspetta che il sito sia completo (scelta di

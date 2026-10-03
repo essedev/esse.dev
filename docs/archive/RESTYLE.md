@@ -121,7 +121,7 @@ Design system di base, su cui la pixel art si poserà in seguito. Decisioni pres
   leggendo "half wizard" più sotto e non diceva cosa faccio; "I write the spells" tiene
   il mago al posto giusto: io scrivo l'incantesimo (architettura, contesto, controlli),
   l'AI lo lancia. Il corpo sotto è asciugato a tre frasi, una per riga da `lg`, senza
-  ripetere due volte che l'AI scrive il codice. Varianti in `docs/concepts/hero-variants.html`. Resta in inglese anche in IT (brand statement intraducibile; il corpo sotto
+  ripetere due volte che l'AI scrive il codice. Varianti in `docs/archive/concepts/hero-variants.html`. Resta in inglese anche in IT (brand statement intraducibile; il corpo sotto
   è localizzato). Sostituisce "Ciao, sono Simone." (il nome era già nel logo). Layout
   **allineato a sinistra** (editoriale, respiro a destra per la futura scena pixel
   art), non centrato.

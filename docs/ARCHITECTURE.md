@@ -88,6 +88,37 @@ header li aggiunge `src/middleware.ts`. Gli asset con hash in `/_astro/` sono ca
 come immutabili. Niente endpoint che
 riflettono input utente.
 
+## Interfaccia: il sito come spazio di lavoro
+
+Il sito si usa come un'app (concept A, `docs/concepts/concept-a-spazio.html`, Ciclo 12):
+due colonne alte tutta la finestra, ognuna col suo tono. A sinistra la lista (logo,
+ricerca, voci, riga di stato con legenda e tasti), a destra il riquadro del contenuto con
+una toolbar (percorso, azioni sul documento, lingua). Nessuna barra a tutta larghezza:
+con due toni su righe orizzontali la pagina formava una T che non corrispondeva a nessuna
+zona (Ciclo 13). Ogni voce resta una pagina statica col suo URL; le transizioni sono
+quelle native del browser (`@view-transition`), senza router.
+
+- **Lista** (`src/lib/workspace.ts`): in ordine di importanza e alta al massimo 900 px.
+  Prima le pagine singole (chi sono, adesso, agente), poi la vetrina dei progetti con
+  "tutti i N" verso il registro, metodo, scritti. I progetti fuori vetrina restano nella
+  pagina: la ricerca li trova e compare quello aperto. È anche la fonte dell'ordine del
+  pager.
+- **Navigazione** (`src/scripts/workspace.ts`): j/k e frecce nella lista, Invio, Esc al
+  livello sopra, h/l (o le frecce laterali) per precedente e successivo, `/` e Cmd/Ctrl+K
+  per la ricerca. Non `[`/`]`: sulla tastiera italiana del Mac richiedono Option. Il
+  livello sopra (Esc, breadcrumb, "‹ sezione" su mobile) si calcola dai `crumbs` e torna
+  con la history se si arriva da lì, così il registro ritrova i filtri. Il documento ha
+  solo titolo, meta e testo: niente "Indietro" nel contenuto.
+- **Mobile**: la home mostra la presentazione e poi la lista; un dettaglio mostra solo il
+  contenuto, con "‹ sezione" nella toolbar come in iOS.
+- **Token** (`@theme` in `src/styles/global.css`): superfici `bg`, `panel`, `surface`,
+  `hover`; testo `fg`, `text`, `muted`, `subtle` (il minimo per il testo, 4,6:1); un
+  accento; `danger`; raggi `--radius-control` e `--radius-panel`. Classi condivise:
+  `.led`, `.kbd`, `.label`, `.chip`, `.ulink`, `.caret`.
+- **Misura**: nessuna larghezza massima sul contenuto, la danno la colonna e la taglia
+  fluida (`Page.astro`, `Prose.astro`). Nei dettagli, da `xl`, i fatti stanno in una
+  colonna a destra; la pagina riempie almeno il riquadro e il pager sta in fondo.
+
 ## Agente
 
 `/it/agente` è una pagina statica con un'isola Svelte (`AgentChat.svelte`) che apre un

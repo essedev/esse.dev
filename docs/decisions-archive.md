@@ -57,4 +57,4 @@ piatti e la profondità è solo luce. La prima versione portava il keycap anche 
 lo schermo ed era uno skeuomorfismo dentro uno skeuomorfismo. Scartati: il tasto
 "illuminato" con fondo d'accento tenue (a riposo leggeva come disabilitato), il
 "pannello di controllo" tutto fisico (non regge la prosa lunga né mobile, dove il
-telaio non c'è). I tre sistemi confrontati sono in `docs/concepts/system-variants.html`.
+telaio non c'è). I tre sistemi confrontati sono in `docs/archive/concepts/system-variants.html`.

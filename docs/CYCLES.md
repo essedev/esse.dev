@@ -396,7 +396,7 @@ scheda (mancava `target="_blank"`), a differenza dei link in Contact e Footer.
 
 Rebrand visivo: da "dev portfolio dark generico" a un'identità "Laboratorio"
 coerente. Prima il messaggio (voce e posizionamento), poi il design system. La
-vision completa, le idee considerate e quelle scartate vivono in `docs/RESTYLE.md`.
+vision completa, le idee considerate e quelle scartate vivono in `docs/archive/RESTYLE.md`.
 
 ### Su `main` (pushato)
 
@@ -427,7 +427,7 @@ vision completa, le idee considerate e quelle scartate vivono in `docs/RESTYLE.m
 - **Coerenza:** `//` rimosso dal content delle voci (era decorazione fuori posto);
   numeri solo dove servono.
 
-### Decisioni chiave (scartate, vedi RESTYLE.md)
+### Decisioni chiave (scartate, vedi docs/archive/RESTYLE.md)
 
 - Motif "doppia S" (richiama altro -> handle "essedev").
 - Font: Jacquard 12/24 (fantasy, non fitta); Fraunces italic (il serif-su-dark
@@ -602,7 +602,7 @@ diversi per i tre controlli flottanti di mobile, testo a 1300px su desktop.
   Unicode. Il placeholder delle immagini è uno schermo spento (griglia, bagliore
   d'accento, etichetta) e le pagine di dettaglio non mostrano più l'immagine hero:
   `src/lib/assets/images` è vuota, il blocco torna quando ci saranno immagini vere.
-- **Keycap (`docs/concepts/system-variants.html`, scelta B):** dopo due passate il
+- **Keycap (`docs/archive/concepts/system-variants.html`, scelta B):** dopo due passate il
   tasto illuminato non convinceva ancora: il fondo tinto all'8% stava a metà e leggeva
   come disabilitato. Tre sistemi completi a confronto (Modulo, Keycap, Terminale) con
   card, tasti e TOP insieme; scelto Keycap ed esteso a tutte le superfici: keycap per
@@ -628,7 +628,7 @@ diversi per i tre controlli flottanti di mobile, testo a 1300px su desktop.
 ### Cosa resta
 
 - Cantieri grossi: animazioni come sistema. La pixel art autoprodotta è scartata
-  (vedi `RESTYLE.md`); contenuti progetti (Blocco 4) e sistema UI (Blocco 5) fatti.
+  (vedi `docs/archive/RESTYLE.md`); contenuti progetti (Blocco 4) e sistema UI (Blocco 5) fatti.
 - Prima del merge/live: `build` + `test:ci` + aggiornare gli E2E + merge su `main`.
 
 ## Ciclo 10 - Ripartenza dallo stile base (2026-09-26)
@@ -638,7 +638,7 @@ quello di `main` (`app.html`, `globals.css`, componenti, sezioni, route, OG, fav
 `svelte-inview` e `FloatingNav` ripristinati); restano contenuti, schema (`eyebrow`),
 loader, `translations.ts` e test unit. Tolti `Chassis`, `EntryIndex`, `SectionHeader`,
 `AccentPicker`, `themes.ts`, `reveal.ts`, `shelf.ts` e lo script favicon. Motivo in
-`RESTYLE.md` ("Stop e ripartenza"). Gate: lint, check 0 errori, build, 193 unit,
+`docs/archive/RESTYLE.md` ("Stop e ripartenza"). Gate: lint, check 0 errori, build, 193 unit,
 32 e2e. `restyle/laboratory` resta intero per ripescare i pezzi che valgono.
 
 ## Ciclo 11 - Riscrittura in Astro con look neutro (2026-10-03)
