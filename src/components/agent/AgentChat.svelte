@@ -2,6 +2,7 @@
 	import { AgentClient } from 'agents/client';
 	import { ArrowUpRight } from '@lucide/svelte';
 	import { onMount, tick } from 'svelte';
+	import { credits, nextReset, SHOW_BUDGET_BELOW } from '../../agent/budget';
 	import { renderMarkdown } from '../../agent/markdown';
 	import { parseRender, type RenderView as View } from '../../agent/render';
 	import type { ChildReport } from '../../agent/delegate';
@@ -53,6 +54,8 @@
 		toolCall: string;
 		result: string;
 		budget: string;
+		credit: string;
+		credits: string;
 		notice: Record<'offtopic' | 'abuse' | 'budget', string>;
 		intent: Record<Triage['intent'], string>;
 		weight: Record<Triage['weight'], string>;
@@ -332,8 +335,22 @@
 	const userText = (m: TranscriptMessage) =>
 		m.parts.map((p) => (p.type === 'text' ? p.text : '')).join('');
 
-	const cents = (usd: number) =>
-		`${(usd * 100).toLocaleString(locale, { maximumFractionDigits: usd * 100 < 0.1 ? 3 : 2 })}¢`;
+	// In pagina i costi sono crediti (`budget.ts`); il costo vero resta nel tooltip.
+	const spent = (usd: number) => {
+		const n = credits(usd);
+		return `${n.toLocaleString(locale)} ${n === 1 ? labels.credit : labels.credits}`;
+	};
+	const dollars = (usd: number) => `$${usd.toLocaleString('en', { maximumSignificantDigits: 3 })}`;
+	// Il contatore si vede solo quando i crediti stanno per finire.
+	const lowBudget = $derived(
+		budget !== null && budget.remaining < budget.limit * SHOW_BUDGET_BELOW
+	);
+	/** Il testo di un avviso, con l'ora della ricarica nel fuso di chi legge. */
+	const noticeText = (reason: Local['reason']) =>
+		labels.notice[reason].replace(
+			'{time}',
+			nextReset(new Date()).toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' })
+		);
 	const tokens = (n: number) =>
 		n >= 1000 ? `${(n / 1000).toLocaleString(locale, { maximumFractionDigits: 1 })}k` : String(n);
 </script>
@@ -357,7 +374,7 @@
 		</p>
 		{@render verdict(triages[item.text])}
 	</div>
-	<p class="pl-6 text-[0.9375rem] text-muted">{labels.notice[item.reason]}</p>
+	<p class="pl-6 text-[0.9375rem] text-muted">{noticeText(item.reason)}</p>
 {/snippet}
 
 <div class="flex flex-1 flex-col">
@@ -461,7 +478,7 @@
 								reports={work.reports}
 								labels={{ subagents: labels.subagents, answer: labels.answer }}
 								{tokens}
-								{cents}
+								{spent}
 							/>
 						{:else if part.type === 'tool-call' && part.name === 'render' && drawn(part.arguments, results.get(part.id))}
 							<RenderView view={drawn(part.arguments, results.get(part.id))!} {locale} />
@@ -522,7 +539,8 @@
 					{/if}
 					{#if message.usage && message.id !== 'live'}
 						<p class="font-mono text-[0.7rem] text-subtle">
-							{tokens(message.usage.tokens)} token · {cents(message.usage.usd)}
+							{tokens(message.usage.tokens)} token ·
+							<span title={dollars(message.usage.usd)}>{spent(message.usage.usd)}</span>
 						</p>
 					{/if}
 				</div>
@@ -592,8 +610,8 @@
 				{view.model?.modelId ??
 					(status === 'open' ? '' : status === 'connecting' ? labels.connecting : labels.offline)}
 			</span>
-			{#if budget}
-				<span>{labels.budget} {cents(budget.remaining)} / {cents(budget.limit)}</span>
+			{#if budget && lowBudget}
+				<span>{credits(budget.remaining).toLocaleString(locale)} {labels.budget}</span>
 			{/if}
 			<button type="button" onclick={reset} class="ml-auto transition-colors hover:text-fg">
 				{labels.reset}

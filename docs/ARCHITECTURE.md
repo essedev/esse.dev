@@ -170,7 +170,7 @@ stessi sui due lati.
 - **Triage e limiti:** ogni messaggio passa prima da Jev (`triage.ts`), che ferma fuori
   tema e abuso e decide la lingua della risposta; la spesa si scala in costo reale per
   visitatore (nel `SiteAgent`) e per tutto il sito (Durable Object `Ledger`), con le soglie
-  in `budget.ts`. Se Jev non risponde il messaggio passa e vale il tetto. Le soglie si
+  in `budget.ts`. In pagina il budget si mostra in crediti, solo quando sta per finire. Se Jev non risponde il messaggio passa e vale il tetto. Le soglie si
   verificano con `pnpm eval:jev` su un set etichettato (`tests/eval/jev-triage.json`).
   Scelte in `docs/DECISIONS.md` #12.
 - **Trascrizione:** Markdown passato da un renderer che sanifica (`markdown.ts`),

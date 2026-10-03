@@ -11,13 +11,13 @@
 		reports,
 		labels,
 		tokens,
-		cents
+		spent
 	}: {
 		tasks: { title: string; task: string }[];
 		reports: ChildReport[] | null;
 		labels: { subagents: string; answer: string };
 		tokens: (n: number) => string;
-		cents: (usd: number) => string;
+		spent: (usd: number) => string;
 	} = $props();
 </script>
 
@@ -35,7 +35,7 @@
 					<span class="text-fg">{task.title}</span>
 					{#if report}
 						<span class="ml-auto shrink-0 font-mono text-[0.7rem] text-subtle">
-							{report.calls.length} tool · {tokens(report.tokens)} token · {cents(report.usd)}
+							{report.calls.length} tool · {tokens(report.tokens)} token · {spent(report.usd)}
 						</span>
 					{/if}
 				</div>

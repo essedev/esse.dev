@@ -92,6 +92,10 @@ Jev passa da OpenRouter con la stessa chiave del modello; TypeSafe diretto e Wor
 restano come trasporti alternativi (`JEV_TRANSPORT` in `src/agent/site-agent.ts`).
 Scartati: un numero fisso di messaggi per visitatore (rigido, ignora quanto costa una
 domanda), il solo triage senza tetto (una classificazione si può ingannare).
+Il budget per visitatore è di 10 centesimi al giorno (era 5: bastavano 3 domande con
+`delegate`). In pagina si conta in crediti (1 credito = 0,01 centesimi, 1.000 al giorno)
+e il contatore compare solo sotto il 30%: chi visita non deve sentirsi misurato. Token e
+crediti di ogni risposta restano visibili, il costo in dollari nel tooltip.
 
 ## #13 - Tool sul codice dall'API di GitHub, pagine come schede
 

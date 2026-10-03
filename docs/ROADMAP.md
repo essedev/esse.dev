@@ -80,7 +80,7 @@ Scelte in `docs/DECISIONS.md` #11-#14.
   finito); `@cloudflare/computer` solo se servisse eseguire il codice dei repo.
 - Prima di attivarlo in produzione: costo misurato su un campione e approvato da Simone.
   Misure in anteprima: una domanda semplice 0,05-0,1 centesimi, una con `run_code` circa
-  0,15, una con `delegate` circa 1,4 (budget di 5 centesimi al giorno per visitatore).
+  0,15, una con `delegate` circa 1,4 (budget di 10 centesimi al giorno per visitatore, mostrato in crediti).
   Scartati: un secondo modello da consultare, fetch libero, voce e immagini.
 - Deciso: l'agente lavora sui repo e risponde anche su Simone; modelli da OpenRouter
   (#11).

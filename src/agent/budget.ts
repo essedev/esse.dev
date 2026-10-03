@@ -5,8 +5,29 @@
  */
 
 /** Dollari al giorno per visitatore e per tutto il sito. */
-export const VISITOR_DAILY_USD = 0.05;
+export const VISITOR_DAILY_USD = 0.1;
 export const SITE_DAILY_USD = 2;
+
+/**
+ * In pagina il budget si conta in crediti, non in centesimi: chi visita ragiona in domande.
+ * Un credito è un centesimo di centesimo, quindi 1.000 al giorno; una domanda leggera ne
+ * usa una decina. I conti restano in dollari, i crediti sono solo il modo di mostrarli.
+ */
+export const CREDIT_USD = 0.0001;
+
+/** Crediti interi; una spesa vera non vale mai zero crediti. */
+export function credits(usd: number): number {
+	if (usd <= 0) return 0;
+	return Math.max(1, Math.round(usd / CREDIT_USD));
+}
+
+/** Sotto questa quota del budget la pagina mostra quanti crediti restano. */
+export const SHOW_BUDGET_BELOW = 0.3;
+
+/** La mezzanotte UTC dopo `now`, quando il budget riparte. */
+export function nextReset(now: Date): Date {
+	return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1));
+}
 
 /** La giornata del limite, in UTC: `2026-10-03`. */
 export function dayKey(now: Date): string {

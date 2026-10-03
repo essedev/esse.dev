@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { costOf, dayKey, remaining, today } from '../../src/agent/budget';
+import { costOf, credits, dayKey, nextReset, remaining, today } from '../../src/agent/budget';
 import { admits, blockReason, jevInput, parseTriage, type JevOutput } from '../../src/agent/triage';
 
 const output = (intent: string, score: number, lang: string, p: number = 0.9): JevOutput => ({
@@ -106,5 +106,20 @@ describe('agent markdown', async () => {
 		expect(html).not.toContain('<img');
 		expect(html).toContain('&lt;img');
 		expect(html).toContain('<strong>ok</strong>');
+	});
+});
+
+describe('credits', () => {
+	it('shows a spend as whole credits, never zero for a real cost', () => {
+		expect(credits(0.1)).toBe(1000);
+		expect(credits(0.0007)).toBe(7);
+		expect(credits(0.00001)).toBe(1);
+		expect(credits(0)).toBe(0);
+	});
+
+	it('resets at the next UTC midnight', () => {
+		expect(nextReset(new Date('2026-10-03T23:59:00Z')).toISOString()).toBe(
+			'2026-10-04T00:00:00.000Z'
+		);
 	});
 });
