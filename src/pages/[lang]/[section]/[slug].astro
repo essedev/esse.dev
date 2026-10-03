@@ -23,7 +23,7 @@ import { readingMetrics } from '../../../lib/metrics';
 import { relatedByTags } from '../../../lib/related';
 import { blogPostingJsonLd, buildCanonical, creativeWorkJsonLd } from '../../../lib/seo';
 import { translator } from '../../../lib/site';
-import { getNavGroups, neighbours } from '../../../lib/workspace';
+import { getNav, neighbours } from '../../../lib/workspace';
 
 type Kind = 'projects' | 'articles' | 'method';
 
@@ -80,7 +80,7 @@ const entry = (project ?? article ?? principle)!.entry;
 const { Content } = await render(entry);
 const title = (project ?? article ?? principle)!.text.title;
 
-const groups = await getNavGroups(lang, t);
+const { groups } = await getNav(lang, t);
 const { prev, next } = neighbours(groups, `${kind}/${id}`);
 
 const isFeatured = project ? featured.projects.includes(project.id) : false;

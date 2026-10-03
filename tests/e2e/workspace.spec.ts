@@ -59,6 +59,24 @@ test.describe('workspace keyboard', () => {
 		expect(pager!.y + pager!.height).toBeGreaterThan(900 - 120);
 	});
 
+	test('the list shows the showcase; search reaches every project', async ({ page }) => {
+		await open(page, '/en');
+		const verbosa = page.locator('[data-sidebar] a[href="/en/projects/verbosa"]');
+		await expect(verbosa).toBeHidden();
+		await expect(page.locator('[data-sidebar] [data-more] a')).toHaveAttribute(
+			'href',
+			'/en/projects'
+		);
+		await page.locator('[data-filter]').fill('verbosa');
+		await expect(verbosa).toBeVisible();
+		await expect(page.locator('[data-sidebar] [data-more]')).toBeHidden();
+	});
+
+	test('a project outside the showcase appears in the list while it is open', async ({ page }) => {
+		await open(page, '/en/projects/verbosa');
+		await expect(page.locator('[data-sidebar] [aria-current="page"]')).toBeVisible();
+	});
+
 	test('the item being viewed is marked in the list', async ({ page }) => {
 		await open(page, '/it/progetti/relay');
 		await expect(page.locator('[data-sidebar] [aria-current="page"]')).toHaveAttribute(

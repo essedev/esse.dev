@@ -84,7 +84,12 @@ colonne alte tutta la finestra, ognuna col suo tono. A sinistra la lista (logo, 
 voci, riga di stato coi tasti), a destra il riquadro del contenuto con la sua toolbar
 (dove sei, azioni sul documento, lingua). Niente barre a tutta larghezza. Ogni voce resta una
 pagina statica col suo URL; la shell è `src/layouts/Workspace.astro`, l'indice della
-lista `src/lib/workspace.ts` (unica fonte dell'ordine per lista, pager e palette).
+lista `src/lib/workspace.ts` (unica fonte dell'ordine per lista e pager).
+
+- La lista va in ordine di importanza e deve stare in 900 px senza scrollare: prima le
+  pagine singole (chi sono, adesso), poi progetti, metodo, scritti. Dei progetti mostra
+  solo la vetrina (`featured.json`, 6) più "tutti i N" verso il registro: gli altri
+  restano nella pagina, li trova la ricerca e compare quello aperto.
 
 - Sezioni: progetti, scritti, metodo, adesso, chi sono (`src/config/navigation.json`).
   Metodo e adesso sono collection come i progetti (meta + testo per lingua). Le route

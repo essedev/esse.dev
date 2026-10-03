@@ -111,7 +111,9 @@ function move(delta: number) {
 	select(items[Math.max(0, Math.min(items.length - 1, next))]);
 }
 
-// Filtro della lista.
+// Filtro della lista. Senza query si vede la vetrina: le voci `data-rest` (progetti fuori
+// vetrina) restano nascoste tranne quella aperta, e c'è la riga "tutti i N". Con una
+// query si vede tutto quello che corrisponde, vetrina o no, e la riga "tutti" sparisce.
 const filter = document.querySelector<HTMLInputElement>('[data-filter]');
 const emptyNote = document.querySelector<HTMLElement>('[data-filter-empty]');
 function applyFilter() {
@@ -122,14 +124,19 @@ function applyFilter() {
 		let groupVisible = 0;
 		for (const row of group.querySelectorAll<HTMLElement>('[data-row]')) {
 			const item = row.querySelector<HTMLElement>('[data-nav-item]');
-			const match = !q || (item?.dataset.search ?? '').includes(q);
-			row.hidden = !match;
-			const divider = row.querySelector<HTMLElement>('[data-divider]');
-			if (divider) divider.hidden = !!q;
-			if (match) groupVisible++;
+			if (row.hasAttribute('data-more')) {
+				row.hidden = !!q;
+				continue;
+			}
+			const isCurrent = item?.getAttribute('aria-current') === 'page';
+			const visible = q
+				? (item?.dataset.search ?? '').includes(q)
+				: !row.hasAttribute('data-rest') || isCurrent;
+			row.hidden = !visible;
+			if (visible) groupVisible++;
 		}
 		const header = group.querySelector<HTMLElement>(':scope > [data-nav-item]');
-		const headerMatch = !q || (header?.dataset.search ?? '').toLowerCase().includes(q);
+		const headerMatch = !!header && (header.dataset.search ?? '').includes(q);
 		group.hidden = !!q && groupVisible === 0 && !headerMatch;
 		if (!group.hidden) anyVisible = true;
 	}

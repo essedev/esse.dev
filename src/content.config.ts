@@ -155,7 +155,7 @@ const site = defineCollection({
 					keysBack: text,
 					startHere: text,
 					featured: text,
-					others: text,
+					allProjects: text,
 					search: text,
 					status: text,
 					tags: text,

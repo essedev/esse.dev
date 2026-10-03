@@ -1,0 +1,61 @@
+---
+import { ArrowRight, FileText, User } from '@lucide/astro';
+import type { NavItem } from '../../lib/workspace';
+
+interface Props {
+	item: NavItem;
+	current: string;
+	/** Riga "tutti i N": porta alla raccolta intera, sparisce mentre si cerca. */
+	more?: boolean;
+}
+
+const { item, current, more = false } = Astro.props;
+const isCurrent = item.key === current;
+
+// Una voce della lista. Il segno a sinistra sta in una colonna fissa, così i titoli si
+// allineano qualunque sia: LED (stato), indice (metodo), icona (pagine e scritti), freccia (tutti).
+---
+
+<li
+	data-row
+	data-rest={item.rest ? '' : undefined}
+	data-more={more ? '' : undefined}
+	hidden={item.rest && !isCurrent}
+>
+	<a
+		href={item.href}
+		data-nav-item
+		data-search={more ? undefined : item.search.toLowerCase()}
+		aria-current={isCurrent ? 'page' : undefined}
+		class:list={[
+			'hover:bg-hover hover:text-fg aria-[current=page]:bg-surface aria-[current=page]:text-fg data-[selected]:bg-hover data-[selected]:text-fg group flex h-9 items-center gap-3 rounded-[var(--radius-control)] px-2 transition-colors',
+			more ? 'text-subtle' : 'text-text'
+		]}
+	>
+		<span class="flex w-4 shrink-0 justify-center">
+			{more ? (
+				<ArrowRight class="size-3.5 transition-transform group-hover:translate-x-0.5" />
+			) : item.index ? (
+				<span class="text-subtle font-mono text-[0.7rem] tabular-nums">{item.index}</span>
+			) : item.icon === 'person' ? (
+				<User class="text-subtle size-3.5" />
+			) : item.icon === 'text' ? (
+				<FileText class="text-subtle size-3.5" />
+			) : (
+				<span class="led" data-status={item.status} />
+			)}
+		</span>
+		<span
+			data-title
+			class:list={[
+				'min-w-0 flex-1 truncate',
+				more ? 'font-mono text-[0.75rem]' : 'text-[0.9375rem]'
+			]}
+		>
+			{item.title}
+		</span>
+		{item.meta && (
+			<span class="text-subtle shrink-0 font-mono text-[0.7rem] tabular-nums">{item.meta}</span>
+		)}
+	</a>
+</li>

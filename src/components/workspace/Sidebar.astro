@@ -1,17 +1,18 @@
 ---
 import { ListFilter } from '@lucide/astro';
-import type { NavGroup } from '../../lib/workspace';
+import type { Nav } from '../../lib/workspace';
+import NavRow from './NavRow.astro';
 import type { Translate } from '../../lib/site';
 
 interface Props {
 	lang: string;
-	groups: NavGroup[];
+	nav: Nav;
 	/** Chiave della voce aperta (`progetti/relay`) o della sezione (`projects`). */
 	current: string;
 	t: Translate;
 }
 
-const { lang, groups, current, t } = Astro.props;
+const { lang, nav, current, t } = Astro.props;
 const keys: [string[], string][] = [
 	[['j', 'k'], t('keysMove')],
 	[['↵'], t('keysOpen')],
@@ -47,8 +48,15 @@ const keys: [string[], string][] = [
 		data-sidebar-scroll
 		class="min-h-0 flex-1 overflow-y-auto px-3 pb-6 lg:px-4 lg:[mask-image:linear-gradient(to_bottom,black_calc(100%-2.5rem),transparent)]"
 	>
-		{groups.map((group) => (
-			<section data-group={group.section} class="mt-5 first:mt-3">
+		<section data-group="pages" class="mt-2">
+			<ul>
+				{nav.pages.map((item) => (
+					<NavRow item={item} current={current} />
+				))}
+			</ul>
+		</section>
+		{nav.groups.map((group) => (
+			<section data-group={group.section} class="mt-5">
 				<a
 					href={group.href}
 					class:list={[
@@ -57,7 +65,7 @@ const keys: [string[], string][] = [
 					]}
 					aria-current={current === group.section ? 'page' : undefined}
 					data-nav-item
-					data-search={group.label}
+					data-search={group.label.toLowerCase()}
 				>
 					<span data-scramble>{group.label}</span>
 					{group.count > 0 && (
@@ -68,37 +76,15 @@ const keys: [string[], string][] = [
 				</a>
 				<ul class="mt-1">
 					{group.items.map((item) => (
-						<li data-row>
-							{item.divider && (
-								<p data-divider class="label mt-3 mb-1 px-2 normal-case tracking-normal">
-									{item.divider}
-								</p>
-							)}
-							<a
-								href={item.href}
-								data-nav-item
-								data-search={item.search.toLowerCase()}
-								aria-current={item.key === current ? 'page' : undefined}
-								class="text-text hover:bg-hover hover:text-fg aria-[current=page]:bg-surface aria-[current=page]:text-fg data-[selected]:bg-hover data-[selected]:text-fg flex h-9 items-center gap-3 rounded-[var(--radius-control)] px-2 transition-colors"
-							>
-								{item.index ? (
-									<span class="text-subtle w-[7px] font-mono text-[0.7rem] tabular-nums">
-										{item.index}
-									</span>
-								) : (
-									<span class="led" data-status={item.status ?? 'none'} />
-								)}
-								<span data-title class="min-w-0 flex-1 truncate text-[0.9375rem]">
-									{item.title}
-								</span>
-								{item.meta && (
-									<span class="text-subtle shrink-0 font-mono text-[0.7rem] tabular-nums">
-										{item.meta}
-									</span>
-								)}
-							</a>
-						</li>
+						<NavRow item={item} current={current} />
 					))}
+					{group.more && (
+						<NavRow
+							item={{ key: '', href: group.more.href, title: group.more.label, search: '' }}
+							current={current}
+							more
+						/>
+					)}
 				</ul>
 			</section>
 		))}
