@@ -101,6 +101,13 @@
 		"agentToolDelegate": "divide una domanda ampia tra 2 o 3 sotto-agenti in parallelo",
 		"agentSubagents": "sotto-agenti in parallelo",
 		"agentAnswer": "risposta",
+		"agentToolDraft": "prepara un messaggio per Simone, che mandi tu",
+		"agentDraft": "bozza per Simone, la mandi tu",
+		"agentDraftSubject": "oggetto",
+		"agentDraftContact": "la tua email o un contatto, se vuoi una risposta",
+		"agentDraftSend": "manda a Simone",
+		"agentDraftSending": "invio…",
+		"agentDraftSent": "inviato, grazie",
 		"agentOpen": "apri",
 		"agentAsk4": "Come fa Portsage a sapere quali porte sono occupate? Mostrami il codice"
 	},

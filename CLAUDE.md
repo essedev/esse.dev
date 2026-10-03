@@ -103,10 +103,12 @@ tastiera in `src/scripts/workspace.ts`.
 ## Agente
 
 - Codice in `src/agent/` e `src/components/agent/`; perché e come in ARCHITECTURE
-  (Agente), DECISIONS #11 e #12.
+  (Agente), DECISIONS #11-#14.
 - Ogni messaggio all'agente in anteprima chiama modelli veri su OpenRouter
   (`OPENROUTER_API_KEY`) e i tool sul codice l'API di GitHub (`GITHUB_TOKEN` facoltativo).
-  Gli E2E non mandano messaggi.
+  Gli E2E non mandano messaggi. In locale `draft_message` spedisce nel simulatore di
+  wrangler (il testo finisce in `.wrangler/tmp/email/`): per provarlo serve `MAIL_TO`,
+  anche finto (`wrangler dev --var MAIL_TO:prova@example.com`).
 - Modello, ordine dei provider e timeout in `src/agent/models.ts`; le conversazioni
   esistenti passano al modello nuovo all'avvio dell'oggetto. Limiti di spesa in
   `src/agent/budget.ts`. Triage in `src/agent/triage.ts`, trasporto di Jev in
@@ -116,6 +118,11 @@ tastiera in `src/scripts/workspace.ts`.
   (generato alla build), mai da fuori.
 - Il codice che gira solo sul Worker va escluso da `tsconfig.json` e incluso in
   `tsconfig.worker.json`.
+- Sul Worker `fetch` staccato dal suo oggetto (salvato in un campo) lancia "Illegal
+  invocation"; in Node e nei test no. Si avvolge: `(input, init) => fetch(input, init)`.
+- In Svelte una prop o una variabile non si chiama come una rune (`state`, `derived`,
+  `effect`, `props`): `$state(...)` diventa la sottoscrizione a uno store e la pagina si
+  rompe a runtime, senza errori da `pnpm check`.
 
 ## Convenzioni
 

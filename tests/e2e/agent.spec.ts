@@ -22,7 +22,9 @@ test.describe('agent', () => {
 			'repo_overview',
 			'read_file',
 			'render',
-			'run_code'
+			'run_code',
+			'delegate',
+			'draft_message'
 		]) {
 			await expect(page.getByText(tool, { exact: true })).toBeVisible();
 		}

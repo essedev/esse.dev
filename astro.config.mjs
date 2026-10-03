@@ -31,10 +31,14 @@ export default defineConfig({
 				"img-src 'self' data:",
 				"font-src 'self'",
 				"connect-src 'self' https://umami.essedev.it",
+				// Turnstile, per l'invio delle bozze dell'agente: script e iframe del widget.
+				'frame-src https://challenges.cloudflare.com',
 				"object-src 'none'",
 				"base-uri 'self'"
 			],
-			scriptDirective: { resources: ["'self'", 'https://umami.essedev.it'] }
+			scriptDirective: {
+				resources: ["'self'", 'https://umami.essedev.it', 'https://challenges.cloudflare.com']
+			}
 		}
 	},
 	vite: {

@@ -27,7 +27,10 @@ scelte in `docs/DECISIONS.md` #10. Gate verde: lint, check, build, unit, E2E.
   22.12; caricare il secret `OPENROUTER_API_KEY` (`wrangler secret put`), senza il
   quale l'agente non risponde, e `GITHUB_TOKEN` (fine-grained, sola lettura dei repo
   pubblici), senza il quale i tool sul codice hanno 60 richieste l'ora per IP condiviso;
-  poi merge su `main` con squash (vedi Aperte) e push.
+  per `draft_message`: Email Routing attivo su `esse.dev` con l'indirizzo di arrivo
+  verificato, i secret `MAIL_TO` e `TURNSTILE_SECRET` e la variabile di build
+  `PUBLIC_TURNSTILE_SITE_KEY` di un widget Turnstile vero (senza, vale la chiave di prova
+  che passa sempre); poi merge su `main` con squash (vedi Aperte) e push.
 
 ### M15 - Struttura e stile - In corso
 
@@ -58,7 +61,7 @@ la lista in ordine di importanza con la sola vetrina dei progetti. Resta:
 Una pagina del sito (`/it/agente`, una riga nella lista) è un agente vero, con tool,
 che mostra come lavora: ogni chiamata ai tool, modello, token e costo per risposta.
 Prende il posto dell'idea precedente (il sito ridisegnato dal vivo da un modello).
-Scelte in `docs/DECISIONS.md` #11 e #12.
+Scelte in `docs/DECISIONS.md` #11-#14.
 
 - Fatto (Ciclo 14): Durable Object per visitatore con pi-durable, `glm-5.3-flash` da
   OpenRouter, `search_site` e `read_page`, triage con Jev valutato su un set etichettato,
@@ -66,24 +69,19 @@ Scelte in `docs/DECISIONS.md` #11 e #12.
 - Fatto (Ciclo 15): `list_projects`, `show_page` (scheda da aprire) e i tool sui repo
   pubblici via API di GitHub (#13). Il repo del sito si legge dal ramo `main`: fino al
   merge l'agente vede il sito vecchio.
-- Da valutare insieme a `run_code`: `@cloudflare/computer` (clona i repo in un
-  workspace ed esegue JavaScript in un Dynamic Worker).
+- Fatto (Ciclo 16): i tool dimostrativi, uno per capacità, coi limiti nel codice:
+  `render` (barre, tabelle, linee del tempo), `run_code` (Code Mode in un Dynamic
+  Worker), `delegate` (2-3 sotto-agenti di pi-durable), `draft_message` (bozza che il
+  visitatore manda, dopo Turnstile). Scelte in #14.
 - Tool di sola lettura su dati già pubblici. Niente scritture, fetch di URL liberi,
-  repo privati, memoria tra visite.
-- Tool dimostrativi, uno per capacità dell'harness, ognuno coi limiti nel codice:
-  - `render(spec)`: grafici, tabelle, confronti disegnati dal client coi token del
-    sito; specifica dichiarativa, mai HTML (CSP).
-  - `run_code(code)`: code mode, JavaScript in un isolate usa e getta (Dynamic Workers,
-    piano Workers a pagamento), può chiamare solo gli altri tool, niente rete.
-  - `delegate(tasks[])`: 2-3 sotto-agenti in parallelo costruiti sopra il core (pi non
-    li ha per scelta), con tetto di agenti e token.
-  - `draft_message(text)`: messaggio a Simone che parte solo se chi visita lo approva
-    (gate umano), con Turnstile e limite per visitatore.
-- Ordine: base più auto-lettura (fatte), poi `render` e `run_code`, poi `delegate` e
-  `draft_message`. Scartati: un secondo modello da consultare, fetch libero, voce e
-  immagini.
-- Limiti: Turnstile (da fare); limite per visitatore e budget giornaliero ci sono già.
-  Prima di attivarlo in produzione, costo misurato su un campione e approvato da Simone.
+  repo privati, memoria tra visite. L'unico effetto fuori dal sito è l'email di
+  `draft_message`, e parte solo da un clic del visitatore.
+- Da fare: gli eventi dei sotto-agenti dal vivo nella pagina (oggi si vedono a lavoro
+  finito); `@cloudflare/computer` solo se servisse eseguire il codice dei repo.
+- Prima di attivarlo in produzione: costo misurato su un campione e approvato da Simone.
+  Misure in anteprima: una domanda semplice 0,05-0,1 centesimi, una con `run_code` circa
+  0,15, una con `delegate` circa 1,4 (budget di 5 centesimi al giorno per visitatore).
+  Scartati: un secondo modello da consultare, fetch libero, voce e immagini.
 - Deciso: l'agente lavora sui repo e risponde anche su Simone; modelli da OpenRouter
   (#11).
 

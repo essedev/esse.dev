@@ -14,6 +14,9 @@
 	// Dynamic Workers per `run_code` (piano Workers a pagamento): il codice del modello gira
 	// in un isolate usa e getta, senza rete.
 	"worker_loaders": [{ "binding": "LOADER" }],
+	// Le bozze di `draft_message` approvate dal visitatore: verso un indirizzo verificato
+	// dell'account (secret `MAIL_TO`), gratis con Email Routing attivo su esse.dev.
+	"send_email": [{ "name": "MAIL" }],
 	"durable_objects": {
 		"bindings": [
 			{ "name": "SiteAgent", "class_name": "SiteAgent" },

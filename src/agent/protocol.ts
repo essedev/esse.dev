@@ -29,7 +29,17 @@ export type PiClientMessage =
 	| { readonly type: 'abort'; readonly id?: string }
 	| { readonly type: 'reset'; readonly id?: string; readonly handoff?: string }
 	/** Ask for a fresh snapshot. */
-	| { readonly type: 'resync'; readonly id?: string };
+	| { readonly type: 'resync'; readonly id?: string }
+	/** Il visitatore approva e spedisce una bozza di `draft_message`, dopo Turnstile. */
+	| {
+			readonly type: 'send-draft';
+			readonly id?: string;
+			readonly draftId: string;
+			readonly subject: string;
+			readonly text: string;
+			readonly contact: string;
+			readonly turnstile: string;
+	  };
 
 /** Server → client. */
 export type PiServerMessage =
@@ -55,6 +65,14 @@ export type PiServerMessage =
 			readonly type: 'notice';
 			readonly text: string;
 			readonly reason: 'offtopic' | 'abuse' | 'budget';
+	  }
+	/** Le bozze già spedite (per id della chiamata), e l'esito di un invio. */
+	| { readonly type: 'drafts'; readonly sent: readonly string[] }
+	| {
+			readonly type: 'draft';
+			readonly draftId: string;
+			readonly status: 'sent' | 'error';
+			readonly message?: string;
 	  }
 	/** Quanto resta del budget di oggi, in dollari. */
 	| { readonly type: 'budget'; readonly remaining: number; readonly limit: number }

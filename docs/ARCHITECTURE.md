@@ -159,6 +159,12 @@ stessi sui due lati.
   sotto-agente. Il loro costo non è nella conversazione principale: lo scala il tool, una
   volta sola (`memo`). La pagina mostra per ogni figlio chiamate, token, costo e risposta
   (`delegate.ts`, `DelegateView.svelte`); gli eventi dei figli non arrivano dal vivo.
+- **`draft_message`:** il modello scrive solo una bozza; la pagina la mostra in una
+  scheda modificabile con Turnstile e il visitatore la manda. Il server (`sendDraft`)
+  controlla che la bozza sia una chiamata dell'agente in questa conversazione e non sia
+  già partita, verifica Turnstile, applica i tetti giornalieri (per visitatore nel
+  `SiteAgent`, per il sito nel `Ledger`) e spedisce con il binding `send_email` verso
+  l'indirizzo verificato in `MAIL_TO` (`draft.ts`, `DraftView.svelte`).
 - **Il catalogo** che la pagina mostra a conversazione vuota è quello che il server
   annuncia nel `hello`: un tool nuovo compare da solo, i gruppi in pagina lo ordinano.
 - **Triage e limiti:** ogni messaggio passa prima da Jev (`triage.ts`), che ferma fuori

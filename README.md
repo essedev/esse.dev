@@ -32,9 +32,9 @@ pnpm build        # static build + Worker in dist/
 pnpm preview      # build and serve with wrangler on :8787
 ```
 
-The agent needs `OPENROUTER_API_KEY`, and reads code on GitHub better with an optional
-`GITHUB_TOKEN`: copy `.dev.vars.example` to `.dev.vars` locally, `wrangler secret put` in
-production.
+The agent needs `OPENROUTER_API_KEY`, reads code on GitHub better with an optional
+`GITHUB_TOKEN`, and sends approved drafts with `TURNSTILE_SECRET` and `MAIL_TO`: copy
+`.dev.vars.example` to `.dev.vars` locally, `wrangler secret put` in production.
 
 Quality gate, run before every push:
 

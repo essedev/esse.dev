@@ -107,3 +107,20 @@ l'ora per IP e ricerca solo nei nomi dei file.
 client, e navigare chiuderebbe la conversazione mentre l'agente risponde.
 Scartati per ora: `@cloudflare/computer` (clona i repo, serve davvero solo per eseguire
 codice: si rivaluta con `run_code`), `open_page` che naviga da solo.
+
+## #14 - Tool dimostrativi: Code Mode in JavaScript, sotto-agenti di pi, invio solo umano
+
+**Status:** attiva (Ciclo 16)
+
+`render` riceve dati e mai HTML: la CSP blocca stili e script inline, e un HTML del
+modello andrebbe sanificato. `run_code` usa il Code Mode di Cloudflare in JavaScript:
+i Dynamic Workers accettano anche Python, ma Cloudflare stessa lo sconsiglia per codice
+generato al volo (avvio nell'ordine dei secondi contro millisecondi), e il Code Mode
+espone gli altri tool come API tipizzate solo in TypeScript. `delegate` segue lo schema
+dei sotto-agenti del README di pi-durable (conversazioni possedute dalla chiamata), con
+i soli tool di sola lettura. `draft_message` non spedisce: il modello scrive la bozza,
+il visitatore la corregge e la manda dopo Turnstile, e il server accetta solo bozze nate
+da una chiamata dell'agente nella stessa conversazione. Destinatario in un secret, perché
+il repo è pubblico.
+Scartati: Python per `run_code`, un invio deciso dal modello, un indirizzo di arrivo
+scritto in `wrangler.jsonc`.

@@ -1,6 +1,7 @@
 ---
 import { render } from 'astro:content';
 import { ArrowRight, ArrowUpRight, Check, Copy } from '@lucide/astro';
+import { TURNSTILE_TEST_SITE_KEY } from '../../../agent/draft';
 import AgentChat from '../../../components/agent/AgentChat.svelte';
 import CollectionBrowser from '../../../components/CollectionBrowser.svelte';
 import Page from '../../../components/Page.astro';
@@ -153,6 +154,7 @@ const ogSection = section === 'projects' ? 'projects' : section === 'articles' ?
 				<AgentChat
 					client:only="svelte"
 					locale={lang}
+					turnstileKey={import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? TURNSTILE_TEST_SITE_KEY}
 					labels={{
 						placeholder: t('agentPlaceholder'),
 						send: t('agentSend'),
@@ -176,7 +178,8 @@ const ogSection = section === 'projects' ? 'projects' : section === 'articles' ?
 							recent_commits: t('agentToolCommits'),
 							render: t('agentToolRender'),
 							run_code: t('agentToolRun'),
-							delegate: t('agentToolDelegate')
+							delegate: t('agentToolDelegate'),
+							draft_message: t('agentToolDraft')
 						},
 						toolGroups: [
 							{
@@ -187,7 +190,10 @@ const ogSection = section === 'projects' ? 'projects' : section === 'articles' ?
 								label: t('agentToolsCode'),
 								names: ['repo_overview', 'list_files', 'read_file', 'search_code', 'recent_commits']
 							},
-							{ label: t('agentToolsMore'), names: ['render', 'run_code', 'delegate'] }
+							{
+								label: t('agentToolsMore'),
+								names: ['render', 'run_code', 'delegate', 'draft_message']
+							}
 						],
 						kinds: {
 							project: site.sections.projects,
@@ -199,6 +205,12 @@ const ogSection = section === 'projects' ? 'projects' : section === 'articles' ?
 						open: t('agentOpen'),
 						subagents: t('agentSubagents'),
 						answer: t('agentAnswer'),
+						draft: t('agentDraft'),
+						draftSubject: t('agentDraftSubject'),
+						draftContact: t('agentDraftContact'),
+						draftSend: t('agentDraftSend'),
+						draftSending: t('agentDraftSending'),
+						draftSent: t('agentDraftSent'),
 						tryAsking: t('agentTry'),
 						suggestions: [t('agentAsk1'), t('agentAsk4'), t('agentAsk2'), t('agentAsk3')],
 						retry: t('agentRetry'),

@@ -101,6 +101,13 @@
 		"agentToolDelegate": "splits a broad question between 2 or 3 sub-agents in parallel",
 		"agentSubagents": "sub-agents in parallel",
 		"agentAnswer": "answer",
+		"agentToolDraft": "drafts a message to Simone that you send",
+		"agentDraft": "draft to Simone, you send it",
+		"agentDraftSubject": "subject",
+		"agentDraftContact": "your email or a contact, if you want a reply",
+		"agentDraftSend": "send to Simone",
+		"agentDraftSending": "sending…",
+		"agentDraftSent": "sent, thank you",
 		"agentOpen": "open",
 		"agentAsk4": "How does Portsage know which ports are taken? Show me the code"
 	},

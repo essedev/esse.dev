@@ -770,3 +770,27 @@ Secondo taglio di M17: da 2 a 9 tool, divisi in pagina tra "sul sito" e "sul cod
 - **Test:** 87 unit e 54 E2E.
 - **Prossimo passo:** `GITHUB_TOKEN` da creare; poi `render` e `run_code`, insieme alla
   valutazione di `@cloudflare/computer`.
+
+## Ciclo 16 - I tool dimostrativi dell'agente (2026-10-03)
+
+Terzo taglio di M17 (`3bdf3ee` .. commit di `draft_message`): da 9 a 13 tool, con un
+gruppo "Capacità" in pagina.
+
+- **`render`:** barre, tabelle e linee del tempo dai dati, mai HTML; stessa validazione
+  sul server e nel browser, barre in SVG per la CSP.
+- **`run_code`:** Code Mode di Cloudflare (`@cloudflare/codemode`) in un Dynamic Worker
+  senza rete; i tool di sola lettura dentro il sandbox, coi tipi generati dagli schemi.
+  JavaScript e non Python, scelto con Simone (#14). Prova: 12 chiamate in parallelo sui 6
+  repo in un'esecuzione, poi una tabella con `render`, circa 0,14 centesimi.
+- **`delegate`:** 2-3 sotto-agenti come conversazioni di pi-durable possedute dalla
+  chiamata, coi soli tool di sola lettura; il loro costo lo scala il tool. Prova sul
+  confronto Relay, Portsage, Templator: 3 figli da 6-7 chiamate, circa 1,4 centesimi e
+  50 s.
+- **`draft_message`:** bozza modificabile, invio dal visitatore dopo Turnstile, tetti di
+  3 al giorno per visitatore e 30 per il sito, email via `send_email` verso `MAIL_TO`.
+  Una bozza inventata sul socket viene rifiutata.
+- **Bug trovati alle prove:** una prop Svelte chiamata `state` rompeva `$state` a runtime
+  senza errori di check; i titoli Markdown nelle risposte uscivano enormi.
+- **Test:** 99 unit e 54 E2E.
+- **Prossimo passo:** messa a punto dei secret e di Email Routing per la produzione (in
+  ROADMAP), eventi dei sotto-agenti dal vivo.

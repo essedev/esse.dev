@@ -9,3 +9,9 @@ OPENROUTER_API_KEY=
 # Tool sui repo (facoltativo): token GitHub fine-grained, "Public repositories (read-only)",
 # senza permessi. Senza token: 60 richieste l'ora per IP e search_code solo sui nomi dei file.
 GITHUB_TOKEN=
+
+# draft_message: Turnstile (in locale la chiave di prova di Cloudflare, che passa sempre;
+# in produzione quella del widget, con PUBLIC_TURNSTILE_SITE_KEY alla build) e l'indirizzo
+# verificato su cui arrivano i messaggi.
+TURNSTILE_SECRET=1x0000000000000000000000000000000AA
+MAIL_TO=

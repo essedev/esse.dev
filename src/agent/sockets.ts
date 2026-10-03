@@ -11,12 +11,19 @@ import type { PiClientMessage, PiServerMessage } from './protocol';
 /**
  * Agganci del sito attorno all'invio (non c'erano nell'esempio): `admit` decide se il
  * messaggio arriva al modello (triage e budget) e manda al client cosa ha deciso;
- * `settled` riceve la ricevuta per addebitare il costo reale a risposta finita.
+ * `settled` riceve la ricevuta per addebitare il costo reale a risposta finita;
+ * `sendDraft` spedisce una bozza di `draft_message` che il visitatore ha approvato.
  */
 export interface SubmitHooks {
 	admit(text: string, reply: (message: PiServerMessage) => void): Promise<boolean>;
 	settled(session: PiSessionId, receipt: PiReceipt): void;
 	status(reply: (message: PiServerMessage) => void): Promise<void>;
+	/** L'invio di una bozza di `draft_message` approvata dal visitatore. */
+	sendDraft(
+		session: PiSessionId,
+		message: Record<string, unknown>,
+		reply: (message: PiServerMessage) => void
+	): Promise<void>;
 }
 
 const SESSION_TAG_PREFIX = 'pi-session:';
@@ -195,6 +202,12 @@ export class PiSessionSockets {
 				return await handle.abort();
 			case 'reset':
 				await handle.reset(message.handoff);
+				return null;
+			case 'send-draft':
+				if (!this.#hooks) throw new Error('Drafts are not enabled');
+				await this.#hooks.sendDraft(session, message as unknown as Record<string, unknown>, (out) =>
+					send(connection, out)
+				);
 				return null;
 			case 'resync':
 				await this.#watch(connection, session);

@@ -6,6 +6,7 @@
 	import { parseRender, type RenderView as View } from '../../agent/render';
 	import type { ChildReport } from '../../agent/delegate';
 	import DelegateView from './DelegateView.svelte';
+	import DraftView from './DraftView.svelte';
 	import RenderView from './RenderView.svelte';
 	import type { ServerMessage, TranscriptMessage, TranscriptPart } from '../../agent/protocol';
 	import type { Triage } from '../../agent/triage';
@@ -39,6 +40,12 @@
 		open: string;
 		subagents: string;
 		answer: string;
+		draft: string;
+		draftSubject: string;
+		draftContact: string;
+		draftSend: string;
+		draftSending: string;
+		draftSent: string;
 		tryAsking: string;
 		suggestions: string[];
 		retry: string;
@@ -50,7 +57,8 @@
 		intent: Record<Triage['intent'], string>;
 		weight: Record<Triage['weight'], string>;
 	};
-	let { labels, locale }: { labels: Labels; locale: string } = $props();
+	let { labels, locale, turnstileKey }: { labels: Labels; locale: string; turnstileKey: string } =
+		$props();
 
 	const VISITOR_KEY = 'agent-visitor';
 
@@ -64,6 +72,10 @@
 	let locals: Local[] = $state([]);
 	let budget: { remaining: number; limit: number } | null = $state(null);
 	let catalog: { name: string; description: string }[] = $state([]);
+	/** Lo stato degli invii delle bozze, per id della chiamata a `draft_message`. */
+	let drafts: Record<string, { status: 'sending' | 'sent' | 'error'; message?: string }> = $state(
+		{}
+	);
 	let client: AgentClient | undefined;
 
 	function visitorId(): string {
@@ -121,6 +133,18 @@
 					break;
 				case 'notice':
 					locals = [...locals, { text: message.text, reason: message.reason, after: shown.length }];
+					break;
+				case 'drafts':
+					drafts = {
+						...drafts,
+						...Object.fromEntries(message.sent.map((id) => [id, { status: 'sent' as const }]))
+					};
+					break;
+				case 'draft':
+					drafts = {
+						...drafts,
+						[message.draftId]: { status: message.status, message: message.message }
+					};
 					break;
 				case 'budget':
 					budget = { remaining: message.remaining, limit: message.limit };
@@ -247,6 +271,26 @@
 			?.split('\n')
 			.map((l) => l.trim())
 			.find((l) => l && !/^async\s*\(.*\)\s*=>\s*\{$/.test(l));
+
+	/** La bozza di `draft_message` dagli argomenti, se il server l'ha accettata. */
+	function drafted(
+		args: unknown,
+		part: ToolResult | undefined
+	): { subject: string; text: string } | null {
+		const a = args as { subject?: unknown; text?: unknown } | null;
+		if (!part || part.error || typeof a?.subject !== 'string' || typeof a.text !== 'string') {
+			return null;
+		}
+		return { subject: a.subject, text: a.text };
+	}
+
+	function sendDraft(
+		draftId: string,
+		fields: { subject: string; text: string; contact: string; turnstile: string }
+	) {
+		drafts = { ...drafts, [draftId]: { status: 'sending' } };
+		send({ type: 'send-draft', draftId, ...fields });
+	}
 
 	/** I compiti di `delegate` dagli argomenti, e i resoconti dal risultato quando c'è. */
 	function delegated(
@@ -393,6 +437,23 @@
 								</summary>
 								<p class="mt-2 font-mono text-xs whitespace-pre-wrap text-subtle">{part.text}</p>
 							</details>
+						{:else if part.type === 'tool-call' && part.name === 'draft_message' && drafted(part.arguments, results.get(part.id))}
+							{@const draft = drafted(part.arguments, results.get(part.id))!}
+							<DraftView
+								subject={draft.subject}
+								text={draft.text}
+								delivery={drafts[part.id]}
+								siteKey={turnstileKey}
+								labels={{
+									draft: labels.draft,
+									subject: labels.draftSubject,
+									contact: labels.draftContact,
+									send: labels.draftSend,
+									sending: labels.draftSending,
+									sent: labels.draftSent
+								}}
+								onsend={(fields) => sendDraft(part.id, fields)}
+							/>
 						{:else if part.type === 'tool-call' && part.name === 'delegate' && delegated(part.arguments, results.get(part.id))}
 							{@const work = delegated(part.arguments, results.get(part.id))!}
 							<DelegateView
