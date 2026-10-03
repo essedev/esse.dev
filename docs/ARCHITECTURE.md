@@ -19,10 +19,12 @@ statici. Il Worker riceve solo ciò che non è un file:
 - il catch-all `src/pages/[...path].astro`, che per un URL con lingua, route o slug
   sbagliati fa un solo redirect al canonico (`resolveRedirect` in `src/lib/i18n.ts`)
   e altrimenti risponde 404 con la pagina localizzata;
-- `/agents/*`, il WebSocket dell'agente (sotto).
+- `/agents/site-agent/*`, il WebSocket dell'agente (sotto).
 
-L'entry del Worker è `src/worker.ts`: manda `/agents/*` a `routeAgentRequest` e tutto il
-resto all'handler di Astro, ed esporta il Durable Object dell'agente.
+L'entry del Worker è `src/worker.ts`: manda solo `/agents/site-agent/*` a
+`routeAgentRequest` e tutto il resto all'handler di Astro, ed esporta i due Durable Object
+(`SiteAgent` e `Ledger`). Il filtro sul path serve perché `routeAgentRequest` instraderebbe
+qualunque classe esportata, e `Ledger` deve restare raggiungibile solo via RPC.
 
 Il prerender gira in Node (`prerenderEnvironment: 'node'`) perché le OG usano resvg,
 che è nativo. Gli E2E girano contro la build servita da `wrangler dev`, non contro il
@@ -91,17 +93,36 @@ riflettono input utente.
 `/it/agente` è una pagina statica con un'isola Svelte (`AgentChat.svelte`) che apre un
 WebSocket verso un Durable Object per visitatore (`SiteAgent`, `src/agent/`). Dentro gira
 pi-durable tramite `PiHarness` dell'Agents SDK: conversazione nel SQLite dell'oggetto,
-ripresa dopo una sospensione, tool come estensioni di pi. I modelli passano dal binding
-`AI` (Workers AI e AI Gateway): nessuna chiave nel Worker. Il protocollo del socket e il
+ripresa dopo una sospensione, tool come estensioni di pi. Il protocollo del socket e il
 riduttore degli eventi (`sockets.ts`, `view.ts`) vengono dall'esempio ufficiale e sono gli
-stessi sui due lati. I tool leggono `/agent/index.json`, un indice del sito generato alla
-build dalle stesse collection delle pagine, dagli asset: l'agente vede solo ciò che il
-sito pubblica. Scelte in `docs/DECISIONS.md` #11.
+stessi sui due lati.
+
+- **Modelli:** da OpenRouter (`src/agent/models.ts`), `glm-5.3-flash` su una lista
+  ordinata di provider veloci con passaggio automatico al successivo, timeout sullo stream
+  senza token e nuovi tentativi di pi. Chiave `OPENROUTER_API_KEY` come secret del Worker. Il
+  binding `AI` resta solo come trasporto alternativo di Jev. Scelte in
+  `docs/DECISIONS.md` #11.
+- **Tool:** `search_site` e `read_page` leggono `/agent/index.json`, un indice del sito
+  generato alla build dalle stesse collection delle pagine e letto dagli asset: l'agente
+  vede solo ciò che il sito pubblica.
+- **Triage e limiti:** ogni messaggio passa prima da Jev (`triage.ts`), che ferma fuori
+  tema e abuso e decide la lingua della risposta; la spesa si scala in costo reale per
+  visitatore (nel `SiteAgent`) e per tutto il sito (Durable Object `Ledger`), con le soglie
+  in `budget.ts`. Se Jev non risponde il messaggio passa e vale il tetto. Le soglie si
+  verificano con `pnpm eval:jev` su un set etichettato (`tests/eval/jev-triage.json`).
+  Scelte in `docs/DECISIONS.md` #12.
+- **Trascrizione:** Markdown passato da un renderer che sanifica (`markdown.ts`),
+  ragionamento chiuso, verdetto di Jev, token, costo e budget residuo per ogni risposta.
+
+Il codice del Worker ha un suo `tsconfig.worker.json`: i tipi del runtime Cloudflare
+(`worker-configuration.d.ts`, generati da `wrangler types`) si scontrano con quelli del DOM.
 
 ## Boundary
 
 Pagine sottili -> `src/lib/content.ts` (dati) -> schemi delle collection
 (validazione) -> componenti (UI). La logica pura (i18n, SEO, filtri delle liste,
 metriche di lettura, vetrina, correlati, layout OG) è in moduli di `src/lib/` senza
-dipendenze da Astro, testabili con vitest in Node. Le isole Svelte ricevono dati già
+dipendenze da Astro, testabili con vitest in Node. Lo stesso per l'agente: la logica pura
+(budget, triage, indice del sito, trascrizione) sta in moduli di `src/agent/` separati dal
+Durable Object. Le isole Svelte ricevono dati già
 serializzati (`ListItem` in `src/lib/listing.ts`) e non leggono contenuti.

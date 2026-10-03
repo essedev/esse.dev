@@ -711,3 +711,34 @@ Giri brevi guardando il sito, ogni correzione di Simone trasformata in regola ne
   pi-agent-core 1.x, isola Svelte), al posto dell'idea del sito ridisegnato dal vivo.
   Scelte in `docs/DECISIONS.md` #11.
 - **Test:** 58 unit e 50 E2E.
+
+## Ciclo 14 - L'agente del sito, prima versione (2026-10-03)
+
+Primo taglio di M17 (`83ddb42` .. `10ef143`): `/it/agente` (e `/en/agent`) è una riga
+della lista e una pagina statica con un'isola Svelte che apre un WebSocket verso un
+Durable Object per visitatore.
+
+- **Base:** `SiteAgent` ospita pi-durable con `PiHarness` dell'Agents SDK; conversazione
+  nel SQLite dell'oggetto, ripresa dopo una sospensione. Tool `search_site` e
+  `read_page` sull'indice `/agent/index.json` generato alla build. Protocollo del socket e
+  riduttore degli eventi adattati dall'esempio ufficiale (MIT). Il codice del Worker ha
+  un suo tsconfig: i tipi del runtime Cloudflare si scontrano con quelli del DOM.
+- **Modelli:** partito sul binding `AI` (Workers AI), passato a `glm-5.3-flash` da
+  OpenRouter coi provider più veloci in ordine: la stessa domanda con tre tool da circa
+  40 s a circa 7. Timeout di 30 s sullo stream, nuovi tentativi di pi, avviso e "riprova"
+  dopo un errore finale (DECISIONS #11).
+- **Triage e spesa:** ogni messaggio passa prima da Jev, che ferma fuori tema e abuso e
+  sceglie la lingua; limite in costo reale per visitatore e per il sito (`Ledger`).
+  Jev è passato da Workers AI (servivano crediti AI Gateway) a TypeSafe diretto e infine a
+  OpenRouter con la stessa chiave del modello; riceve i titoli del sito come
+  `site_topics`, senza i quali leggeva "Relay e Portsage" come fuori tema (DECISIONS #12).
+- **Valutazione di Jev:** 54 messaggi etichettati e `pnpm eval:jev` (chiamate vere, fuori
+  da `test:ci`). La prima prova lasciava passare 4 messaggi su 19 da fermare; con le
+  soglie sulla massa fuori tema più abuso il risultato è 53 su 54, 0 domande legittime
+  fermate.
+- **Trascrizione:** Markdown sanificato, ragionamento chiuso, verdetto di Jev, token, costo
+  e budget residuo per risposta.
+- **Test:** 73 unit e 52 E2E (gli E2E dell'agente aprono la sessione ma non mandano
+  messaggi, che chiamerebbero un modello vero).
+- **Prossimo passo:** i tool che restano in M17 (`list_projects`, repo pubblici,
+  `open_page`, poi i dimostrativi) e Turnstile.

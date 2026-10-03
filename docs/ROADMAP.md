@@ -2,7 +2,7 @@
 
 Stato corrente del progetto. Milestone reali, non wishlist. Aggiornata insieme al codice.
 
-Ultimo aggiornamento: 2026-10-03 (piano dell'agente in M17)
+Ultimo aggiornamento: 2026-10-03 (prima versione dell'agente, M17 in corso)
 
 ## Contesto
 
@@ -24,7 +24,8 @@ scelte in `docs/DECISIONS.md` #10. Gate verde: lint, check, build, unit, E2E.
 
 - Per andare online: controllare nelle impostazioni di Cloudflare Workers Builds che
   il comando di build sia `pnpm build`, il deploy `npx wrangler deploy` e Node almeno
-  22.12; poi merge su `main` con squash (vedi Aperte) e push.
+  22.12; caricare il secret `OPENROUTER_API_KEY` (`wrangler secret put`), senza il
+  quale l'agente non risponde; poi merge su `main` con squash (vedi Aperte) e push.
 
 ### M15 - Struttura e stile - In corso
 
@@ -50,31 +51,22 @@ la lista in ordine di importanza con la sola vetrina dei progetti. Resta:
   screenshot veri dove esistono. Tag ripuliti.
 - Skill che propone le voci nuove o aggiornate dai repo; propone, non pubblica.
 
-### M17 - Agente - Da fare
+### M17 - Agente - In corso
 
 Una pagina del sito (`/it/agente`, una riga nella lista) è un agente vero, con tool,
 che mostra come lavora: ogni chiamata ai tool, modello, token e costo per risposta.
 Prende il posto dell'idea precedente (il sito ridisegnato dal vivo da un modello).
-Scelte in `docs/DECISIONS.md` #11.
+Scelte in `docs/DECISIONS.md` #11 e #12.
 
-- Fatto (prova): pagina `/it/agente` con isola Svelte, WebSocket verso un Durable
-  Object per visitatore con pi-durable dentro (`PiHarness`), modelli dal binding `AI`,
-  tool `search_site` sull'indice del sito. Due domande vere: il modello chiama il tool,
-  risponde con i path giusti, lo streaming arriva.
-- Fatto dopo la prova: `glm-5.3-flash` da OpenRouter sui provider più veloci (una domanda
-  con quattro tool in circa 7 s, contro i 40 di Workers AI; circa 0,08 centesimi);
-  `read_page`; Markdown sicuro, ragionamento chiuso, token e costo per risposta, avviso
-  di nuovo tentativo e "riprova" dopo un errore. Triage con Jev (via OpenRouter) e limite
-  in costo reale (`docs/DECISIONS.md` #12).
-- Ripresa dai guasti, dal basso: OpenRouter cambia provider nella stessa richiesta; pi
-  riprova la chiamata (3 volte, 1-2-4 s; timeout di 30 s senza token); il Durable Object
-  riprende il lavoro dopo una sospensione.
+- Fatto (Ciclo 14): Durable Object per visitatore con pi-durable, `glm-5.3-flash` da
+  OpenRouter, `search_site` e `read_page`, triage con Jev valutato su un set etichettato,
+  limite in costo reale per visitatore e per il sito, trascrizione con token e costo.
 - Da valutare: `@cloudflare/computer` (clona i repo in un workspace ed esegue JavaScript
   in un Dynamic Worker) al posto dei tool sull'API di GitHub, unito a `run_code`.
 - Tool di sola lettura su dati già pubblici. Niente scritture, fetch di URL liberi,
   repo privati, memoria tra visite.
   - Sito, da un indice JSON generato a build: `search_site`, `list_projects` (filtri
-    del registro), `read_page(path)`.
+    del registro), `read_page(path)`. Fatti `search_site` e `read_page`.
   - Repo pubblici: `repo_overview`, `list_files`, `read_file` (righe limitate),
     `search_code`, `recent_activity`. Ammessi solo i `repo` dei progetti pubblicati
     più il repo del sito (l'agente legge le proprie definizioni e il proprio prompt);
@@ -93,9 +85,10 @@ Scelte in `docs/DECISIONS.md` #11.
 - Ordine: base più auto-lettura, poi `render` e `run_code`, poi `delegate` e
   `draft_message`. Scartati: un secondo modello da consultare, fetch libero, voce e
   immagini.
-- Limiti: Turnstile, limite per visitatore, budget giornaliero che spegne l'agente,
-  costo misurato su un campione e approvato da Simone prima di attivarlo.
-- Deciso: l'agente lavora sui repo e risponde anche su Simone; modelli da AI Gateway.
+- Limiti: Turnstile (da fare); limite per visitatore e budget giornaliero ci sono già.
+  Prima di attivarlo in produzione, costo misurato su un campione e approvato da Simone.
+- Deciso: l'agente lavora sui repo e risponde anche su Simone; modelli da OpenRouter
+  (#11).
 
 ## Aperte
 
