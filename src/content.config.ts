@@ -224,6 +224,7 @@ const site = defineCollection({
 					agentToolCode: text,
 					agentToolCommits: text,
 					agentToolRender: text,
+					agentToolRun: text,
 					agentOpen: text,
 					agentAsk4: text,
 					prev: text,

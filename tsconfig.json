@@ -10,6 +10,7 @@
 		"src/agent/site-agent.ts",
 		"src/agent/ledger.ts",
 		"src/agent/sockets.ts",
+		"src/agent/run-code.ts",
 		"worker-configuration.d.ts"
 	]
 }

@@ -11,6 +11,9 @@
 	// Workers AI, oggi solo per il trasporto alternativo di Jev (`JEV_TRANSPORT`): i modelli
 	// dell'agente passano da OpenRouter. In dev il binding è remoto (account Cloudflare).
 	"ai": { "binding": "AI", "remote": true },
+	// Dynamic Workers per `run_code` (piano Workers a pagamento): il codice del modello gira
+	// in un isolate usa e getta, senza rete.
+	"worker_loaders": [{ "binding": "LOADER" }],
 	"durable_objects": {
 		"bindings": [
 			{ "name": "SiteAgent", "class_name": "SiteAgent" },

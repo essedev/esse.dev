@@ -147,6 +147,12 @@ stessi sui due lati.
   mai HTML; la stessa validazione (`render.ts`) gira nel Durable Object, che rimanda
   l'errore al modello, e nel browser, che disegna coi token del sito (le barre sono SVG:
   la CSP blocca gli stili inline).
+- **`run_code`:** il Code Mode di Cloudflare (`@cloudflare/codemode`, `run-code.ts`). Il
+  modello scrive una funzione JavaScript che chiama i tool di sola lettura come
+  `codemode.nome()`, con le dichiarazioni TypeScript generate dagli schemi nella
+  descrizione del tool. Gira in un Dynamic Worker (binding `LOADER`, piano a pagamento)
+  senza rete né ambiente, con tetti su tempo, chiamate e dimensione del risultato; ogni
+  chiamata passa dalla stessa validazione e dallo stesso `execute` dei tool normali.
 - **Il catalogo** che la pagina mostra a conversazione vuota è quello che il server
   annuncia nel `hello`: un tool nuovo compare da solo, i gruppi in pagina lo ordinano.
 - **Triage e limiti:** ogni messaggio passa prima da Jev (`triage.ts`), che ferma fuori

@@ -25,6 +25,7 @@
 		"@astrojs/cloudflare": "^14.3.3",
 		"@astrojs/rss": "^4.0.19",
 		"@astrojs/svelte": "^9.0.1",
+		"@cloudflare/codemode": "^0.5.3",
 		"@earendil-works/pi-ai": "^1.0.1",
 		"@earendil-works/pi-durable": "^1.0.1",
 		"@lucide/astro": "^1.51.0",

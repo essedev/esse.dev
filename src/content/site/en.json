@@ -97,6 +97,7 @@
 		"agentToolCode": "searches the code of a repo",
 		"agentToolCommits": "the latest commits of a repo",
 		"agentToolRender": "draws bars, tables and timelines",
+		"agentToolRun": "writes and runs JavaScript that calls the other tools, in a sandbox with no network",
 		"agentOpen": "open",
 		"agentAsk4": "How does Portsage know which ports are taken? Show me the code"
 	},

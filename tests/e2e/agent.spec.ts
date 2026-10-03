@@ -15,7 +15,15 @@ test.describe('agent', () => {
 		await page.goto('/en/agent');
 		await page.getByRole('button', { name: 'new conversation' }).click();
 		await expect(page.getByText('search_site')).toBeVisible({ timeout: 15_000 });
-		for (const tool of ['read_page', 'list_projects', 'show_page', 'repo_overview', 'read_file']) {
+		for (const tool of [
+			'read_page',
+			'list_projects',
+			'show_page',
+			'repo_overview',
+			'read_file',
+			'render',
+			'run_code'
+		]) {
 			await expect(page.getByText(tool, { exact: true })).toBeVisible();
 		}
 		await expect(page.getByRole('heading', { name: 'On the code' })).toBeVisible();

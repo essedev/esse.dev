@@ -174,7 +174,8 @@ const ogSection = section === 'projects' ? 'projects' : section === 'articles' ?
 							read_file: t('agentToolFile'),
 							search_code: t('agentToolCode'),
 							recent_commits: t('agentToolCommits'),
-							render: t('agentToolRender')
+							render: t('agentToolRender'),
+							run_code: t('agentToolRun')
 						},
 						toolGroups: [
 							{
@@ -185,7 +186,7 @@ const ogSection = section === 'projects' ? 'projects' : section === 'articles' ?
 								label: t('agentToolsCode'),
 								names: ['repo_overview', 'list_files', 'read_file', 'search_code', 'recent_commits']
 							},
-							{ label: t('agentToolsMore'), names: ['render'] }
+							{ label: t('agentToolsMore'), names: ['render', 'run_code'] }
 						],
 						kinds: {
 							project: site.sections.projects,

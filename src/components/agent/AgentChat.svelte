@@ -231,6 +231,19 @@
 	const resultText = (part: ToolResult) =>
 		part.content.map((c) => (c.type === 'text' ? c.text : '[image]')).join('\n');
 
+	/** Il codice di `run_code`, da mostrare come codice e non come stringa JSON. */
+	const code = (args: unknown) =>
+		args && typeof args === 'object' && typeof (args as { code?: unknown }).code === 'string'
+			? (args as { code: string }).code
+			: undefined;
+
+	/** Nella riga chiusa, la prima riga che dice qualcosa: non la firma della funzione. */
+	const codeLine = (args: unknown) =>
+		code(args)
+			?.split('\n')
+			.map((l) => l.trim())
+			.find((l) => l && !/^async\s*\(.*\)\s*=>\s*\{$/.test(l));
+
 	/** La vista di `render`, dagli argomenti, solo se il server l'ha accettata. */
 	function drawn(args: unknown, part: ToolResult | undefined): View | null {
 		if (!part || part.error) return null;
@@ -395,15 +408,15 @@
 										data-status={result ? (result.error ? 'archived' : 'completed') : 'in-progress'}
 									></span>
 									<span class="text-fg">{part.name}</span>
-									<span class="truncate">{JSON.stringify(part.arguments)}</span>
+									<span class="truncate"
+										>{codeLine(part.arguments) ?? JSON.stringify(part.arguments)}</span
+									>
 								</summary>
 								<div class="flex flex-col gap-2 px-3 pb-3 font-mono text-xs">
 									<p class="label">{labels.toolCall}</p>
-									<pre class="overflow-x-auto whitespace-pre-wrap text-muted">{JSON.stringify(
-											part.arguments,
-											null,
-											2
-										)}</pre>
+									<pre class="overflow-x-auto whitespace-pre-wrap text-muted">{code(
+											part.arguments
+										) ?? JSON.stringify(part.arguments, null, 2)}</pre>
 									{#if result}
 										<p class="label">{labels.result}</p>
 										<pre class="max-h-64 overflow-auto whitespace-pre-wrap text-muted">{resultText(

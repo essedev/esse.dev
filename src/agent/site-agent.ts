@@ -9,6 +9,7 @@ import type { PiServerMessage } from './protocol';
 import { GitHubReader } from './github';
 import { MODEL, siteModels } from './models';
 import { parseRender, RENDER_LIMITS } from './render';
+import { RUN_LIMITS, runCode, sandboxTypes } from './run-code';
 import { listProjects, publicRepos, searchSite, type SiteDoc } from './site-index';
 import { PiSessionSockets } from './sockets';
 import {
@@ -156,6 +157,13 @@ const RenderArgs = Type.Object({
 	)
 });
 
+const RunCode = Type.Object({
+	code: Type.String({
+		description:
+			'An async arrow function, e.g. async () => { const hits = await codemode.search_site({ query: "swift", lang: "en" }); return hits.length; }'
+	})
+});
+
 const json = (value: unknown) => ({
 	content: [{ type: 'text' as const, text: JSON.stringify(value) }]
 });
@@ -264,6 +272,24 @@ export class SiteAgent extends DurableObject<Env> {
 		}
 	};
 
+	/**
+	 * `run_code` con i tool di sola lettura dentro il sandbox. La descrizione porta le loro
+	 * dichiarazioni TypeScript, generate dagli schemi: il modello scrive codice tipizzato.
+	 */
+	#runTool(tools: readonly ToolRegistration[]): ToolRegistration<typeof RunCode> {
+		return {
+			name: 'run_code',
+			description: `Run JavaScript in an isolated sandbox without network, to combine many tool calls or compute over their results in one step (counts, joins, comparisons across repos). Call the tools as async functions of \`codemode\`; they return parsed JSON. Return the value you need, console.log for notes. At most ${RUN_LIMITS.calls} tool calls and ${RUN_LIMITS.timeoutMs / 1000} s per run.\n\n${sandboxTypes(tools)}`,
+			parameters: RunCode,
+			// Rieseguirlo rifà solo letture.
+			replay: 'safe',
+			execute: async ({ code }) => {
+				const outcome = await runCode(this.env.LOADER, tools, code);
+				return { ...json(outcome), isError: Boolean(outcome.error) };
+			}
+		};
+	}
+
 	/** I tool sui repo pubblici, con l'elenco dei repo ammessi nei parametri. */
 	#repoTools(repos: readonly string[]): ToolRegistration[] {
 		const schemas = repoSchemas(repos);
@@ -327,6 +353,13 @@ export class SiteAgent extends DurableObject<Env> {
 	readonly harness = new PiHarness({
 		harness: async ({ storage, context }) => {
 			const repos = publicRepos(await this.siteIndex(), [SITE_REPO]);
+			const repoTools = this.#repoTools(repos);
+			const readOnly = [
+				this.searchTool,
+				this.readTool,
+				this.listTool,
+				...repoTools
+			] as ToolRegistration[];
 			this.registry.install({
 				name: 'site',
 				sections: [
@@ -346,7 +379,8 @@ export class SiteAgent extends DurableObject<Env> {
 					this.listTool,
 					this.showTool,
 					this.renderTool,
-					...this.#repoTools(repos)
+					...repoTools,
+					this.#runTool(readOnly)
 				]
 			});
 			return Harness.open(
