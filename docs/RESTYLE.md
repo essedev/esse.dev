@@ -75,7 +75,7 @@ deterministico non ci arriva su soggetti organici in prospettiva: il dettaglio f
 (es. il chip sul cappello) si perde e va reiniettato a mano. La pixel art vera si
 disegna nativa su griglia, cioè è lavoro da pixel artist, fuori dal perimetro del
 restyle. Gli script sperimentali e i concept generati sono archiviati in
-`docs/archive/pixel-art/` (`scripts/` e `concepts/`): si leggono, non si aggiornano.
+sul branch `restyle/laboratory` in `docs/archive/pixel-art/` (`scripts/` e `concepts/`): tolti dagli altri branch per peso.
 
 Cosa era previsto, per memoria: la firma visiva sarebbe stata pixel art prodotta con
 `idkcraft-studio` (base AI ad alta risoluzione, poi downscale + quantizzazione CIELAB

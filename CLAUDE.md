@@ -57,7 +57,9 @@ deploy avviene via Cloudflare Workers Builds al push, il gate di qualità è loc
 
 ## Design system
 
-Branch `restyle/base`: look di `main` (Geist, fondo a gradiente blu-nero, card e
+Sul branch `astro` il sito si sta rifacendo in Astro a parità di look (M14 in
+`docs/ROADMAP.md`): finché la migrazione non chiude, quanto segue descrive la versione
+SvelteKit. Branch `restyle/base`: look di `main` (Geist, fondo a gradiente blu-nero, card e
 pillole) con i contenuti e lo schema del branch `restyle/laboratory` (progetti
 ricurati, `eyebrow` nel welcome, voce). Il tentativo "Laboratorio" con telaio, keycap
 e mono resta intero su `restyle/laboratory`, non mergiato: vision e motivi dello stop
