@@ -101,12 +101,15 @@ transition) sembrava un sito che carica una pagina nuova e rallentava j k e h/l.
 
 Su schermo largo le due colonne sono due card dentro una finestra arrotondata, staccata
 dai bordi. Su mobile la finestra resta, con il solo riquadro del contenuto. La finestra
-poggia su uno sfondo con bagliori lavanda, viola e verde e una griglia fine (`wallpaper`),
-che si vede attraverso la cornice, la lista (48%), il contenuto (55%) e il campo
-dell'agente, di vetro (utility `glass`: sfocatura forte, saturazione alta, nessun velo bianco (il bianco
-ingrigisce) e un bordo che prende luce; valori in `--glass-*` e `--wall`). La toolbar resta piatta. `surface` e
+poggia su uno sfondo (`wallpaper`): un velo continuo in diagonale da lavanda a viola
+profondo che sfuma nel nero, su una griglia fine. Niente bagliori separati, che attraverso
+il vetro diventavano macchie di colore, e niente verde, che resta agli stati vivi. Si vede
+attraverso la cornice, la lista (48%), il contenuto (55%) e il campo dell'agente, di vetro
+(utility `glass`: sfocatura forte, saturazione moderata, nessun velo bianco, che
+ingrigisce, e un bordo che prende luce appena; valori in `--glass-*` e `--wall`). La
+toolbar resta piatta. `surface` e
 `hover` sono veli chiari e non grigi pieni, così i controlli sul vetro schiariscono
-invece di fare da buco; `subtle` è tarato sul vetro dove il bagliore è più forte (4,5:1).
+invece di fare da buco; `subtle` è tarato sul vetro dove il velo dietro è più chiaro (5,3:1).
 Viene dal concept C (`docs/concepts/concept-c-vetro.html`, variante B;
 la rifrazione della C funziona solo in Chromium). Lo stile viene
 dal concept B (`docs/concepts/concept-b-stile.html`): accento lavanda su nero appena
@@ -140,7 +143,7 @@ che le contiene e una quando esce.
 - **Token** (`@theme` in `src/styles/global.css`): `desk` e `frame` dietro e attorno alla
   finestra; superfici `bg`, `panel`, `surface`, `hover`; `line`; testo `fg`, `text`,
   `muted`, `subtle` (il minimo per il testo, 4,5:1 misurato sul vetro); `accent` e `on-accent`; `live` per
-  gli stati vivi; `glow`, il viola del bagliore dietro la finestra; `danger`; `status-*` per lo stato dei progetti; raggi `--radius-control`,
+  gli stati vivi; `glow`, il viola profondo del velo dietro la finestra; `danger`; `status-*` per lo stato dei progetti; raggi `--radius-control`,
   `--radius-panel`, `--radius-card`, `--radius-window`. Classi condivise: `.led`, `.kbd`,
   `.label`, `.chip`, `.ulink`, `.caret`.
 - **Misura**: nessuna larghezza massima sul contenuto, la danno la colonna e la taglia
