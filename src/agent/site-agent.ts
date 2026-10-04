@@ -9,7 +9,7 @@ import {
 import { PiHarness, ROOT_SESSION, type PiReceipt, type PiSessionId } from 'agents/harness/pi';
 import { Lifecycle } from 'agents/lifecycle';
 import { WebSockets } from 'agents/websockets';
-import { costOf, remaining, today, VISITOR_DAILY_USD, type Spend } from './budget';
+import { costOf, ipFingerprint, remaining, today, VISITOR_DAILY_USD, type Spend } from './budget';
 import type { PiServerMessage } from './protocol';
 import { CHILD_TOKEN_CAP, CHILD_TOKEN_OVERSHOOT, ChildBudget } from './child-budget';
 import { CHILD_INSTRUCTIONS, childReport, DELEGATE_LIMITS, type ChildReport } from './delegate';
@@ -74,7 +74,7 @@ You can also read the public code of his projects and of this site on GitHub: re
 
 When you point the visitor to one or two pages worth opening, call show_page for each: it shows them a card to open. When numbers, a comparison or dates read better as a picture, call render. If the visitor wants to contact Simone, call draft_message: they review and send the draft themselves.
 
-Your voice: sharp, warm and a little playful, like a good engineer who enjoys the conversation. You know what you are: an AI agent on Simone's site, running on a harness he built, with tools you can show; you can joke, also about yourself, but you never pretend to be human and never invent facts to be funny.`;
+Your voice: sharp, warm and a little playful, like a good engineer who enjoys the conversation. You know what you are: an AI agent on Simone's site, running on a harness he built, with tools you can show; you can joke, also about yourself, but you never pretend to be human and never invent facts to be funny. No emoji.`;
 
 /** Per un saluto o una battuta: due o tre frasi, senza tool, e un aggancio a cosa sa fare. */
 const CHAT_MODE = `This message is small talk: a greeting, a joke, thanks, something playful, or a question about you. Reply in one to three sentences, with wit, without calling tools. If asked for a joke, tell a short one, ideally about software or agents. When it fits, end with a light hook to what you can do: his projects, his code, how he works.`;
@@ -226,6 +226,8 @@ export class SiteAgent extends DurableObject<Env> {
 	#lang: Lang | null = null;
 	/** Se l'ultimo messaggio è una chiacchiera, secondo Jev: il prompt cambia tono. */
 	#smallTalk = false;
+	/** L'impronta di oggi dell'IP dell'ultimo messaggio, per i limiti per IP (`budget.ts`). */
+	#ip: string | null = null;
 
 	/** Un secret del Worker (`.dev.vars` in locale, `wrangler secret put` in produzione). */
 	#secret(
@@ -566,7 +568,7 @@ export class SiteAgent extends DurableObject<Env> {
 		this.registry,
 		(tag) => this.ctx.getWebSockets(tag),
 		{
-			admit: (text, reply) => this.admit(text, reply),
+			admit: (text, reply, ip) => this.admit(text, reply, ip),
 			sendDraft: (session, message, reply) => this.sendDraft(session, message, reply),
 			settled: (session, receipt) => this.ctx.waitUntil(this.settle(session, receipt)),
 			status: (reply) => this.status(reply)
@@ -602,9 +604,12 @@ export class SiteAgent extends DurableObject<Env> {
 		return today(await this.ctx.storage.get<Spend>('spend'), new Date());
 	}
 
-	/** Quanto resta oggi al visitatore: il minimo tra il suo budget e quello del sito. */
+	/** Quanto resta oggi al visitatore: il minimo tra il suo budget, quello del suo IP e del sito. */
 	async #remaining(): Promise<number> {
-		const [spend, site] = await Promise.all([this.#spend(), this.#ledger().remaining()]);
+		const [spend, site] = await Promise.all([
+			this.#spend(),
+			this.#ledger().remaining(this.#ip ?? undefined)
+		]);
 		return Math.min(remaining(spend, VISITOR_DAILY_USD), site);
 	}
 
@@ -713,8 +718,18 @@ export class SiteAgent extends DurableObject<Env> {
 		}
 	}
 
-	/** Prima del modello: budget, poi triage. Restituisce se il messaggio può passare. */
-	async admit(text: string, reply: Reply): Promise<boolean> {
+	/**
+	 * Prima del modello: raffica per IP, budget, poi triage. Restituisce se il messaggio può
+	 * passare. La raffica viene prima di Jev, che si paga anche per i messaggi poi fermati.
+	 */
+	async admit(text: string, reply: Reply, ip: string | null): Promise<boolean> {
+		if (ip) {
+			this.#ip = await ipFingerprint(ip, new Date());
+			if (!(await this.env.AGENT_RATE.limit({ key: this.#ip })).success) {
+				reply({ type: 'notice', text, reason: 'rate' });
+				return false;
+			}
+		}
 		if ((await this.#remaining()) <= 0) {
 			reply({ type: 'notice', text, reason: 'budget' });
 			return false;
@@ -753,7 +768,7 @@ export class SiteAgent extends DurableObject<Env> {
 		if (usd <= 0) return;
 		const spend = await this.#spend();
 		await this.ctx.storage.put('spend', { day: spend.day, usd: spend.usd + usd });
-		await this.#ledger().charge(usd);
+		await this.#ledger().charge(usd, this.#ip ?? undefined);
 		for (const socket of this.ctx.getWebSockets()) {
 			await this.status((message) => socket.send(JSON.stringify(message)));
 		}

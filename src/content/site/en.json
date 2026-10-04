@@ -74,6 +74,7 @@
 		"agentCredits": "credits",
 		"agentNoticeOfftopic": "I will pass on this one: I am the agent on Simone's site, and my field is his projects, his code and the way he works. Ask me anything there.",
 		"agentNoticeAbuse": "I will not run this request.",
+		"agentNoticeRate": "You are going a bit fast: try again in a minute.",
 		"agentNoticeBudget": "You have used today's credits for the agent: they come back at {time}. Meanwhile you can write to me from the contact page.",
 		"agentIntentAbout": "about Simone",
 		"agentIntentCode": "on code",

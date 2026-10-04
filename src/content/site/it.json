@@ -74,6 +74,7 @@
 		"agentCredits": "crediti",
 		"agentNoticeOfftopic": "Qui passo: sono l'agente del sito di Simone e il mio campo sono i suoi progetti, il suo codice e il suo modo di lavorare. Lì però chiedimi pure di tutto.",
 		"agentNoticeAbuse": "Questa richiesta non la eseguo.",
+		"agentNoticeRate": "Stai andando un po' veloce: riprova tra un minuto.",
 		"agentNoticeBudget": "Hai usato i crediti di oggi per l'agente: si ricaricano alle {time}. Intanto puoi scrivermi dalla pagina contatti.",
 		"agentIntentAbout": "su Simone",
 		"agentIntentCode": "sul codice",

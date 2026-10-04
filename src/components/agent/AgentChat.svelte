@@ -10,7 +10,12 @@
 	import DelegateView from './DelegateView.svelte';
 	import DraftView from './DraftView.svelte';
 	import RenderView from './RenderView.svelte';
-	import type { ServerMessage, TranscriptMessage, TranscriptPart } from '../../agent/protocol';
+	import type {
+		NoticeReason,
+		ServerMessage,
+		TranscriptMessage,
+		TranscriptPart
+	} from '../../agent/protocol';
 	import type { Triage } from '../../agent/triage';
 	import { EMPTY_VIEW, reduceEvents, type PiSessionView } from '../../agent/view';
 
@@ -57,7 +62,7 @@
 		credit: string;
 		credits: string;
 		/** Per lingua: l'avviso segue la lingua del messaggio, non quella della pagina. */
-		notice: Record<string, Record<'offtopic' | 'abuse' | 'budget', string>>;
+		notice: Record<string, Record<NoticeReason, string>>;
 		intent: Record<Triage['intent'], string>;
 		weight: Record<Triage['weight'], string>;
 	};
@@ -67,7 +72,7 @@
 	const VISITOR_KEY = 'agent-visitor';
 
 	/** Un messaggio fermato prima del modello: vive solo nel browser. */
-	type Local = { text: string; reason: 'offtopic' | 'abuse' | 'budget'; after: number };
+	type Local = { text: string; reason: NoticeReason; after: number };
 
 	let view: PiSessionView = $state(EMPTY_VIEW);
 	let status: 'connecting' | 'open' | 'closed' = $state('connecting');

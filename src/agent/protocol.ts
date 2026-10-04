@@ -6,6 +6,9 @@ import type { AgentEvent, UserInput } from '@earendil-works/pi-durable';
 import type { PiSessionId, PiWhenBusy } from 'agents/harness/pi';
 import type { Triage } from './triage';
 
+/** Perché un messaggio si è fermato prima del modello. `rate`: troppi messaggi dallo stesso IP. */
+export type NoticeReason = 'offtopic' | 'abuse' | 'budget' | 'rate';
+
 /**
  * This app's WebSocket protocol, served by `sockets.ts`. The harness knows
  * nothing about it: it is one way to put `session.events()` and
@@ -64,7 +67,7 @@ export type PiServerMessage =
 	| {
 			readonly type: 'notice';
 			readonly text: string;
-			readonly reason: 'offtopic' | 'abuse' | 'budget';
+			readonly reason: NoticeReason;
 	  }
 	/** Le bozze già spedite (per id della chiamata), e l'esito di un invio. */
 	| { readonly type: 'drafts'; readonly sent: readonly string[] }

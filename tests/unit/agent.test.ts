@@ -1,5 +1,13 @@
 import { describe, expect, it } from 'vitest';
-import { costOf, credits, dayKey, nextReset, remaining, today } from '../../src/agent/budget';
+import {
+	costOf,
+	credits,
+	dayKey,
+	ipFingerprint,
+	nextReset,
+	remaining,
+	today
+} from '../../src/agent/budget';
 import {
 	admits,
 	blockReason,
@@ -96,6 +104,16 @@ describe('triage', () => {
 });
 
 describe('budget', () => {
+	it('fingerprints an IP per day, without keeping it in clear', async () => {
+		const day = new Date('2026-10-04T10:00:00Z');
+		const fp = await ipFingerprint('203.0.113.7', day);
+		expect(fp).toMatch(/^[0-9a-f]{16}$/);
+		expect(fp).not.toContain('203');
+		expect(await ipFingerprint('203.0.113.7', new Date('2026-10-04T23:00:00Z'))).toBe(fp);
+		expect(await ipFingerprint('203.0.113.7', new Date('2026-10-05T01:00:00Z'))).not.toBe(fp);
+		expect(await ipFingerprint('203.0.113.8', day)).not.toBe(fp);
+	});
+
 	const now = new Date('2026-10-03T22:00:00Z');
 
 	it('restarts the spend every UTC day', () => {

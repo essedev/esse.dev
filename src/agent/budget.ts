@@ -9,6 +9,24 @@ export const VISITOR_DAILY_USD = 0.1;
 export const SITE_DAILY_USD = 2;
 
 /**
+ * Dollari al giorno per IP. Il visitatore è un id scelto dal browser: cambiandolo si aggira
+ * il suo tetto, l'IP no. Cinque visitatori, perché uffici e reti mobili mettono tante
+ * persone dietro lo stesso indirizzo.
+ */
+export const IP_DAILY_USD = 0.5;
+
+/**
+ * L'impronta di un IP per il giorno: SHA-256 di giorno e indirizzo, 16 caratteri. L'IP non
+ * si salva in chiaro, e il giorno nel calcolo rende le impronte di giorni diversi
+ * scollegate tra loro.
+ */
+export async function ipFingerprint(ip: string, now: Date): Promise<string> {
+	const data = new TextEncoder().encode(`${dayKey(now)}:${ip}`);
+	const hash = new Uint8Array(await crypto.subtle.digest('SHA-256', data));
+	return [...hash.slice(0, 8)].map((b) => b.toString(16).padStart(2, '0')).join('');
+}
+
+/**
  * In pagina il budget si conta in crediti, non in centesimi: chi visita ragiona in domande.
  * Un credito è un centesimo di centesimo, quindi 1.000 al giorno; una domanda leggera ne
  * usa una decina. I conti restano in dollari, i crediti sono solo il modo di mostrarli.

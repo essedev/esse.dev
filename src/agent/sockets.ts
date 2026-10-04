@@ -15,7 +15,12 @@ import type { PiClientMessage, PiServerMessage } from './protocol';
  * `sendDraft` spedisce una bozza di `draft_message` che il visitatore ha approvato.
  */
 export interface SubmitHooks {
-	admit(text: string, reply: (message: PiServerMessage) => void): Promise<boolean>;
+	/** `ip` è l'indirizzo della connessione (`CF-Connecting-IP`), se c'è. */
+	admit(
+		text: string,
+		reply: (message: PiServerMessage) => void,
+		ip: string | null
+	): Promise<boolean>;
 	settled(session: PiSessionId, receipt: PiReceipt): void;
 	status(reply: (message: PiServerMessage) => void): Promise<void>;
 	/** L'invio di una bozza di `draft_message` approvata dal visitatore. */
@@ -123,6 +128,9 @@ export class PiSessionSockets {
 
 	async #onConnect(connection: Connection, ctx: ConnectionContext) {
 		const session = sessionFromRequest(ctx.request, ROOT_SESSION);
+		// L'IP si legge solo dalla richiesta di apertura: resta nello stato della connessione,
+		// che sopravvive all'ibernazione, per i limiti per IP di `admit`.
+		connection.setState({ ip: ctx.request.headers.get('CF-Connecting-IP') });
 		send(connection, {
 			type: 'hello',
 			session,
@@ -190,7 +198,8 @@ export class PiSessionSockets {
 			case 'submit': {
 				const text = typeof message.input === 'string' ? message.input : '';
 				const reply = (out: PiServerMessage) => send(connection, out);
-				if (this.#hooks && !(await this.#hooks.admit(text, reply))) return null;
+				const ip = (connection.state as { ip?: string | null } | null)?.ip ?? null;
+				if (this.#hooks && !(await this.#hooks.admit(text, reply, ip))) return null;
 				const receipt = await handle.submit(message.input, {
 					...(message.whenBusy ? { whenBusy: message.whenBusy } : {}),
 					...(message.operationId ? { operationId: message.operationId } : {})
