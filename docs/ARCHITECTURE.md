@@ -80,13 +80,13 @@ di satori: font `woff`/`ttf`, mai `woff2` (si leggono da `@fontsource/geist-sans
 ## Sicurezza e header
 
 CSP generata da Astro (`security.csp`) come meta tag nelle pagine, con gli hash degli
-script inline; Umami è l'unico dominio esterno ammesso. `frame-ancestors` nel meta
+script inline; i soli domini esterni ammessi sono Umami e Turnstile
+(`challenges.cloudflare.com`, per `draft_message`). `frame-ancestors` nel meta
 tag è ignorato, quindi va come header in `public/_headers` insieme a
 `X-Content-Type-Options`, `Referrer-Policy`, `X-Frame-Options` e `Permissions-Policy`.
 Le risposte del Worker (root, redirect, 404) non passano da `_headers`: gli stessi
 header li aggiunge `src/middleware.ts`. Gli asset con hash in `/_astro/` sono cacheati
-come immutabili. Niente endpoint che
-riflettono input utente.
+come immutabili. Niente endpoint che riflettono input utente.
 
 ## Interfaccia: il sito come spazio di lavoro
 
@@ -100,9 +100,9 @@ istantaneo, come cambiare documento in un'app: la dissolvenza con salita di prim
 transition) sembrava un sito che carica una pagina nuova e rallentava j k e h/l.
 
 Su schermo largo le due colonne sono due card dentro una finestra arrotondata, staccata
-dai bordi. Su mobile la finestra resta, con il solo riquadro del contenuto. Lo stile viene dal concept B
-(`docs/concepts/concept-b-stile.html`): accento lavanda su nero appena freddo, un verde
-fosforo solo per gli stati vivi o riusciti (LED in corso, copie e invii), Departure
+dai bordi. Su mobile la finestra resta, con il solo riquadro del contenuto. Lo stile viene
+dal concept B (`docs/concepts/concept-b-stile.html`): accento lavanda su nero appena
+freddo, un verde fosforo solo per gli stati vivi o riusciti (LED in corso, copie e invii), Departure
 Mono per il monospace dell'interfaccia, e un velo da monitor CRT (alone da fosforo su
 titoli ed etichette, frangia rosso-ciano, righe e vignetta) regolato dalle variabili
 `--crt-*` di `global.css`. Scelte in `docs/DECISIONS.md` #15. Le etichette con
@@ -131,10 +131,10 @@ che le contiene e una quando esce.
   Contiene anche i profili e la legenda; i tasti no.
 - **Token** (`@theme` in `src/styles/global.css`): `desk` e `frame` dietro e attorno alla
   finestra; superfici `bg`, `panel`, `surface`, `hover`; `line`; testo `fg`, `text`,
-  `muted`, `subtle` (il minimo per il testo, 4,6:1); `accent`; `live` per gli stati vivi;
-  `danger`; raggi `--radius-control`, `--radius-panel`, `--radius-card`,
-  `--radius-window`. Classi condivise:
-  `.led`, `.kbd`, `.label`, `.chip`, `.ulink`, `.caret`.
+  `muted`, `subtle` (il minimo per il testo, 4,6:1); `accent` e `on-accent`; `live` per
+  gli stati vivi; `danger`; `status-*` per lo stato dei progetti; raggi `--radius-control`,
+  `--radius-panel`, `--radius-card`, `--radius-window`. Classi condivise: `.led`, `.kbd`,
+  `.label`, `.chip`, `.ulink`, `.caret`.
 - **Misura**: nessuna larghezza massima sul contenuto, la danno la colonna e la taglia
   fluida (`Page.astro`, `Prose.astro`). Nei dettagli, da `xl`, i fatti stanno in una
   colonna a destra; la pagina riempie almeno il riquadro e il pager sta in fondo.

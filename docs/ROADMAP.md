@@ -2,7 +2,7 @@
 
 Stato corrente del progetto. Milestone reali, non wishlist. Aggiornata insieme al codice.
 
-Ultimo aggiornamento: 2026-10-04 (Ciclo 17: stile del concept B e home snellita, M15 in corso)
+Ultimo aggiornamento: 2026-10-04 (Ciclo 18: il mobile come finestra con un cassetto, M15 in corso)
 
 ## Contesto
 

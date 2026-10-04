@@ -5,47 +5,7 @@ lavoro svolto (con riferimenti ai commit), verifiche e cosa resta. Serve a ripre
 il filo tra una sessione e l'altra. La pianificazione ad alto livello vive in
 `docs/ROADMAP.md`.
 
-I cicli più vecchi sono in `docs/archive/` (Cicli 1-2 in `CYCLES-1-2.md`).
-
----
-
-## Ciclo 3 - Slug map derivata, niente drift (2026-06-01)
-
-### Obiettivo
-
-Nato da una domanda di review: la "slug map leggera" introdotta nelle fasi
-precedenti era un file pre-generato e committato (`slug-map.json`), copia derivata
-degli slug che vivono nelle traduzioni. Duplicazione materializzata = potenziale
-drift (in produzione la build rigenerava, ma il file committato e la dev potevano
-restare stale, senza alcun guardrail).
-
-### Decisione
-
-Valutate tre opzioni: (1) indice derivato a runtime, (2) tenere il file ma
-gitignorarlo + guardrail, (3) spostare gli slug nei `meta.json`. Scelta la **1**:
-elimina la causa (la copia materializzata) invece di sincronizzarla con una toppa,
-rimuove codice invece di aggiungerne, e a questa scala non costa nulla. La 3 non
-aggiunge correttezza sulla 1 (entrambe single source), ottimizza solo la scala a
-costo di coesione: rinviata a quando i contenuti cresceranno (vedi `ARCHITECTURE.md`).
-
-### Lavoro svolto
-
-- `ContentLoader.loadSlugMap` ora DERIVA l'indice id -> { lang: slug } dai contenuti
-  (`loadProjects`/`loadArticles` su tutte le lingue) invece di importare un JSON.
-- Memoizzazione a livello di modulo: l'indice è globale e i contenuti immutabili
-  per la vita dell'isolate, quindi si calcola una volta sola. Senza questo, il
-  ricalcolo per richiesta rallentava la dev e rendeva flaky un E2E.
-- Rimossi `scripts/generate-slug-map.ts`, `src/lib/content/slug-map.json` e lo step
-  `generate-slug-map` dalla build chain.
-- Test: rimosso `slug-map.test.ts` (testava il generatore), aggiunto in
-  `content-loader.test.ts` un invariante che verifica indice == slug delle
-  traduzioni per ogni lingua.
-
-### Verifiche
-
-- `pnpm check`: 0 errori; `pnpm lint`: pulito
-- `pnpm test:ci`: 139 unit verdi, 15 E2E verdi (suite tornata a ~10s)
-- `pnpm build`: OK end-to-end
+I cicli più vecchi sono in `docs/archive/` (Cicli 1-3 in `CYCLES-1-3.md`).
 
 ---
 
@@ -699,8 +659,10 @@ Giro su M15: il mobile prende la stessa forma dello schermo largo.
   con Esc, la X, un tocco fuori o trascinandola verso sinistra. Il riquadro sotto diventa
   `inert`, il focus entra nel cassetto e torna al bottone. La visibilità cambia subito in
   apertura e a fine corsa in chiusura, altrimenti il focus non entra nello stesso gesto.
-- **Fix:** la pagina dell'agente non scorre più in fondo a conversazione vuota;
-  `theme-color` allineato al fondo nuovo.
+- **Fix:** la pagina dell'agente non scorre più in fondo a conversazione vuota
+  (`643b424`); `theme-color` allineato al fondo nuovo.
+- **Velo CRT** (`3bfc60e`): circa un quarto più leggero (alone, frangia, righe e
+  vignetta), sempre e solo dalle variabili `--crt-*`.
 - **Test:** 104 unit e 57 E2E (cassetto: Esc, X, tocco fuori, ricerca dalla lente).
 - **Prossimo passo:** il giro completo su un iPhone vero, il segnaposto dell'agente su due
   righe, l'altezza della lista oltre i 900 px.

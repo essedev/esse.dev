@@ -144,7 +144,8 @@ mono, effetto CRT e cornice. Accento lavanda su nero appena freddo (palette G); 
 fosforo come secondo colore con un solo compito, gli stati vivi o riusciti, mai sul testo
 corrente. Departure Mono per tutto il mono dell'interfaccia, Geist Mono per il codice.
 Velo CRT (alone, frangia, righe, vignetta) regolato solo dalle variabili `--crt-*`. Su
-schermo largo lista e contenuto sono due card in una finestra; su mobile a filo. Il cambio
+schermo largo lista e contenuto sono due card in una finestra; dal Ciclo 18 la finestra c'è
+anche su mobile, col solo riquadro e la lista in un cassetto (prima era a filo). Il cambio
 pagina è istantaneo: la view transition sembrava un sito che carica e rallentava la
 tastiera. Scartati: le altre palette del concept (menta, viola, ultravioletto, ambra,
 cyberpunk), gli altri mono pixel (Geist Pixel, VT323, Doto e gli altri), la cornice piatta
