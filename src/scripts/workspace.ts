@@ -128,7 +128,8 @@ wide.addEventListener('change', () => wide.matches && closeDrawer());
 
 // Trascinare il cassetto: segue il dito verso sinistra e, rilasciato oltre un terzo della
 // larghezza (o con un colpo deciso), si chiude; altrimenti torna al suo posto. Lo scroll
-// verticale della lista resta al browser (`touch-pan-y`).
+// verticale della lista resta al browser con `touch-pan-y`, che va messo anche sulla lista:
+// non passa dentro un contenitore che scorre, e lì il browser si prenderebbe il gesto.
 if (drawer) {
 	let start: { x: number; y: number; t: number } | null = null;
 	let dx = 0;
