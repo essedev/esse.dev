@@ -78,9 +78,13 @@ Scelte in `docs/DECISIONS.md` #11-#14.
   `draft_message`, e parte solo da un clic del visitatore.
 - Da fare: gli eventi dei sotto-agenti dal vivo nella pagina (oggi si vedono a lavoro
   finito); `@cloudflare/computer` solo se servisse eseguire il codice dei repo.
+- Da misurare con traffico vero: se il peso stimato da Jev prevede il costo reale delle
+  risposte (ci sono entrambi per ogni messaggio). Solo se lo prevede bene, usarlo per
+  scegliere quali tool offrire; oggi il peso si mostra e basta.
 - Prima di attivarlo in produzione: costo misurato su un campione e approvato da Simone.
   Misure in anteprima: una domanda semplice 0,05-0,1 centesimi, una con `run_code` circa
-  0,15, una con `delegate` circa 1,4 (budget di 10 centesimi al giorno per visitatore, mostrato in crediti).
+  0,15, una con `delegate` circa 0,9 col tetto per figlio (era 1,4; budget di 10 centesimi
+  al giorno per visitatore, mostrato in crediti).
   Scartati: un secondo modello da consultare, fetch libero, voce e immagini.
 - Deciso: l'agente lavora sui repo e risponde anche su Simone; modelli da OpenRouter
   (#11).

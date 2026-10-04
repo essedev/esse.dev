@@ -794,3 +794,7 @@ gruppo "Capacità" in pagina.
 - **Test:** 99 unit e 54 E2E.
 - **Prossimo passo:** messa a punto dei secret e di Email Routing per la produzione (in
   ROADMAP), eventi dei sotto-agenti dal vivo.
+- **Crediti e tetti (dopo):** budget per visitatore a 10 centesimi, mostrato in crediti
+  (1.000 al giorno) e solo sotto il 30%; tetto di 12.000 token per figlio di `delegate` e
+  niente figli senza crediti per il caso peggiore. Stessa domanda su tre repo: da circa
+  140 a 93 crediti, da 50 a 29 s.

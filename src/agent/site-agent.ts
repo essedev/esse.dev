@@ -11,6 +11,7 @@ import { Lifecycle } from 'agents/lifecycle';
 import { WebSockets } from 'agents/websockets';
 import { costOf, remaining, today, VISITOR_DAILY_USD, type Spend } from './budget';
 import type { PiServerMessage } from './protocol';
+import { CHILD_TOKEN_CAP, CHILD_TOKEN_OVERSHOOT, ChildBudget } from './child-budget';
 import { CHILD_INSTRUCTIONS, childReport, DELEGATE_LIMITS, type ChildReport } from './delegate';
 import {
 	DRAFT_LIMITS,
@@ -345,6 +346,20 @@ export class SiteAgent extends DurableObject<Env> {
 			// Una ripresa ritrova i figli (indice di possesso) e le richieste (requestId).
 			replay: 'safe',
 			execute: async ({ tasks }, api, context) => {
+				// Senza crediti per tutti i figli nel caso peggiore, niente figli: risponde il padre.
+				const worst =
+					(tasks.length * (CHILD_TOKEN_CAP + CHILD_TOKEN_OVERSHOOT) * this.#model().cost.input) /
+					1e6;
+				if ((await this.#remaining()) < worst) {
+					return {
+						content: [
+							{
+								type: 'text',
+								text: 'Not enough credits left today for sub-agents: answer directly with the other tools.'
+							}
+						]
+					};
+				}
 				const ids = await api.commit(async (tx) => {
 					const ids = (
 						await tx.scanConversations({ ownerTaskId: api.taskId }, DELEGATE_LIMITS.max)
@@ -354,6 +369,7 @@ export class SiteAgent extends DurableObject<Env> {
 							ownership: { kind: 'task', taskId: api.taskId }
 						});
 						await configure(tx, child.id, {
+							extensions: { add: [ChildBudget] },
 							tools: { remove: [...exclude()] },
 							instructions: CHILD_INSTRUCTIONS
 						});
@@ -489,7 +505,10 @@ export class SiteAgent extends DurableObject<Env> {
 				this.showTool as unknown as ToolRegistration,
 				this.draftTool as unknown as ToolRegistration
 			]);
-			this.registry.install({
+			// `child-budget` è installata ma fuori dalla selezione predefinita: la aggiungono
+			// solo i figli di `delegate`.
+			this.registry.install(ChildBudget);
+			const site = {
 				name: 'site',
 				sections: [
 					{ key: 'preamble', render: () => PREAMBLE, tag: false },
@@ -513,13 +532,17 @@ export class SiteAgent extends DurableObject<Env> {
 					delegateTool,
 					this.draftTool
 				]
-			});
+			};
+			this.registry.install(site);
 			return Harness.open(
 				storage,
 				{
 					models: this.models,
 					registry: this.registry,
-					settings: { retry: { enabled: true, maxRetries: 3, baseDelayMs: 1000 } },
+					settings: {
+						extensions: [site],
+						retry: { enabled: true, maxRetries: 3, baseDelayMs: 1000 }
+					},
 					onReport: (error) => console.warn('pi report', error)
 				},
 				context

@@ -126,5 +126,10 @@ i soli tool di sola lettura. `draft_message` non spedisce: il modello scrive la 
 il visitatore la corregge e la manda dopo Turnstile, e il server accetta solo bozze nate
 da una chiamata dell'agente nella stessa conversazione. Destinatario in un secret, perché
 il repo è pubblico.
+Ogni figlio di `delegate` ha un tetto di 12.000 token, con un'estensione di pi
+selezionata solo sui figli: arrivati al tetto rispondono con quello che hanno. Sul
+confronto di tre repo il costo è sceso da circa 140 a 93 crediti e il tempo da 50 a 29 s.
 Scartati: Python per `run_code`, un invio deciso dal modello, un indirizzo di arrivo
-scritto in `wrangler.jsonc`.
+scritto in `wrangler.jsonc`. Scartato anche
+togliere tool in base al peso stimato da Jev: il peso non è mai stato misurato contro il
+costo reale, e un errore toglierebbe `delegate` alle domande che lo meritano.

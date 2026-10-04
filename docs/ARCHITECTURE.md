@@ -156,8 +156,11 @@ stessi sui due lati.
 - **`delegate`:** 2 o 3 sotto-agenti in parallelo, con lo schema dei sotto-agenti di
   pi-durable: ogni figlio è una conversazione posseduta dalla chiamata (fermare il padre
   ferma i figli, una ripresa li ritrova), con i soli tool di sola lettura e istruzioni da
-  sotto-agente. Il loro costo non è nella conversazione principale: lo scala il tool, una
-  volta sola (`memo`). La pagina mostra per ogni figlio chiamate, token, costo e risposta
+  sotto-agente. Ogni figlio ha un tetto di token (`child-budget.ts`): un'estensione
+  selezionata solo sui figli che, arrivati al tetto, chiede la risposta finale prima della
+  richiesta e blocca altri tool. Senza crediti per tutti i figli nel caso peggiore, il tool
+  non li crea e risponde il padre. Il costo dei figli non è nella conversazione
+  principale: lo scala il tool, una volta sola (`memo`). La pagina mostra per ogni figlio chiamate, token, costo e risposta
   (`delegate.ts`, `DelegateView.svelte`); gli eventi dei figli non arrivano dal vivo.
 - **`draft_message`:** il modello scrive solo una bozza; la pagina la mostra in una
   scheda modificabile con Turnstile e il visitatore la manda. Il server (`sendDraft`)

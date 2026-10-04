@@ -13,7 +13,7 @@ import { costOf } from './budget';
 export const DELEGATE_LIMITS = { min: 2, max: 3, titleChars: 60, taskChars: 1000 } as const;
 
 export const CHILD_INSTRUCTIONS =
-	'You are a sub-agent working on one part of a larger question for the main agent, not for the visitor. Use your tools, then answer with the findings only: concrete, under 150 words, with the paths or GitHub links you used. No greetings, no questions back.';
+	'You are a sub-agent working on one part of a larger question for the main agent, not for the visitor. You have a small token budget: go straight to what matters, prefer search_code and the README to reading whole files, and read at most three files. Then answer with the findings only: concrete, under 150 words, with the paths or GitHub links you used. No greetings, no questions back.';
 
 export interface ChildReport {
 	title: string;
