@@ -26,7 +26,6 @@
 		placeholder: string;
 		send: string;
 		stop: string;
-		reset: string;
 		connecting: string;
 		offline: string;
 		thinking: string;
@@ -180,7 +179,15 @@
 					break;
 			}
 		});
-		return () => client?.close();
+		// "Nuova conversazione" sta nella toolbar della pagina, fuori dall'isola.
+		const onReset = (event: MouseEvent) => {
+			if ((event.target as HTMLElement).closest('[data-agent-reset]')) reset();
+		};
+		document.addEventListener('click', onReset);
+		return () => {
+			document.removeEventListener('click', onReset);
+			client?.close();
+		};
 	});
 
 	// La trascrizione segue l'ultima riga mentre arriva, ma solo se chi legge è già in
@@ -693,11 +700,10 @@
 					(status === 'open' ? '' : status === 'connecting' ? labels.connecting : labels.offline)}
 			</span>
 			{#if budget && lowBudget}
-				<span>{credits(budget.remaining).toLocaleString(locale)} {labels.budget}</span>
+				<span class="ml-auto"
+					>{credits(budget.remaining).toLocaleString(locale)} {labels.budget}</span
+				>
 			{/if}
-			<button type="button" onclick={reset} class="ml-auto transition-colors hover:text-fg">
-				{labels.reset}
-			</button>
 		</div>
 	</div>
 </div>

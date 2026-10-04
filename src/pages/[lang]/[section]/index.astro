@@ -1,6 +1,6 @@
 ---
 import { render } from 'astro:content';
-import { ArrowRight, ArrowUpRight, Check, Copy } from '@lucide/astro';
+import { ArrowRight, ArrowUpRight, Check, Copy, SquarePen } from '@lucide/astro';
 import { TURNSTILE_TEST_SITE_KEY } from '../../../agent/draft';
 import AgentChat from '../../../components/agent/AgentChat.svelte';
 import CollectionBrowser from '../../../components/CollectionBrowser.svelte';
@@ -90,6 +90,18 @@ const ogSection = section === 'projects' ? 'projects' : section === 'articles' ?
 	current={section}
 	crumbs={[{ label: routes[section] }]}
 >
+	{section === 'agent' && (
+		<button
+			slot="actions"
+			type="button"
+			data-agent-reset
+			aria-label={t('agentReset')}
+			class="hover:text-fg hover:bg-surface hidden h-8 items-center gap-1.5 rounded-[var(--radius-control)] px-2 transition-colors group-data-[agent-started]/ws:flex"
+		>
+			<SquarePen class="size-3.5" />
+			<span class="hidden sm:inline">{t('agentReset')}</span>
+		</button>
+	)}
 	<Page class={section === 'agent' ? 'pb-0!' : undefined}>
 		<header
 			class:list={[
@@ -183,7 +195,6 @@ const ogSection = section === 'projects' ? 'projects' : section === 'articles' ?
 						placeholder: t('agentPlaceholder'),
 						send: t('agentSend'),
 						stop: t('agentStop'),
-						reset: t('agentReset'),
 						connecting: t('agentConnecting'),
 						offline: t('agentOffline'),
 						thinking: t('agentThinking'),

@@ -13,7 +13,6 @@ test.describe('agent', () => {
 		page
 	}) => {
 		await page.goto('/en/agent');
-		await page.getByRole('button', { name: 'new conversation' }).click();
 		await expect(page.getByText('search_site')).toBeVisible({ timeout: 15_000 });
 		for (const tool of [
 			'read_page',
@@ -32,16 +31,16 @@ test.describe('agent', () => {
 		await expect(page.locator('main ul button')).toHaveCount(4);
 	});
 
-	test('an empty conversation shows the title even if the last visit had one open', async ({
+	test('an empty conversation shows the title, not the reset, even after an open one', async ({
 		page
 	}) => {
 		await page.goto('/en/agent');
-		await page.getByRole('button', { name: 'new conversation' }).click();
 		await page.evaluate(() => localStorage.setItem('agent-started', '1'));
 		await page.reload();
 		await expect(page.getByText('search_site')).toBeVisible({ timeout: 15_000 });
 		await expect(page.locator('[data-workspace]')).not.toHaveAttribute('data-agent-started');
 		await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+		await expect(page.getByRole('button', { name: 'new conversation' })).toBeHidden();
 	});
 
 	test('the input sits at the bottom of the pane', async ({ page }) => {
