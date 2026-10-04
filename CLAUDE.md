@@ -108,8 +108,8 @@ tastiera in `src/scripts/workspace.ts`.
   valori in `--glass-*`; la toolbar resta piatta. I controlli usano `surface` e `hover`,
   veli chiari e non grigi pieni. Un vetro che sfoca non va dentro un altro che sfoca
   (Chromium smette di sfocare): cornice e riquadro hanno solo il bordo. Un colore di testo nuovo si misura sul vetro, dove il
-  velo dietro è più chiaro, non sul nero. Lo sfondo è un velo continuo: bagliori separati
-  diventano macchie attraverso il vetro.
+  velo dietro è più chiaro, non sul nero. Lo sfondo è un velo continuo con un solo punto di
+  luce: bagliori sparsi diventano macchie attraverso il vetro.
 - Stile del concept B (`docs/concepts/concept-b-stile.html`): lavanda accesa, Departure
   Mono per tutto il mono dell'interfaccia (il codice nella prosa resta Geist Mono), velo
   CRT con i valori in `--crt-*` di `global.css`.

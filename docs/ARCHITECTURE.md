@@ -102,14 +102,16 @@ transition) sembrava un sito che carica una pagina nuova e rallentava j k e h/l.
 Su schermo largo le due colonne sono due card dentro una finestra arrotondata, staccata
 dai bordi. Su mobile la finestra resta, con il solo riquadro del contenuto. La finestra
 poggia su uno sfondo (`wallpaper`): un velo continuo in diagonale da lavanda a viola
-profondo che sfuma nel nero, su una griglia fine. Niente bagliori separati, che attraverso
-il vetro diventavano macchie di colore, e niente verde, che resta agli stati vivi. Cornice,
+profondo che sfuma nel nero, su una griglia fine, con un solo punto di luce tenue in alto
+a sinistra (`--wall-light`) che si vede attraverso la lista. Niente bagliori sparsi, che
+attraverso il vetro diventavano macchie di colore, e niente verde, che resta agli stati
+vivi. Cornice,
 lista, riquadro, campo dell'agente e menu sono di vetro (utility `glass`: sfocatura forte,
 saturazione moderata, nessun velo bianco, che ingrigisce, e un bordo che prende luce
 appena; valori in `--glass-*` e `--wall`). Sfocano solo i vetri che non ne contengono
 altri (lista, campo dell'agente, menu): in Chromium un vetro che sfoca dentro un altro
 smette di sfocare, quindi cornice e riquadro hanno solo il bordo e il riquadro è quasi
-opaco. La toolbar resta piatta. `surface` e `hover` sono veli chiari e non grigi pieni,
+opaco, nel tono `panel` al 90%: un filo più scuro della lista, non il nero di `bg`. La toolbar resta piatta. `surface` e `hover` sono veli chiari e non grigi pieni,
 così i controlli sul vetro schiariscono invece di fare da buco; `subtle` è tarato sul
 vetro dove il velo dietro è più chiaro. Viene dal concept C
 (`docs/concepts/concept-c-vetro.html`, variante B), scelte in `docs/DECISIONS.md` #16.

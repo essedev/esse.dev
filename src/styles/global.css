@@ -72,6 +72,8 @@
 		/* Il vetro (concept C, variante B): finestra su uno sfondo colorato, cornice, lista e
 		   campo dell'agente traslucidi. `--wall` è l'intensità del bagliore dietro. */
 		--wall: 0.2;
+		/* Un solo punto di luce, in alto a sinistra: si vede attraverso il vetro della lista. */
+		--wall-light: 0.3;
 		--glass-blur: 32px;
 		--glass-sat: 110%;
 		--glass-tint: 0;
@@ -277,12 +279,18 @@
 }
 
 /* Lo sfondo dietro la finestra: un velo continuo in diagonale, da lavanda in alto a
-   sinistra a viola profondo, che sfuma nel nero in basso a destra, su una griglia fine.
-   Senza bagliori separati: attraverso il vetro diventerebbero macchie. */
+   sinistra a viola profondo, che sfuma nel nero in basso a destra, su una griglia fine, e
+   un solo punto di luce tenue in alto a sinistra. Più bagliori separati, attraverso il
+   vetro, diventavano macchie. */
 @utility wallpaper {
 	background:
 		repeating-linear-gradient(to right, rgb(255 255 255 / 0.03) 0 1px, transparent 1px 48px),
 		repeating-linear-gradient(to bottom, rgb(255 255 255 / 0.03) 0 1px, transparent 1px 48px),
+		radial-gradient(
+			26% 30% at 14% 6%,
+			color-mix(in srgb, var(--color-accent) calc(var(--wall-light) * 100%), transparent),
+			transparent 70%
+		),
 		linear-gradient(
 			135deg,
 			color-mix(in srgb, var(--color-accent) calc(var(--wall) * 55%), transparent) 0%,
