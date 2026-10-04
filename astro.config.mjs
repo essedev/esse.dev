@@ -22,7 +22,18 @@ export default defineConfig({
 	// per ridurre il salto di layout. Le variabili CSS si usano nel @theme di global.css.
 	fonts: [
 		{ provider: fontProviders.fontsource(), name: 'Geist', cssVariable: '--font-geist' },
-		{ provider: fontProviders.fontsource(), name: 'Geist Mono', cssVariable: '--font-geist-mono' }
+		{ provider: fontProviders.fontsource(), name: 'Geist Mono', cssVariable: '--font-geist-mono' },
+		// Il mono dell'interfaccia: pixel, leggibile anche piccolo (MIT, licenza accanto al file).
+		{
+			provider: fontProviders.local(),
+			name: 'Departure Mono',
+			cssVariable: '--font-departure',
+			options: {
+				variants: [
+					{ src: ['./src/assets/fonts/DepartureMono-Regular.woff2'], weight: 400, style: 'normal' }
+				]
+			}
+		}
 	],
 	security: {
 		csp: {

@@ -90,7 +90,11 @@ tastiera in `src/scripts/workspace.ts`.
 - La navigazione sta nella toolbar (breadcrumb, Esc, "‹ sezione" su mobile), mai un
   "Indietro" nel contenuto. Il livello sopra si calcola dai `crumbs` in `Workspace.astro`.
 - Token in `@theme` (`src/styles/global.css`): un valore scritto a mano in un componente
-  è un errore. Profondità dal tono delle superfici: l'unica linea separa le due colonne.
+  è un errore. Profondità dal tono delle superfici. Su schermo largo la shell è una
+  finestra con due card (lista e contenuto); su mobile tutto a filo.
+- Stile del concept B (`docs/concepts/concept-b-stile.html`): lavanda accesa, Departure
+  Mono per tutto il mono dell'interfaccia (il codice nella prosa resta Geist Mono), velo
+  CRT con i valori in `--crt-*` di `global.css`.
 - Nessuna larghezza massima sul contenuto: la misura la danno la colonna e la taglia
   fluida.
 - Controlli mai nativi (`ui/Select.svelte`). Icone solo Lucide.

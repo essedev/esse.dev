@@ -99,6 +99,13 @@ zona (Ciclo 13). Ogni voce resta una pagina statica col suo URL, senza router. I
 istantaneo, come cambiare documento in un'app: la dissolvenza con salita di prima (view
 transition) sembrava un sito che carica una pagina nuova e rallentava j k e h/l.
 
+Su schermo largo le due colonne sono due card dentro una finestra arrotondata, staccata
+dai bordi; su mobile restano a filo. Lo stile viene dal concept B
+(`docs/concepts/concept-b-stile.html`): accento lavanda su nero appena freddo, Departure
+Mono per il monospace dell'interfaccia, e un velo da monitor CRT (alone da fosforo su
+titoli ed etichette, frangia rosso-ciano, righe e vignetta) regolato dalle variabili
+`--crt-*` di `global.css`.
+
 - **Lista** (`src/lib/workspace.ts`): in ordine di importanza e alta al massimo 900 px.
   Prima le pagine singole (chi sono, adesso, agente), poi la vetrina dei progetti con
   "tutti i N" verso il registro, metodo, scritti. I progetti fuori vetrina restano nella

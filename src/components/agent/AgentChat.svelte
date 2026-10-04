@@ -375,7 +375,7 @@
 {#snippet localNotice(item: Local)}
 	<div class="flex flex-col gap-1.5">
 		<p class="flex gap-3 font-mono text-[0.875rem] text-fg">
-			<span class="text-accent select-none" aria-hidden="true">›</span>
+			<span class="text-accent glow select-none" aria-hidden="true">›</span>
 			<span class="whitespace-pre-wrap">{item.text}</span>
 		</p>
 		{@render verdict(triages[item.text])}
@@ -463,7 +463,7 @@
 				{@const triage = triages[text]}
 				<div class="flex flex-col gap-1.5">
 					<p class="flex gap-3 font-mono text-[0.875rem] text-fg">
-						<span class="text-accent select-none" aria-hidden="true">›</span>
+						<span class="text-accent glow select-none" aria-hidden="true">›</span>
 						<span class="whitespace-pre-wrap">{text}</span>
 					</p>
 					{@render verdict(triage)}
@@ -608,7 +608,8 @@
 			onsubmit={submit}
 			class="flex items-end gap-3 rounded-[var(--radius-panel)] bg-surface p-3"
 		>
-			<span class="pb-1.5 font-mono text-sm text-accent select-none" aria-hidden="true">›</span>
+			<span class="pb-1.5 font-mono text-sm text-accent glow select-none" aria-hidden="true">›</span
+			>
 			<textarea
 				bind:value={input}
 				onkeydown={onKey}

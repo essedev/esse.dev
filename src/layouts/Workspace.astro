@@ -39,41 +39,43 @@ const up =
 			? { label: parentCrumb.label, href: parentCrumb.href }
 			: home;
 
-// Due colonne alte tutta la finestra, ognuna col suo tono: la lista (panel) e il riquadro
-// del contenuto (bg). Nessuna barra a tutta larghezza.
+// Su schermo largo: una finestra arrotondata staccata dai bordi, con dentro due card, la
+// lista (panel) e il riquadro del contenuto (bg). Su mobile tutto a filo, come prima.
 ---
 
 <Layout lang={lang} path={path} {...head}>
 	<a href="#main-content" class="skip-link">
 		{t('skipToContent')}
 	</a>
-	<div
-		data-workspace
-		data-view={view}
-		data-parent={up?.href ?? home.href}
-		data-lang={lang}
-		class="flex min-h-dvh flex-col lg:grid lg:h-dvh lg:min-h-0 lg:grid-cols-[var(--sidebar)_minmax(0,1fr)]"
-	>
-		<div class="order-1 flex min-w-0 flex-1 flex-col lg:order-2 lg:min-h-0">
-			<Toolbar lang={lang} path={path} crumbs={crumbs} up={up} t={t}>
-				<slot name="actions" slot="actions" />
-			</Toolbar>
-			<main
-				id="main-content"
-				data-main-scroll
-				class="flex min-w-0 flex-1 flex-col lg:min-h-0 lg:overflow-y-auto lg:[mask-image:linear-gradient(to_bottom,transparent,black_1.5rem)]"
-			>
-				<slot />
-			</main>
-		</div>
-		<aside
-			class:list={[
-				'order-2 lg:order-1 lg:bg-panel lg:border-line lg:min-h-0 lg:border-r',
-				view === 'detail' && 'hidden lg:block'
-			]}
+	<div class="lg:bg-desk lg:h-dvh lg:p-3">
+		<div
+			data-workspace
+			data-view={view}
+			data-parent={up?.href ?? home.href}
+			data-lang={lang}
+			class="lg:bg-frame lg:ring-line flex min-h-dvh flex-col lg:grid lg:h-full lg:min-h-0 lg:grid-cols-[var(--sidebar)_minmax(0,1fr)] lg:gap-2 lg:rounded-[var(--radius-window)] lg:p-2 lg:ring-1"
 		>
-			<Sidebar lang={lang} nav={nav} current={current} t={t} />
-		</aside>
+			<div class="lg:bg-bg lg:ring-line/70 order-1 flex min-w-0 flex-1 flex-col lg:order-2 lg:min-h-0 lg:overflow-hidden lg:rounded-[var(--radius-card)] lg:ring-1">
+				<Toolbar lang={lang} path={path} crumbs={crumbs} up={up} t={t}>
+					<slot name="actions" slot="actions" />
+				</Toolbar>
+				<main
+					id="main-content"
+					data-main-scroll
+					class="flex min-w-0 flex-1 flex-col lg:min-h-0 lg:overflow-y-auto lg:[mask-image:linear-gradient(to_bottom,transparent,black_1.5rem)]"
+				>
+					<slot />
+				</main>
+			</div>
+			<aside
+				class:list={[
+					'order-2 lg:order-1 lg:bg-panel lg:ring-line/70 lg:min-h-0 lg:overflow-hidden lg:rounded-[var(--radius-card)] lg:ring-1',
+					view === 'detail' && 'hidden lg:block'
+				]}
+			>
+				<Sidebar lang={lang} nav={nav} current={current} t={t} />
+			</aside>
+		</div>
 	</div>
 </Layout>
 
