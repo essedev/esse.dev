@@ -130,6 +130,6 @@ Ogni figlio di `delegate` ha un tetto di 12.000 token, con un'estensione di pi
 selezionata solo sui figli: arrivati al tetto rispondono con quello che hanno. Sul
 confronto di tre repo il costo è sceso da circa 140 a 93 crediti e il tempo da 50 a 29 s.
 Scartati: Python per `run_code`, un invio deciso dal modello, un indirizzo di arrivo
-scritto in `wrangler.jsonc`. Scartato anche
-togliere tool in base al peso stimato da Jev: il peso non è mai stato misurato contro il
-costo reale, e un errore toglierebbe `delegate` alle domande che lo meritano.
+scritto in `wrangler.jsonc`. Scartato anche togliere tool in base al peso stimato da Jev:
+il peso non è mai stato misurato contro il costo reale, e un errore toglierebbe
+`delegate` alle domande che lo meritano.

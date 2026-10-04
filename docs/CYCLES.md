@@ -773,7 +773,7 @@ Secondo taglio di M17: da 2 a 9 tool, divisi in pagina tra "sul sito" e "sul cod
 
 ## Ciclo 16 - I tool dimostrativi dell'agente (2026-10-03)
 
-Terzo taglio di M17 (`3bdf3ee` .. commit di `draft_message`): da 9 a 13 tool, con un
+Terzo taglio di M17 (`3bdf3ee` .. `85a8ccd`): da 9 a 13 tool, con un
 gruppo "Capacità" in pagina.
 
 - **`render`:** barre, tabelle e linee del tempo dai dati, mai HTML; stessa validazione

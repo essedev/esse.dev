@@ -160,8 +160,9 @@ stessi sui due lati.
   selezionata solo sui figli che, arrivati al tetto, chiede la risposta finale prima della
   richiesta e blocca altri tool. Senza crediti per tutti i figli nel caso peggiore, il tool
   non li crea e risponde il padre. Il costo dei figli non è nella conversazione
-  principale: lo scala il tool, una volta sola (`memo`). La pagina mostra per ogni figlio chiamate, token, costo e risposta
-  (`delegate.ts`, `DelegateView.svelte`); gli eventi dei figli non arrivano dal vivo.
+  principale: lo scala il tool, una volta sola (`memo`). La pagina mostra per ogni figlio
+  chiamate, token, costo e risposta (`delegate.ts`, `DelegateView.svelte`); gli eventi dei
+  figli non arrivano dal vivo.
 - **`draft_message`:** il modello scrive solo una bozza; la pagina la mostra in una
   scheda modificabile con Turnstile e il visitatore la manda. Il server (`sendDraft`)
   controlla che la bozza sia una chiamata dell'agente in questa conversazione e non sia
@@ -173,9 +174,10 @@ stessi sui due lati.
 - **Triage e limiti:** ogni messaggio passa prima da Jev (`triage.ts`), che ferma fuori
   tema e abuso e decide la lingua della risposta; la spesa si scala in costo reale per
   visitatore (nel `SiteAgent`) e per tutto il sito (Durable Object `Ledger`), con le soglie
-  in `budget.ts`. In pagina il budget si mostra in crediti, solo quando sta per finire. Se Jev non risponde il messaggio passa e vale il tetto. Le soglie si
-  verificano con `pnpm eval:jev` su un set etichettato (`tests/eval/jev-triage.json`).
-  Scelte in `docs/DECISIONS.md` #12.
+  in `budget.ts`. In pagina il budget si mostra in crediti, solo quando sta per finire. Se
+  Jev non risponde il messaggio passa e vale il tetto. Le soglie si verificano con
+  `pnpm eval:jev` su un set etichettato (`tests/eval/jev-triage.json`). Scelte in
+  `docs/DECISIONS.md` #12.
 - **Trascrizione:** Markdown passato da un renderer che sanifica (`markdown.ts`),
   ragionamento chiuso, verdetto di Jev, token, costo e budget residuo per ogni risposta.
 
