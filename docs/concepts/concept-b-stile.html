@@ -67,7 +67,7 @@
 			[data-where='all'] { --mono: var(--special); }
 
 			/* CRT, dagli slider. */
-			:root { --glow: 12px; --bloom: 0px; --scan: 0.04; --gap: 3px; --vig: 0.35; --ab: 0px; }
+			:root { --glow: 12px; --hglow: 18px; --bloom: 0px; --scan: 0.04; --gap: 3px; --vig: 0.35; --ab: 0px; }
 
 			* { box-sizing: border-box; margin: 0; }
 			html, body { height: 100%; }
@@ -97,8 +97,10 @@
 			.label { font-family: var(--special); font-size: calc(11px * var(--special-scale)); letter-spacing: var(--special-track); text-transform: uppercase; color: var(--subtle); }
 			.glow { text-shadow: 0 0 var(--glow) color-mix(in srgb, var(--accent) 80%, transparent), 0 0 calc(var(--glow) / 3) color-mix(in srgb, var(--accent) 90%, transparent); }
 
+			/* Alone titoli: il bagliore da fosforo, nel colore dell'accento, su nome, titoli, etichette e logo. */
+			h1, .label, .logo, .crumb { text-shadow: 0 0 var(--hglow) color-mix(in srgb, var(--accent) 55%, transparent), 0 0 calc(var(--hglow) / 4) color-mix(in srgb, var(--accent) 35%, transparent); }
 			.led { width: 7px; height: 7px; border-radius: 99px; background: #4d4d55; flex: none; display: inline-block; }
-			.led.on { background: var(--status); box-shadow: 0 0 calc(4px + var(--glow) / 2) color-mix(in srgb, var(--status) 75%, transparent); animation: breathe 2.8s cubic-bezier(.16,1,.3,1) infinite; }
+			.led.on { background: var(--status); box-shadow: 0 0 calc(3px + var(--glow)) calc(var(--glow) / 8) color-mix(in srgb, var(--status) 80%, transparent); animation: breathe 2.8s cubic-bezier(.16,1,.3,1) infinite; }
 			.led.done { background: var(--fg); }
 			.led.idea { background: transparent; box-shadow: inset 0 0 0 1.5px var(--muted); }
 			@keyframes breathe { 50% { opacity: .55; } }
@@ -305,6 +307,7 @@
 			<div class="seg" data-key="where" style="margin-top: 6px"><button data-v="labels">solo etichette</button><button data-v="all">tutto il mono</button></div>
 
 			<h2>Effetto CRT</h2>
+			<div class="slider"><label for="hglow">alone titoli</label><input id="hglow" data-var="--hglow" data-unit="px" type="range" min="0" max="40" step="1" value="18" /><output></output></div>
 			<div class="slider"><label for="glow">alone accento</label><input id="glow" data-var="--glow" data-unit="px" type="range" min="0" max="30" step="1" value="12" /><output></output></div>
 			<div class="slider"><label for="bloom">bagliore testo</label><input id="bloom" data-var="--bloom" data-unit="px" type="range" min="0" max="8" step="0.5" value="0" /><output></output></div>
 			<div class="slider"><label for="scan">righe</label><input id="scan" data-var="--scan" type="range" min="0" max="0.14" step="0.005" value="0.04" /><output></output></div>
