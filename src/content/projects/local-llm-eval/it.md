@@ -1,6 +1,6 @@
 ---
-slug: "local-llm-eval"
-title: "Local LLM Eval"
+slug: "local-llm-experiments"
+title: "Local LLM Experiments"
 excerpt: "Quanto regge il coding agentico con modelli locali su un MacBook Pro M5 da 32 GB, misurato contro i modelli cloud."
 tags:
   - "LLM"
@@ -20,3 +20,7 @@ Volevo sapere se un modello locale può fare davvero da coding agent, non in una
 - Spezzare il lavoro in una roadmap salva i modelli fragili ma rompe quelli capaci, perché il reset del contesto fra un task e l'altro fa perdere coerenza.
 
 Il perimetro è stretto e lo dico nel repo: un solo task, quasi tutte le celle con N=1, nessun dato su refactor o contesti lunghi. Vale come punto di partenza qualitativo, non come benchmark. Log, codice generato, punteggi e costi di ogni run sono pubblici.
+
+## LLM Dash
+
+Per usarli ogni giorno c'è [LLM Dash](https://github.com/essedev/llm-dash), il pannello di controllo dei modelli locali sul mio Mac: quattro profili pronti (build, coder, plan e uno veloce per quando la memoria è stretta), avviati con `mlx_lm.server`, una dashboard per cambiare modello e tenere d'occhio memoria e velocità, e l'integrazione con opencode. Nei profili entrano solo modelli con il tool calling verificato davvero, con lo stesso harness degli esperimenti.

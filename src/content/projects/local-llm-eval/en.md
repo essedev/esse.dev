@@ -1,6 +1,6 @@
 ---
-slug: "local-llm-eval"
-title: "Local LLM Eval"
+slug: "local-llm-experiments"
+title: "Local LLM Experiments"
 excerpt: "How far agentic coding goes with local models on a 32 GB MacBook Pro M5, measured against cloud models."
 tags:
   - "LLM"
@@ -20,3 +20,7 @@ I wanted to know whether a local model can really act as a coding agent, not in 
 - Splitting the work into a roadmap rescues fragile models but breaks capable ones, because resetting context between tasks loses coherence.
 
 The scope is narrow and the repo says so: one task, most cells with N=1, no data on refactors or long contexts. It is a qualitative starting point, not a benchmark. Logs, generated code, scores and costs for every run are public.
+
+## LLM Dash
+
+For daily use there is [LLM Dash](https://github.com/essedev/llm-dash), the control panel for local models on my Mac: four ready profiles (build, coder, plan and a fast one for when memory is tight), served with `mlx_lm.server`, a dashboard to switch models and watch memory and speed, and opencode integration. Only models whose tool calling was actually verified, with the same harness as the experiments, make it into a profile.

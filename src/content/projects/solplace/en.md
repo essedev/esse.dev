@@ -1,16 +1,24 @@
 ---
-slug: "solplace"
-title: "SolPlace"
-excerpt: "Interactive on-chain world map for placing Solana token logos, inspired by r/Place"
+slug: "solana"
+title: "Solana experiments"
+excerpt: "An on-chain world map where tokens fight over territory, and around it the tools I wrote to read the Solana market in real time."
 tags:
   - "Solana"
-  - "Web3"
-  - "MapLibre"
   - "Rust"
   - "Anchor"
-  - "Crypto"
+  - "TypeScript"
+  - "Python"
+  - "Web3"
 ---
 
-SolPlace is an interactive platform that overlays Solana token logos on a world map, inspired by Reddit r/Place and Wplace.live. Users connect their Solana wallet, navigate the map, select a grid cell and place a token logo by paying a SOL fee. Each cell can be overwritten, creating 'territory wars' between meme coin communities.
+Between summer 2025 and early 2026 I worked inside the Solana ecosystem, the one of launchpads and tokens that are born and die in an afternoon. The project to show is SolPlace; around it are the tools I built to understand how that market works.
 
-Fully on-chain for decentralization and transparency. Frontend with MapLibre and OpenStreetMap, backend with Solana programs (Anchor in Rust), real-time updates via websockets. Logos are automatically fetched from on-chain metadata. Business model: placement fees (0.001 SOL for free cells, 0.005 SOL for overwrites), split between burn and treasury.
+## SolPlace
+
+r/Place, but for Solana tokens on a real world map. Each community plants its token's flag somewhere, and whoever wants that spot pays more for it: the price goes up with every overwrite. Every placement is an on-chain transaction, with a program in Rust and Anchor and no database behind it. It stayed a prototype.
+
+## The tools
+
+- Real-time reading of launchpad transactions from block streams, telling buys, sells and swaps apart in both phases of a token's life: the bonding curve and then the AMM.
+- A tracker that follows the wallets of the people who move the market and alerts when several of them buy the same token, crossing three APIs to tell which platform it was launched on.
+- A token archive with monitoring of X accounts, downloaded media and profile history.

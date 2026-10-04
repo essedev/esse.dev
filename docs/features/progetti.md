@@ -48,7 +48,9 @@ i tentativi che non hanno una voce propria.
 Deciso con Simone il 2026-10-04. Le voci senza scheda oggi vanno create.
 
 **Vetrina** (6): Relay, Nexus, pgbee, Zeno, mcpbelt, Portsage. Zeno è privato: scheda
-senza link al repo.
+senza link al repo. Gli assistenti personali sono le iterazioni di Nexus (`previously`):
+Verbosa, NanoClaw, Life Terminal, Almanac, Nexus in Elixir, Bob, che si è fermato il
+giorno in cui è ripartito Nexus.
 
 **Registro**:
 
@@ -56,16 +58,13 @@ senza link al repo.
 - Wavelength: radio AI con redazione multi-agente.
 - Media Hub (repo `home-media`): il server di casa e l'app per la TV (vedi sotto).
 - Watch-OS: firmware per uno smartwatch client vocale di un agente.
-- Assistenti personali, voce unica: nanoclaw, Bob, Life Terminal, Almanac. La prima
-  iterazione è Verbosa (2025), chat multi-provider in Flutter con backend Go: il primo
-  client e harness verso i modelli.
 - IDKCraft: voxel game in Kotlin, con IDKCraft Studio che genera le texture in pixel art
   via modelli di immagini, con immagini di riferimento per tenere lo stile.
 - Local LLM Experiments, voce unica sugli LLM in locale: Local LLM Eval e LLM Dash.
 - Milano, voce unica: based-routing (trip planner multi-origine sulla rete lombarda) e
   Milanoz, col contesto del trasferimento a Milano nel 2026.
 - Server personali, voce unica: monitor (`status.esse.dev`) e server-ops.
-- Esperimenti su Solana, voce unica: SolPlace con nome, il resto senza.
+- Esperimenti su Solana, voce unica (cartella `solplace`): SolPlace con nome, il resto senza.
 - doppia.os: uno dei primi progetti con l'AI, mentre arrivavano i coding agent. L'effetto
   molla sul trascinamento delle finestre, prima scritto a mano in Svelte e poi con l'AI;
   oggi una cosa così è un benchmark per i modelli locali. La storia è la scheda.

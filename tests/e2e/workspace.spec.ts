@@ -69,7 +69,7 @@ test.describe('workspace keyboard', () => {
 
 	test('a short page keeps the pager at the bottom of the pane', async ({ page }) => {
 		await page.setViewportSize({ width: 1440, height: 900 });
-		await open(page, '/en/projects/verbosa');
+		await open(page, '/en/projects/watch-os');
 		const pager = await page.locator('[data-pager]').first().boundingBox();
 		expect(pager!.y + pager!.height).toBeGreaterThan(900 - 120);
 	});
@@ -102,19 +102,19 @@ test.describe('workspace keyboard', () => {
 
 	test('the list shows the showcase; search reaches every project', async ({ page }) => {
 		await open(page, '/en');
-		const verbosa = page.locator('[data-sidebar] a[href="/en/projects/verbosa"]');
-		await expect(verbosa).toBeHidden();
+		const watch = page.locator('[data-sidebar] a[href="/en/projects/watch-os"]');
+		await expect(watch).toBeHidden();
 		await expect(page.locator('[data-sidebar] [data-more] a')).toHaveAttribute(
 			'href',
 			'/en/projects'
 		);
-		await page.locator('[data-filter]').fill('verbosa');
-		await expect(verbosa).toBeVisible();
+		await page.locator('[data-filter]').fill('watch-os');
+		await expect(watch).toBeVisible();
 		await expect(page.locator('[data-sidebar] [data-more]')).toBeHidden();
 	});
 
 	test('a project outside the showcase appears in the list while it is open', async ({ page }) => {
-		await open(page, '/en/projects/verbosa');
+		await open(page, '/en/projects/watch-os');
 		await expect(page.locator('[data-sidebar] [aria-current="page"]')).toBeVisible();
 	});
 
