@@ -54,6 +54,8 @@ giorno in cui è ripartito Nexus.
 
 **Registro**:
 
+- Copilota: copilota per le call di vendita, app macOS in Swift con il backend dentro l'app,
+  trascrizione dei due canali, card dalla knowledge base, Nemotron in locale. Repo privato.
 - printor: LLM che legge gli 8-K, harness a prova di autoinganno.
 - Wavelength: radio AI con redazione multi-agente.
 - Media Hub (repo `home-media`): il server di casa e l'app per la TV (vedi sotto).
