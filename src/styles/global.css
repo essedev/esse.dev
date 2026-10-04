@@ -71,11 +71,11 @@
 
 		/* Il vetro (concept C, variante B): finestra su uno sfondo colorato, cornice, lista e
 		   campo dell'agente traslucidi. `--wall` è l'intensità del bagliore dietro. */
-		--wall: 0.6;
+		--wall: 0.4;
 		--glass-blur: 32px;
 		--glass-sat: 180%;
 		--glass-tint: 0;
-		--glass-rim: 0.3;
+		--glass-rim: 0.14;
 		--glass-shadow: 0 12px 32px rgb(0 0 0 / 0.35);
 	}
 
