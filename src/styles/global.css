@@ -59,12 +59,12 @@
 
 		/* Il velo CRT: alone da fosforo su titoli ed etichette, alone sull'accento, una
 		   frangia rosso-ciano sul testo, righe orizzontali e vignetta sopra a tutto. */
-		--crt-title-glow: 6px;
-		--crt-accent-glow: 8px;
-		--crt-aberration: 0.4px;
-		--crt-scan: 0.035;
+		--crt-title-glow: 4.5px;
+		--crt-accent-glow: 6px;
+		--crt-aberration: 0.3px;
+		--crt-scan: 0.025;
 		--crt-scan-gap: 3px;
-		--crt-vignette: 0.25;
+		--crt-vignette: 0.18;
 	}
 
 	html {
