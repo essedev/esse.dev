@@ -204,6 +204,7 @@ const site = defineCollection({
 					agentNoticeBudget: text,
 					agentIntentAbout: text,
 					agentIntentCode: text,
+					agentIntentChat: text,
 					agentIntentOfftopic: text,
 					agentIntentAbuse: text,
 					agentWeightLight: text,

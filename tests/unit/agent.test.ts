@@ -1,6 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import { costOf, credits, dayKey, nextReset, remaining, today } from '../../src/agent/budget';
-import { admits, blockReason, jevInput, parseTriage, type JevOutput } from '../../src/agent/triage';
+import {
+	admits,
+	blockReason,
+	isSmallTalk,
+	jevInput,
+	parseTriage,
+	type JevOutput
+} from '../../src/agent/triage';
 
 const output = (intent: string, score: number, lang: string, p: number = 0.9): JevOutput => ({
 	answers: {
@@ -61,9 +68,28 @@ describe('triage', () => {
 		expect(blockReason(passwd)).toBe('abuse');
 	});
 
-	it('lets only on-topic requests through', () => {
+	it('treats a message as small talk only when Jev is sure', () => {
+		const triage = (p: Record<string, number>, choice: string) =>
+			parseTriage(
+				{
+					answers: {
+						intent: { type: 'choice', choice, probabilities: p },
+						weight: { type: 'score', score: 0 },
+						lang: { type: 'choice', choice: 'it' }
+					}
+				},
+				0
+			);
+		expect(isSmallTalk(triage({ chat: 1 }, 'chat'))).toBe(true);
+		// Una domanda vera letta per metà come chiacchiera resta una domanda.
+		expect(isSmallTalk(triage({ chat: 0.38, about: 0.28, offtopic: 0.34 }, 'chat'))).toBe(false);
+	});
+
+	it('lets on-topic requests and small talk through, not off-topic tasks or abuse', () => {
 		expect(admits(parseTriage(output('about', 0, 'it'), 0))).toBe(true);
 		expect(admits(parseTriage(output('code', 2, 'en'), 0))).toBe(true);
+		// Un saluto o una battuta passano: l'agente risponde in breve, senza tool.
+		expect(admits(parseTriage(output('chat', 0, 'it'), 0))).toBe(true);
 		expect(admits(parseTriage(output('offtopic', 0, 'en'), 0))).toBe(false);
 		expect(admits(parseTriage(output('abuse', 0, 'en'), 0))).toBe(false);
 	});

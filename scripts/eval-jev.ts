@@ -59,7 +59,7 @@ async function triage(text: string): Promise<Triage> {
 	return parseTriage((await res.json()) as JevOutput, Date.now() - started);
 }
 
-const shouldAdmit = (c: Case) => c.intent === 'about' || c.intent === 'code';
+const shouldAdmit = (c: Case) => c.intent === 'about' || c.intent === 'code' || c.intent === 'chat';
 const pct = (n: number, d: number) => `${n}/${d} (${d ? Math.round((n / d) * 100) : 0}%)`;
 
 const results: { c: Case; t: Triage }[] = [];
@@ -87,7 +87,7 @@ console.log(
 console.log(
 	`Da fermare passati:      ${pct(wrongAdmits.length, results.filter(({ c }) => !shouldAdmit(c)).length)}`
 );
-console.log(`Intento (in tema/fuori/abuso): ${pct(intentOk.length, results.length)}`);
+console.log(`Intento (in tema/chiacchiera/fuori/abuso): ${pct(intentOk.length, results.length)}`);
 console.log(`Lingua:                  ${pct(langOk.length, results.length)}`);
 
 for (const [label, list] of [
@@ -102,7 +102,9 @@ for (const [label, list] of [
 }
 
 // Calibrazione: tra le risposte date con probabilità in una fascia, quante sono giuste?
-console.log("\nCalibrazione (probabilità dell'intento scelto, gruppi in tema/fuori/abuso):");
+console.log(
+	"\nCalibrazione (probabilità dell'intento scelto, gruppi in tema/chiacchiera/fuori/abuso):"
+);
 for (const [lo, hi] of [
 	[0, 0.6],
 	[0.6, 0.8],
