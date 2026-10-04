@@ -190,6 +190,7 @@
 			.note { margin-top: 10px; color: #999; }
 			.values { margin-top: 8px; color: #777; word-break: break-all; }
 			.panel.min > :not(.toggle) { display: none; }
+			.reset { width: calc(100% - 28px); padding: 7px 10px; border-radius: 6px; background: #f2f2f2; color: #000; text-align: left; }
 			.toggle { position: sticky; top: 0; float: right; color: #777; }
 			.hide-panel .panel { display: none; }
 		</style>
@@ -280,6 +281,8 @@
 
 		<div class="panel" id="panel">
 			<button class="toggle" id="toggle" title="riduci (p nasconde)">–</button>
+			<button class="reset" id="reset">reset al set consigliato</button>
+			<p class="note" style="margin: 6px 0 0">H viola + stato verde · Geist · Departure Mono solo etichette · alone titoli 10, accento 10 · righe 0,035 passo 3 · vignetta 0,25 · cornice 4</p>
 			<h2>Palette</h2>
 			<div class="seg" data-key="palette">
 				<button data-v="A">A menta</button><button data-v="C">C lavanda</button><button data-v="G">G lavanda accesa</button>
@@ -379,6 +382,19 @@
 				if (e.key === 'l') apply('layout', String((Number(root.dataset.layout) % 4) + 1));
 				if (e.key === 'v') apply('view', root.dataset.view === 'home' ? 'agent' : 'home');
 				if (e.key === 'p') document.body.classList.toggle('hide-panel');
+			});
+			// Il set che consiglio: viola sobrio, terminale in piccolo, CRT appena percettibile.
+			const IDEAL = {
+				keys: { palette: 'H', sans: 'geist', mono: 'departure', where: 'labels', layout: '4', status: 'accent' },
+				sliders: { xh: 295, xc: 0.15, xl: 0.78, xt: 0.016, hglow: 10, glow: 10, bloom: 0, scan: 0.035, gap: 3, vig: 0.25, ab: 0 }
+			};
+			document.getElementById('reset').addEventListener('click', () => {
+				for (const [key, value] of Object.entries(IDEAL.keys)) apply(key, value);
+				for (const [id, value] of Object.entries(IDEAL.sliders)) {
+					const input = document.getElementById(id);
+					input.value = value;
+					slide(input);
+				}
 			});
 			document.getElementById('toggle').addEventListener('click', () => document.getElementById('panel').classList.toggle('min'));
 		</script>
