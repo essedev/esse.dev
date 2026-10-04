@@ -570,12 +570,13 @@
 								</summary>
 								<div class="flex flex-col gap-2 px-3 pb-3 font-mono text-xs">
 									<p class="label">{labels.toolCall}</p>
-									<pre class="overflow-x-auto whitespace-pre-wrap text-muted">{code(
+									<pre class="overflow-x-auto overscroll-none whitespace-pre-wrap text-muted">{code(
 											part.arguments
 										) ?? JSON.stringify(part.arguments, null, 2)}</pre>
 									{#if result}
 										<p class="label">{labels.result}</p>
-										<pre class="max-h-64 overflow-auto whitespace-pre-wrap text-muted">{resultText(
+										<pre
+											class="max-h-64 overflow-auto overscroll-none whitespace-pre-wrap text-muted">{resultText(
 												result
 											)}</pre>
 									{/if}

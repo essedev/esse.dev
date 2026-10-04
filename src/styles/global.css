@@ -79,9 +79,13 @@
 		--glass-shadow: 0 12px 32px rgb(0 0 0 / 0.35);
 	}
 
-	/* Niente rimbalzo elastico (macOS, iOS) né scroll che passa al contenitore sotto, in
-	   nessun punto: la finestra resta ferma come un'app. */
-	* {
+	/* Niente rimbalzo elastico (macOS, iOS) né scroll che passa al contenitore sotto: la
+	   finestra resta ferma come un'app. Va sulla pagina e su ogni contenitore che scorre
+	   (`overscroll-none` accanto a `overflow-*-auto`), mai su tutto: su un elemento che non
+	   scorre Chromium ci aggancia la rotella e la lista si ferma dopo il primo colpo. */
+	html,
+	body,
+	.prose pre {
 		overscroll-behavior: none;
 	}
 

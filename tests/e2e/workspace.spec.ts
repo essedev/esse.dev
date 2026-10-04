@@ -59,6 +59,20 @@ test.describe('workspace keyboard', () => {
 		expect(pager!.y + pager!.height).toBeGreaterThan(900 - 120);
 	});
 
+	test('the wheel scrolls the list all the way down', async ({ page }) => {
+		// Con overscroll-behavior su un antenato che non scorre, Chromium si fermava al primo colpo.
+		await page.setViewportSize({ width: 1440, height: 760 });
+		await open(page, '/en/projects/relay');
+		const list = page.locator('[data-sidebar-scroll]');
+		await list.evaluate((el) => (el.scrollTop = 0));
+		const box = (await list.boundingBox())!;
+		await page.mouse.move(box.x + box.width / 2, box.y + box.height / 2);
+		for (let i = 0; i < 12; i++) await page.mouse.wheel(0, 80);
+		await expect
+			.poll(() => list.evaluate((el) => el.scrollHeight - el.clientHeight - el.scrollTop))
+			.toBeLessThan(2);
+	});
+
 	test('the list shows the showcase; search reaches every project', async ({ page }) => {
 		await open(page, '/en');
 		const verbosa = page.locator('[data-sidebar] a[href="/en/projects/verbosa"]');

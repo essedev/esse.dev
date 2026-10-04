@@ -43,7 +43,7 @@
 			{/each}
 		</dl>
 	{:else if view.type === 'table'}
-		<div class="overflow-x-auto">
+		<div class="overflow-x-auto overscroll-none">
 			<table class="w-full text-left text-sm">
 				<thead>
 					<tr>

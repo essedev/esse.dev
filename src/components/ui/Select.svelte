@@ -253,7 +253,7 @@
 				aria-multiselectable={multiple || undefined}
 				aria-activedescendant={!searchable && visible[active] ? optionId(active) : undefined}
 				tabindex={searchable ? -1 : 0}
-				class="max-h-64 overflow-y-auto py-1 outline-none"
+				class="max-h-64 overflow-y-auto overscroll-none py-1 outline-none"
 			>
 				{#each visible as option, i (option.value)}
 					{@const isSelected = selected.includes(option.value)}
