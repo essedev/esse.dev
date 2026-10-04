@@ -19,7 +19,8 @@
 		"test:e2e": "playwright test",
 		"test:ci": "vitest run && playwright test",
 		"generate-types": "wrangler types",
-		"eval:jev": "node --experimental-strip-types scripts/eval-jev.ts"
+		"eval:jev": "node --experimental-strip-types scripts/eval-jev.ts",
+		"favicons": "node --experimental-strip-types scripts/generate-favicons.ts"
 	},
 	"dependencies": {
 		"@astrojs/cloudflare": "^14.3.3",
