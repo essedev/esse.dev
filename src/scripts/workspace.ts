@@ -174,12 +174,10 @@ const navItems = () =>
 		(el) => el.offsetParent !== null
 	);
 
+// La voce scelta è quella col focus, e si vede dal fondo di `:focus-visible`: se il focus
+// esce dalla lista non resta una seconda voce evidenziata accanto alla pagina corrente.
 function select(el: HTMLAnchorElement | undefined) {
 	if (!el) return;
-	for (const item of document.querySelectorAll('[data-nav-item][data-selected]')) {
-		item.removeAttribute('data-selected');
-	}
-	el.setAttribute('data-selected', '');
 	el.focus({ preventScroll: true });
 	el.scrollIntoView({ block: 'nearest', behavior: reduceMotion ? 'auto' : 'smooth' });
 }

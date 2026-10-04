@@ -10,11 +10,26 @@ test.describe('workspace keyboard', () => {
 	test('j moves through the list and Enter opens the item', async ({ page }) => {
 		await open(page, '/en');
 		await page.keyboard.press('j');
-		const selected = page.locator('[data-nav-item][data-selected]');
+		const selected = page.locator('[data-nav-item]:focus-visible');
 		await expect(selected).toHaveCount(1);
 		const href = await selected.getAttribute('href');
 		await page.keyboard.press('Enter');
 		await expect(page).toHaveURL(new RegExp(`${href}$`));
+	});
+
+	test('the j/k highlight goes away with the focus', async ({ page }) => {
+		await open(page, '/en');
+		await page.keyboard.press('j');
+		await page.keyboard.press('j');
+		const selected = page.locator('[data-nav-item]:focus-visible');
+		await expect(selected).toHaveCount(1);
+		const item = (await selected.elementHandle())!;
+		// `transition-colors`: il fondo ci mette un attimo ad arrivare e ad andarsene.
+		const background = () => item.evaluate((el) => getComputedStyle(el).backgroundColor);
+		await expect.poll(background).not.toBe('rgba(0, 0, 0, 0)');
+		await page.locator('[data-content]').click({ position: { x: 400, y: 300 } });
+		await expect(page.locator('[data-nav-item]:focus')).toHaveCount(0);
+		await expect.poll(background).toBe('rgba(0, 0, 0, 0)');
 	});
 
 	test('"/" focuses the search, which narrows the list and opens the first match', async ({
