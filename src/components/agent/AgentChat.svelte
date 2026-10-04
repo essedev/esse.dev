@@ -57,7 +57,8 @@
 		budget: string;
 		credit: string;
 		credits: string;
-		notice: Record<'offtopic' | 'abuse' | 'budget', string>;
+		/** Per lingua: l'avviso segue la lingua del messaggio, non quella della pagina. */
+		notice: Record<string, Record<'offtopic' | 'abuse' | 'budget', string>>;
 		intent: Record<Triage['intent'], string>;
 		weight: Record<Triage['weight'], string>;
 	};
@@ -151,6 +152,7 @@
 					break;
 				case 'events':
 					view = reduceEvents(view, message.events);
+					loaded = true;
 					break;
 				case 'triage':
 					triages = { ...triages, [message.text]: message.triage };
@@ -264,6 +266,30 @@
 	let sent = $state(false);
 	const empty = $derived(!sent && shown.length === 0 && locals.length === 0 && !view.running);
 
+	// Titolo e sottotitolo della pagina sono il benvenuto, come le domande d'esempio: quando
+	// la conversazione parte spariscono (restano per gli screen reader). Finché non arriva la
+	// trascrizione decide il ricordo dell'ultima visita, così una conversazione già aperta
+	// non mostra il titolo per un attimo.
+	const STARTED_KEY = 'agent-started';
+	let loaded = $state(false);
+	let remembered = false;
+	try {
+		remembered = localStorage.getItem(STARTED_KEY) === '1';
+	} catch {
+		// Niente storage: si aspetta la trascrizione.
+	}
+	const started = $derived(loaded ? !empty : remembered);
+	$effect(() => {
+		document.querySelector('[data-workspace]')?.toggleAttribute('data-agent-started', started);
+		if (!loaded) return;
+		try {
+			if (started) localStorage.setItem(STARTED_KEY, '1');
+			else localStorage.removeItem(STARTED_KEY);
+		} catch {
+			// vedi sopra
+		}
+	});
+
 	function reset() {
 		send({ type: 'reset' });
 		sent = false;
@@ -367,12 +393,18 @@
 	const lowBudget = $derived(
 		budget !== null && budget.remaining < budget.limit * SHOW_BUDGET_BELOW
 	);
-	/** Il testo di un avviso, con l'ora della ricarica nel fuso di chi legge. */
-	const noticeText = (reason: Local['reason']) =>
-		labels.notice[reason].replace(
+	/**
+	 * Il testo di un avviso, nella lingua del messaggio quando Jev l'ha riconosciuta ("ciao"
+	 * su `/en` riceve l'avviso in italiano), con l'ora della ricarica nel fuso di chi legge.
+	 */
+	function noticeText(item: Local) {
+		const lang = triages[item.text]?.lang ?? locale;
+		const texts = labels.notice[lang] ?? labels.notice[locale];
+		return texts[item.reason].replace(
 			'{time}',
-			nextReset(new Date()).toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit' })
+			nextReset(new Date()).toLocaleTimeString(lang, { hour: '2-digit', minute: '2-digit' })
 		);
+	}
 	const tokens = (n: number) =>
 		n >= 1000 ? `${(n / 1000).toLocaleString(locale, { maximumFractionDigits: 1 })}k` : String(n);
 </script>
@@ -396,7 +428,7 @@
 		</p>
 		{@render verdict(triages[item.text])}
 	</div>
-	<p class="pl-6 text-[0.9375rem] text-muted">{noticeText(item.reason)}</p>
+	<p class="pl-6 text-[0.9375rem] text-muted">{noticeText(item)}</p>
 {/snippet}
 
 <div class="flex flex-1 flex-col">
@@ -570,13 +602,14 @@
 								</summary>
 								<div class="flex flex-col gap-2 px-3 pb-3 font-mono text-xs">
 									<p class="label">{labels.toolCall}</p>
-									<pre class="overflow-x-auto overscroll-none whitespace-pre-wrap text-muted">{code(
+									<pre
+										class="overflow-x-auto overscroll-x-none whitespace-pre-wrap text-muted">{code(
 											part.arguments
 										) ?? JSON.stringify(part.arguments, null, 2)}</pre>
 									{#if result}
 										<p class="label">{labels.result}</p>
 										<pre
-											class="max-h-64 overflow-auto overscroll-none whitespace-pre-wrap text-muted">{resultText(
+											class="max-h-64 overflow-auto overscroll-x-none whitespace-pre-wrap text-muted">{resultText(
 												result
 											)}</pre>
 									{/if}

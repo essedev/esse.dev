@@ -25,6 +25,22 @@ export function getStaticPaths() {
 const { lang } = Astro.params;
 const { section } = Astro.props as { section: Section };
 const t = await translator(lang);
+// Gli avvisi dell'agente in ogni lingua: seguono la lingua del messaggio, non della pagina.
+const notices = Object.fromEntries(
+	await Promise.all(
+		languageCodes.map(async (code) => {
+			const tl = await translator(code);
+			return [
+				code,
+				{
+					offtopic: tl('agentNoticeOfftopic'),
+					abuse: tl('agentNoticeAbuse'),
+					budget: tl('agentNoticeBudget')
+				}
+			];
+		})
+	)
+);
 const site = await getSite(lang);
 const routes = navigation[lang];
 const title = site.sections[section];
@@ -75,7 +91,12 @@ const ogSection = section === 'projects' ? 'projects' : section === 'articles' ?
 	crumbs={[{ label: routes[section] }]}
 >
 	<Page class={section === 'agent' ? 'pb-0!' : undefined}>
-		<header class="flex flex-col gap-4">
+		<header
+			class:list={[
+				'flex flex-col gap-4',
+				section === 'agent' && 'group-data-[agent-started]/ws:sr-only'
+			]}
+		>
 			<h1 class="text-[clamp(2rem,1.2rem+2.6vw,3.5rem)] leading-[1.05] font-medium tracking-[-0.025em]">
 				{title}
 			</h1>
@@ -85,7 +106,10 @@ const ogSection = section === 'projects' ? 'projects' : section === 'articles' ?
 		</header>
 
 		<div
-			class:list={['mt-[clamp(2rem,4vw,3.5rem)]', section === 'agent' && 'flex flex-1 flex-col']}
+			class:list={[
+				'mt-[clamp(2rem,4vw,3.5rem)]',
+				section === 'agent' && 'flex flex-1 flex-col group-data-[agent-started]/ws:mt-0'
+			]}
 		>
 			{(section === 'projects' || section === 'articles') && (
 				<CollectionBrowser
@@ -220,11 +244,7 @@ const ogSection = section === 'projects' ? 'projects' : section === 'articles' ?
 						budget: t('agentBudget'),
 						credit: t('agentCredit'),
 						credits: t('agentCredits'),
-						notice: {
-							offtopic: t('agentNoticeOfftopic'),
-							abuse: t('agentNoticeAbuse'),
-							budget: t('agentNoticeBudget')
-						},
+						notice: notices,
 						intent: {
 							about: t('agentIntentAbout'),
 							code: t('agentIntentCode'),

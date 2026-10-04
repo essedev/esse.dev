@@ -32,6 +32,18 @@ test.describe('agent', () => {
 		await expect(page.locator('main ul button')).toHaveCount(4);
 	});
 
+	test('an empty conversation shows the title even if the last visit had one open', async ({
+		page
+	}) => {
+		await page.goto('/en/agent');
+		await page.getByRole('button', { name: 'new conversation' }).click();
+		await page.evaluate(() => localStorage.setItem('agent-started', '1'));
+		await page.reload();
+		await expect(page.getByText('search_site')).toBeVisible({ timeout: 15_000 });
+		await expect(page.locator('[data-workspace]')).not.toHaveAttribute('data-agent-started');
+		await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+	});
+
 	test('the input sits at the bottom of the pane', async ({ page }) => {
 		await page.setViewportSize({ width: 1440, height: 900 });
 		await page.goto('/en/agent');
