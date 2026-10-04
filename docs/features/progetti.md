@@ -59,20 +59,23 @@ senza link al repo.
 - Assistenti personali, voce unica: nanoclaw, Bob, Life Terminal, Almanac.
 - LLM in locale, voce unica: Local LLM Eval e LLM Dash; nome da trovare.
 - Milano, voce unica: based-routing (trip planner multi-origine sulla rete lombarda) e
-  Milanoz, col contesto del trasferimento.
+  Milanoz, col contesto del trasferimento a Milano nel 2026.
 - Server personali, voce unica: monitor (`status.esse.dev`) e server-ops.
 - Esperimenti su Solana, voce unica: SolPlace con nome, il resto senza.
+- doppia.os: uno dei primi progetti con l'AI, mentre arrivavano i coding agent. L'effetto
+  molla sul trascinamento delle finestre, prima scritto a mano in Svelte e poi con l'AI;
+  oggi una cosa così è un benchmark per i modelli locali. La storia è la scheda.
+- Ethicode.
 - Pigeon, Flux (esce dalla vetrina), Budokan (sito su `budokan-v2`), L.R.L. Elettrica.
 
 **Idee**: Maia, con Cosmoscope e Upstream come iterazioni precedenti; Minerd, l'idle game
 come base di un gioco che si aggiorna da solo con l'AI.
 
 **Fuori**: Horizon e Casussy (quasi nessun lavoro), Templator (nascosto finché non si
-aggiorna), Haystack, CORE.
+aggiorna), Haystack, CORE, Didattica Integrata.
 
-**Da decidere**: il nome della voce sugli LLM in locale; l'anno del trasferimento a
-Milano; Verbosa, Kebabbivori, doppia.os, Ethicode e Didattica Integrata, oggi nel
-registro e non ancora discussi; IDKCraft e CamperPlan.
+**Da decidere**: il nome della voce sugli LLM in locale e di home-media; Verbosa e
+Kebabbivori, oggi nel registro; IDKCraft e CamperPlan.
 
 ## home-media
 
