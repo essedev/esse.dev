@@ -1,6 +1,7 @@
 ---
 import Sidebar from '../components/workspace/Sidebar.astro';
 import Toolbar from '../components/workspace/Toolbar.astro';
+import { getPage } from '../lib/content';
 import { translator } from '../lib/site';
 import { getNav } from '../lib/workspace';
 import Layout from './Layout.astro';
@@ -27,6 +28,10 @@ interface Props {
 const { lang, path, current, crumbs, view = 'detail', ...head } = Astro.props;
 const t = await translator(lang);
 const nav = await getNav(lang, t);
+// I profili esterni, gli stessi della pagina contatti, in fondo alla lista.
+const social = (await getPage('contact', lang)).data.links.filter((l) =>
+	/^https?:\/\//.test(l.url)
+);
 
 // Il livello sopra, unica fonte per Esc, il breadcrumb e il "‹" della toolbar su mobile:
 // la voce precedente del percorso, oppure la home per una sezione.
@@ -73,7 +78,7 @@ const up =
 					view === 'detail' && 'hidden lg:block'
 				]}
 			>
-				<Sidebar lang={lang} nav={nav} current={current} t={t} />
+				<Sidebar lang={lang} nav={nav} current={current} social={social} t={t} />
 			</aside>
 		</div>
 	</div>

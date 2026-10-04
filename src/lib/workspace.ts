@@ -23,7 +23,7 @@ export interface NavItem {
 	/** Numero d'ordine mostrato al posto del LED (metodo). */
 	index?: string;
 	/** Icona al posto del LED, per le voci senza stato: una pagina o uno scritto. */
-	icon?: 'person' | 'text' | 'agent' | 'now';
+	icon?: 'home' | 'person' | 'text' | 'agent' | 'now';
 	/** Testo su cui lavora il filtro. */
 	search: string;
 	/**
@@ -75,6 +75,13 @@ export async function getNav(lang: string, t: Translate): Promise<Nav> {
 
 	return {
 		pages: [
+			{
+				key: 'home',
+				href: `/${lang}`,
+				title: t('welcome'),
+				icon: 'home',
+				search: t('welcome').toLowerCase()
+			},
 			{
 				key: 'about',
 				href: base('about'),

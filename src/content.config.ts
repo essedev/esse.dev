@@ -142,6 +142,8 @@ const site = defineCollection({
 					skipToContent: text,
 					language: text,
 					home: text,
+					welcome: text,
+					contacts: text,
 					backHome: text,
 					pageNotFound: text,
 					pageNotFoundText: text,

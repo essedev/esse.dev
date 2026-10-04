@@ -13,6 +13,8 @@
 		"skipToContent": "Skip to content",
 		"language": "Language",
 		"home": "welcome",
+		"welcome": "Welcome",
+		"contacts": "contact",
 		"backHome": "Back home",
 		"pageNotFound": "Page not found",
 		"pageNotFoundText": "This address doesn't match any page. You'll find everything in the list.",

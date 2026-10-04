@@ -1,0 +1,30 @@
+---
+import { ArrowUpRight } from '@lucide/astro';
+
+/**
+ * I profili esterni come nomi in monospace con la freccia: Lucide non ha i loghi dei
+ * marchi, e nel sito le icone sono solo Lucide. Gli stessi link della pagina contatti.
+ */
+interface Props {
+	links: { name: string; url: string }[];
+	class?: string;
+}
+
+const { links, class: className } = Astro.props;
+---
+
+<ul class:list={['flex flex-wrap items-center gap-x-4 gap-y-1 font-mono', className]}>
+	{links.map((l) => (
+		<li>
+			<a
+				href={l.url}
+				target="_blank"
+				rel="me noopener noreferrer"
+				class="group text-muted hover:text-fg inline-flex items-center gap-1 transition-colors"
+			>
+				{l.name.toLowerCase()}
+				<ArrowUpRight class="size-3 transition-transform group-hover:translate-x-px group-hover:-translate-y-px" />
+			</a>
+		</li>
+	))}
+</ul>

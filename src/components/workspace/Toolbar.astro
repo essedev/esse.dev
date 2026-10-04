@@ -47,13 +47,18 @@ const slugMap = await getSlugMap();
 		data-glow
 		class="hidden min-w-0 items-center gap-2 font-mono text-[0.8125rem] lg:flex"
 	>
-		{crumbs.map((c, i) => (
+		<a
+			href={`/${lang}`}
+			aria-label={t('welcome')}
+			class="text-subtle hover:text-fg transition-colors"
+		>
+			~
+		</a>
+		{crumbs.map((c) => (
 			<>
-				{i > 0 && (
-					<span class="text-subtle/50" aria-hidden="true">
-						/
-					</span>
-				)}
+				<span class="text-subtle/50" aria-hidden="true">
+					/
+				</span>
 				{c.href ? (
 					<a
 						href={c.href}
