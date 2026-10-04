@@ -71,12 +71,18 @@
 
 		/* Il vetro (concept C, variante B): finestra su uno sfondo colorato, cornice, lista e
 		   campo dell'agente traslucidi. `--wall` è l'intensità del bagliore dietro. */
-		--wall: 1;
+		--wall: 0.6;
 		--glass-blur: 32px;
-		--glass-sat: 220%;
+		--glass-sat: 180%;
 		--glass-tint: 0;
 		--glass-rim: 0.3;
 		--glass-shadow: 0 12px 32px rgb(0 0 0 / 0.35);
+	}
+
+	/* Niente rimbalzo elastico (macOS, iOS) né scroll che passa al contenitore sotto, in
+	   nessun punto: la finestra resta ferma come un'app. */
+	* {
+		overscroll-behavior: none;
 	}
 
 	html {
