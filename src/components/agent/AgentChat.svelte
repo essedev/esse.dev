@@ -210,7 +210,8 @@
 		void shown.length;
 		void view.live;
 		void locals.length;
-		if (!following) return;
+		// A conversazione vuota non c'è nulla da seguire: la pagina parte dall'alto.
+		if (!following || empty) return;
 		tick().then(() => {
 			const s = scroller();
 			s.el.scrollTo({ top: s.height });
