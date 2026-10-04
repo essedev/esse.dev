@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="it">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Concept E - Cursore</title>
+		<!--
+			Concept E: il cursore del sito. Ogni riquadro usa il suo cursore vero: passaci sopra
+			con il mouse, sul testo, sul link e nel campo.
+			A  vettoriale: freccia con angoli appena smussati, grigio lavanda, bordo scuro;
+			   sui link la stessa freccia in lavanda piena.
+			B  pixel fine: la griglia resta, molto più fitta (1 px), si intuisce appena.
+			C  inverso: freccia scura con bordo chiaro, come i cursori dei temi scuri.
+		-->
+		<style>
+			@font-face { font-family: 'Geist'; font-weight: 400; src: url(https://cdn.jsdelivr.net/fontsource/fonts/geist@latest/latin-400-normal.woff2) format('woff2'); }
+			@font-face { font-family: 'Departure Mono'; src: url(https://cdn.jsdelivr.net/gh/rektdeckard/departure-mono@main/public/assets/DepartureMono-Regular.woff2) format('woff2'); }
+			:root { --bg: #0a0a0d; --panel: #121119; --fg: #efedf5; --text: #cbc9d4; --muted: #9c9aa8; --accent: #b59cff; --line: #23232b; }
+			* { box-sizing: border-box; }
+			body { margin: 0; min-height: 100vh; background: linear-gradient(135deg, rgb(181 156 255 / 0.1), rgb(110 80 255 / 0.08) 50%, transparent), #050507; color: var(--fg); font-family: 'Geist', system-ui, sans-serif; padding: 48px; }
+			h1 { font-weight: 500; letter-spacing: -0.02em; margin: 0 0 8px; }
+			p.intro { color: var(--muted); margin: 0 0 32px; max-width: 60ch; line-height: 1.5; }
+			.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; }
+			.tile { background: var(--panel); border-radius: 12px; box-shadow: inset 0 0 0 1px var(--line); padding: 24px; display: flex; flex-direction: column; gap: 16px; }
+			.tile h2 { font-family: 'Departure Mono', monospace; font-size: 13px; font-weight: 400; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); margin: 0; }
+			.tile p { color: var(--text); line-height: 1.6; margin: 0; }
+			.tile a { color: var(--fg); text-decoration: underline; text-decoration-color: var(--accent); text-underline-offset: 3px; }
+			.tile input { font: 13px 'Departure Mono', monospace; color: var(--fg); background: rgb(255 255 255 / 0.05); border: 0; border-radius: 6px; padding: 10px 12px; outline: none; }
+			.tile button { font: 13px 'Departure Mono', monospace; color: var(--fg); background: rgb(255 255 255 / 0.05); border: 0; border-radius: 6px; padding: 10px 12px; align-self: flex-start; }
+			.preview { display: flex; gap: 20px; align-items: flex-end; padding: 14px; border-radius: 8px; background: #17161f; }
+			.preview img { image-rendering: auto; }
+			.note { font-size: 13px; color: var(--muted) !important; }
+		</style>
+	</head>
+	<body>
+		<h1>Il cursore</h1>
+		<p class="intro">Passa il mouse sopra ogni riquadro: sul testo, sul link, sul bottone e nel campo. Sotto il titolo i tre cursori ingranditi due volte.</p>
+		<div class="grid" id="grid"></div>
+		<script>
+			const OUT = '#0a0a0d';
+			const svg = (w, h, body, scale = 1) =>
+				`<svg xmlns="http://www.w3.org/2000/svg" width="${w * scale}" height="${h * scale}" viewBox="0 0 ${w} ${h}">${body}</svg>`;
+			const url = (s) => `url("data:image/svg+xml,${encodeURIComponent(s)}")`;
+
+			// A, vettoriale: la freccia classica con angoli smussati. 16x24.
+			const arrowPath = 'M2.5 1.8v17.6c0 .5.6.8 1 .4l4.1-4.1 2.6 6c.2.4.6.6 1 .4l2.1-.9c.4-.2.6-.6.4-1l-2.6-6h5.8c.5 0 .8-.6.4-1L3.5 1.4c-.4-.4-1-.1-1 .4z';
+			const A = {
+				arrow: (fill) => svg(18, 24, `<path d="${arrowPath}" fill="${fill}" stroke="${OUT}" stroke-width="1.4" stroke-linejoin="round"/>`),
+				text: (fill) => svg(10, 22, `<path d="M2 1.5h2.2c.6 0 .8.3.8.8v17.4c0 .5-.2.8-.8.8H2M8 1.5H5.8c-.6 0-.8.3-.8.8v17.4c0 .5.2.8.8.8H8M3.4 11h3.2" fill="none" stroke="${OUT}" stroke-width="3.2" stroke-linecap="round"/><path d="M2 1.5h2.2c.6 0 .8.3.8.8v17.4c0 .5-.2.8-.8.8H2M8 1.5H5.8c-.6 0-.8.3-.8.8v17.4c0 .5.2.8.8.8H8M3.4 11h3.2" fill="none" stroke="${fill}" stroke-width="1.3" stroke-linecap="round"/>`)
+			};
+
+			// B, pixel fine: la stessa freccia su una griglia di 1 px, con i gradini più piccoli.
+			const fineArrow = [
+				'O','OO','OFO','OFFO','OFFFO','OFFFFO','OFFFFFO','OFFFFFFO','OFFFFFFFO','OFFFFFFFFO','OFFFFFFFFFO','OFFFFFFFFFFO','OFFFFFFOOOOO','OFFFOFFO','OFFOOFFO','OFO..OFFO','OO...OFFO','O.....OFFO','......OFFO','.......OO'
+			];
+			const pixels = (rows, fill) => {
+				const w = Math.max(...rows.map((r) => r.length));
+				const rects = rows.flatMap((r, y) => [...r].map((c, x) => (c === 'O' || c === 'F' ? `<rect x="${x}" y="${y}" width="1" height="1" fill="${c === 'O' ? OUT : fill}"/>` : ''))).join('');
+				return svg(w, rows.length, rects).replace('<svg ', '<svg shape-rendering="crispEdges" ');
+			};
+			const fineText = ['OOO.OOO','OFFOFFO','OOOFOOO', ...Array(14).fill('..OFO'), 'OOOFOOO','OFFOFFO','OOO.OOO'];
+
+			const variants = [
+				{
+					key: 'A', name: 'A · vettoriale',
+					note: 'Freccia moderna con gli angoli smussati, grigio lavanda chiaro (#d9d4ea) con il bordo scuro; sui link la stessa freccia piena di lavanda. Nessuna manina: il link si riconosce dal colore.',
+					cursor: url(A.arrow('#d9d4ea')) + ' 3 2, default',
+					pointer: url(A.arrow('#b59cff')) + ' 3 2, pointer',
+					text: url(A.text('#d9d4ea')) + ' 5 11, text',
+					imgs: [A.arrow('#d9d4ea'), A.arrow('#b59cff'), A.text('#d9d4ea')]
+				},
+				{
+					key: 'B', name: 'B · pixel fine',
+					note: 'La griglia in pixel di Departure Mono, ma a 1 px: i gradini si intuiscono appena. Stesso grigio lavanda; sui link riempimento lavanda.',
+					cursor: url(pixels(fineArrow, '#d9d4ea')) + ' 0 0, default',
+					pointer: url(pixels(fineArrow, '#b59cff')) + ' 0 0, pointer',
+					text: url(pixels(fineText, '#d9d4ea')) + ' 3 10, text',
+					imgs: [pixels(fineArrow, '#d9d4ea'), pixels(fineArrow, '#b59cff'), pixels(fineText, '#d9d4ea')]
+				},
+				{
+					key: 'C', name: 'C · inverso',
+					note: 'Freccia scura (il fondo del sito) con il bordo grigio lavanda, come i cursori dei temi scuri; sui link il bordo diventa lavanda. Più discreta, si stacca dal contenuto senza accendersi.',
+					cursor: url(svg(18, 24, `<path d="${arrowPath}" fill="#141419" stroke="#d9d4ea" stroke-width="1.4" stroke-linejoin="round"/>`)) + ' 3 2, default',
+					pointer: url(svg(18, 24, `<path d="${arrowPath}" fill="#141419" stroke="#b59cff" stroke-width="1.6" stroke-linejoin="round"/>`)) + ' 3 2, pointer',
+					text: url(A.text('#d9d4ea')) + ' 5 11, text',
+					imgs: [svg(18, 24, `<path d="${arrowPath}" fill="#141419" stroke="#d9d4ea" stroke-width="1.4" stroke-linejoin="round"/>`), svg(18, 24, `<path d="${arrowPath}" fill="#141419" stroke="#b59cff" stroke-width="1.6" stroke-linejoin="round"/>`), A.text('#d9d4ea')]
+				}
+			];
+
+			const grid = document.getElementById('grid');
+			for (const v of variants) {
+				const tile = document.createElement('section');
+				tile.className = 'tile';
+				tile.style.cursor = v.cursor;
+				tile.innerHTML = `
+					<h2>${v.name}</h2>
+					<div class="preview">${v.imgs.map((s) => `<img alt="" src="data:image/svg+xml,${encodeURIComponent(s)}" width="${parseFloat(s.match(/width="([\d.]+)"/)[1]) * 2}">`).join('')}</div>
+					<p>Porto l'AI generativa dentro aziende vere e la tengo in produzione. <a href="#">Un link verso un progetto</a>, poi altro testo per vedere la freccia sopra le parole.</p>
+					<button type="button">Un bottone</button>
+					<input type="text" placeholder="Un campo di testo">
+					<p class="note">${v.note}</p>`;
+				for (const el of tile.querySelectorAll('a, button')) el.style.cursor = v.pointer;
+				tile.querySelector('input').style.cursor = v.text;
+				grid.append(tile);
+			}
+		</script>
+	</body>
+</html>
