@@ -37,6 +37,7 @@
 		"sort": "Sort",
 		"statusCompleted": "Completed",
 		"statusInProgress": "In progress",
+		"statusMaintained": "Maintained",
 		"statusIdea": "Idea",
 		"statusArchived": "Archived",
 		"sortNewest": "Newest first",

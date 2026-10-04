@@ -37,6 +37,7 @@
 		"sort": "Ordina",
 		"statusCompleted": "Completato",
 		"statusInProgress": "In corso",
+		"statusMaintained": "Mantenuto",
 		"statusIdea": "Idea",
 		"statusArchived": "Archiviato",
 		"sortNewest": "Più recenti",

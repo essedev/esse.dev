@@ -63,6 +63,7 @@ export async function getNav(lang: string, t: Translate): Promise<Nav> {
 			(
 				{
 					'in-progress': 'statusInProgress',
+					maintained: 'statusMaintained',
 					completed: 'statusCompleted',
 					idea: 'statusIdea',
 					archived: 'statusArchived'

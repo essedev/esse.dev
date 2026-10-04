@@ -4,6 +4,7 @@ import type { UiKey } from './site';
 
 export const STATUS_KEY: Record<ProjectStatus, UiKey> = {
 	'in-progress': 'statusInProgress',
+	maintained: 'statusMaintained',
 	completed: 'statusCompleted',
 	idea: 'statusIdea',
 	archived: 'statusArchived'

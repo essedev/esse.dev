@@ -39,7 +39,7 @@ const COLORS = {
 	archived: '#4d4d58'
 };
 
-export type OgStatus = 'in-progress' | 'completed' | 'idea' | 'archived';
+export type OgStatus = 'in-progress' | 'maintained' | 'completed' | 'idea' | 'archived';
 
 // Un `type` e non un'`interface`: le props di `getStaticPaths` vogliono un record.
 export type OgData = {
@@ -65,7 +65,7 @@ export function titleSize(title: string): number {
 	return title.length > 50 ? 58 : title.length > 20 ? 84 : 112;
 }
 
-/** Il LED dello stato, come nel sito: pieno e acceso se vivo, vuoto se è un'idea. */
+/** Il LED dello stato, come nel sito: acceso se vivo (fisso se mantenuto), vuoto se è un'idea. */
 function led(status: OgStatus): OgNode {
 	const base = { display: 'flex', width: 13, height: 13, borderRadius: 999 };
 	if (status === 'idea') return h('div', { ...base, border: `2px solid ${COLORS.muted}` });
@@ -74,6 +74,13 @@ function led(status: OgStatus): OgNode {
 			...base,
 			background: COLORS.live,
 			boxShadow: '0 0 10px rgba(125, 255, 155, 0.75)'
+		});
+	}
+	if (status === 'maintained') {
+		return h('div', {
+			...base,
+			background: COLORS.live,
+			boxShadow: '0 0 5px rgba(125, 255, 155, 0.4)'
 		});
 	}
 	return h('div', {

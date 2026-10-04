@@ -5,6 +5,7 @@
 
 	const DOT: Record<Status, string> = {
 		'in-progress': 'bg-status-progress',
+		maintained: 'bg-status-maintained',
 		completed: 'bg-status-completed',
 		idea: 'bg-status-idea',
 		archived: 'bg-status-archived'

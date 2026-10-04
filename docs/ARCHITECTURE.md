@@ -121,7 +121,7 @@ contenitori principali, `overscroll-x-none` sui blocchi annidati che scorrono di
 una regola su ogni elemento faceva agganciare a Chromium la rotella a un antenato che
 non scorre, e la lista si fermava. Lo stile viene
 dal concept B (`docs/concepts/concept-b-stile.html`): accento lavanda su nero appena
-freddo, un verde fosforo solo per gli stati vivi o riusciti (LED in corso, copie e invii), Departure
+freddo, un verde fosforo solo per gli stati vivi o riusciti (LED in corso e mantenuto, copie e invii), Departure
 Mono per il monospace dell'interfaccia, e un velo da monitor CRT (alone da fosforo su
 titoli ed etichette, frangia rosso-ciano, righe e vignetta) regolato dalle variabili
 `--crt-*` di `global.css`. Scelte in `docs/DECISIONS.md` #15. Le etichette con

@@ -99,7 +99,7 @@ const ListProjects = Type.Object({
 	lang: Lang,
 	status: Type.Optional(
 		Type.Union(
-			['in-progress', 'completed', 'idea', 'archived'].map((s) => Type.Literal(s)),
+			['in-progress', 'maintained', 'completed', 'idea', 'archived'].map((s) => Type.Literal(s)),
 			{ description: 'Only projects in this state.' }
 		)
 	),

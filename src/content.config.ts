@@ -12,7 +12,7 @@ const isoDate = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'data in formato YYYY-MM
 const folderId = ({ entry }: { entry: string }) => entry.split('/')[0];
 const textId = ({ entry }: { entry: string }) => entry.replace(/\.md$/, '');
 
-export const projectStatus = z.enum(['in-progress', 'completed', 'idea', 'archived']);
+export const projectStatus = z.enum(['in-progress', 'maintained', 'completed', 'idea', 'archived']);
 
 const projects = defineCollection({
 	loader: glob({ pattern: '*/meta.json', base: './src/content/projects', generateId: folderId }),
@@ -180,6 +180,7 @@ const site = defineCollection({
 					sort: text,
 					statusCompleted: text,
 					statusInProgress: text,
+					statusMaintained: text,
 					statusIdea: text,
 					statusArchived: text,
 					sortNewest: text,

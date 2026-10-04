@@ -4,7 +4,7 @@
  * interattiva (listing con filtri). Il filtro è puro e testabile.
  */
 
-export type Status = 'in-progress' | 'completed' | 'idea' | 'archived';
+export type Status = 'in-progress' | 'maintained' | 'completed' | 'idea' | 'archived';
 
 export interface ListItem {
 	id: string;
@@ -32,7 +32,13 @@ export interface Filters {
 
 export const DEFAULT_FILTERS: Filters = { query: '', tags: [], statuses: [], sort: 'newest' };
 
-export const STATUS_ORDER: Status[] = ['in-progress', 'completed', 'idea', 'archived'];
+export const STATUS_ORDER: Status[] = [
+	'in-progress',
+	'maintained',
+	'completed',
+	'idea',
+	'archived'
+];
 
 const SORTS: SortKey[] = ['newest', 'oldest', 'title'];
 

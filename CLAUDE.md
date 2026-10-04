@@ -103,7 +103,7 @@ tastiera in `src/scripts/workspace.ts`.
   finestra con due card (lista e contenuto); su mobile la finestra ha solo il riquadro e la
   lista è un cassetto (`data-drawer`, in `src/scripts/workspace.ts`).
 - Due colori con compiti separati: la lavanda (`accent`) per identità e interazione, il
-  verde (`live`) solo per "vivo, riuscito" (LED in corso, copie e invii riusciti), mai
+  verde (`live`) solo per "vivo, riuscito" (LED in corso e mantenuto, copie e invii riusciti), mai
   sul testo corrente.
 - Vetro (`docs/concepts/concept-c-vetro.html`, variante B): sfondo colorato
   (`wallpaper`), cornice, lista, contenuto e campo dell'agente con l'utility `glass` e i
