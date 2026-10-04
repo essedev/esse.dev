@@ -111,7 +111,7 @@ saturazione moderata, nessun velo bianco, che ingrigisce, e un bordo che prende 
 appena; valori in `--glass-*` e `--wall`). Sfocano solo i vetri che non ne contengono
 altri (lista, campo dell'agente, menu): in Chromium un vetro che sfoca dentro un altro
 smette di sfocare, quindi cornice e riquadro hanno solo il bordo e il riquadro è quasi
-opaco, nel tono `panel` al 90%: un filo più scuro della lista, non il nero di `bg`. La toolbar resta piatta. `surface` e `hover` sono veli chiari e non grigi pieni,
+opaco, nel tono `pane` (#111116) al 95%, non il nero di `bg`. La toolbar resta piatta. `surface` e `hover` sono veli chiari e non grigi pieni,
 così i controlli sul vetro schiariscono invece di fare da buco; `subtle` è tarato sul
 vetro dove il velo dietro è più chiaro. Viene dal concept C
 (`docs/concepts/concept-c-vetro.html`, variante B), scelte in `docs/DECISIONS.md` #16.
@@ -150,7 +150,7 @@ che le contiene e una quando esce.
   contenitore che scorre e senza il browser si prende il gesto. Contiene anche i profili e
   la legenda; i tasti no.
 - **Token** (`@theme` in `src/styles/global.css`): `desk` e `frame` dietro e attorno alla
-  finestra; superfici `bg`, `panel`, `surface`, `hover`; `line`; testo `fg`, `text`,
+  finestra; superfici `bg`, `panel`, `pane` (il riquadro del contenuto), `surface`, `hover`; `line`; testo `fg`, `text`,
   `muted`, `subtle` (il minimo per il testo, 4,5:1 misurato sul vetro); `accent` e `on-accent`; `live` per
   gli stati vivi; `glow`, il viola profondo del velo dietro la finestra; `danger`; `status-*` per lo stato dei progetti; raggi `--radius-control`,
   `--radius-panel`, `--radius-card`, `--radius-window`. Classi condivise: `.led`, `.kbd`,

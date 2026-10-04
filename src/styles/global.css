@@ -20,6 +20,8 @@
 	--color-frame: #08080b;
 	--color-bg: #0a0a0d;
 	--color-panel: #0e0e12;
+	/* Il riquadro del contenuto, sopra lo sfondo: un passo più chiaro del nero di `bg`. */
+	--color-pane: #111116;
 	/* Controlli e riquadri dentro le card: un velo chiaro e non un grigio pieno, così sul
 	   vetro schiariscono invece di fare da buco scuro. Su bg danno circa #151518 e #1b1b1f. */
 	--color-surface: rgb(255 255 255 / 0.05);
