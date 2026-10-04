@@ -86,8 +86,8 @@ tastiera in `src/scripts/workspace.ts`.
 
 - La lista va in ordine di importanza: pagine singole (benvenuto, chi sono, adesso,
   agente), poi la vetrina dei progetti (`featured.json`, 6) con "tutti i N", metodo,
-  scritti, e in fondo i profili esterni. Gli altri progetti li trova la ricerca. Dovrebbe
-  stare in 900 px di altezza: oggi ne servono circa 1.000 (aperto in ROADMAP).
+  scritti, e in fondo i profili esterni. Gli altri progetti li trova la ricerca. Deve
+  stare in 900 px di altezza.
 - Un parametro nuovo nell'URL si controlla prima contro quelli in uso: `?q=` è la
   ricerca della sidebar, `?ask=` la domanda precompilata dell'agente.
 - La navigazione sta nella toolbar (breadcrumb, Esc, "‹ sezione" su mobile), mai un
