@@ -84,9 +84,12 @@ ARCHITECTURE): lista a sinistra, riquadro del contenuto con la sua toolbar a des
 in `src/layouts/Workspace.astro`, ordine della lista e del pager in `src/lib/workspace.ts`,
 tastiera in `src/scripts/workspace.ts`.
 
-- La lista va in ordine di importanza e sta in 900 px: pagine singole (chi sono, adesso,
+- La lista va in ordine di importanza: pagine singole (benvenuto, chi sono, adesso,
   agente), poi la vetrina dei progetti (`featured.json`, 6) con "tutti i N", metodo,
-  scritti. Gli altri progetti li trova la ricerca.
+  scritti, e in fondo i profili esterni. Gli altri progetti li trova la ricerca. Dovrebbe
+  stare in 900 px di altezza: oggi ne servono circa 1.000 (aperto in ROADMAP).
+- Un parametro nuovo nell'URL si controlla prima contro quelli in uso: `?q=` è la
+  ricerca della sidebar, `?ask=` la domanda precompilata dell'agente.
 - La navigazione sta nella toolbar (breadcrumb, Esc, "‹ sezione" su mobile), mai un
   "Indietro" nel contenuto. Il livello sopra si calcola dai `crumbs` in `Workspace.astro`.
 - Token in `@theme` (`src/styles/global.css`): un valore scritto a mano in un componente
