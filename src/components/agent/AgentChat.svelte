@@ -618,7 +618,7 @@
 
 	<!-- Un pannello di vetro ancorato in fondo al riquadro: la conversazione ci scorre dietro. -->
 	<div
-		class="glass sticky bottom-3 z-10 mt-8 mb-3 rounded-[var(--radius-panel)] bg-surface/60 px-3 pt-3 pb-2.5"
+		class="glass sticky bottom-3 z-10 mt-8 mb-3 rounded-[var(--radius-panel)] bg-panel/60 px-3 pt-3 pb-2.5"
 	>
 		<form onsubmit={submit} class="flex items-end gap-3">
 			<span class="pb-1.5 font-mono text-sm text-accent glow select-none" aria-hidden="true">›</span

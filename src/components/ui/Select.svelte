@@ -215,7 +215,7 @@
 		<!-- svelte-ignore a11y_no_static_element_interactions -->
 		<div
 			bind:this={panel}
-			class="absolute top-full z-30 mt-1.5 flex w-max max-w-[calc(100vw-2rem)] min-w-full flex-col overflow-hidden rounded-md border border-line bg-surface shadow-lg shadow-black/40 sm:max-w-72 sm:min-w-56 {side ===
+			class="glass absolute top-full z-30 mt-1.5 flex w-max max-w-[calc(100vw-2rem)] min-w-full flex-col overflow-hidden rounded-md bg-panel/85 sm:max-w-72 sm:min-w-56 {side ===
 			'end'
 				? 'right-0'
 				: 'left-0'}"

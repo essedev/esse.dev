@@ -20,14 +20,17 @@
 	--color-frame: #08080b;
 	--color-bg: #0a0a0d;
 	--color-panel: #0e0e12;
-	--color-surface: #141419;
-	--color-hover: #1a1a20;
+	/* Controlli e riquadri dentro le card: un velo chiaro e non un grigio pieno, così sul
+	   vetro schiariscono invece di fare da buco scuro. Su bg danno circa #151518 e #1b1b1f. */
+	--color-surface: rgb(255 255 255 / 0.05);
+	--color-hover: rgb(255 255 255 / 0.08);
 	--color-line: #23232b;
 	--color-fg: #efedf5;
 	--color-text: #cbc9d4;
 	--color-muted: #9c9aa8;
-	/* Il grigio minimo per il testo: 4,6:1 sulle superfici, sopra la soglia WCAG AA. */
-	--color-subtle: #81808d;
+	/* Il grigio minimo per il testo: 4,5:1 sul vetro dove il bagliore dietro è più forte
+	   (misurato), 6:1 sul nero pieno. Sopra la soglia WCAG AA. */
+	--color-subtle: #908e9b;
 	--color-accent: #b59cff;
 	--color-on-accent: #140c2b;
 	/* Il secondo colore, con un solo compito: "vivo, riuscito". LED in corso, l'agente che
@@ -68,11 +71,11 @@
 
 		/* Il vetro (concept C, variante B): finestra su uno sfondo colorato, cornice, lista e
 		   campo dell'agente traslucidi. `--wall` è l'intensità del bagliore dietro. */
-		--wall: 0.85;
-		--glass-blur: 24px;
-		--glass-sat: 180%;
-		--glass-tint: 0.045;
-		--glass-rim: 0.25;
+		--wall: 1;
+		--glass-blur: 32px;
+		--glass-sat: 220%;
+		--glass-tint: 0;
+		--glass-rim: 0.3;
 		--glass-shadow: 0 12px 32px rgb(0 0 0 / 0.35);
 	}
 
@@ -265,18 +268,23 @@
 		repeating-linear-gradient(to right, rgb(255 255 255 / 0.03) 0 1px, transparent 1px 48px),
 		repeating-linear-gradient(to bottom, rgb(255 255 255 / 0.03) 0 1px, transparent 1px 48px),
 		radial-gradient(
-			38% 50% at 16% 20%,
-			color-mix(in srgb, var(--color-accent) calc(var(--wall) * 55%), transparent),
+			45% 60% at 10% 18%,
+			color-mix(in srgb, var(--color-accent) calc(var(--wall) * 70%), transparent),
 			transparent 70%
 		),
 		radial-gradient(
-			30% 40% at 88% 84%,
-			color-mix(in srgb, var(--color-live) calc(var(--wall) * 25%), transparent),
+			50% 45% at 70% 0%,
+			color-mix(in srgb, var(--color-glow) calc(var(--wall) * 65%), transparent),
 			transparent 70%
 		),
 		radial-gradient(
-			45% 55% at 72% 6%,
-			color-mix(in srgb, var(--color-glow) calc(var(--wall) * 35%), transparent),
+			40% 45% at 45% 100%,
+			color-mix(in srgb, var(--color-glow) calc(var(--wall) * 45%), transparent),
+			transparent 70%
+		),
+		radial-gradient(
+			35% 45% at 95% 90%,
+			color-mix(in srgb, var(--color-live) calc(var(--wall) * 40%), transparent),
 			transparent 70%
 		),
 		var(--color-desk);

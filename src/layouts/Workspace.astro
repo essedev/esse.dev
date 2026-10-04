@@ -42,9 +42,7 @@ const up =
 			: home;
 
 // Una finestra staccata dai bordi su ogni schermo, appoggiata su uno sfondo colorato che si
-// vede attraverso la cornice e la lista, di vetro.
-// Sul vetro il fondo schiarisce dove il bagliore è più forte: lì `subtle` scende a 3,5:1, sotto
-// la soglia AA, e nella lista prende il valore di `muted` (4,9:1 nel punto peggiore). Su schermo largo dentro ci sono due
+// vede attraverso la cornice e la lista, di vetro. Su schermo largo dentro ci sono due
 // card, la lista (panel) e il riquadro del contenuto (bg); su mobile solo il riquadro, e la
 // lista entra da sinistra come una card sopra di esso (il cassetto, `data-drawer`).
 ---
@@ -59,11 +57,11 @@ const up =
 			data-view={view}
 			data-parent={up?.href ?? home.href}
 			data-lang={lang}
-			class="group/ws flex h-full flex-col lg:glass lg:bg-frame/30 lg:relative lg:grid lg:grid-cols-[var(--sidebar)_minmax(0,1fr)] lg:gap-2 lg:rounded-[var(--radius-window)] lg:p-2"
+			class="group/ws flex h-full flex-col lg:glass lg:bg-frame/20 lg:relative lg:grid lg:grid-cols-[var(--sidebar)_minmax(0,1fr)] lg:gap-2 lg:rounded-[var(--radius-window)] lg:p-2"
 		>
 			<div
 				data-content
-				class="bg-bg/94 ring-line/70 flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-[var(--radius-card)] ring-1 lg:order-2"
+				class="glass bg-bg/55 relative flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-[var(--radius-card)] lg:order-2"
 			>
 				<Toolbar lang={lang} path={path} crumbs={crumbs} up={up} t={t}>
 					<slot name="actions" slot="actions" />
@@ -71,7 +69,7 @@ const up =
 				<main
 					id="main-content"
 					data-main-scroll
-					class="flex min-h-0 min-w-0 flex-1 flex-col overflow-y-auto [mask-image:linear-gradient(to_bottom,transparent,black_1.5rem)]"
+					class="flex min-h-0 min-w-0 flex-1 flex-col overflow-y-auto"
 				>
 					<slot />
 				</main>
@@ -88,7 +86,7 @@ const up =
 				id="sidebar"
 				data-drawer-panel
 				tabindex="-1"
-				class="glass bg-panel/85 lg:bg-panel/50 [--color-subtle:var(--color-muted)] touch-pan-y outline-none invisible fixed inset-y-1.5 left-1.5 z-50 flex w-[min(21rem,calc(100vw-3.5rem))] -translate-x-[calc(100%+1rem)] flex-col overflow-hidden rounded-[var(--radius-card)] group-data-[drawer=open]/ws:visible group-data-[drawer=open]/ws:translate-x-0 lg:visible lg:relative lg:inset-auto lg:order-1 lg:z-auto lg:w-auto lg:translate-x-0"
+				class="glass bg-panel/75 lg:bg-panel/48 touch-pan-y outline-none invisible fixed inset-y-1.5 left-1.5 z-50 flex w-[min(21rem,calc(100vw-3.5rem))] -translate-x-[calc(100%+1rem)] flex-col overflow-hidden rounded-[var(--radius-card)] group-data-[drawer=open]/ws:visible group-data-[drawer=open]/ws:translate-x-0 lg:visible lg:relative lg:inset-auto lg:order-1 lg:z-auto lg:w-auto lg:translate-x-0"
 			>
 				<Sidebar lang={lang} nav={nav} current={current} social={social} t={t} />
 			</aside>
