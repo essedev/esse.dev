@@ -59,7 +59,7 @@
 		"why": "The interesting choice",
 		"prev": "Previous",
 		"next": "Next",
-		"agentPlaceholder": "Ask something about my projects",
+		"agentPlaceholder": "Ask about my projects",
 		"agentSend": "send",
 		"agentStop": "stop",
 		"agentReset": "new conversation",
