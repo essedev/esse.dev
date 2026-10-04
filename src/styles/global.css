@@ -62,12 +62,12 @@
 
 		/* Il velo CRT: alone da fosforo su titoli ed etichette, alone sull'accento, una
 		   frangia rosso-ciano sul testo, righe orizzontali e vignetta sopra a tutto. */
-		--crt-title-glow: 4.5px;
-		--crt-accent-glow: 6px;
-		--crt-aberration: 0.3px;
-		--crt-scan: 0.025;
+		--crt-title-glow: 3.5px;
+		--crt-accent-glow: 5px;
+		--crt-aberration: 0.22px;
+		--crt-scan: 0.018;
 		--crt-scan-gap: 3px;
-		--crt-vignette: 0.18;
+		--crt-vignette: 0.14;
 
 		/* Il vetro (concept C, variante B): finestra su uno sfondo colorato, cornice, lista e
 		   campo dell'agente traslucidi. `--wall` è l'intensità del bagliore dietro. */
@@ -75,7 +75,7 @@
 		--glass-blur: 32px;
 		--glass-sat: 110%;
 		--glass-tint: 0;
-		--glass-rim: 0.14;
+		--glass-rim: 0.09;
 		--glass-shadow: 0 12px 32px rgb(0 0 0 / 0.35);
 	}
 
