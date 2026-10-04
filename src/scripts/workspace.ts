@@ -11,7 +11,6 @@
  * - il livello sopra (Esc, breadcrumb, "‹") torna con la history se si arriva da lì.
  * - la lista ricorda il proprio scroll fra una pagina e l'altra.
  * - su mobile la lista è un cassetto che entra da sinistra sopra il riquadro.
- * - con il mouse, una luce sullo sfondo segue il puntatore.
  */
 
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -392,36 +391,4 @@ for (const type of ['pointerenter', 'pointerleave'] as const) {
 		},
 		true
 	);
-}
-
-// La luce dietro la finestra segue il puntatore con un po' di ritardo: si muove verso il
-// punto di arrivo a ogni frame e si ferma quando lo raggiunge. Solo con un mouse; con il
-// movimento ridotto salta subito al punto. Si spegne quando il puntatore esce dalla pagina.
-const light = document.querySelector<HTMLElement>('[data-cursor-light]');
-if (light && matchMedia('(pointer: fine)').matches) {
-	let x = innerWidth / 2;
-	let y = innerHeight / 3;
-	let tx = x;
-	let ty = y;
-	let frame = 0;
-	const step = () => {
-		const ease = reduceMotion ? 1 : 0.16;
-		x += (tx - x) * ease;
-		y += (ty - y) * ease;
-		light.style.setProperty('--lx', `${x.toFixed(1)}px`);
-		light.style.setProperty('--ly', `${y.toFixed(1)}px`);
-		frame = Math.abs(tx - x) + Math.abs(ty - y) > 0.5 ? requestAnimationFrame(step) : 0;
-	};
-	addEventListener(
-		'pointermove',
-		(event) => {
-			if (event.pointerType !== 'mouse') return;
-			tx = event.clientX;
-			ty = event.clientY;
-			light.setAttribute('data-on', '');
-			frame ||= requestAnimationFrame(step);
-		},
-		{ passive: true }
-	);
-	document.documentElement.addEventListener('pointerleave', () => light.removeAttribute('data-on'));
 }

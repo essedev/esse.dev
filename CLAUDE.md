@@ -116,9 +116,7 @@ tastiera in `src/scripts/workspace.ts`.
   CRT con i valori in `--crt-*` di `global.css`.
 - Nessuna larghezza massima sul contenuto: la misura la danno la colonna e la taglia
   fluida.
-- Controlli mai nativi (`ui/Select.svelte`). Icone solo Lucide. Cursori in pixel art in
-  `public/cursors/` (`--cursor-*` in `global.css`); con il mouse una luce sullo sfondo
-  segue il puntatore (`data-cursor-light`, `--cursor-light`).
+- Controlli mai nativi (`ui/Select.svelte`). Icone solo Lucide.
 - Una sola ricerca nel sito e un solo cursore lampeggiante. Mai linee o barre d'accento a
   sinistra o sopra un elemento per indicare selezione o stato: la selezione si vede dal
   fondo.
