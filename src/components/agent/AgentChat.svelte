@@ -119,15 +119,16 @@
 		)
 	);
 
-	// `?q=` arriva da un link (la home): la domanda finisce nel campo, non parte da sola.
-	// Il costo resta una scelta di chi visita.
+	// `?ask=` arriva da un link (la home): la domanda finisce nel campo, non parte da sola.
+	// Il costo resta una scelta di chi visita. Non `?q=`: è la ricerca della sidebar.
+	const PREFILL_PARAM = 'ask';
 	const PREFILL_MAX = 500;
 	function prefill() {
 		const url = new URL(location.href);
-		const q = url.searchParams.get('q')?.trim();
-		if (!q) return;
-		input = q.slice(0, PREFILL_MAX);
-		url.searchParams.delete('q');
+		const ask = url.searchParams.get(PREFILL_PARAM)?.trim();
+		if (!ask) return;
+		input = ask.slice(0, PREFILL_MAX);
+		url.searchParams.delete(PREFILL_PARAM);
 		history.replaceState(history.state, '', url);
 		tick().then(() => document.querySelector<HTMLTextAreaElement>('[data-agent-input]')?.focus());
 	}

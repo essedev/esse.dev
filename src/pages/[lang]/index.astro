@@ -33,7 +33,7 @@ const email = contact.data.links.find((l) => l.url.startsWith('mailto:'))?.url.s
 const ask = t('agentAsk4');
 const starts = [
 	{
-		href: `/${lang}/${routes.agent}?q=${encodeURIComponent(ask)}`,
+		href: `/${lang}/${routes.agent}?ask=${encodeURIComponent(ask)}`,
 		title: site.sections.agent,
 		note: `› ${ask}`,
 		icon: 'agent'

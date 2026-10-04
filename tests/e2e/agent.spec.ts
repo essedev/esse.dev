@@ -47,4 +47,15 @@ test.describe('agent', () => {
 		expect(docs.some((d) => d.kind === 'project')).toBe(true);
 		expect(docs.some((d) => (d as { featured?: boolean }).featured)).toBe(true);
 	});
+
+	test('a link with ?ask= fills the agent input without sending, and leaves the search alone', async ({
+		page
+	}) => {
+		await page.goto('/en');
+		await page.locator('a[href*="?ask="]').first().click();
+		await expect(page).toHaveURL(/\/en\/agent$/);
+		await expect(page.locator('[data-agent-input]')).toHaveValue(/Portsage/);
+		await expect(page.locator('#search')).toHaveValue('');
+		await expect(page.locator('main ul button')).toHaveCount(4);
+	});
 });
