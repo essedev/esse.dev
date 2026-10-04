@@ -92,6 +92,9 @@ tastiera in `src/scripts/workspace.ts`.
 - Token in `@theme` (`src/styles/global.css`): un valore scritto a mano in un componente
   è un errore. Profondità dal tono delle superfici. Su schermo largo la shell è una
   finestra con due card (lista e contenuto); su mobile tutto a filo.
+- Due colori con compiti separati: la lavanda (`accent`) per identità e interazione, il
+  verde (`live`) solo per "vivo, riuscito" (LED in corso, copie e invii riusciti), mai
+  sul testo corrente.
 - Stile del concept B (`docs/concepts/concept-b-stile.html`): lavanda accesa, Departure
   Mono per tutto il mono dell'interfaccia (il codice nella prosa resta Geist Mono), velo
   CRT con i valori in `--crt-*` di `global.css`.

@@ -20,9 +20,9 @@ const { external, t } = Astro.props;
 	aria-label={t('copyLink')}
 	class="hover:text-fg hover:bg-surface group flex h-8 items-center gap-1.5 rounded-[var(--radius-control)] px-2 transition-colors"
 >
-	<Link2 class="size-3.5 group-data-[copied]:text-accent" />
+	<Link2 class="size-3.5 group-data-[copied]:text-live" />
 	<span class="hidden sm:inline group-data-[copied]:hidden">{t('copyLink')}</span>
-	<span class="text-accent hidden sm:group-data-[copied]:inline">{t('copied')}</span>
+	<span class="text-live hidden sm:group-data-[copied]:inline">{t('copied')}</span>
 </button>
 {external && (
 	<a

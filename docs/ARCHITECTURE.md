@@ -101,7 +101,8 @@ transition) sembrava un sito che carica una pagina nuova e rallentava j k e h/l.
 
 Su schermo largo le due colonne sono due card dentro una finestra arrotondata, staccata
 dai bordi; su mobile restano a filo. Lo stile viene dal concept B
-(`docs/concepts/concept-b-stile.html`): accento lavanda su nero appena freddo, Departure
+(`docs/concepts/concept-b-stile.html`): accento lavanda su nero appena freddo, un verde
+fosforo solo per gli stati vivi o riusciti (LED in corso, copie e invii), Departure
 Mono per il monospace dell'interfaccia, e un velo da monitor CRT (alone da fosforo su
 titoli ed etichette, frangia rosso-ciano, righe e vignetta) regolato dalle variabili
 `--crt-*` di `global.css`.

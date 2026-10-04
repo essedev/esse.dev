@@ -4,9 +4,10 @@
 /*
  * Spazio di lavoro (concept A), con lo stile del concept B: lavanda accesa su nero appena
  * freddo, Departure Mono per tutto il monospace dell'interfaccia, un velo da monitor CRT
- * e la finestra con due card su schermo largo. Un solo accento, profondità dal tono delle
- * superfici. Tutto quello che è colore, raggio, durata o effetto vive qui: un valore
- * scritto a mano in un componente è un errore.
+ * e la finestra con due card su schermo largo. Lavanda per identità e interazione, verde
+ * solo per "vivo, riuscito"; profondità dal tono delle superfici. Tutto quello che è
+ * colore, raggio, durata o effetto vive qui: un valore scritto a mano in un componente è
+ * un errore.
  */
 @theme {
 	--font-sans: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
@@ -29,9 +30,12 @@
 	--color-subtle: #81808d;
 	--color-accent: #b59cff;
 	--color-on-accent: #140c2b;
+	/* Il secondo colore, con un solo compito: "vivo, riuscito". LED in corso, l'agente che
+	   lavora, una copia o un invio andati a buon fine. Mai sul testo corrente. */
+	--color-live: #7dff9b;
 	--color-danger: #f2857a;
 
-	--color-status-progress: var(--color-accent);
+	--color-status-progress: var(--color-live);
 	--color-status-completed: #efedf5;
 	--color-status-idea: #9c9aa8;
 	--color-status-archived: #4d4d58;
@@ -101,7 +105,7 @@
 	}
 	.led[data-status='in-progress'] {
 		background: var(--color-status-progress);
-		box-shadow: 0 0 var(--crt-accent-glow) color-mix(in srgb, var(--color-accent) 75%, transparent);
+		box-shadow: 0 0 var(--crt-accent-glow) color-mix(in srgb, var(--color-live) 75%, transparent);
 		animation: led-breathe 2.8s var(--ease-out) infinite;
 	}
 	.led[data-status='completed'] {
@@ -224,7 +228,7 @@
 @keyframes led-breathe {
 	50% {
 		opacity: 0.55;
-		box-shadow: 0 0 2px color-mix(in srgb, var(--color-accent) 70%, transparent);
+		box-shadow: 0 0 2px color-mix(in srgb, var(--color-live) 70%, transparent);
 	}
 }
 

@@ -150,7 +150,7 @@
 	{/if}
 	<div class="flex items-center gap-3">
 		{#if sent}
-			<p class="font-mono text-xs text-muted">{labels.sent}</p>
+			<p class="font-mono text-xs text-live">{labels.sent}</p>
 		{:else}
 			<button
 				type="submit"
