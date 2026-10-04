@@ -54,14 +54,14 @@ senza link al repo.
 
 - printor: LLM che legge gli 8-K, harness a prova di autoinganno.
 - Wavelength: radio AI con redazione multi-agente.
-- Hearth (repo `home-media`): il server di casa e l'app per la TV (vedi sotto).
+- Media Hub (repo `home-media`): il server di casa e l'app per la TV (vedi sotto).
 - Watch-OS: firmware per uno smartwatch client vocale di un agente.
 - Assistenti personali, voce unica: nanoclaw, Bob, Life Terminal, Almanac. La prima
   iterazione è Verbosa (2025), chat multi-provider in Flutter con backend Go: il primo
   client e harness verso i modelli.
 - IDKCraft: voxel game in Kotlin, con IDKCraft Studio che genera le texture in pixel art
   via modelli di immagini, con immagini di riferimento per tenere lo stile.
-- Localhost, voce unica sugli LLM in locale: Local LLM Eval e LLM Dash.
+- Local LLM Experiments, voce unica sugli LLM in locale: Local LLM Eval e LLM Dash.
 - Milano, voce unica: based-routing (trip planner multi-origine sulla rete lombarda) e
   Milanoz, col contesto del trasferimento a Milano nel 2026.
 - Server personali, voce unica: monitor (`status.esse.dev`) e server-ops.
@@ -78,7 +78,7 @@ come base di un gioco che si aggiorna da solo con l'AI.
 **Fuori**: Horizon e Casussy (quasi nessun lavoro), Templator (nascosto finché non si
 aggiorna), Haystack, CORE, Didattica Integrata, Kebabbivori, CamperPlan.
 
-## Hearth
+## Media Hub
 
 Si racconta come il server di casa e le app che lo usano, non come un client torrent:
 launcher multi-app su un backend unico, media server che fa partire il video mentre
