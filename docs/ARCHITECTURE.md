@@ -110,8 +110,9 @@ lista, riquadro, campo dell'agente e menu sono di vetro (utility `glass`: sfocat
 saturazione moderata, nessun velo bianco, che ingrigisce, e un bordo che prende luce
 appena; valori in `--glass-*` e `--wall`). Sfocano solo i vetri che non ne contengono
 altri (lista, campo dell'agente, menu): in Chromium un vetro che sfoca dentro un altro
-smette di sfocare, quindi cornice e riquadro hanno solo il bordo e il riquadro è quasi
-opaco, nel tono `pane` (#111018), il colore medio della lista di vetro al 95%, non il nero di `bg`. La toolbar resta piatta. `surface` e `hover` sono veli chiari e non grigi pieni,
+smette di sfocare, quindi la cornice ha solo il bordo e il riquadro sfoca da uno strato
+dietro il contenuto (`data-pane-glass`, `pane` #111018 al 75%), fratello e non antenato
+del campo dell'agente e dei menu, che così sfocano ancora. La toolbar resta piatta. `surface` e `hover` sono veli chiari e non grigi pieni,
 così i controlli sul vetro schiariscono invece di fare da buco; `subtle` è tarato sul
 vetro dove il velo dietro è più chiaro. Viene dal concept C
 (`docs/concepts/concept-c-vetro.html`, variante B), scelte in `docs/DECISIONS.md` #16.

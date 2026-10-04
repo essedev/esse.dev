@@ -61,8 +61,11 @@ const up =
 		>
 			<div
 				data-content
-				class="glass bg-pane/95 relative flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-[var(--radius-card)] lg:order-2"
+				class="glass relative isolate flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-[var(--radius-card)] lg:order-2"
 			>
+				{/* Il vetro del riquadro è uno strato dietro il contenuto, non il riquadro stesso:
+				    così il campo dell'agente e i menu, che stanno nel contenuto, sfocano ancora. */}
+				<div data-pane-glass class="bg-pane/75 pointer-events-none absolute inset-0 -z-10"></div>
 				<Toolbar lang={lang} path={path} crumbs={crumbs} up={up} t={t}>
 					<slot name="actions" slot="actions" />
 				</Toolbar>

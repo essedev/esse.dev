@@ -165,7 +165,8 @@ valori in `--glass-*`), la barra in alto piatta. Lo sfondo è un velo diagonale 
 (`--wall`): bagliori separati diventavano macchie attraverso il vetro. Nessun velo bianco
 sul vetro, che ingrigisce; `surface` e `hover` sono veli chiari, non grigi pieni; un colore
 di testo si misura sul vetro, non sul nero. In Chromium un vetro che sfoca dentro un altro
-smette di sfocare: cornice e riquadro hanno solo il bordo. Scartati: velo bianco, bagliori
+smette di sfocare: la cornice ha solo il bordo, il riquadro sfoca da uno strato
+(`data-pane-glass`) dietro il contenuto invece che dal riquadro stesso. Scartati: velo bianco, bagliori
 separati, barra in alto di vetro (Simone non la voleva), la rifrazione della variante C
 (solo Chromium), la sfocatura su ogni livello.
 

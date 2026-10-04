@@ -348,11 +348,17 @@
 /* La cornice e il riquadro del contenuto hanno il bordo del vetro ma non la sfocatura: in
    Chromium un vetro che sfoca dentro un altro che sfoca smette di sfocare (il campo
    dell'agente mostrava nitido il testo dietro). Sfocano solo i vetri che non ne contengono
-   altri: lista, campo dell'agente, menu. Fuori da @layer, vince sull'utility. */
+   altri: lista, campo dell'agente, menu, e lo strato dietro il contenuto. Fuori da @layer,
+   vince sull'utility. */
 [data-workspace],
 [data-content] {
 	-webkit-backdrop-filter: none;
 	backdrop-filter: none;
+}
+/* Il riquadro sfoca lo stesso, da uno strato dietro il contenuto che non contiene altri vetri. */
+[data-pane-glass] {
+	-webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat));
+	backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat));
 }
 
 /* CRT su tutta la finestra: una frangia rosso-ciano sul testo, e sopra a tutto righe
