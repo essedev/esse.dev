@@ -48,7 +48,9 @@ Segreti in `.dev.vars` (escluso da git, modello in `.dev.vars.example`), letti d
 - `src/lib/content.ts` è l'unico accesso ai contenuti. Unisce meta e testo e fa fallire
   la build se manca una lingua, un testo non ha il meta, uno slug si ripete o la vetrina
   punta a un progetto non pubblicato. Un progetto da nascondere va a `published: false`,
-  non si cancella.
+  non si cancella. Quali progetti, come raccontarli e la voce del sito:
+  `docs/features/progetti.md`. Il repo è pubblico e l'agente ne legge i doc: niente nomi
+  di clienti o di progetti riservati in nessun file.
 - Testi del sito e stringhe della UI: collection `site` (`src/content/site/<lang>.json`),
   lette con `getSite(lang)` e `translator(lang)` di `src/lib/site.ts`. Schema rigido: una
   chiave nuova va nello schema e in ogni lingua, e diventa un tipo (`UiKey`).

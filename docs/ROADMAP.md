@@ -46,15 +46,17 @@ DECISIONS #16). OG nello stile terminale e favicon con il cursore del logo, dal 
 (Ciclo 20, per DECISIONS #19). Chiusa da Simone nel Ciclo 20; l'altezza della lista è
 tra le Aperte.
 
-### M16 - Progetti - Da fare
+### M16 - Progetti - In corso
 
-- Censimento dei repo (`~/Development/Projects` + GitHub `essedev`) e smistamento
-  voce per voce: vetrina, registro, escluso, cliente. I lavori per clienti restano
-  fuori di default; un repo privato si pubblica solo voce per voce.
-- Vetrina di 6 progetti (quanti ne stanno nella lista) con criteri espliciti: coprire
-  gli assi del lavoro e avere qualcosa da aprire (repo, sito, comando). Il registro
-  tiene tutti gli altri. I fatti (date, attività, stack) si ricavano dalle fonti, il
-  testo si scrive a mano con Simone, compresa "La scelta interessante".
+Principi, voce e smistamento in `docs/features/progetti.md`.
+
+- Fatto: censimento dei repo e smistamento con Simone (vetrina, registro, famiglie,
+  idee, fuori). I lavori per clienti restano fuori di default; un repo privato si
+  pubblica solo voce per voce.
+- Campo `previously` nello schema: le iterazioni precedenti di un'idea come dati.
+- Schede nuove e riscritte secondo lo smistamento. I fatti (date, attività, stack) si
+  ricavano dalle fonti, il testo si scrive a mano con Simone, compresa "La scelta
+  interessante".
 - Cover per ogni progetto da un componente (colore, icona Lucide o SVG, scena di UI),
   screenshot veri dove esistono. Tag ripuliti.
 - Skill che propone le voci nuove o aggiornate dai repo; propone, non pubblica.
