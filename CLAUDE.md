@@ -19,6 +19,7 @@ stato e log in `docs/ROADMAP.md` e `docs/CYCLES.md`.
 - `pnpm eval:jev` - valuta il triage dell'agente su `tests/eval/jev-triage.json`
   (chiamate vere via OpenRouter, dopo una build; fuori da `test:ci`). Da rilanciare se
   cambiano domande, soglie o versione di Jev.
+- `pnpm favicons` - rigenera le favicon in `public/` da `scripts/generate-favicons.ts`.
 - `pnpm generate-types` - rigenera `worker-configuration.d.ts` dopo ogni modifica a
   `wrangler.jsonc`.
 - `pnpm deploy` - build + wrangler deploy.
@@ -73,8 +74,11 @@ Segreti in `.dev.vars` (escluso da git, modello in `.dev.vars.example`), letti d
 ## Open Graph e SEO
 
 - OG: endpoint prerenderizzato `src/pages/og/[name].png.ts` (satori + resvg), layout
-  puro in `src/lib/og.ts`; il prerender gira in Node per resvg. Gotcha satori: font
-  `woff`/`ttf`, mai `woff2`; dimensioni nello `style`.
+  puro in `src/lib/og.ts` (stile terminale, DECISIONS #19); il prerender gira in Node per
+  resvg. Gotcha satori: font `woff`/`ttf`, mai `woff2` (Departure Mono ha anche il `woff`
+  in `src/assets/fonts/`); dimensioni nello `style`; colori ricopiati da `@theme`, perché
+  satori non legge le variabili CSS; un file si legge da `process.cwd()`, non da
+  `import.meta.url`, che alla build punta a `dist/`.
 - Canonical, hreflang e JSON-LD: helper puri in `src/lib/seo.ts`.
 
 ## Design system: lo spazio di lavoro

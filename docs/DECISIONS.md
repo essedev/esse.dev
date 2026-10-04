@@ -193,3 +193,18 @@ e la conversazione la vede solo chi l'ha scritta. Scartata per ora: un'allowlist
 nel renderer della trascrizione (complessità e link utili tagliati, senza un rischio da
 coprire). Si rivede quando le conversazioni diventano condivisibili o l'agente legge
 contenuti di terzi (fetch di URL, repo non di Simone).
+
+## #19 - OG nello stile terminale, favicon con il solo cursore
+
+**Status:** attiva (Ciclo 20)
+
+Dal concept D (`docs/concepts/concept-d-og.html`). Le immagini di condivisione sono la
+direzione B: il comando che apre la pagina (`whoami`, `ls progetti`, `cat
+progetti/relay.md`), il titolo grande con il cursore lavanda, il sommario, metadati e
+dominio in Departure Mono, righe CRT leggere. Generate alla build come PNG statici
+(satori e resvg nel prerender in Node): sul Worker non gira niente. Scartate: A, la
+finestra in miniatura (troppi dettagli che a dimensione di anteprima si perdono), e C,
+la tipografica (pulita ma slegata dal sito). La favicon è il cursore del logo con un
+alone: scartate la "e" (l'iniziale del dominio, senza un motivo), la "s" (il nome della
+lettera, ma una lettera resta una scelta comune), la tilde del percorso e il cappello del
+laboratorio. I file si generano con `pnpm favicons`.

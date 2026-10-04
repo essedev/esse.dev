@@ -677,3 +677,15 @@ Giro su M15 e M17 (`2a3862a` .. `38ece10`).
   attesa della scelta di Simone.
 - **Test:** 106 unit e 61 E2E.
 - **Prossimo passo:** OG e favicon dal concept D, l'altezza della lista oltre i 900 px.
+
+## Ciclo 20 - OG e favicon dal concept D (2026-10-04)
+
+- **OG (#19):** direzione B, il terminale: comando che apre la pagina, titolo con il
+  cursore lavanda (parola per parola, così su due righe segue l'ultima parola), sommario,
+  metadati in mono con il LED dello stato, righe CRT. 45 PNG generati alla build. Departure
+  Mono convertito in `woff` per satori.
+- **Favicon (#19):** il solo cursore del logo, proposta 7 del concept D, dopo un giro con
+  tre varianti a cursore verticale (s, e, solo cursore). `scripts/generate-favicons.ts`
+  (`pnpm favicons`) produce SVG, ICO con PNG dentro, PNG per iOS e manifest; manifest con
+  i colori nuovi.
+- **Test:** unit su comando, metadati, LED e taglia del titolo delle OG.

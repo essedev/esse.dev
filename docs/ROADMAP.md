@@ -42,10 +42,9 @@ la lista in ordine di importanza con la sola vetrina dei progetti. Stile dal con
 CRT, finestra con due card su schermo largo; home snellita con l'agente in testa. Su
 mobile la finestra con il riquadro e la lista in un cassetto (Ciclo 18), rifiniture
 chiuse nel Ciclo 19. La finestra di vetro su uno sfondo colorato (Ciclo 19, per
-DECISIONS #16). Resta:
+DECISIONS #16). OG nello stile terminale e favicon con il cursore del logo, dal concept D
+(Ciclo 20, per DECISIONS #19). Resta:
 
-- OG e favicon: Simone sceglie tra le proposte del concept D
-  (`docs/concepts/concept-d-og.html`), poi si applicano all'endpoint OG e alle favicon.
 - L'altezza della lista oltre i 900 px.
 
 ### M16 - Progetti - Da fare
@@ -108,7 +107,6 @@ Scelte in `docs/DECISIONS.md` #11-#14.
   rinnova. Spostare Umami su un sottodominio di `esse.dev` prima della scadenza, o le
   statistiche si fermano senza errori.
 - Email `hello@esse.dev`: verificare che la casella riceva prima della messa online.
-- Favicon: ora c'è quella di `main`; quella nuova esce dal concept D (M15).
 - Merge su `main` con **squash**: i branch del restyle portano in
   storia circa 70 MB di PNG della pixel art scartata, che non devono entrare in `main`.
 
