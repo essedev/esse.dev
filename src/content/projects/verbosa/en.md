@@ -12,4 +12,4 @@ tags:
   - "Material Design"
 ---
 
-In 2025 I wanted a single chat to use OpenAI, Anthropic, Google and OpenRouter models, picking the model message by message. Flutter frontend for desktop and mobile, Go backend with WebSockets for streaming, conversations organized by project.
+In 2025 I wanted a single chat to use OpenAI, Anthropic, Google and OpenRouter models, picking the model message by message. Flutter frontend for desktop and mobile, Go backend with WebSockets for streaming, conversations organized by project. It was my first client for talking to models: the assistants I built later start here.
