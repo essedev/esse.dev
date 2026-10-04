@@ -42,6 +42,17 @@ describe('searchSite', () => {
 		expect(searchSite(docs, 'terminale', { lang: 'it' })).toHaveLength(1);
 	});
 
+	it('finds a project by the name of an earlier iteration', () => {
+		const maia = doc({
+			path: '/en/projects/maia',
+			title: 'Maia',
+			previously: [{ name: 'Cosmoscope', year: 2025, note: 'Questions as concept maps.' }]
+		});
+		expect(searchSite([...docs, maia], 'cosmoscope', { lang: 'en' }).map((h) => h.path)).toEqual([
+			'/en/projects/maia'
+		]);
+	});
+
 	it('returns nothing for an empty query', () => {
 		expect(searchSite(docs, '   ', { lang: 'en' })).toEqual([]);
 	});

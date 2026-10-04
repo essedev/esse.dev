@@ -39,7 +39,21 @@ const projectTexts = defineCollection({
 		excerpt: z.string().min(1),
 		tags: z.array(z.string().min(1)),
 		/** La decisione tecnica interessante, per i progetti in vetrina. */
-		why: z.string().min(1).optional()
+		why: z.string().min(1).optional(),
+		/**
+		 * Le iterazioni precedenti dell'idea, dalla più vecchia: anche quelle abbandonate, per
+		 * trasparenza (docs/features/progetti.md). Nome e anno uguali in ogni lingua, la nota
+		 * tradotta; `src/lib/content.ts` lo controlla.
+		 */
+		previously: z
+			.array(
+				z.object({
+					name: z.string().min(1),
+					year: z.number().int().min(2015).max(2100),
+					note: z.string().min(1)
+				})
+			)
+			.optional()
 	})
 });
 
@@ -186,6 +200,7 @@ const site = defineCollection({
 					releases: text,
 					license: text,
 					why: text,
+					previously: text,
 					agentPlaceholder: text,
 					agentSend: text,
 					agentStop: text,

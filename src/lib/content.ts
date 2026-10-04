@@ -112,6 +112,16 @@ function loadAll() {
 		const articles = join('articles', am, at);
 		const method = join('method', mm, mt);
 		const now = join('now', nm, nt);
+		// Le iterazioni precedenti sono le stesse in ogni lingua: cambia solo la nota.
+		for (const p of projects) {
+			const shape = (lang: string) =>
+				JSON.stringify((p.texts[lang].data.previously ?? []).map((x) => [x.name, x.year]));
+			const [first, ...rest] = languageCodes;
+			for (const lang of rest) {
+				if (shape(lang) !== shape(first))
+					throw new Error(`projects/${p.id}: \`previously\` diverso tra ${first} e ${lang}`);
+			}
+		}
 		const publishedIds = new Set(projects.map((p) => p.id));
 		for (const id of featured.projects) {
 			if (!publishedIds.has(id))

@@ -188,6 +188,23 @@ const host = (url: string) => url.replace(/^https?:\/\/(www\.)?/, '').replace(/\
 					<Content />
 				</Prose>
 
+				{project?.text.previously && (
+					<section class="mt-16">
+						<h2 class="label">{t('previously')}</h2>
+						<ol class="mt-4 flex flex-col gap-5">
+							{project.text.previously.map((p) => (
+								<li class="grid grid-cols-[3rem_minmax(0,1fr)] items-baseline gap-x-4">
+									<span class="text-subtle font-mono text-sm tabular-nums">{p.year}</span>
+									<div>
+										<p class="text-fg font-medium">{p.name}</p>
+										<p class="text-muted mt-1 text-[0.9375rem] text-pretty">{p.note}</p>
+									</div>
+								</li>
+							))}
+						</ol>
+					</section>
+				)}
+
 				{related.length > 0 && (
 					<section class="mt-16">
 						<h2 class="label">{t('related')}</h2>

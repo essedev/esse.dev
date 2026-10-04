@@ -57,6 +57,7 @@
 		"releases": "releases",
 		"license": "license",
 		"why": "The interesting choice",
+		"previously": "Before this",
 		"prev": "Previous",
 		"next": "Next",
 		"agentPlaceholder": "Ask about my projects",

@@ -25,6 +25,7 @@ export const GET: APIRoute = async () => {
 				repo: p.meta.repo,
 				site: p.meta.site,
 				why: p.text.why,
+				previously: p.text.previously,
 				body: p.entry.body ?? ''
 			});
 		}

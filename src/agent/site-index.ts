@@ -19,6 +19,8 @@ export interface SiteDoc {
 	repo?: string;
 	site?: string;
 	why?: string;
+	/** Solo progetti: le iterazioni precedenti dell'idea, dalla più vecchia. */
+	previously?: { name: string; year: number; note: string }[];
 	/** Il testo della pagina in Markdown. */
 	body: string;
 }
@@ -49,7 +51,9 @@ export function searchSite(
 		if (doc.lang !== options.lang) continue;
 		if (options.kind && doc.kind !== options.kind) continue;
 		const title = normalize(doc.title);
-		const meta = normalize(`${doc.summary} ${doc.tags.join(' ')}`);
+		// Il nome di un'iterazione precedente porta al progetto che l'ha presa in carico.
+		const before = (doc.previously ?? []).map((p) => p.name).join(' ');
+		const meta = normalize(`${doc.summary} ${doc.tags.join(' ')} ${before}`);
 		const body = normalize(doc.body);
 		let score = 0;
 		for (const word of words) {
