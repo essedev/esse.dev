@@ -21,7 +21,7 @@
 	--color-bg: #0a0a0d;
 	--color-panel: #0e0e12;
 	/* Il riquadro del contenuto: il colore medio della lista di vetro, misurato in pagina. */
-	--color-pane: #0d0c12;
+	--color-pane: #0f0e15;
 	/* Controlli e riquadri dentro le card: un velo chiaro e non un grigio pieno, così sul
 	   vetro schiariscono invece di fare da buco scuro. Su bg danno circa #151518 e #1b1b1f. */
 	--color-surface: rgb(255 255 255 / 0.05);
