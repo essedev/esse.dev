@@ -1,0 +1,336 @@
+<!doctype html>
+<html lang="it">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Concept D - OG e favicon</title>
+		<!--
+			Concept D: immagini Open Graph (1200x630) e favicon con lo stile definitivo.
+			OG in tre direzioni, ognuna sui quattro tipi reali (home, sezione, progetto, scritto):
+			A  la finestra: la shell con le due card di vetro sul velo diagonale.
+			B  terminale: prompt mono, caret lavanda, righe CRT leggere.
+			C  tipografica: titolo Geist enorme, metadati mono, un solo accento.
+			Favicon in quattro proposte (1-4), a 16/32/64 px, nelle tab e come apple-touch-icon.
+			Le OG usano solo quello che satori sa rendere: niente backdrop-filter, blur o mask.
+		-->
+		<style>
+			@font-face { font-family: 'Geist'; font-weight: 400; src: url(https://cdn.jsdelivr.net/fontsource/fonts/geist@latest/latin-400-normal.woff2) format('woff2'); }
+			@font-face { font-family: 'Geist'; font-weight: 500; src: url(https://cdn.jsdelivr.net/fontsource/fonts/geist@latest/latin-500-normal.woff2) format('woff2'); }
+			@font-face { font-family: 'Departure Mono'; src: url(https://cdn.jsdelivr.net/gh/rektdeckard/departure-mono@main/public/assets/DepartureMono-Regular.woff2) format('woff2'); }
+
+			:root {
+				--desk: #050507;
+				--bg: #0a0a0d;
+				--panel: #0e0e12;
+				--surface: rgb(255 255 255 / 0.05);
+				--line: #23232b;
+				--fg: #efedf5;
+				--text: #cbc9d4;
+				--muted: #9c9aa8;
+				--subtle: #908e9b;
+				--accent: #b59cff;
+				--glow: #6e50ff;
+				--live: #7dff9b;
+				--sans: 'Geist', ui-sans-serif, system-ui, sans-serif;
+				--mono: 'Departure Mono', ui-monospace, monospace;
+			}
+			* { box-sizing: border-box; }
+			html, body { margin: 0; }
+			body {
+				background: var(--desk);
+				color: var(--fg);
+				font-family: var(--sans);
+				font-weight: 380;
+				-webkit-font-smoothing: antialiased;
+				padding: 32px clamp(16px, 4vw, 40px) 80px;
+			}
+			h1 { font-size: 30px; font-weight: 500; letter-spacing: -0.02em; margin: 0; }
+			h2 { font-family: var(--mono); font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--subtle); font-weight: 400; margin: 48px 0 16px; }
+			.intro { color: var(--muted); max-width: 70ch; line-height: 1.55; margin: 10px 0 0; font-size: 15px; }
+			.bar { position: sticky; top: 0; z-index: 10; display: flex; flex-wrap: wrap; gap: 24px; align-items: center; padding: 14px 0; margin-top: 20px; background: var(--desk); border-bottom: 1px solid var(--line); }
+			.seg { display: flex; align-items: center; gap: 6px; font-family: var(--mono); font-size: 12px; color: var(--subtle); }
+			.seg button { border: 0; border-radius: 6px; background: #141419; color: var(--muted); font: inherit; padding: 7px 12px; cursor: pointer; }
+			.seg button[aria-pressed='true'] { background: var(--accent); color: #140c2b; }
+			.note { max-width: 78ch; font-size: 14px; line-height: 1.6; color: var(--text); background: var(--panel); border-radius: 10px; padding: 16px 18px; margin-top: 18px; }
+			.note b { color: var(--fg); font-weight: 500; }
+			.note .pro { color: var(--live); }
+			.note .contro { color: #f2857a; }
+			.note p { margin: 0; }
+			.note p + p { margin-top: 8px; }
+
+			/* Griglia delle OG: ogni tela è 1200x630, scalata. */
+			.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(560px, 100%), 1fr)); gap: 28px; }
+			.cell { display: flex; flex-direction: column; gap: 8px; }
+			.cell .cap { font-family: var(--mono); font-size: 12px; color: var(--subtle); }
+			.frame { position: relative; width: 100%; aspect-ratio: 1200 / 630; overflow: hidden; border-radius: 10px; box-shadow: 0 0 0 1px var(--line); }
+			.og { position: absolute; top: 0; left: 0; width: 1200px; height: 630px; transform-origin: 0 0; display: flex; overflow: hidden; }
+
+			/* Anteprime di condivisione */
+			.share { display: flex; flex-wrap: wrap; gap: 40px; align-items: flex-start; }
+			.xcard { width: min(520px, 100%); font-family: -apple-system, system-ui, sans-serif; }
+			.xcard .post { color: #e7e9ea; font-size: 15px; line-height: 1.4; margin-bottom: 10px; }
+			.xcard .post b { font-weight: 700; }
+			.xcard .post span { color: #71767b; }
+			.xcard .card { border-radius: 16px; overflow: hidden; box-shadow: 0 0 0 1px #2f3336; position: relative; }
+			.xcard .card .frame { border-radius: 0; box-shadow: none; }
+			.xcard .dom { position: absolute; left: 12px; bottom: 12px; background: rgb(0 0 0 / 0.77); color: #fff; font-size: 13px; padding: 2px 6px; border-radius: 4px; }
+			.xcard .src { color: #71767b; font-size: 13px; margin-top: 4px; }
+			.li { width: min(520px, 100%); background: #1b1f23; border-radius: 10px; overflow: hidden; font-family: -apple-system, system-ui, sans-serif; }
+			.li .meta { padding: 10px 14px 12px; }
+			.li .meta div:first-child { color: #fff; font-size: 14px; font-weight: 600; }
+			.li .meta div:last-child { color: #b0b7bf; font-size: 12px; margin-top: 2px; }
+			.li .frame { border-radius: 0; box-shadow: none; }
+			.imsg { width: 300px; font-family: -apple-system, system-ui, sans-serif; }
+			.imsg .bubble { border-radius: 18px; overflow: hidden; background: #262629; }
+			.imsg .bubble .frame { border-radius: 0; box-shadow: none; }
+			.imsg .bubble .meta { padding: 9px 13px 11px; }
+			.imsg .bubble .meta div:first-child { color: #fff; font-size: 14px; font-weight: 600; line-height: 1.25; }
+			.imsg .bubble .meta div:last-child { color: #98989d; font-size: 12px; margin-top: 2px; }
+			.imsg .when { text-align: right; color: #8e8e93; font-size: 11px; margin-top: 4px; }
+			.share-cap { font-family: var(--mono); font-size: 12px; color: var(--subtle); margin-bottom: 10px; }
+
+			/* Favicon */
+			.favs { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(300px, 100%), 1fr)); gap: 20px; }
+			.fav { background: var(--panel); border-radius: 12px; padding: 18px; display: flex; flex-direction: column; gap: 14px; cursor: pointer; box-shadow: 0 0 0 1px var(--line); }
+			.fav[aria-pressed='true'] { box-shadow: 0 0 0 1.5px var(--accent); }
+			.fav .name { font-family: var(--mono); font-size: 13px; color: var(--fg); }
+			.fav .sizes { display: flex; align-items: flex-end; gap: 18px; }
+			.fav .sizes figure { margin: 0; display: flex; flex-direction: column; align-items: center; gap: 6px; font-family: var(--mono); font-size: 10px; color: var(--subtle); }
+			.fav p { margin: 0; font-size: 13px; line-height: 1.5; color: var(--text); }
+			.tabs { display: flex; flex-direction: column; gap: 16px; }
+			.tabbar { display: flex; align-items: flex-end; gap: 2px; padding: 8px 10px 0; border-radius: 10px 10px 0 0; width: min(640px, 100%); }
+			.tabbar.dark { background: #1f1f23; }
+			.tabbar.light { background: #dfe1e5; }
+			.tab { display: flex; align-items: center; gap: 8px; height: 34px; padding: 0 14px; border-radius: 8px 8px 0 0; font-family: -apple-system, system-ui, sans-serif; font-size: 12px; width: 200px; white-space: nowrap; overflow: hidden; }
+			.dark .tab { color: #9aa0a6; }
+			.dark .tab.on { background: #35363a; color: #e8eaed; }
+			.light .tab { color: #5f6368; }
+			.light .tab.on { background: #fff; color: #202124; }
+			.tab .ic { width: 16px; height: 16px; flex: none; display: block; }
+			.tab .gen { width: 16px; height: 16px; border-radius: 50%; background: currentColor; opacity: 0.35; flex: none; }
+			.home { display: flex; gap: 28px; align-items: flex-end; }
+			.home .phone { width: 220px; height: 150px; border-radius: 24px; background: linear-gradient(160deg, #2b2340, #0f1d2b); display: flex; align-items: center; justify-content: center; gap: 22px; }
+			.home .app { display: flex; flex-direction: column; align-items: center; gap: 6px; font-family: -apple-system, system-ui, sans-serif; font-size: 11px; color: #fff; }
+			.home .app .icon { width: 60px; height: 60px; border-radius: 14px; overflow: hidden; }
+			.home .app .icon.other { background: linear-gradient(135deg, #3a7bd5, #00d2ff); }
+		</style>
+	</head>
+	<body>
+		<h1>OG e favicon</h1>
+		<p class="intro">
+			Le immagini che compaiono quando si condivide un link al sito, nelle tre direzioni, e le proposte di favicon. Ogni tela è 1200x630 come quella vera, scalata. Le OG sono costruite solo con quello che satori, il motore che le genera alla build, sa rendere: flex, gradienti lineari e radiali, bordi, raggi, testo e SVG semplici. Niente sfocature né maschere: il vetro è simulato con un fondo traslucido e un filo di luce sul bordo.
+		</p>
+
+		<div class="bar">
+			<div class="seg">OG <span id="ogseg"></span></div>
+			<div class="seg">favicon <span id="favseg"></span></div>
+			<div class="seg">lingua <span id="langseg"></span></div>
+		</div>
+
+		<h2>Immagini di condivisione</h2>
+		<div class="grid" id="grid"></div>
+		<div class="note" id="ognote"></div>
+
+		<h2>Come appaiono condivise</h2>
+		<div class="share" id="share"></div>
+
+		<h2>Favicon</h2>
+		<div class="favs" id="favs"></div>
+		<div class="note" id="favnote"></div>
+
+		<h2>Nella barra del browser e sul telefono</h2>
+		<div class="tabs" id="tabs"></div>
+
+		<script>
+			const T = {
+				it: {
+					home: { cap: 'home', crumbs: ['~'], title: 'Simone Salerno', eyebrow: 'Lead AI Engineer in Yellow Tech · Milano', excerpt: 'Porto l\'AI generativa dentro aziende vere e la tengo in produzione. Progetto l\'architettura, l\'AI scrive il codice, io verifico e rilascio.', path: 'esse.dev' },
+					section: { cap: 'sezione', crumbs: ['~', 'progetti'], title: 'Progetti', eyebrow: '19 progetti · 6 in evidenza', excerpt: 'Cose che ho costruito e che sto costruendo: prodotti, strumenti per sviluppatori, esperimenti con l\'AI e qualche idea ancora sulla carta.', path: 'esse.dev/it/progetti' },
+					project: { cap: 'progetto', crumbs: ['~', 'progetti', 'relay'], title: 'Relay', status: 'in corso', year: '2026', tags: ['Swift', 'macOS', 'Claude Code'], excerpt: 'Terminale nativo per macOS pensato per far girare tanti coding agent in parallelo, con lo stato di ogni agente letto dagli hook e non dall\'output.', path: 'esse.dev/it/progetti/relay' },
+					article: { cap: 'scritto', crumbs: ['~', 'scritti', 'il-mio-nuovo-laboratorio'], title: 'Il mio nuovo laboratorio: dove le idee di un bambino incontrano il codice', date: '27 gen 2025', tags: ['SvelteKit', 'TailwindCSS'], excerpt: 'Dal raccoglitore arancione pieno di progetti di robot al codice: la storia di come il mio laboratorio di scienziato pazzo si è trasformato in questo sito web.', path: 'esse.dev/it/scritti/il-mio-nuovo-laboratorio' },
+					list: ['Benvenuto', 'Chi sono', 'Adesso', 'Agente'],
+					projects: 'progetti',
+					post: 'Ho scritto due righe su come lavoro con i coding agent'
+				},
+				en: {
+					home: { cap: 'home', crumbs: ['~'], title: 'Simone Salerno', eyebrow: 'Lead AI Engineer at Yellow Tech · Milan', excerpt: 'I bring generative AI into real companies and keep it running in production. I design the architecture, the AI writes the code, I review and ship.', path: 'esse.dev' },
+					section: { cap: 'section', crumbs: ['~', 'projects'], title: 'Projects', eyebrow: '19 projects · 6 featured', excerpt: 'Things I have built and am building: products, developer tools, AI experiments and a few ideas still on paper.', path: 'esse.dev/en/projects' },
+					project: { cap: 'project', crumbs: ['~', 'projects', 'relay'], title: 'Relay', status: 'in progress', year: '2026', tags: ['Swift', 'macOS', 'Claude Code'], excerpt: 'Native macOS terminal built for running many coding agents in parallel, with each agent\'s state read from hooks instead of parsed output.', path: 'esse.dev/en/projects/relay' },
+					article: { cap: 'writing', crumbs: ['~', 'writing', 'my-new-laboratory'], title: 'My new laboratory: where a child\'s ideas meet code', date: 'Jan 27, 2025', tags: ['SvelteKit', 'TailwindCSS'], excerpt: 'From an orange binder full of robot projects to code: how my mad scientist laboratory turned into this website.', path: 'esse.dev/en/writing/my-new-laboratory' },
+					list: ['Welcome', 'About', 'Now', 'Agent'],
+					projects: 'projects',
+					post: 'A few lines on how I work with coding agents'
+				}
+			};
+			const TYPES = ['home', 'section', 'project', 'article'];
+			const state = { og: 'A', fav: 1, lang: 'it' };
+			const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+
+			// Pezzi comuni, tutti fattibili in satori (div flex, testo, gradienti, bordi).
+			const caret = (h = 0.86) => `<span style="display:flex;width:${h * 0.55}em;height:${h}em;margin-left:0.12em;background:#b59cff;box-shadow:0 0 18px rgb(181 156 255 / .55)"></span>`;
+			const led = (size = 14, live = true) => `<span style="display:flex;width:${size}px;height:${size}px;border-radius:99px;background:${live ? '#7dff9b' : '#efedf5'};${live ? 'box-shadow:0 0 14px rgb(125 255 155 / .7)' : ''}"></span>`;
+			const titleSize = (t, big, mid, small) => (t.length > 50 ? small : t.length > 20 ? mid : big);
+
+			function meta(d, mono = 26) {
+				const parts = [];
+				if (d.status) parts.push(`<span style="display:flex;align-items:center;gap:14px">${led(13)}${esc(d.status)}</span>`, d.year);
+				if (d.date) parts.push(d.date, ...d.tags);
+				if (!d.status && !d.date && d.eyebrow) parts.push(d.eyebrow);
+				return `<div style="display:flex;align-items:center;gap:18px;font-family:'Departure Mono';font-size:${mono}px;color:#9c9aa8">${parts.map((p, i) => (i ? `<span style="color:#55535f">·</span>` : '') + `<span style="display:flex">${p}</span>`).join('')}</div>`;
+			}
+
+			// A: la finestra. Velo diagonale fuori, cornice con due card: lista e documento.
+			function ogA(d, k, L) {
+				const rows = L.list.map((r, i) => `<div style="display:flex;align-items:center;height:42px;padding:0 14px;border-radius:9px;font-size:21px;color:${i === 0 && k === 'home' ? '#efedf5' : '#cbc9d4'};${i === 0 && k === 'home' ? 'background:rgba(255,255,255,.06)' : ''}">${r}</div>`).join('');
+				const projRows = ['Relay', 'Nexus', 'Portsage'].map((p) => `<div style="display:flex;align-items:center;gap:14px;height:42px;padding:0 14px;border-radius:9px;font-size:21px;color:${k === 'project' && p === 'Relay' ? '#efedf5' : '#cbc9d4'};${k === 'project' && p === 'Relay' ? 'background:rgba(255,255,255,.06)' : ''}">${led(10, p !== 'Portsage')}${p}</div>`).join('');
+				const crumbs = d.crumbs.map((c, i) => `<span style="display:flex;color:${i === d.crumbs.length - 1 ? '#efedf5' : '#908e9b'}">${esc(c)}</span>`).join('<span style="display:flex;color:#55535f">/</span>');
+				const ts = titleSize(d.title, 92, 70, 52);
+				return `<div class="og" style="padding:34px;background:linear-gradient(135deg, rgb(181 156 255 / .32) 0%, rgb(110 80 255 / .22) 50%, rgb(5 5 7 / 0) 100%), #050507">
+					<div style="display:flex;flex:1;gap:12px;padding:12px;border-radius:30px;background:rgba(8,8,11,.35);border:1px solid rgba(255,255,255,.07);box-shadow:inset 0 1px 0 rgba(255,255,255,.09)">
+						<div style="display:flex;flex-direction:column;width:300px;padding:22px 16px;border-radius:19px;background:rgba(14,14,18,.62);border:1px solid rgba(255,255,255,.06);box-shadow:inset 0 1px 0 rgba(255,255,255,.08);font-family:Geist">
+							<div style="display:flex;align-items:center;padding:0 14px 22px;font-family:'Departure Mono';font-size:22px;color:#efedf5">esse.dev${caret(1)}</div>
+							${rows}
+							<div style="display:flex;padding:22px 14px 10px;font-family:'Departure Mono';font-size:15px;letter-spacing:.1em;color:#908e9b">${L.projects.toUpperCase()}</div>
+							${projRows}
+						</div>
+						<div style="display:flex;flex-direction:column;flex:1;padding:30px 56px;border-radius:19px;background:rgba(10,10,13,.72);border:1px solid rgba(255,255,255,.06);box-shadow:inset 0 1px 0 rgba(255,255,255,.08);font-family:Geist">
+							<div style="display:flex;gap:12px;font-family:'Departure Mono';font-size:20px">${crumbs}</div>
+							<div style="display:flex;flex-direction:column;justify-content:center;flex:1;gap:22px">
+								<div style="display:flex;font-size:${ts}px;font-weight:500;letter-spacing:-.035em;line-height:1.02;color:#efedf5;text-shadow:0 0 12px rgb(181 156 255 / .35)">${esc(d.title)}</div>
+								${meta(d, 21)}
+								<div style="display:flex;font-size:26px;line-height:1.45;color:#cbc9d4;max-width:640px">${esc(d.excerpt)}</div>
+							</div>
+						</div>
+					</div>
+				</div>`;
+			}
+
+			// B: terminale. Un prompt che apre il documento, titolo grande con il caret, righe CRT.
+			function ogB(d, k) {
+				const cmd = { home: 'whoami', section: `ls ${d.crumbs.slice(1).join('/')}`, project: `cat ${d.crumbs.slice(1).join('/')}.md`, article: `cat ${d.crumbs.slice(1).join('/')}.md` }[k];
+				const ts = titleSize(d.title, 112, 84, 58);
+				return `<div class="og" style="flex-direction:column;justify-content:space-between;padding:64px 80px;background:repeating-linear-gradient(to bottom, rgba(255,255,255,.035) 0 1px, rgba(0,0,0,0) 1px 4px), radial-gradient(70% 90% at 15% 10%, rgb(110 80 255 / .16), rgba(0,0,0,0) 70%), #0a0a0d;font-family:Geist">
+					<div style="display:flex;align-items:center;gap:16px;font-family:'Departure Mono';font-size:28px;color:#908e9b">
+						<span style="display:flex;color:#b59cff">›</span><span style="display:flex;color:#cbc9d4">${esc(cmd)}</span>
+					</div>
+					<div style="display:flex;flex-direction:column;gap:26px">
+						<div style="display:flex;align-items:flex-end;font-size:${ts}px;font-weight:500;letter-spacing:-.035em;line-height:1;color:#efedf5;text-shadow:0 0 16px rgb(181 156 255 / .45)">${esc(d.title)}${caret(0.8)}</div>
+						<div style="display:flex;font-size:29px;line-height:1.45;color:#cbc9d4;max-width:960px">${esc(d.excerpt.length > 150 ? d.excerpt.slice(0, d.excerpt.lastIndexOf(' ', 147)) + '…' : d.excerpt)}</div>
+					</div>
+					<div style="display:flex;justify-content:space-between;align-items:center">
+						${meta(d, 24)}
+						<div style="display:flex;font-family:'Departure Mono';font-size:24px;color:#efedf5">esse.dev</div>
+					</div>
+				</div>`;
+			}
+
+			// C: tipografica. Quasi solo il titolo; metadati in mono; un accento, il caret del logo.
+			function ogC(d, k) {
+				const ts = titleSize(d.title, 150, 104, 66);
+				return `<div class="og" style="flex-direction:column;justify-content:space-between;padding:70px 84px;background:#0a0a0d;font-family:Geist">
+					<div style="display:flex;justify-content:space-between;align-items:center;font-family:'Departure Mono';font-size:26px">
+						<div style="display:flex;align-items:center;color:#efedf5">esse.dev${caret(1)}</div>
+						<div style="display:flex;color:#908e9b">${esc(d.cap)}</div>
+					</div>
+					<div style="display:flex;font-size:${ts}px;font-weight:500;letter-spacing:-.045em;line-height:.98;color:#efedf5">${esc(d.title)}</div>
+					${meta(d, 26)}
+				</div>`;
+			}
+
+			const RENDER = { A: ogA, B: ogB, C: ogC };
+			const NOTES = {
+				A: '<p><b>A, la finestra.</b> La OG è una miniatura del sito: velo diagonale, cornice, lista a sinistra con la voce aperta, documento a destra.</p><p><span class="pro">Pro:</span> riconoscibile al primo colpo da chi ha visto il sito, racconta lo spazio di lavoro anche a chi non l\'ha visto. <span class="contro">Contro:</span> la più densa; a 300 px di larghezza (iMessage, Slack) la lista diventa rumore e il titolo si legge meno. Il vetro è solo simulato.</p>',
+				B: '<p><b>B, terminale.</b> Un prompt che apre il documento (whoami, ls, cat), titolo grande con il caret lavanda, righe CRT appena visibili, metadati in mono.</p><p><span class="pro">Pro:</span> porta l\'anima CRT e il caret del logo, resta leggibile piccola, un solo layout per tutti i tipi. <span class="contro">Contro:</span> il prompt finto è un cliché da sviluppatore; le righe orizzontali in satori vanno provate (repeating-linear-gradient), al limite si tolgono.</p>',
+				C: '<p><b>C, tipografica.</b> Titolo Geist enorme, logo in alto a sinistra con il caret, tipo di pagina a destra, metadati in mono in basso. Nient\'altro.</p><p><span class="pro">Pro:</span> la più leggibile a ogni dimensione e la più sobria, è la più vicina alla OG di oggi. <span class="contro">Contro:</span> la meno legata al sito nuovo: del vetro e della finestra non resta nulla, solo il caret.</p>'
+			};
+
+			function scaleFrames() {
+				for (const f of document.querySelectorAll('.frame')) {
+					const og = f.querySelector('.og');
+					if (og) og.style.transform = `scale(${f.clientWidth / 1200})`;
+				}
+			}
+
+			function renderOg() {
+				const L = T[state.lang];
+				document.getElementById('grid').innerHTML = TYPES.map((k) => `<div class="cell"><div class="cap">${state.og} · ${L[k].cap}</div><div class="frame">${RENDER[state.og](L[k], k, L)}</div></div>`).join('');
+				document.getElementById('ognote').innerHTML = NOTES[state.og] + '<p style="color:#908e9b">In tutte: il vetro, le righe e gli aloni sono gradienti e ombre, le uniche cose che satori disegna. Font Geist e Departure Mono in woff, non woff2 (vincolo di satori).</p>';
+				const p = L.project;
+				const og = RENDER[state.og](p, 'project', L);
+				document.getElementById('share').innerHTML = `
+					<div class="xcard"><div class="share-cap">X</div>
+						<div class="post"><b>Simone Salerno</b> <span>@essedotdev · 2 h</span><br>${state.lang === 'it' ? 'Ho rilasciato Relay, un terminale per far girare tanti coding agent insieme' : 'I released Relay, a terminal for running many coding agents at once'}</div>
+						<div class="card"><div class="frame">${og}</div><div class="dom">esse.dev</div></div>
+						<div class="src">${state.lang === 'it' ? 'Da' : 'From'} esse.dev</div>
+					</div>
+					<div class="li"><div class="share-cap" style="padding:10px 14px 0;margin:0">LinkedIn</div>
+						<div class="frame" style="margin-top:8px">${og}</div>
+						<div class="meta"><div>Relay · Simone Salerno</div><div>esse.dev</div></div>
+					</div>
+					<div class="imsg"><div class="share-cap">iMessage</div>
+						<div class="bubble"><div class="frame">${RENDER[state.og](L.home, 'home', L)}</div><div class="meta"><div>Simone Salerno · Lead AI Engineer</div><div>esse.dev</div></div></div>
+						<div class="when">${state.lang === 'it' ? 'Consegnato' : 'Delivered'}</div>
+					</div>`;
+				scaleFrames();
+			}
+
+			// Favicon: SVG su griglia 32. Si vedono a 16, 32, 64 px e a 180 come apple-touch-icon.
+			const FAVS = [
+				{
+					name: '1 · e_',
+					svg: (s) => `<svg width="${s}" height="${s}" viewBox="0 0 32 32"><rect width="32" height="32" rx="7" fill="#0a0a0d"/><rect x=".5" y=".5" width="31" height="31" rx="6.5" fill="none" stroke="#ffffff" stroke-opacity=".1"/><path d="M8.5 16.3h9.2c0-3.4-2-5.6-4.6-5.6-2.8 0-4.8 2.4-4.8 5.4 0 3.1 2 5.4 5 5.4 1.8 0 3.2-.8 4-2" fill="none" stroke="#efedf5" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><rect x="20.5" y="19.2" width="4.6" height="3" rx=".5" fill="#b59cff"/></svg>`,
+					text: 'La "e" di esse.dev con il cursore lavanda al posto del trattino basso. È la favicon generata a settembre, ripulita. <span class="pro">Pro:</span> legata al nome e al caret che il sito già usa ovunque. <span class="contro">Contro:</span> a 16 px la e e il cursore si toccano; una lettera sola è la scelta più comune.'
+				},
+				{
+					name: '2 · ~ e caret',
+					svg: (s) => `<svg width="${s}" height="${s}" viewBox="0 0 32 32"><rect width="32" height="32" rx="7" fill="#0a0a0d"/><rect x=".5" y=".5" width="31" height="31" rx="6.5" fill="none" stroke="#ffffff" stroke-opacity=".1"/><path d="M6 17.5c1.6-3.2 3.6-3.6 5.6-2s3.9 1.3 5.4-1.6" fill="none" stroke="#efedf5" stroke-width="2.6" stroke-linecap="round"/><rect x="20" y="9" width="6" height="14" rx="1" fill="#b59cff"/></svg>`,
+					text: 'La tilde del percorso, la radice di ogni pagina nella toolbar, e il cursore lampeggiante del logo. <span class="pro">Pro:</span> due segni netti che reggono a 16 px; dice "terminale" senza lettere. <span class="contro">Contro:</span> astratta: non dice esse.dev a chi non conosce il sito.'
+				},
+				{
+					name: '3 · cappello tech',
+					svg: (s) => `<svg width="${s}" height="${s}" viewBox="0 0 32 32"><rect width="32" height="32" rx="7" fill="#0a0a0d"/><rect x=".5" y=".5" width="31" height="31" rx="6.5" fill="none" stroke="#ffffff" stroke-opacity=".1"/><path d="M16.8 4.5 9.6 21.5h13.6l-2.3-7.6 3-1.6-3.9-.6z" fill="#1b1830" stroke="#b59cff" stroke-width="1.4" stroke-linejoin="round"/><path d="M6 23.2h20.5" stroke="#efedf5" stroke-width="2.4" stroke-linecap="round"/><path d="M13.2 18.2h2.6m-1.3 0v-3.5m3.4 3.5v-2.2h2" stroke="#b59cff" stroke-opacity=".55" stroke-width=".9" stroke-linecap="round"/><circle cx="16.5" cy="13.2" r="2.1" fill="#b59cff"/><circle cx="16.5" cy="13.2" r="3.6" fill="#b59cff" fill-opacity=".22"/></svg>`,
+					text: 'Il cappello da mago reso tech deciso a giugno: bordo lavanda, tracce di circuito, un chip luminoso davanti (era azzurro, qui nella lavanda del sito). <span class="pro">Pro:</span> la più personale, porta il "laboratorio" dell\'identità. <span class="contro">Contro:</span> a 16 px resta solo la sagoma e il punto; con lo stile terminale di oggi è un tema in più.'
+				},
+				{
+					name: '4 · la finestra',
+					svg: (s) => `<svg width="${s}" height="${s}" viewBox="0 0 32 32"><defs><linearGradient id="w${s}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#b59cff" stop-opacity=".55"/><stop offset=".5" stop-color="#6e50ff" stop-opacity=".35"/><stop offset="1" stop-color="#050507" stop-opacity="0"/></linearGradient></defs><rect width="32" height="32" rx="7" fill="#050507"/><rect width="32" height="32" rx="7" fill="url(#w${s})"/><rect x="4" y="5" width="7.5" height="22" rx="2.2" fill="#0e0e12" fill-opacity=".85" stroke="#ffffff" stroke-opacity=".14" stroke-width=".8"/><rect x="13" y="5" width="15" height="22" rx="2.2" fill="#0a0a0d" fill-opacity=".9" stroke="#ffffff" stroke-opacity=".14" stroke-width=".8"/><rect x="16" y="12" width="3" height="7" rx=".5" fill="#b59cff"/></svg>`,
+					text: 'La shell in miniatura: velo diagonale, le due card, il cursore nel documento. <span class="pro">Pro:</span> è il sito, e fa coppia con la OG A. <span class="contro">Contro:</span> a 16 px le card diventano due rettangoli scuri e il velo si perde; si legge bene da 32 in su.'
+				}
+			];
+
+			function renderFav() {
+				const f = FAVS[state.fav - 1];
+				document.getElementById('favs').innerHTML = FAVS.map((x, i) => `<div class="fav" data-fav="${i + 1}" aria-pressed="${state.fav === i + 1}"><div class="name">${x.name}</div><div class="sizes">${[16, 32, 64].map((s) => `<figure>${x.svg(s)}<figcaption>${s}</figcaption></figure>`).join('')}</div><p>${x.text}</p></div>`).join('');
+				document.getElementById('favnote').innerHTML = '<p>In produzione: un SVG per i browser moderni, ICO 32 per i vecchi, PNG 180 per la home di iOS e 192/512 per il manifest, generati da un sorgente unico con lo script che c\'è già (<b>scripts/generate-favicons.ts</b>). A 16 px conviene una versione semplificata dello stesso segno.</p>';
+				const tabRow = (cls) => `<div class="tabbar ${cls}"><div class="tab on">${f.svg(16).replace('<svg', '<svg class="ic"')}Simone Salerno · Lead AI Engineer</div><div class="tab"><span class="gen"></span>GitHub · essedev/relay</div><div class="tab"><span class="gen"></span>Claude</div></div>`;
+				document.getElementById('tabs').innerHTML = tabRow('dark') + tabRow('light') + `<div class="home"><div class="phone"><div class="app"><div class="icon">${f.svg(60).replace(/rx="7"/g, 'rx="0"')}</div>esse.dev</div><div class="app"><div class="icon other"></div>Meteo</div></div><figure style="margin:0;display:flex;flex-direction:column;align-items:center;gap:6px;font-family:var(--mono);font-size:10px;color:var(--subtle)">${f.svg(180).replace(/rx="7"/g, 'rx="0"')}<figcaption>apple-touch-icon 180 (iOS arrotonda da sé)</figcaption></figure></div>`;
+			}
+
+			function segs() {
+				const mk = (id, values, key, label = (v) => v) => {
+					document.getElementById(id).innerHTML = values.map((v) => `<button data-k="${key}" data-v="${v}" aria-pressed="${String(state[key]) === String(v)}">${label(v)}</button>`).join(' ');
+				};
+				mk('ogseg', ['A', 'B', 'C'], 'og');
+				mk('favseg', [1, 2, 3, 4], 'fav');
+				mk('langseg', ['it', 'en'], 'lang');
+			}
+
+			document.addEventListener('click', (e) => {
+				const b = e.target.closest('[data-k]');
+				const card = e.target.closest('[data-fav]');
+				if (b) state[b.dataset.k] = b.dataset.k === 'fav' ? Number(b.dataset.v) : b.dataset.v;
+				else if (card) state.fav = Number(card.dataset.fav);
+				else return;
+				segs();
+				renderOg();
+				renderFav();
+			});
+			addEventListener('resize', scaleFrames);
+
+			segs();
+			renderOg();
+			renderFav();
+			document.fonts.ready.then(scaleFrames);
+		</script>
+	</body>
+</html>
