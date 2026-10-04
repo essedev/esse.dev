@@ -109,7 +109,7 @@ attraverso la cornice, la lista (48%), il contenuto (55%) e il campo dell'agente
 ingrigisce, e un bordo che prende luce appena; valori in `--glass-*` e `--wall`). La
 toolbar resta piatta. `surface` e
 `hover` sono veli chiari e non grigi pieni, così i controlli sul vetro schiariscono
-invece di fare da buco; `subtle` è tarato sul vetro dove il velo dietro è più chiaro (5,3:1).
+invece di fare da buco; `subtle` è tarato sul vetro dove il velo dietro è più chiaro (5,7:1).
 Viene dal concept C (`docs/concepts/concept-c-vetro.html`, variante B;
 la rifrazione della C funziona solo in Chromium). Lo stile viene
 dal concept B (`docs/concepts/concept-b-stile.html`): accento lavanda su nero appena
