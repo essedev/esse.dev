@@ -2,6 +2,7 @@
 	import { AgentClient } from 'agents/client';
 	import { ArrowUpRight } from '@lucide/svelte';
 	import { onMount, tick } from 'svelte';
+	import { fade } from 'svelte/transition';
 	import { credits, nextReset, SHOW_BUDGET_BELOW } from '../../agent/budget';
 	import { renderMarkdown } from '../../agent/markdown';
 	import { parseRender, type RenderView as View } from '../../agent/render';
@@ -106,6 +107,11 @@
 			{ label: '', tools: catalog.filter((t) => !known.has(t.name)) }
 		].filter((g) => g.tools.length > 0);
 	});
+
+	/** Il tool di cui si legge la descrizione: quello sotto il puntatore, a fuoco o toccato. */
+	let picked: string | null = $state(null);
+	const toolLabel = (name: string) =>
+		labels.toolLabels[name] ?? catalog.find((t) => t.name === name)?.description ?? '';
 
 	const shown = $derived(
 		[...view.messages, ...(view.live ? [view.live] : [])].filter(
@@ -380,27 +386,6 @@
 <div class="flex flex-1 flex-col">
 	{#if empty}
 		<div class="flex flex-col gap-10">
-			{#if catalog.length}
-				<section class="flex flex-col gap-4">
-					<h2 class="label">{labels.tools}</h2>
-					<div class="grid gap-x-12 gap-y-6 md:grid-cols-2">
-						{#each groups as group (group.label)}
-							<div class="flex flex-col gap-2">
-								{#if group.label}
-									<h3 class="font-mono text-xs text-subtle">{group.label}</h3>
-								{/if}
-								<dl class="grid grid-cols-[auto_minmax(0,1fr)] gap-x-5 gap-y-1.5 text-[0.9375rem]">
-									{#each group.tools as tool (tool.name)}
-										<dt class="font-mono text-sm text-fg">{tool.name}</dt>
-										<dd class="text-muted">{labels.toolLabels[tool.name] ?? tool.description}</dd>
-									{/each}
-								</dl>
-							</div>
-						{/each}
-					</div>
-					<p class="text-sm text-pretty text-subtle">{labels.toolsNote}</p>
-				</section>
-			{/if}
 			<section class="flex flex-col gap-3">
 				<h2 class="label">{labels.tryAsking}</h2>
 				<ul class="flex flex-wrap gap-2">
@@ -418,6 +403,54 @@
 					{/each}
 				</ul>
 			</section>
+			{#if catalog.length}
+				<!-- Solo i nomi, per gruppo; la descrizione di uno alla volta nella riga sotto. -->
+				<section
+					class="flex flex-col gap-3"
+					onmouseleave={() => (picked = null)}
+					onfocusout={(e) => {
+						if (!e.currentTarget.contains(e.relatedTarget as Node | null)) picked = null;
+					}}
+				>
+					<h2 class="label">{labels.tools}</h2>
+					<dl class="grid grid-cols-[auto_minmax(0,1fr)] items-baseline gap-x-6 gap-y-1.5">
+						{#each groups as group (group.label)}
+							<dt class="font-mono text-xs text-subtle">{group.label}</dt>
+							<dd class="flex flex-wrap gap-1">
+								{#each group.tools as tool (tool.name)}
+									<button
+										type="button"
+										aria-describedby="agent-tool-detail"
+										data-active={picked === tool.name || undefined}
+										onmouseenter={() => (picked = tool.name)}
+										onfocus={() => (picked = tool.name)}
+										onclick={() => (picked = tool.name)}
+										class="cursor-pointer rounded-[var(--radius-control)] px-1.5 py-0.5 font-mono text-sm text-text transition-colors hover:bg-hover hover:text-fg data-active:bg-hover data-active:text-fg"
+									>
+										{tool.name}
+									</button>
+								{/each}
+							</dd>
+						{/each}
+					</dl>
+					<p
+						id="agent-tool-detail"
+						aria-live="polite"
+						class="min-h-[1.5em] text-sm text-pretty text-subtle"
+					>
+						{#key picked}
+							<span in:fade={{ duration: 140 }}>
+								{#if picked}
+									<span class="font-mono text-fg">{picked}</span>
+									<span class="text-muted">· {toolLabel(picked)}</span>
+								{:else}
+									{labels.toolsNote}
+								{/if}
+							</span>
+						{/key}
+					</p>
+				</section>
+			{/if}
 		</div>
 	{/if}
 	<div class="flex flex-1 flex-col gap-6">

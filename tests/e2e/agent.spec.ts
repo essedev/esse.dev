@@ -28,7 +28,7 @@ test.describe('agent', () => {
 		]) {
 			await expect(page.getByText(tool, { exact: true })).toBeVisible();
 		}
-		await expect(page.getByRole('heading', { name: 'On the code' })).toBeVisible();
+		await expect(page.getByText('On the code', { exact: true })).toBeVisible();
 		await expect(page.locator('main ul button')).toHaveCount(4);
 	});
 
