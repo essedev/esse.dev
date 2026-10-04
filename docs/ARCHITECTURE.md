@@ -100,7 +100,14 @@ istantaneo, come cambiare documento in un'app: la dissolvenza con salita di prim
 transition) sembrava un sito che carica una pagina nuova e rallentava j k e h/l.
 
 Su schermo largo le due colonne sono due card dentro una finestra arrotondata, staccata
-dai bordi. Su mobile la finestra resta, con il solo riquadro del contenuto. Lo stile viene
+dai bordi. Su mobile la finestra resta, con il solo riquadro del contenuto. La finestra
+poggia su uno sfondo con bagliori lavanda, viola e verde e una griglia fine (`wallpaper`),
+che si vede attraverso la cornice, la lista e il campo dell'agente, di vetro (utility
+`glass`: sfocatura, saturazione, velatura e un bordo che prende luce; valori in
+`--glass-*` e `--wall`). Il contenuto resta quasi opaco e la toolbar piatta, per leggere;
+sulla lista `subtle` prende il valore di `muted`, perché dove il bagliore è più forte
+scendeva a 3,5:1. Viene dal concept C (`docs/concepts/concept-c-vetro.html`, variante B;
+la rifrazione della C funziona solo in Chromium). Lo stile viene
 dal concept B (`docs/concepts/concept-b-stile.html`): accento lavanda su nero appena
 freddo, un verde fosforo solo per gli stati vivi o riusciti (LED in corso, copie e invii), Departure
 Mono per il monospace dell'interfaccia, e un velo da monitor CRT (alone da fosforo su
@@ -132,7 +139,7 @@ che le contiene e una quando esce.
 - **Token** (`@theme` in `src/styles/global.css`): `desk` e `frame` dietro e attorno alla
   finestra; superfici `bg`, `panel`, `surface`, `hover`; `line`; testo `fg`, `text`,
   `muted`, `subtle` (il minimo per il testo, 4,6:1); `accent` e `on-accent`; `live` per
-  gli stati vivi; `danger`; `status-*` per lo stato dei progetti; raggi `--radius-control`,
+  gli stati vivi; `glow`, il viola del bagliore dietro la finestra; `danger`; `status-*` per lo stato dei progetti; raggi `--radius-control`,
   `--radius-panel`, `--radius-card`, `--radius-window`. Classi condivise: `.led`, `.kbd`,
   `.label`, `.chip`, `.ulink`, `.caret`.
 - **Misura**: nessuna larghezza massima sul contenuto, la danno la colonna e la taglia

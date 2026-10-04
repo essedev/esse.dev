@@ -98,7 +98,11 @@ tastiera in `src/scripts/workspace.ts`.
   lista è un cassetto (`data-drawer`, in `src/scripts/workspace.ts`).
 - Due colori con compiti separati: la lavanda (`accent`) per identità e interazione, il
   verde (`live`) solo per "vivo, riuscito" (LED in corso, copie e invii riusciti), mai
-  sul testo corrente.
+  sul testo corrente. Fa eccezione il bagliore dello sfondo dietro la finestra.
+- Vetro (`docs/concepts/concept-c-vetro.html`, variante B): sfondo colorato
+  (`wallpaper`), cornice, lista e campo dell'agente con l'utility `glass` e i valori in
+  `--glass-*`; il contenuto resta quasi opaco e la toolbar piatta. Sul vetro `subtle` non
+  regge il contrasto: nella lista vale `muted`.
 - Stile del concept B (`docs/concepts/concept-b-stile.html`): lavanda accesa, Departure
   Mono per tutto il mono dell'interfaccia (il codice nella prosa resta Geist Mono), velo
   CRT con i valori in `--crt-*` di `global.css`.

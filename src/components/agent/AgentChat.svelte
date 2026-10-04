@@ -616,14 +616,11 @@
 		{/if}
 	</div>
 
-	<!-- Ancorato in fondo al riquadro: la conversazione scorre sopra e sfuma sul bordo. -->
+	<!-- Un pannello di vetro ancorato in fondo al riquadro: la conversazione ci scorre dietro. -->
 	<div
-		class="sticky bottom-0 mt-8 bg-bg pt-2 pb-4 before:pointer-events-none before:absolute before:inset-x-0 before:-top-8 before:h-8 before:bg-linear-to-t before:from-bg before:to-transparent"
+		class="glass sticky bottom-3 z-10 mt-8 mb-3 rounded-[var(--radius-panel)] bg-surface/60 px-3 pt-3 pb-2.5"
 	>
-		<form
-			onsubmit={submit}
-			class="flex items-end gap-3 rounded-[var(--radius-panel)] bg-surface p-3"
-		>
+		<form onsubmit={submit} class="flex items-end gap-3">
 			<span class="pb-1.5 font-mono text-sm text-accent glow select-none" aria-hidden="true">›</span
 			>
 			<textarea
@@ -654,7 +651,7 @@
 			{/if}
 		</form>
 		<div
-			class="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 font-mono text-[0.7rem] text-subtle"
+			class="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 px-1 font-mono text-[0.7rem] text-subtle"
 		>
 			<span class="flex items-center gap-2">
 				<span class="led" data-status={status === 'open' ? 'in-progress' : 'idea'}></span>
