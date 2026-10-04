@@ -14,7 +14,8 @@ Personal portfolio of Simone Salerno, online at [esse.dev](https://esse.dev). Bu
 ## Features
 
 - English and Italian with translated routes and slugs, canonical redirects and hreflang
-- Home with a curated project showcase, about, latest articles and contact
+- The site as a workspace: a list on the left (pages, project showcase, method, writing), the content pane with its toolbar on the right, keyboard navigation
+- Home with a short intro, contacts and where to start: the agent, a lead project, the method
 - Project and article listings with search, tag, status and sort filters kept in the URL
 - Article reading time and token estimate, related articles
 - Per-language RSS feed, sitemap with alternates, JSON-LD

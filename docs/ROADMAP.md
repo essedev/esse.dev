@@ -2,7 +2,7 @@
 
 Stato corrente del progetto. Milestone reali, non wishlist. Aggiornata insieme al codice.
 
-Ultimo aggiornamento: 2026-10-03 (Ciclo 15: l'agente legge progetti e codice, M17 in corso)
+Ultimo aggiornamento: 2026-10-04 (Ciclo 17: stile del concept B e home snellita, M15 in corso)
 
 ## Contesto
 
@@ -37,11 +37,16 @@ scelte in `docs/DECISIONS.md` #10. Gate verde: lint, check, build, unit, E2E.
 Struttura scelta: il sito come spazio di lavoro (concept A, Ciclo 12), portato in
 Astro. Fatti: due colonne alte tutta la finestra (lista e riquadro con toolbar), il
 livello sopra nella toolbar e non nel contenuto, il pager in fondo al riquadro con h/l,
-la lista in ordine di importanza con la sola vetrina dei progetti. Resta:
+la lista in ordine di importanza con la sola vetrina dei progetti. Stile dal concept B
+(Ciclo 17, per DECISIONS #15): lavanda e verde per gli stati vivi, Departure Mono, velo
+CRT, finestra con due card su schermo largo; home snellita con l'agente in testa. Resta:
 
-- Le pagine non ancora riviste con la shell nuova: home (Da dove iniziare resta),
-  metodo, adesso, chi sono, dettaglio di uno scritto, 404; un giro completo su mobile.
-- OG e favicon coerenti con lo spazio di lavoro (vedi Aperte).
+- Mobile: la finestra anche su mobile, un bottone e un drawer per la lista; la pagina
+  dell'agente che su mobile si apre scrollata in fondo (bug); poi un giro completo.
+- L'altezza della lista oltre i 900 px.
+- Le pagine non ancora riviste con la shell nuova: metodo, adesso, chi sono, dettaglio
+  di uno scritto, 404.
+- OG e favicon coerenti con lo spazio di lavoro e lo stile nuovo (vedi Aperte).
 
 ### M16 - Progetti - Da fare
 

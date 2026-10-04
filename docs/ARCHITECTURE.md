@@ -105,24 +105,31 @@ dai bordi; su mobile restano a filo. Lo stile viene dal concept B
 fosforo solo per gli stati vivi o riusciti (LED in corso, copie e invii), Departure
 Mono per il monospace dell'interfaccia, e un velo da monitor CRT (alone da fosforo su
 titoli ed etichette, frangia rosso-ciano, righe e vignetta) regolato dalle variabili
-`--crt-*` di `global.css`.
+`--crt-*` di `global.css`. Scelte in `docs/DECISIONS.md` #15. Le etichette con
+`data-scramble` si decodificano una volta quando il puntatore entra nel link o nel bottone
+che le contiene e una quando esce.
 
 - **Lista** (`src/lib/workspace.ts`): in ordine di importanza e alta al massimo 900 px.
-  Prima le pagine singole (chi sono, adesso, agente), poi la vetrina dei progetti con
-  "tutti i N" verso il registro, metodo, scritti. I progetti fuori vetrina restano nella
-  pagina: la ricerca li trova e compare quello aperto. È anche la fonte dell'ordine del
-  pager.
+  Prima Benvenuto (la home) e le pagine singole (chi sono, adesso, agente), poi la
+  vetrina dei progetti con "tutti i N" verso il registro, metodo, scritti. I progetti
+  fuori vetrina restano nella pagina: la ricerca li trova e compare quello aperto. È
+  anche la fonte dell'ordine del pager. In fondo, sopra la riga di stato, i profili
+  esterni (`SocialLinks.astro`, gli stessi link dei contatti) come nomi mono con la
+  freccia.
 - **Navigazione** (`src/scripts/workspace.ts`): j/k e frecce nella lista, Invio, Esc al
   livello sopra, h/l (o le frecce laterali) per precedente e successivo, `/` e Cmd/Ctrl+K
   per la ricerca. Non `[`/`]`: sulla tastiera italiana del Mac richiedono Option. Il
-  livello sopra (Esc, breadcrumb, "‹ sezione" su mobile) si calcola dai `crumbs` e torna
+  percorso nella toolbar comincia sempre con `~`, che porta alla home. Il livello sopra
+  (Esc, breadcrumb, "‹ sezione" su mobile) si calcola dai `crumbs` e torna
   con la history se si arriva da lì, così il registro ritrova i filtri. Il documento ha
   solo titolo, meta e testo: niente "Indietro" nel contenuto.
 - **Mobile**: la home mostra la presentazione e poi la lista; un dettaglio mostra solo il
   contenuto, con "‹ sezione" nella toolbar come in iOS.
-- **Token** (`@theme` in `src/styles/global.css`): superfici `bg`, `panel`, `surface`,
-  `hover`; testo `fg`, `text`, `muted`, `subtle` (il minimo per il testo, 4,6:1); un
-  accento; `danger`; raggi `--radius-control` e `--radius-panel`. Classi condivise:
+- **Token** (`@theme` in `src/styles/global.css`): `desk` e `frame` dietro e attorno alla
+  finestra; superfici `bg`, `panel`, `surface`, `hover`; `line`; testo `fg`, `text`,
+  `muted`, `subtle` (il minimo per il testo, 4,6:1); `accent`; `live` per gli stati vivi;
+  `danger`; raggi `--radius-control`, `--radius-panel`, `--radius-card`,
+  `--radius-window`. Classi condivise:
   `.led`, `.kbd`, `.label`, `.chip`, `.ulink`, `.caret`.
 - **Misura**: nessuna larghezza massima sul contenuto, la danno la colonna e la taglia
   fluida (`Page.astro`, `Prose.astro`). Nei dettagli, da `xl`, i fatti stanno in una
@@ -178,6 +185,8 @@ stessi sui due lati.
   già partita, verifica Turnstile, applica i tetti giornalieri (per visitatore nel
   `SiteAgent`, per il sito nel `Ledger`) e spedisce con il binding `send_email` verso
   l'indirizzo verificato in `MAIL_TO` (`draft.ts`, `DraftView.svelte`).
+- **Link all'agente:** `?ask=` scrive una domanda nell'input senza mandarla (la usa la
+  home). Non `?q=`, che è la ricerca della lista.
 - **Il catalogo** che la pagina mostra a conversazione vuota è quello che il server
   annuncia nel `hello`: un tool nuovo compare da solo, i gruppi in pagina lo ordinano.
 - **Triage e limiti:** ogni messaggio passa prima da Jev (`triage.ts`), che ferma fuori

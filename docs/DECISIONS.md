@@ -6,7 +6,8 @@ numerate e citabili come `#N`; status: `proposta`, `attiva`, `superata da #M`,
 
 Le scelte strutturali di fondo (contenuti JSON senza DB, i18n hand-rolled, slug map
 derivata, OG a build time) sono spiegate in `docs/ARCHITECTURE.md`; quelle di identità
-visiva (palette, font, hero, pixel art scartata) in `docs/archive/RESTYLE.md`.
+visiva del restyle fermo (palette, font, hero, pixel art scartata) in
+`docs/archive/RESTYLE.md`; lo stile attuale è #15.
 
 Le voci non più attive (superate o sospese con il ritorno allo stile base e la
 riscrittura in Astro) stanno in `docs/decisions-archive.md`, con la stessa numerazione.
@@ -133,3 +134,18 @@ Scartati: Python per `run_code`, un invio deciso dal modello, un indirizzo di ar
 scritto in `wrangler.jsonc`. Scartato anche togliere tool in base al peso stimato da Jev:
 il peso non è mai stato misurato contro il costo reale, e un errore toglierebbe
 `delegate` alle domande che lo meritano.
+
+## #15 - Stile dal concept B: lavanda, verde solo per gli stati vivi, velo CRT
+
+**Status:** attiva (Ciclo 17)
+
+Scelto con Simone su `docs/concepts/concept-b-stile.html`, che regolava dal vivo palette,
+mono, effetto CRT e cornice. Accento lavanda su nero appena freddo (palette G); un verde
+fosforo come secondo colore con un solo compito, gli stati vivi o riusciti, mai sul testo
+corrente. Departure Mono per tutto il mono dell'interfaccia, Geist Mono per il codice.
+Velo CRT (alone, frangia, righe, vignetta) regolato solo dalle variabili `--crt-*`. Su
+schermo largo lista e contenuto sono due card in una finestra; su mobile a filo. Il cambio
+pagina è istantaneo: la view transition sembrava un sito che carica e rallentava la
+tastiera. Scartati: le altre palette del concept (menta, viola, ultravioletto, ambra,
+cyberpunk), gli altri mono pixel (Geist Pixel, VT323, Doto e gli altri), la cornice piatta
+o la sola finestra, la dissolvenza tra le pagine.
