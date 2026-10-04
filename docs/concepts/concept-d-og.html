@@ -295,6 +295,21 @@
 					name: '4 · la finestra',
 					svg: (s) => `<svg width="${s}" height="${s}" viewBox="0 0 32 32"><defs><linearGradient id="w${s}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#b59cff" stop-opacity=".55"/><stop offset=".5" stop-color="#6e50ff" stop-opacity=".35"/><stop offset="1" stop-color="#050507" stop-opacity="0"/></linearGradient></defs><rect width="32" height="32" rx="7" fill="#050507"/><rect width="32" height="32" rx="7" fill="url(#w${s})"/><rect x="4" y="5" width="7.5" height="22" rx="2.2" fill="#0e0e12" fill-opacity=".85" stroke="#ffffff" stroke-opacity=".14" stroke-width=".8"/><rect x="13" y="5" width="15" height="22" rx="2.2" fill="#0a0a0d" fill-opacity=".9" stroke="#ffffff" stroke-opacity=".14" stroke-width=".8"/><rect x="16" y="12" width="3" height="7" rx=".5" fill="#b59cff"/></svg>`,
 					text: 'La shell in miniatura: velo diagonale, le due card, il cursore nel documento. <span class="pro">Pro:</span> è il sito, e fa coppia con la OG A. <span class="contro">Contro:</span> a 16 px le card diventano due rettangoli scuri e il velo si perde; si legge bene da 32 in su.'
+				},
+				{
+					name: '5 · s e cursore',
+					svg: (s) => `<svg width="${s}" height="${s}" viewBox="0 0 32 32"><rect width="32" height="32" rx="7" fill="#0a0a0d"/><rect x=".5" y=".5" width="31" height="31" rx="6.5" fill="none" stroke="#ffffff" stroke-opacity=".1"/><path d="M16.6 11.6c-.8-1.2-2.1-1.9-3.7-1.9-2.2 0-3.8 1.2-3.8 2.9 0 1.7 1.3 2.4 3.7 2.9 2.6.5 4 1.4 4 3.3 0 1.9-1.7 3.2-4.1 3.2-1.8 0-3.3-.7-4.1-2" fill="none" stroke="#efedf5" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><rect x="20" y="9" width="6" height="14" rx="1" fill="#b59cff"/></svg>`,
+					text: '"Esse" è il nome della lettera S: esse.dev si legge proprio "S". Una s minuscola con il cursore verticale della 2. <span class="pro">Pro:</span> la lettera ha un motivo, il cursore regge a 16 px, legata al nome per chi lo sa e pulita per chi non lo sa. <span class="contro">Contro:</span> una lettera sola resta una scelta comune; la s va disegnata bene perché a 16 px non diventi un 5.'
+				},
+				{
+					name: '6 · e e cursore',
+					svg: (s) => `<svg width="${s}" height="${s}" viewBox="0 0 32 32"><rect width="32" height="32" rx="7" fill="#0a0a0d"/><rect x=".5" y=".5" width="31" height="31" rx="6.5" fill="none" stroke="#ffffff" stroke-opacity=".1"/><path d="M8.5 16.3h9.2c0-3.4-2-5.6-4.6-5.6-2.8 0-4.8 2.4-4.8 5.4 0 3.1 2 5.4 5 5.4 1.8 0 3.2-.8 4-2" fill="none" stroke="#efedf5" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/><rect x="20" y="9" width="6" height="14" rx="1" fill="#b59cff"/></svg>`,
+					text: 'La e della 1 con il cursore verticale della 2. <span class="pro">Pro:</span> la e che ti piace con il segno più leggibile. <span class="contro">Contro:</span> resta il dubbio sul perché una e: è solo l\'iniziale del dominio.'
+				},
+				{
+					name: '7 · solo il cursore',
+					svg: (s) => `<svg width="${s}" height="${s}" viewBox="0 0 32 32"><rect width="32" height="32" rx="7" fill="#0a0a0d"/><rect x=".5" y=".5" width="31" height="31" rx="6.5" fill="none" stroke="#ffffff" stroke-opacity=".1"/><rect x="12.5" y="7" width="7" height="18" rx="1.2" fill="#b59cff" fill-opacity=".22"/><rect x="13.5" y="8" width="5" height="16" rx="1" fill="#b59cff"/></svg>`,
+					text: 'Il cursore lampeggiante del logo e basta, con un alone. <span class="pro">Pro:</span> il segno più riconoscibile del sito, nitido a ogni dimensione. <span class="contro">Contro:</span> da solo è quasi anonimo: un rettangolo lavanda tra le tab.'
 				}
 			];
 
@@ -311,7 +326,7 @@
 					document.getElementById(id).innerHTML = values.map((v) => `<button data-k="${key}" data-v="${v}" aria-pressed="${String(state[key]) === String(v)}">${label(v)}</button>`).join(' ');
 				};
 				mk('ogseg', ['A', 'B', 'C'], 'og');
-				mk('favseg', [1, 2, 3, 4], 'fav');
+				mk('favseg', [1, 2, 3, 4, 5, 6, 7], 'fav');
 				mk('langseg', ['it', 'en'], 'lang');
 			}
 
