@@ -30,6 +30,8 @@
 		"featured": "in evidenza",
 		"allProjects": "tutti i {n}",
 		"search": "Cerca",
+		"openIndex": "Apri l'indice",
+		"close": "Chiudi",
 		"status": "Stato",
 		"tags": "Tag",
 		"sort": "Ordina",

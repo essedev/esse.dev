@@ -1,5 +1,5 @@
 ---
-import { ListFilter } from '@lucide/astro';
+import { ListFilter, X } from '@lucide/astro';
 import type { Nav } from '../../lib/workspace';
 import NavRow from './NavRow.astro';
 import SocialLinks from '../SocialLinks.astro';
@@ -22,14 +22,20 @@ const keys: [string[], string][] = [
 ];
 ---
 
-<nav aria-label="Indice" data-sidebar class="flex min-h-0 flex-col lg:h-full">
-	<a
-		href={`/${lang}`}
-		data-glow
-		class="text-fg hidden h-12 shrink-0 items-center px-6 font-mono text-[0.8125rem] whitespace-nowrap lg:flex"
-	>
-		esse.dev<span class="caret" aria-hidden="true"></span>
-	</a>
+<nav aria-label="Indice" data-sidebar class="flex h-full min-h-0 flex-col">
+	<div class="flex h-12 shrink-0 items-center justify-between pr-2 pl-5 lg:pl-6">
+		<a href={`/${lang}`} data-glow class="text-fg font-mono text-[0.8125rem] whitespace-nowrap">
+			esse.dev<span class="caret" aria-hidden="true"></span>
+		</a>
+		<button
+			type="button"
+			data-drawer-close
+			aria-label={t('close')}
+			class="text-subtle hover:text-fg hover:bg-surface flex size-8 items-center justify-center rounded-[var(--radius-control)] transition-colors lg:hidden"
+		>
+			<X class="size-4" />
+		</button>
+	</div>
 	<div class="px-3 pt-3 pb-2 lg:px-4 lg:pt-1">
 		<label class="bg-surface focus-within:bg-hover flex h-9 items-center gap-2 rounded-[var(--radius-control)] pr-1.5 pl-2.5 transition-colors">
 			<ListFilter class="text-subtle size-4 shrink-0" />
@@ -43,7 +49,7 @@ const keys: [string[], string][] = [
 				spellcheck="false"
 				class="placeholder:text-subtle min-w-0 flex-1 bg-transparent font-mono text-[0.8125rem] outline-none [&::-webkit-search-cancel-button]:hidden"
 			/>
-			<span class="kbd">/</span>
+			<span class="kbd max-lg:hidden">/</span>
 		</label>
 	</div>
 
@@ -99,7 +105,7 @@ const keys: [string[], string][] = [
 	{/* Riga di stato: legenda dei LED, tasti, e per un attimo la conferma di un'azione. */}
 	<div
 		data-statusline
-		class="group/status text-subtle hidden shrink-0 flex-col gap-2.5 px-6 pt-3 pb-4 font-mono text-[0.7rem] lg:flex"
+		class="group/status text-subtle flex shrink-0 flex-col gap-2.5 px-5 pt-3 pb-4 font-mono text-[0.7rem] lg:px-6"
 	>
 		<SocialLinks links={social} class="gap-x-3 text-[0.7rem] whitespace-nowrap" />
 		<div class="flex flex-wrap items-center gap-x-4 gap-y-1 whitespace-nowrap">
@@ -116,7 +122,8 @@ const keys: [string[], string][] = [
 				{t('statusIdea').toLowerCase()}
 			</span>
 		</div>
-		<div class="grid h-[1.4rem] items-center">
+		{/* I tasti servono solo con la tastiera: su mobile la riga non c'è. */}
+		<div class="hidden h-[1.4rem] items-center lg:grid">
 			<ul
 				class="flex items-center gap-4 whitespace-nowrap transition-opacity duration-150 [grid-area:1/1] group-data-[flash]/status:opacity-0"
 				aria-hidden="true"

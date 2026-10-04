@@ -685,3 +685,22 @@ la lista rifinite a giri brevi.
 - **Prossimo passo:** mobile (la finestra anche su mobile, bottone e drawer per la lista),
   l'altezza della lista oltre i 900 px, la pagina dell'agente che su mobile si
   apre scrollata in fondo.
+
+## Ciclo 18 - Il mobile come finestra con un cassetto (2026-10-04)
+
+Giro su M15: il mobile prende la stessa forma dello schermo largo.
+
+- **Finestra:** anche su mobile la shell è staccata dai bordi (6 px, fondo `desk`) e il
+  riquadro è una card arrotondata che scorre dentro di sé, con la toolbar ferma in cima.
+  Prima la pagina scorreva tutta e la home mostrava la lista sotto la presentazione.
+- **Cassetto:** la lista entra da sinistra come una card sopra il riquadro, con logo, X,
+  ricerca, voci, profili e legenda (i tasti restano solo su desktop). Si apre dal
+  bottone `PanelLeft` nella toolbar o dalla lente, che va dritta alla ricerca; si chiude
+  con Esc, la X, un tocco fuori o trascinandola verso sinistra. Il riquadro sotto diventa
+  `inert`, il focus entra nel cassetto e torna al bottone. La visibilità cambia subito in
+  apertura e a fine corsa in chiusura, altrimenti il focus non entra nello stesso gesto.
+- **Fix:** la pagina dell'agente non scorre più in fondo a conversazione vuota;
+  `theme-color` allineato al fondo nuovo.
+- **Test:** 104 unit e 57 E2E (cassetto: Esc, X, tocco fuori, ricerca dalla lente).
+- **Prossimo passo:** il giro completo su un iPhone vero, il segnaposto dell'agente su due
+  righe, l'altezza della lista oltre i 900 px.

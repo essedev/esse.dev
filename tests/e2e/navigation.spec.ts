@@ -57,6 +57,41 @@ test.describe('mobile toolbar', () => {
 		await expect(page).toHaveURL(/\/it\/progetti$/);
 	});
 
+	test('the index opens as a drawer and closes with Esc, the X and a tap outside', async ({
+		page
+	}) => {
+		await open(page, '/it/progetti/relay');
+		const sidebar = page.locator('[data-sidebar]');
+		const toggle = page.getByRole('button', { name: "Apri l'indice" });
+		await expect(toggle).toHaveAttribute('aria-expanded', 'false');
+
+		await toggle.click();
+		await expect(sidebar).toBeVisible();
+		await expect(toggle).toHaveAttribute('aria-expanded', 'true');
+		await expect(page.locator('[data-content]')).toHaveAttribute('inert', '');
+		await page.keyboard.press('Escape');
+		await expect(sidebar).toBeHidden();
+		await expect(page).toHaveURL(/\/it\/progetti\/relay$/);
+
+		await toggle.click();
+		await page.getByRole('button', { name: 'Chiudi' }).click();
+		await expect(sidebar).toBeHidden();
+
+		await toggle.click();
+		await page.mouse.click(380, 420);
+		await expect(sidebar).toBeHidden();
+		await expect(page.locator('[data-content]')).not.toHaveAttribute('inert', '');
+	});
+
+	test('the search button opens the drawer on the search field', async ({ page }) => {
+		await open(page, '/it/metodo');
+		await page.getByRole('button', { name: 'Cerca' }).click();
+		await expect(page.locator('#search')).toBeFocused();
+		await page.keyboard.type('relay');
+		await page.locator('[data-sidebar] a[href="/it/progetti/relay"]').click();
+		await expect(page).toHaveURL(/\/it\/progetti\/relay$/);
+	});
+
 	test('a section goes up to the home', async ({ page }) => {
 		await open(page, '/it/metodo');
 		await page.getByRole('link', { name: 'esse.dev', exact: true }).click();

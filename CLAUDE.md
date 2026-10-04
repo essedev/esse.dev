@@ -94,7 +94,8 @@ tastiera in `src/scripts/workspace.ts`.
   "Indietro" nel contenuto. Il livello sopra si calcola dai `crumbs` in `Workspace.astro`.
 - Token in `@theme` (`src/styles/global.css`): un valore scritto a mano in un componente
   è un errore. Profondità dal tono delle superfici. Su schermo largo la shell è una
-  finestra con due card (lista e contenuto); su mobile tutto a filo.
+  finestra con due card (lista e contenuto); su mobile la finestra ha solo il riquadro e la
+  lista è un cassetto (`data-drawer`, in `src/scripts/workspace.ts`).
 - Due colori con compiti separati: la lavanda (`accent`) per identità e interazione, il
   verde (`live`) solo per "vivo, riuscito" (LED in corso, copie e invii riusciti), mai
   sul testo corrente.

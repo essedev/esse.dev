@@ -30,6 +30,8 @@
 		"featured": "featured",
 		"allProjects": "all {n}",
 		"search": "Search",
+		"openIndex": "Open the index",
+		"close": "Close",
 		"status": "Status",
 		"tags": "Tags",
 		"sort": "Sort",

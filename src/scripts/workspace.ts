@@ -10,6 +10,7 @@
  * - i pulsanti `[data-copy]` copiano e confermano nella riga di stato.
  * - il livello sopra (Esc, breadcrumb, "‹") torna con la history se si arriva da lì.
  * - la lista ricorda il proprio scroll fra una pagina e l'altra.
+ * - su mobile la lista è un cassetto che entra da sinistra sopra il riquadro.
  */
 
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -84,6 +85,88 @@ if (scrollBox) {
 	});
 }
 
+// Su mobile la lista è un cassetto: entra da sinistra sopra il riquadro, che intanto
+// diventa inerte. Si chiude con Esc, con un tocco fuori, con la X o trascinandola verso
+// sinistra. Da `lg` in su la lista è sempre lì e il cassetto non esiste.
+const wide = matchMedia('(min-width: 64rem)');
+const drawer = document.querySelector<HTMLElement>('[data-drawer-panel]');
+const content = document.querySelector<HTMLElement>('[data-content]');
+const openers = [...document.querySelectorAll<HTMLElement>('[data-drawer-open]')];
+let returnFocus: HTMLElement | null = null;
+const drawerOpen = () => workspace?.dataset.drawer === 'open';
+
+function openDrawer() {
+	if (!workspace || !drawer || wide.matches || drawerOpen()) return;
+	returnFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+	workspace.dataset.drawer = 'open';
+	content?.setAttribute('inert', '');
+	for (const el of openers) el.setAttribute('aria-expanded', 'true');
+	drawer.focus({ preventScroll: true });
+}
+
+function closeDrawer() {
+	if (!workspace || !drawerOpen()) return;
+	delete workspace.dataset.drawer;
+	content?.removeAttribute('inert');
+	for (const el of openers) el.setAttribute('aria-expanded', 'false');
+	const active = document.activeElement;
+	if (!active || active === document.body || drawer?.contains(active)) {
+		(returnFocus?.isConnected ? returnFocus : openers[0])?.focus({ preventScroll: true });
+	}
+}
+
+for (const el of openers) {
+	el.addEventListener('click', () => {
+		openDrawer();
+		if (el.dataset.drawerOpen === 'search') focusSearch();
+	});
+}
+for (const el of document.querySelectorAll('[data-drawer-close]')) {
+	el.addEventListener('click', closeDrawer);
+}
+wide.addEventListener('change', () => wide.matches && closeDrawer());
+
+// Trascinare il cassetto: segue il dito verso sinistra e, rilasciato oltre un terzo della
+// larghezza (o con un colpo deciso), si chiude; altrimenti torna al suo posto. Lo scroll
+// verticale della lista resta al browser (`touch-pan-y`).
+if (drawer) {
+	let start: { x: number; y: number; t: number } | null = null;
+	let dx = 0;
+	let dragging = false;
+	const release = () => {
+		drawer.style.removeProperty('translate');
+		drawer.style.removeProperty('transition');
+		start = null;
+		dragging = false;
+	};
+	drawer.addEventListener('pointerdown', (event) => {
+		if (event.pointerType !== 'touch' || !drawerOpen()) return;
+		start = { x: event.clientX, y: event.clientY, t: event.timeStamp };
+		dx = 0;
+	});
+	drawer.addEventListener('pointermove', (event) => {
+		if (!start) return;
+		dx = event.clientX - start.x;
+		const dy = event.clientY - start.y;
+		if (!dragging) {
+			if (Math.abs(dy) > 10 && Math.abs(dy) > Math.abs(dx)) return release();
+			if (Math.abs(dx) < 10) return;
+			dragging = true;
+			drawer.setPointerCapture(event.pointerId);
+			drawer.style.transition = 'none';
+		}
+		drawer.style.translate = `${Math.min(0, dx)}px 0`;
+	});
+	drawer.addEventListener('pointerup', (event) => {
+		if (!start) return;
+		const fast = dx / Math.max(1, event.timeStamp - start.t) < -0.5;
+		const close = dragging && (dx < -drawer.offsetWidth / 3 || fast);
+		release();
+		if (close) closeDrawer();
+	});
+	drawer.addEventListener('pointercancel', release);
+}
+
 // Voci navigabili da tastiera: solo quelle visibili (il filtro ne nasconde alcune).
 const navItems = () =>
 	[...document.querySelectorAll<HTMLAnchorElement>('[data-sidebar] [data-nav-item]')].filter(
@@ -143,6 +226,7 @@ function applyFilter() {
 	if (emptyNote) emptyNote.hidden = anyVisible;
 }
 function focusSearch() {
+	openDrawer();
 	filter?.focus();
 	filter?.select();
 }
@@ -155,7 +239,7 @@ function onSearch() {
 }
 filter?.addEventListener('input', onSearch);
 
-// La ricerca riparte da quella nell'URL (?q=) e si apre da #search (icona su mobile).
+// La ricerca riparte da quella nell'URL (?q=) e si apre da #search.
 const initialQuery = new URLSearchParams(location.search).get('q');
 if (filter && initialQuery) {
 	filter.value = initialQuery;
@@ -172,6 +256,8 @@ addEventListener('workspace:set-search', (event) => {
 filter?.addEventListener('keydown', (event) => {
 	if (event.key === 'Escape') {
 		event.preventDefault();
+		// A campo vuoto, nel cassetto, Esc lo chiude invece di non fare nulla.
+		if (!filter.value && drawerOpen()) return closeDrawer();
 		filter.value = '';
 		onSearch();
 		filter.blur();
@@ -243,6 +329,10 @@ document.addEventListener('keydown', (event) => {
 			focusSearch();
 			break;
 		case 'Escape': {
+			if (drawerOpen()) {
+				closeDrawer();
+				break;
+			}
 			const parent = workspace?.dataset.parent;
 			if (parent && parent !== location.pathname) goUp(parent);
 			break;

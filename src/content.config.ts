@@ -159,6 +159,8 @@ const site = defineCollection({
 					featured: text,
 					allProjects: text,
 					search: text,
+					openIndex: text,
+					close: text,
 					status: text,
 					tags: text,
 					sort: text,

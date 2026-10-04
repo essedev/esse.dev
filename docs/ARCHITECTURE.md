@@ -100,7 +100,7 @@ istantaneo, come cambiare documento in un'app: la dissolvenza con salita di prim
 transition) sembrava un sito che carica una pagina nuova e rallentava j k e h/l.
 
 Su schermo largo le due colonne sono due card dentro una finestra arrotondata, staccata
-dai bordi; su mobile restano a filo. Lo stile viene dal concept B
+dai bordi. Su mobile la finestra resta, con il solo riquadro del contenuto. Lo stile viene dal concept B
 (`docs/concepts/concept-b-stile.html`): accento lavanda su nero appena freddo, un verde
 fosforo solo per gli stati vivi o riusciti (LED in corso, copie e invii), Departure
 Mono per il monospace dell'interfaccia, e un velo da monitor CRT (alone da fosforo su
@@ -123,8 +123,12 @@ che le contiene e una quando esce.
   (Esc, breadcrumb, "‹ sezione" su mobile) si calcola dai `crumbs` e torna
   con la history se si arriva da lì, così il registro ritrova i filtri. Il documento ha
   solo titolo, meta e testo: niente "Indietro" nel contenuto.
-- **Mobile**: la home mostra la presentazione e poi la lista; un dettaglio mostra solo il
-  contenuto, con "‹ sezione" nella toolbar come in iOS.
+- **Mobile**: ogni pagina mostra solo il riquadro, che scorre dentro la finestra con la
+  toolbar ferma in cima e "‹ sezione" come in iOS. La lista è un cassetto (`data-drawer`
+  su `[data-workspace]`): entra da sinistra come una card sopra il riquadro, che diventa
+  inerte, e si apre dal bottone a sinistra nella toolbar o dalla lente, che porta dritta
+  alla ricerca. Si chiude con Esc, la X, un tocco fuori o trascinandola verso sinistra.
+  Contiene anche i profili e la legenda; i tasti no.
 - **Token** (`@theme` in `src/styles/global.css`): `desk` e `frame` dietro e attorno alla
   finestra; superfici `bg`, `panel`, `surface`, `hover`; `line`; testo `fg`, `text`,
   `muted`, `subtle` (il minimo per il testo, 4,6:1); `accent`; `live` per gli stati vivi;

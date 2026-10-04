@@ -46,6 +46,9 @@
 	--radius-window: 18px;
 
 	--ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+	/* La lista su mobile, quando entra sopra il riquadro. */
+	--shadow-drawer: 0 24px 64px rgb(0 0 0 / 0.6);
 }
 
 @layer base {
@@ -216,6 +219,21 @@
 	}
 	.skip-link:focus {
 		top: 0.75rem;
+	}
+}
+
+/* Il cassetto della lista su mobile. La visibilità cambia subito in apertura, così il focus
+   può entrarci nello stesso gesto, e solo a fine corsa in chiusura. */
+@media (width < 64rem) {
+	[data-drawer-panel],
+	[data-drawer-backdrop] {
+		transition:
+			translate 300ms var(--ease-out),
+			opacity 300ms var(--ease-out),
+			visibility 0s 300ms;
+	}
+	[data-drawer='open'] :is([data-drawer-panel], [data-drawer-backdrop]) {
+		transition-delay: 0s;
 	}
 }
 

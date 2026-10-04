@@ -39,10 +39,11 @@ Astro. Fatti: due colonne alte tutta la finestra (lista e riquadro con toolbar),
 livello sopra nella toolbar e non nel contenuto, il pager in fondo al riquadro con h/l,
 la lista in ordine di importanza con la sola vetrina dei progetti. Stile dal concept B
 (Ciclo 17, per DECISIONS #15): lavanda e verde per gli stati vivi, Departure Mono, velo
-CRT, finestra con due card su schermo largo; home snellita con l'agente in testa. Resta:
+CRT, finestra con due card su schermo largo; home snellita con l'agente in testa. Su
+mobile la finestra con il riquadro e la lista in un cassetto (Ciclo 18). Resta:
 
-- Mobile: la finestra anche su mobile, un bottone e un drawer per la lista; la pagina
-  dell'agente che su mobile si apre scrollata in fondo (bug); poi un giro completo.
+- Mobile, il giro completo: il segnaposto dell'agente su due righe, la colonna dei fatti
+  con Departure Mono (l'URL delle release va a capo), da provare su un iPhone vero.
 - L'altezza della lista oltre i 900 px.
 - Le pagine non ancora riviste con la shell nuova: metodo, adesso, chi sono, dettaglio
   di uno scritto, 404.
