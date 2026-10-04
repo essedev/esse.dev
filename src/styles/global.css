@@ -335,6 +335,16 @@
 	filter: drop-shadow(0 0 calc(var(--crt-accent-glow) / 2) var(--color-accent));
 }
 
+/* La cornice e il riquadro del contenuto hanno il bordo del vetro ma non la sfocatura: in
+   Chromium un vetro che sfoca dentro un altro che sfoca smette di sfocare (il campo
+   dell'agente mostrava nitido il testo dietro). Sfocano solo i vetri che non ne contengono
+   altri: lista, campo dell'agente, menu. Fuori da @layer, vince sull'utility. */
+[data-workspace],
+[data-content] {
+	-webkit-backdrop-filter: none;
+	backdrop-filter: none;
+}
+
 /* CRT su tutta la finestra: una frangia rosso-ciano sul testo, e sopra a tutto righe
    orizzontali e vignetta. Il velo non riceve clic e non va in stampa. */
 [data-workspace] {
