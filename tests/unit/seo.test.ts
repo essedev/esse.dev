@@ -132,8 +132,8 @@ describe('JSON-LD builders', () => {
 
 	it('personJsonLd omits sameAs when there are no socials', () => {
 		expect(personJsonLd({ origin, sameAs: [] })).not.toHaveProperty('sameAs');
-		expect(personJsonLd({ origin, sameAs: ['https://x.com/essesdev/'] }).sameAs).toEqual([
-			'https://x.com/essesdev/'
+		expect(personJsonLd({ origin, sameAs: ['https://x.com/essedotdev/'] }).sameAs).toEqual([
+			'https://x.com/essedotdev/'
 		]);
 	});
 

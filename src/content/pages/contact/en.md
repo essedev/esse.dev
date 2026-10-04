@@ -9,7 +9,7 @@ links:
   - name: "GitHub"
     url: "https://github.com/essedev/"
   - name: "Instagram"
-    url: "https://www.instagram.com/essesdev/"
+    url: "https://www.instagram.com/essedotdev/"
   - name: "X"
-    url: "https://x.com/essesdev/"
+    url: "https://x.com/essedotdev/"
 ---
