@@ -689,3 +689,5 @@ Giro su M15 e M17 (`2a3862a` .. `38ece10`).
   (`pnpm favicons`) produce SVG, ICO con PNG dentro, PNG per iOS e manifest; manifest con
   i colori nuovi.
 - **Test:** unit su comando, metadati, LED e taglia del titolo delle OG.
+- **M15 chiusa** da Simone: struttura e stile fatti; l'altezza della lista resta tra le
+  Aperte della ROADMAP.

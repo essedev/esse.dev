@@ -2,7 +2,7 @@
 
 Stato corrente del progetto. Milestone reali, non wishlist. Aggiornata insieme al codice.
 
-Ultimo aggiornamento: 2026-10-04 (Ciclo 19: il vetro, l'agente che chiacchiera, i limiti per IP)
+Ultimo aggiornamento: 2026-10-04 (Ciclo 20: OG e favicon, M15 chiusa)
 
 ## Contesto
 
@@ -32,7 +32,7 @@ scelte in `docs/DECISIONS.md` #10. Gate verde: lint, check, build, unit, E2E.
   `PUBLIC_TURNSTILE_SITE_KEY` di un widget Turnstile vero (senza, vale la chiave di prova
   che passa sempre); poi merge su `main` con squash (vedi Aperte) e push.
 
-### M15 - Struttura e stile - In corso
+### M15 - Struttura e stile - Fatta
 
 Struttura scelta: il sito come spazio di lavoro (concept A, Ciclo 12), portato in
 Astro. Fatti: due colonne alte tutta la finestra (lista e riquadro con toolbar), il
@@ -43,9 +43,8 @@ CRT, finestra con due card su schermo largo; home snellita con l'agente in testa
 mobile la finestra con il riquadro e la lista in un cassetto (Ciclo 18), rifiniture
 chiuse nel Ciclo 19. La finestra di vetro su uno sfondo colorato (Ciclo 19, per
 DECISIONS #16). OG nello stile terminale e favicon con il cursore del logo, dal concept D
-(Ciclo 20, per DECISIONS #19). Resta:
-
-- L'altezza della lista oltre i 900 px.
+(Ciclo 20, per DECISIONS #19). Chiusa da Simone nel Ciclo 20; l'altezza della lista è
+tra le Aperte.
 
 ### M16 - Progetti - Da fare
 
@@ -98,6 +97,10 @@ Scelte in `docs/DECISIONS.md` #11-#14.
   (#11).
 
 ## Aperte
+
+- Altezza della lista: dovrebbe stare in 900 px (CLAUDE.md), oggi ne servono circa 1.000
+  e su schermi bassi si scorre. Lasciata così da Simone alla chiusura di M15; da
+  riprendere se la vetrina o le pagine singole crescono.
 
 - Dominio: `esse.dev` è il principale. Da fare nel pannello Cloudflare: Redirect Rule
   301 da `simonesalerno.it` e `www.simonesalerno.it` a `https://esse.dev` con il path
