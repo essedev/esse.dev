@@ -250,27 +250,54 @@ document.addEventListener('keydown', (event) => {
 	}
 });
 
-// Etichette che si decodificano al passaggio: 280 ms, poi il testo vero.
+// Etichette che si decodificano una volta entrando e una uscendo: 280 ms, poi il testo vero.
+// Il bersaglio è il link o il bottone che le contiene (la riga intera nella lista), così
+// muoversi dentro la riga non le fa ripartire; un testo fuori da un link fa da sé.
 const GLYPHS = '01<>/_-=+*#';
-document.addEventListener('pointerover', (event) => {
-	const el = (event.target as HTMLElement).closest<HTMLElement>('[data-scramble]');
-	if (!el || reduceMotion || el.dataset.busy) return;
-	const final = el.textContent ?? '';
-	el.dataset.busy = '1';
+const SCRAMBLE_MS = 280;
+const scrambling = new WeakMap<HTMLElement, number>();
+
+function scramble(el: HTMLElement) {
+	// Il testo vero si legge una volta sola: a metà animazione `textContent` è fatto di glifi.
+	const final = (el.dataset.text ??= el.textContent ?? '');
+	cancelAnimationFrame(scrambling.get(el) ?? 0);
 	const start = performance.now();
 	const tick = (now: number) => {
-		const p = Math.min(1, (now - start) / 280);
+		const p = Math.min(1, (now - start) / SCRAMBLE_MS);
 		const keep = Math.floor(final.length * p);
 		el.textContent =
 			final.slice(0, keep) +
 			[...final.slice(keep)]
 				.map((c) => (c === ' ' ? ' ' : GLYPHS[(Math.random() * GLYPHS.length) | 0]))
 				.join('');
-		if (p < 1) requestAnimationFrame(tick);
+		if (p < 1) scrambling.set(el, requestAnimationFrame(tick));
 		else {
 			el.textContent = final;
-			delete el.dataset.busy;
+			scrambling.delete(el);
 		}
 	};
-	requestAnimationFrame(tick);
-});
+	scrambling.set(el, requestAnimationFrame(tick));
+}
+
+function scrambleTargets(target: EventTarget | null): HTMLElement[] {
+	if (!(target instanceof HTMLElement)) return [];
+	if (target.matches('a, button')) {
+		return [
+			...(target.matches('[data-scramble]') ? [target] : []),
+			...target.querySelectorAll<HTMLElement>('[data-scramble]')
+		];
+	}
+	return target.matches('[data-scramble]') && !target.closest('a, button') ? [target] : [];
+}
+
+// pointerenter e pointerleave non risalgono: si ascoltano in cattura sul documento.
+for (const type of ['pointerenter', 'pointerleave'] as const) {
+	document.addEventListener(
+		type,
+		(event) => {
+			if (reduceMotion) return;
+			for (const el of scrambleTargets(event.target)) scramble(el);
+		},
+		true
+	);
+}
