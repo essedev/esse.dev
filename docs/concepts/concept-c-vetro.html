@@ -175,7 +175,10 @@
 				font-size: 13px;
 			}
 			body[data-v='X'] .tb { background: var(--bg); }
-			body:not([data-v='X']) .tb {
+			/* In B la barra resta piatta e ferma, come oggi: il contenuto scorre sotto di lei, non
+			   dietro, e sfuma in cima come sul sito. */
+			body[data-v='B'] .scroll { top: 48px; padding-top: 32px; -webkit-mask-image: linear-gradient(to bottom, transparent, #000 1.5rem); mask-image: linear-gradient(to bottom, transparent, #000 1.5rem); }
+			body:not([data-v='X']):not([data-v='B']) .tb {
 				top: 8px; left: 8px; right: 8px;
 				height: 44px;
 				border-radius: 12px;
@@ -275,10 +278,11 @@
 			body:not([data-mobile]) .scrim { display: none; }
 			body[data-mobile] .menu-btn { display: inline-flex; }
 			body[data-mobile] .tb { padding: 0 8px; gap: 6px; }
-			body[data-mobile]:not([data-v='X']) .tb { top: 10px; left: 10px; right: 10px; border-radius: 30px 30px 14px 14px; }
-			body[data-mobile][data-v='X'] .tb { border-radius: 40px 40px 0 0; padding-top: 6px; }
+			body[data-mobile]:not([data-v='X']):not([data-v='B']) .tb { top: 10px; left: 10px; right: 10px; border-radius: 30px 30px 14px 14px; }
+			body[data-mobile]:is([data-v='X'], [data-v='B']) .tb { border-radius: 40px 40px 0 0; padding-top: 6px; }
 			body[data-mobile] .crumbs .deep { display: none; }
 			body[data-mobile] .scroll { padding: 80px 22px 120px; }
+			body[data-mobile][data-v='B'] .scroll { top: 54px; padding-top: 24px; }
 			body[data-mobile] h1 { font-size: 44px; }
 			body[data-mobile] .lead { font-size: 18px; }
 			body[data-mobile] .composer { left: 12px; right: 12px; bottom: 12px; border-radius: 16px 16px 32px 32px; }
@@ -286,6 +290,7 @@
 
 			/* Pannello dei controlli */
 			.ctl { background: #0b0b0e; border-left: 1px solid var(--line); padding: 18px; overflow-y: auto; font-family: var(--mono); font-size: 12px; color: var(--muted); display: flex; flex-direction: column; gap: 16px; position: relative; z-index: 101; }
+			.ctl > * { flex-shrink: 0; }
 			.ctl h2 { font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--subtle); margin: 0; font-weight: 400; }
 			.seg { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
 			.seg button { border: 0; border-radius: 6px; background: var(--surface); padding: 8px 0; font-family: var(--mono); color: var(--muted); }
@@ -405,7 +410,7 @@
 			const DESC = {
 				X: 'Lo stile attuale: superfici piene, toolbar ferma sopra il contenuto. Per confronto.',
 				A: 'Vetro solo su quello che galleggia sopra il contenuto: toolbar, campo dell\'agente, cassetto su mobile. Il resto resta pieno. È l\'uso che ne fa Apple.',
-				B: 'A più una finestra su uno sfondo: cornice e lista di vetro lasciano vedere un bagliore lavanda e verde dietro, il contenuto resta quasi opaco per leggere.',
+				B: 'Una finestra su uno sfondo: cornice e lista di vetro lasciano vedere un bagliore lavanda e verde dietro, il contenuto resta quasi opaco. La barra in alto resta piatta e ferma; di vetro anche il campo dell\'agente.',
 				C: 'B con la rifrazione ai bordi e la frangia cromatica, come Liquid Glass. Solo Chrome, Edge, Arc: Safari e Firefox mostrano B.'
 			};
 			const SLIDERS = [
@@ -455,7 +460,7 @@
 			const GLASS = {
 				X: [],
 				A: ['tb', 'composer'],
-				B: ['tb', 'composer', 'side', 'win'],
+				B: ['composer', 'side', 'win'],
 				C: ['tb', 'composer', 'side', 'win']
 			};
 
