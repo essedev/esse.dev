@@ -1,6 +1,6 @@
 ---
 import { render } from 'astro:content';
-import { ArrowRight, Copy, Check, User } from '@lucide/astro';
+import { ArrowRight, Copy, Check, SquareTerminal } from '@lucide/astro';
 import Page from '../../components/Page.astro';
 import Workspace from '../../layouts/Workspace.astro';
 import { languageCodes, navigation, featured } from '../../lib/config';
@@ -25,11 +25,19 @@ const [welcome, contact, projects, method] = await Promise.all([
 ]);
 const { Content: Intro } = await render(welcome);
 
-const active = projects.filter((p) => p.meta.status === 'in-progress').length;
 const lead = projects.find((p) => p.id === featured.projects[0]) ?? projects[0];
 const email = contact.data.links.find((l) => l.url.startsWith('mailto:'))?.url.slice(7);
 
+// Tre voci, una per domanda di chi arriva: chiedere (l'agente), cosa costruisco, come
+// lavoro. La domanda d'esempio apre l'agente con il campo già scritto, senza inviarla.
+const ask = t('agentAsk4');
 const starts = [
+	{
+		href: `/${lang}/${routes.agent}?q=${encodeURIComponent(ask)}`,
+		title: site.sections.agent,
+		note: `› ${ask}`,
+		icon: 'agent'
+	},
 	{
 		href: `/${lang}/${routes.projects}/${lead.text.slug}`,
 		title: lead.text.title,
@@ -41,18 +49,6 @@ const starts = [
 		title: site.sections.method,
 		note: method.map((m) => m.text.title).join(', '),
 		index: '01'
-	},
-	{
-		href: `/${lang}/${routes.now}`,
-		title: site.sections.now,
-		note: site.sectionDescriptions.now,
-		status: 'in-progress'
-	},
-	{
-		href: `/${lang}/${routes.about}`,
-		title: site.sections.about,
-		note: site.sectionDescriptions.about,
-		icon: 'person'
 	}
 ];
 
@@ -92,15 +88,6 @@ const jsonLd = [
 							<dd class="text-text">{f.value}</dd>
 						</>
 					))}
-					<dt class="label">{site.sections.projects.toLowerCase()}</dt>
-					<dd class="text-text">
-						<a href={`/${lang}/${routes.projects}`} class="ulink">
-							{projects.length}
-						</a>{' '}
-						<span class="text-subtle">
-							· {active} {t('statusInProgress').toLowerCase()}
-						</span>
-					</dd>
 					{email && (
 						<>
 							<dt class="label">email</dt>
@@ -135,15 +122,22 @@ const jsonLd = [
 								<span class="flex w-4 justify-center">
 									{s.index ? (
 										<span class="text-subtle font-mono text-[0.7rem]">{s.index}</span>
-									) : s.icon === 'person' ? (
-										<User class="text-subtle size-3.5 translate-y-0.5" />
+									) : s.icon === 'agent' ? (
+										<SquareTerminal class="text-accent glow size-3.5 translate-y-0.5" />
 									) : (
 										<span class="led -translate-y-px" data-status={s.status} />
 									)}
 								</span>
 								<span class="flex min-w-0 flex-col gap-1">
 									<span class="text-fg text-[1.0625rem] font-medium tracking-tight">{s.title}</span>
-									<span class="text-muted line-clamp-2 text-[0.9375rem]">{s.note}</span>
+									<span
+										class:list={[
+											'text-muted line-clamp-2',
+											s.icon === 'agent' ? 'font-mono text-[0.8125rem]' : 'text-[0.9375rem]'
+										]}
+									>
+										{s.note}
+									</span>
 								</span>
 								<ArrowRight class="text-subtle size-4 self-center transition-transform group-hover:translate-x-1 group-hover:text-accent" />
 							</a>
