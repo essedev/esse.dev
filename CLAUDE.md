@@ -115,8 +115,9 @@ tastiera in `src/scripts/workspace.ts`.
   sinistra o sopra un elemento per indicare selezione o stato: la selezione si vede dal
   fondo.
 - Niente stili inline negli attributi: la CSP li blocca. Il cambio pagina è istantaneo:
-  niente view transition. Niente rimbalzo né scroll che passa sotto: ogni contenitore che
-  scorre prende `overscroll-none`, mai una regola su `*` (in Chromium blocca la rotella).
+  niente view transition. Niente rimbalzo né scroll che passa sotto: `overscroll-none` sui
+  contenitori principali, `overscroll-x-none` sui blocchi annidati che scorrono di lato
+  (sennò la rotella sopra il codice non scorre la pagina); mai una regola su `*`.
 
 ## Agente
 

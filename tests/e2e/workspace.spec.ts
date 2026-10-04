@@ -73,6 +73,18 @@ test.describe('workspace keyboard', () => {
 			.toBeLessThan(2);
 	});
 
+	test('the wheel over a command scrolls the page', async ({ page }) => {
+		// Con overscroll-behavior anche verticale sul blocco, la rotella lì sopra non scorreva.
+		await page.setViewportSize({ width: 1440, height: 760 });
+		await open(page, '/en/projects/relay');
+		const box = (await page.locator('[data-copy] .overflow-x-auto').first().boundingBox())!;
+		await page.mouse.move(box.x + 20, box.y + box.height / 2);
+		for (let i = 0; i < 3; i++) await page.mouse.wheel(0, 100);
+		await expect
+			.poll(() => page.locator('[data-main-scroll]').evaluate((el) => el.scrollTop))
+			.toBeGreaterThan(100);
+	});
+
 	test('the list shows the showcase; search reaches every project', async ({ page }) => {
 		await open(page, '/en');
 		const verbosa = page.locator('[data-sidebar] a[href="/en/projects/verbosa"]');
