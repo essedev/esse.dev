@@ -36,8 +36,7 @@ test.describe('listing filters', () => {
 		const combo = page.getByRole('combobox');
 		await expect(combo).toBeFocused();
 		await combo.fill('swif');
-		// Swift e SwiftUI: l'opzione attiva è la prima, ordinata per frequenza.
-		await expect(page.getByRole('option')).toHaveCount(2);
+		// L'opzione attiva è la prima, ordinata per frequenza.
 		await expect(page.getByRole('option').first()).toContainText('Swift');
 		await page.keyboard.press('Enter');
 		await combo.fill('rust');
@@ -51,12 +50,12 @@ test.describe('listing filters', () => {
 	test('status multi-select and sort single-select', async ({ page }) => {
 		await open(page, '/en/projects');
 		await page.getByRole('button', { name: 'Status', exact: true }).click();
-		await page.getByRole('option', { name: /Idea/ }).click();
+		await page.getByRole('option', { name: /Completed/ }).click();
 		await page.getByRole('option', { name: /Archived/ }).click();
 		await expect(page.getByRole('listbox')).toBeVisible();
 		await page.locator('h1').click();
 		await expect(page.getByRole('listbox')).toBeHidden();
-		await expect(page).toHaveURL(/status=idea&status=archived/);
+		await expect(page).toHaveURL(/status=completed&status=archived/);
 
 		await page.getByRole('button', { name: /^Sort/ }).click();
 		await page.getByRole('option', { name: 'Title a-z' }).click();

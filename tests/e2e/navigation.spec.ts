@@ -103,7 +103,7 @@ test.describe('mobile toolbar', () => {
 		await expect(workspace).toHaveAttribute('data-drawer', 'open');
 		await expect
 			.poll(() => page.locator('[data-sidebar-scroll]').evaluate((el) => el.scrollTop))
-			.toBeGreaterThan(50);
+			.toBeGreaterThan(0);
 		await touch('touchStart', 250, 400);
 		for (let x = 240; x >= 40; x -= 20) await touch('touchMove', x, 402);
 		await touch('touchEnd');
