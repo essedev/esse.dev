@@ -95,8 +95,9 @@ due colonne alte tutta la finestra, ognuna col suo tono. A sinistra la lista (lo
 ricerca, voci, riga di stato con legenda e tasti), a destra il riquadro del contenuto con
 una toolbar (percorso, azioni sul documento, lingua). Nessuna barra a tutta larghezza:
 con due toni su righe orizzontali la pagina formava una T che non corrispondeva a nessuna
-zona (Ciclo 13). Ogni voce resta una pagina statica col suo URL; le transizioni sono
-quelle native del browser (`@view-transition`), senza router.
+zona (Ciclo 13). Ogni voce resta una pagina statica col suo URL, senza router. Il cambio pagina è
+istantaneo, come cambiare documento in un'app: la dissolvenza con salita di prima (view
+transition) sembrava un sito che carica una pagina nuova e rallentava j k e h/l.
 
 - **Lista** (`src/lib/workspace.ts`): in ordine di importanza e alta al massimo 900 px.
   Prima le pagine singole (chi sono, adesso, agente), poi la vetrina dei progetti con

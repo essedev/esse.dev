@@ -195,37 +195,10 @@
 	}
 }
 
-/* Navigazione fra pagine: il dettaglio si dissolve e sale di poco, il resto resta fermo. */
-@view-transition {
-	navigation: auto;
-}
-
-::view-transition-old(detail) {
-	animation: 140ms ease-in both detail-out;
-}
-::view-transition-new(detail) {
-	animation: 260ms var(--ease-out) both detail-in;
-}
-
-@keyframes detail-out {
-	to {
-		opacity: 0;
-	}
-}
-@keyframes detail-in {
-	from {
-		opacity: 0;
-		transform: translateY(6px);
-	}
-}
-
 @media (prefers-reduced-motion: reduce) {
 	*,
 	*::before,
-	*::after,
-	::view-transition-group(*),
-	::view-transition-old(*),
-	::view-transition-new(*) {
+	*::after {
 		animation: none !important;
 		transition: none !important;
 	}

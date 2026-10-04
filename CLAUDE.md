@@ -97,8 +97,8 @@ tastiera in `src/scripts/workspace.ts`.
 - Una sola ricerca nel sito e un solo cursore lampeggiante. Mai linee o barre d'accento a
   sinistra o sopra un elemento per indicare selezione o stato: la selezione si vede dal
   fondo.
-- Niente stili inline negli attributi: la CSP li blocca (anche `view-transition-name` va
-  in una classe).
+- Niente stili inline negli attributi: la CSP li blocca. Il cambio pagina è istantaneo:
+  niente view transition.
 
 ## Agente
 
