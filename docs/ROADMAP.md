@@ -2,7 +2,7 @@
 
 Stato corrente del progetto. Milestone reali, non wishlist. Aggiornata insieme al codice.
 
-Ultimo aggiornamento: 2026-10-04 (Ciclo 18: il mobile come finestra con un cassetto, M15 in corso)
+Ultimo aggiornamento: 2026-10-04 (Ciclo 19: il vetro, l'agente che chiacchiera, i limiti per IP)
 
 ## Contesto
 
@@ -40,14 +40,13 @@ livello sopra nella toolbar e non nel contenuto, il pager in fondo al riquadro c
 la lista in ordine di importanza con la sola vetrina dei progetti. Stile dal concept B
 (Ciclo 17, per DECISIONS #15): lavanda e verde per gli stati vivi, Departure Mono, velo
 CRT, finestra con due card su schermo largo; home snellita con l'agente in testa. Su
-mobile la finestra con il riquadro e la lista in un cassetto (Ciclo 18). Resta:
+mobile la finestra con il riquadro e la lista in un cassetto (Ciclo 18), rifiniture
+chiuse nel Ciclo 19. La finestra di vetro su uno sfondo colorato (Ciclo 19, per
+DECISIONS #16). Resta:
 
-- Mobile, il giro completo: il segnaposto dell'agente su due righe, la colonna dei fatti
-  con Departure Mono (l'URL delle release va a capo), da provare su un iPhone vero.
+- OG e favicon: Simone sceglie tra le proposte del concept D
+  (`docs/concepts/concept-d-og.html`), poi si applicano all'endpoint OG e alle favicon.
 - L'altezza della lista oltre i 900 px.
-- Le pagine non ancora riviste con la shell nuova: metodo, adesso, chi sono, dettaglio
-  di uno scritto, 404.
-- OG e favicon coerenti con lo spazio di lavoro e lo stile nuovo (vedi Aperte).
 
 ### M16 - Progetti - Da fare
 
@@ -79,6 +78,10 @@ Scelte in `docs/DECISIONS.md` #11-#14.
   `render` (barre, tabelle, linee del tempo), `run_code` (Code Mode in un Dynamic
   Worker), `delegate` (2-3 sotto-agenti di pi-durable), `draft_message` (bozza che il
   visitatore manda, dopo Turnstile). Scelte in #14.
+- Fatto (Ciclo 19): le chiacchiere passano al modello, che risponde breve e senza tool
+  (#12); limiti per IP, raffica di 10 messaggi al minuto e 50 centesimi al giorno (#17);
+  red team: 10 attacchi nel set di Jev, superato anche dal vivo. Niente allowlist dei
+  link esterni finché le conversazioni non sono condivisibili (#18).
 - Tool di sola lettura su dati già pubblici. Niente scritture, fetch di URL liberi,
   repo privati, memoria tra visite. L'unico effetto fuori dal sito è l'email di
   `draft_message`, e parte solo da un clic del visitatore.
@@ -105,8 +108,7 @@ Scelte in `docs/DECISIONS.md` #11-#14.
   rinnova. Spostare Umami su un sottodominio di `esse.dev` prima della scadenza, o le
   statistiche si fermano senza errori.
 - Email `hello@esse.dev`: verificare che la casella riceva prima della messa online.
-- Favicon: da rifare dentro M15. Ora c'è quella di `main` (quella del laboratorio è
-  rimasta sul suo branch).
+- Favicon: ora c'è quella di `main`; quella nuova esce dal concept D (M15).
 - Merge su `main` con **squash**: i branch del restyle portano in
   storia circa 70 MB di PNG della pixel art scartata, che non devono entrare in `main`.
 

@@ -103,15 +103,20 @@ Su schermo largo le due colonne sono due card dentro una finestra arrotondata, s
 dai bordi. Su mobile la finestra resta, con il solo riquadro del contenuto. La finestra
 poggia su uno sfondo (`wallpaper`): un velo continuo in diagonale da lavanda a viola
 profondo che sfuma nel nero, su una griglia fine. Niente bagliori separati, che attraverso
-il vetro diventavano macchie di colore, e niente verde, che resta agli stati vivi. Si vede
-attraverso la cornice, la lista (48%), il contenuto (55%) e il campo dell'agente, di vetro
-(utility `glass`: sfocatura forte, saturazione moderata, nessun velo bianco, che
-ingrigisce, e un bordo che prende luce appena; valori in `--glass-*` e `--wall`). La
-toolbar resta piatta. `surface` e
-`hover` sono veli chiari e non grigi pieni, così i controlli sul vetro schiariscono
-invece di fare da buco; `subtle` è tarato sul vetro dove il velo dietro è più chiaro (5,7:1).
-Viene dal concept C (`docs/concepts/concept-c-vetro.html`, variante B;
-la rifrazione della C funziona solo in Chromium). Lo stile viene
+il vetro diventavano macchie di colore, e niente verde, che resta agli stati vivi. Cornice,
+lista, riquadro, campo dell'agente e menu sono di vetro (utility `glass`: sfocatura forte,
+saturazione moderata, nessun velo bianco, che ingrigisce, e un bordo che prende luce
+appena; valori in `--glass-*` e `--wall`). Sfocano solo i vetri che non ne contengono
+altri (lista, campo dell'agente, menu): in Chromium un vetro che sfoca dentro un altro
+smette di sfocare, quindi cornice e riquadro hanno solo il bordo e il riquadro è quasi
+opaco. La toolbar resta piatta. `surface` e `hover` sono veli chiari e non grigi pieni,
+così i controlli sul vetro schiariscono invece di fare da buco; `subtle` è tarato sul
+vetro dove il velo dietro è più chiaro. Viene dal concept C
+(`docs/concepts/concept-c-vetro.html`, variante B), scelte in `docs/DECISIONS.md` #16.
+Niente rimbalzo né scroll che passa sotto: `overscroll-none` sulla pagina e sui
+contenitori principali, `overscroll-x-none` sui blocchi annidati che scorrono di lato;
+una regola su ogni elemento faceva agganciare a Chromium la rotella a un antenato che
+non scorre, e la lista si fermava. Lo stile viene
 dal concept B (`docs/concepts/concept-b-stile.html`): accento lavanda su nero appena
 freddo, un verde fosforo solo per gli stati vivi o riusciti (LED in corso, copie e invii), Departure
 Mono per il monospace dell'interfaccia, e un velo da monitor CRT (alone da fosforo su
@@ -138,8 +143,10 @@ che le contiene e una quando esce.
   toolbar ferma in cima e "‹ sezione" come in iOS. La lista è un cassetto (`data-drawer`
   su `[data-workspace]`): entra da sinistra come una card sopra il riquadro, che diventa
   inerte, e si apre dal bottone a sinistra nella toolbar o dalla lente, che porta dritta
-  alla ricerca. Si chiude con Esc, la X, un tocco fuori o trascinandola verso sinistra.
-  Contiene anche i profili e la legenda; i tasti no.
+  alla ricerca. Si chiude con Esc, la X, un tocco fuori o trascinandola verso sinistra:
+  cassetto e lista hanno `touch-pan-y`, perché `touch-action` non passa dentro un
+  contenitore che scorre e senza il browser si prende il gesto. Contiene anche i profili e
+  la legenda; i tasti no.
 - **Token** (`@theme` in `src/styles/global.css`): `desk` e `frame` dietro e attorno alla
   finestra; superfici `bg`, `panel`, `surface`, `hover`; `line`; testo `fg`, `text`,
   `muted`, `subtle` (il minimo per il testo, 4,5:1 misurato sul vetro); `accent` e `on-accent`; `live` per
@@ -202,15 +209,22 @@ stessi sui due lati.
   l'indirizzo verificato in `MAIL_TO` (`draft.ts`, `DraftView.svelte`).
 - **Link all'agente:** `?ask=` scrive una domanda nell'input senza mandarla (la usa la
   home). Non `?q=`, che è la ricerca della lista.
+- **Pagina a conversazione avviata:** `data-agent-started` su `[data-workspace]` nasconde
+  titolo e introduzione (restano per i lettori di schermo) e mostra "nuova conversazione"
+  nella toolbar. Le risposte possono linkare qualunque dominio (#18).
 - **Il catalogo** che la pagina mostra a conversazione vuota è quello che il server
   annuncia nel `hello`: un tool nuovo compare da solo, i gruppi in pagina lo ordinano.
-- **Triage e limiti:** ogni messaggio passa prima da Jev (`triage.ts`), che ferma fuori
-  tema e abuso e decide la lingua della risposta; la spesa si scala in costo reale per
-  visitatore (nel `SiteAgent`) e per tutto il sito (Durable Object `Ledger`), con le soglie
-  in `budget.ts`. In pagina il budget si mostra in crediti, solo quando sta per finire. Se
-  Jev non risponde il messaggio passa e vale il tetto. Le soglie si verificano con
-  `pnpm eval:jev` su un set etichettato (`tests/eval/jev-triage.json`). Scelte in
-  `docs/DECISIONS.md` #12.
+- **Triage e limiti:** prima di tutto la raffica per IP (binding `AGENT_RATE`, Workers
+  Rate Limiting), poi il budget, poi Jev (`triage.ts`), che ferma fuori tema e abuso e
+  decide la lingua della risposta e degli avvisi. Una chiacchiera (intento `chat`) passa,
+  e se Jev ne è sicuro il prompt riceve la modalità breve senza tool. La spesa si scala in
+  costo reale per visitatore (nel `SiteAgent`), per impronta giornaliera di IP e per tutto
+  il sito (entrambe nel Durable Object `Ledger`), con le soglie in `budget.ts`; l'IP non si
+  salva, solo l'impronta SHA-256 di giorno e indirizzo. In pagina il budget si mostra in
+  crediti, solo quando sta per finire. Se Jev non risponde il messaggio passa e vale il
+  tetto. Le soglie si verificano con `pnpm eval:jev` su un set etichettato
+  (`tests/eval/jev-triage.json`), che contiene anche attacchi. Scelte in
+  `docs/DECISIONS.md` #12 e #17.
 - **Trascrizione:** Markdown passato da un renderer che sanifica (`markdown.ts`),
   ragionamento chiuso, verdetto di Jev, token, costo e budget residuo per ogni risposta.
 

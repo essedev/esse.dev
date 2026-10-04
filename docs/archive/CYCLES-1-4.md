@@ -1,4 +1,4 @@
-# Cycles 1-3 (archivio)
+# Cycles 1-4 (archivio)
 
 Cicli archiviati da `docs/CYCLES.md`, numerazione intatta.
 
@@ -187,4 +187,42 @@ costo di coesione: rinviata a quando i contenuti cresceranno (vedi `ARCHITECTURE
 
 - `pnpm check`: 0 errori; `pnpm lint`: pulito
 - `pnpm test:ci`: 139 unit verdi, 15 E2E verdi (suite tornata a ~10s)
+- `pnpm build`: OK end-to-end
+
+---
+
+## Ciclo 4 - Routing i18n unificato + dead code rimosso (2026-06-01)
+
+### Obiettivo
+
+Sempre da review: la logica di routing/i18n (validazione lingua, route -> chiave
+logica, route valida, traduzione route, sezione) era reimplementata in 4 posti
+(metodi del `ContentLoader`, funzioni inline nel `+layout.svelte`, logica inline
+negli `hooks.server.ts`, e dentro `getLanguageUrl`). Inoltre alcuni metodi del
+loader e un campo di output erano codice morto.
+
+### Decisione
+
+Unica fonte per le regole di routing: un modulo di funzioni pure
+`src/lib/utils/i18n.ts` (prende navigation/languages come argomenti, niente I/O),
+usato sia lato server sia lato client. La logica NON va nel `ContentLoader` (che
+resta data-access). Il codice morto si rimuove.
+
+### Lavoro svolto
+
+- Nuovo `src/lib/utils/i18n.ts`: `isValidLanguage`, `routeKeyOf`,
+  `isValidRouteForLang`, `findRouteKeyAnyLang`, `translateRoute`, `sectionOf`.
+- `getLanguageUrl`, `+layout.svelte` (rimosse 3 funzioni inline + `ogSection`) e
+  `hooks.server.ts` ora usano le primitive condivise.
+- Rimossi dal `ContentLoader` 5 metodi: 4 mai usati (`isValidRoute`,
+  `isValidLanguage`, `getRouteType`, `contentExists`) e `getAvailableLanguages`,
+  il cui output (`availableLanguages` in `DetailPageData`) non era letto da nessun
+  componente. Rimosso anche il campo e le due chiamate nel `+page.server.ts`.
+- Test: nuovo `i18n.test.ts` per le primitive; potati da `content-loader.test.ts`
+  i test dei metodi rimossi.
+
+### Verifiche
+
+- `pnpm check`: 0 errori; `pnpm lint`: pulito
+- `pnpm test:ci`: 145 unit verdi, 15 E2E verdi
 - `pnpm build`: OK end-to-end

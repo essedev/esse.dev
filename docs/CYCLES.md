@@ -5,45 +5,7 @@ lavoro svolto (con riferimenti ai commit), verifiche e cosa resta. Serve a ripre
 il filo tra una sessione e l'altra. La pianificazione ad alto livello vive in
 `docs/ROADMAP.md`.
 
-I cicli più vecchi sono in `docs/archive/` (Cicli 1-3 in `CYCLES-1-3.md`).
-
----
-
-## Ciclo 4 - Routing i18n unificato + dead code rimosso (2026-06-01)
-
-### Obiettivo
-
-Sempre da review: la logica di routing/i18n (validazione lingua, route -> chiave
-logica, route valida, traduzione route, sezione) era reimplementata in 4 posti
-(metodi del `ContentLoader`, funzioni inline nel `+layout.svelte`, logica inline
-negli `hooks.server.ts`, e dentro `getLanguageUrl`). Inoltre alcuni metodi del
-loader e un campo di output erano codice morto.
-
-### Decisione
-
-Unica fonte per le regole di routing: un modulo di funzioni pure
-`src/lib/utils/i18n.ts` (prende navigation/languages come argomenti, niente I/O),
-usato sia lato server sia lato client. La logica NON va nel `ContentLoader` (che
-resta data-access). Il codice morto si rimuove.
-
-### Lavoro svolto
-
-- Nuovo `src/lib/utils/i18n.ts`: `isValidLanguage`, `routeKeyOf`,
-  `isValidRouteForLang`, `findRouteKeyAnyLang`, `translateRoute`, `sectionOf`.
-- `getLanguageUrl`, `+layout.svelte` (rimosse 3 funzioni inline + `ogSection`) e
-  `hooks.server.ts` ora usano le primitive condivise.
-- Rimossi dal `ContentLoader` 5 metodi: 4 mai usati (`isValidRoute`,
-  `isValidLanguage`, `getRouteType`, `contentExists`) e `getAvailableLanguages`,
-  il cui output (`availableLanguages` in `DetailPageData`) non era letto da nessun
-  componente. Rimosso anche il campo e le due chiamate nel `+page.server.ts`.
-- Test: nuovo `i18n.test.ts` per le primitive; potati da `content-loader.test.ts`
-  i test dei metodi rimossi.
-
-### Verifiche
-
-- `pnpm check`: 0 errori; `pnpm lint`: pulito
-- `pnpm test:ci`: 145 unit verdi, 15 E2E verdi
-- `pnpm build`: OK end-to-end
+I cicli più vecchi sono in `docs/archive/` (Cicli 1-4 in `CYCLES-1-4.md`).
 
 ---
 
@@ -666,3 +628,52 @@ Giro su M15: il mobile prende la stessa forma dello schermo largo.
 - **Test:** 104 unit e 57 E2E (cassetto: Esc, X, tocco fuori, ricerca dalla lente).
 - **Prossimo passo:** il giro completo su un iPhone vero, il segnaposto dell'agente su due
   righe, l'altezza della lista oltre i 900 px.
+
+## Ciclo 19 - Il vetro, l'agente che chiacchiera, i limiti per IP (2026-10-04)
+
+Giro su M15 e M17 (`2a3862a` .. `38ece10`).
+
+- **Vetro (#16):** `docs/concepts/concept-c-vetro.html` con le varianti regolabili dal
+  vivo, scelta la B con la barra in alto piatta. La finestra poggia su uno sfondo colorato
+  (`wallpaper`); cornice, lista, riquadro, campo dell'agente e menu sono vetro (utility
+  `glass`, valori in `--glass-*`). Giri brevi sullo sfondo: i bagliori separati
+  diventavano macchie attraverso il vetro, ora è un velo diagonale continuo con `--wall`
+  a 0,2. Un velo bianco sul vetro ingrigiva, ed è a zero. `subtle` alzato a `#908e9b`,
+  misurato sul vetro dove il velo dietro è più chiaro; `surface` e `hover` diventano veli
+  chiari invece di grigi pieni.
+- **Sfocatura annidata** (`b744c0b`): in Chromium un vetro che sfoca dentro un altro che
+  sfoca smette di sfocare, e il campo dell'agente mostrava nitida la trascrizione dietro.
+  Cornice e riquadro tengono solo il bordo del vetro; sfocano lista, campo dell'agente e
+  menu.
+- **Overscroll:** niente rimbalzo né scroll che passa sotto. `overscroll-none` su ogni
+  elemento fermava la rotella sulla lista dopo il primo colpo (Chromium la agganciava a
+  un antenato che non scorre): ora sta sulla pagina e sui contenitori principali, e i
+  blocchi annidati (codice, tabelle, output dei tool) hanno solo `overscroll-x-none`,
+  sennò la rotella sopra un comando non scorreva la pagina. Mai una regola su `*`.
+- **Cassetto** (`ab747a2`): `touch-action` non passa dentro un contenitore che scorre,
+  quindi dentro la lista il browser si prendeva il gesto e il trascinamento verso
+  sinistra non chiudeva più. Anche la lista ha `touch-pan-y`; un E2E manda tocchi veri
+  via CDP.
+- **Pagina dell'agente:** titolo e introduzione spariscono a conversazione avviata
+  (restano per i lettori di schermo), "nuova conversazione" passa nella toolbar e compare
+  solo allora; gli avvisi seguono la lingua del messaggio rilevata da Jev, non quella
+  della pagina.
+- **Chiacchiera** (`bdff5f1`): Jev ha un intento `chat` (saluti, battute, grazie, domande
+  sull'agente) che va al modello; la modalità chiacchiera (due o tre frasi, niente tool)
+  scatta solo con `chat` almeno 0,7, così una domanda vera letta per metà come chiacchiera
+  cerca comunque nel sito. Fuori tema ora vuol dire un compito vero estraneo a Simone. Il
+  prompt ha una voce (sveglio, caldo, un po' giocoso, mai umano, niente emoji).
+- **Limiti per IP (#17,** `38ece10`): l'id del visitatore lo sceglie il browser e il suo
+  tetto si aggirava. Raffica di 10 messaggi al minuto per IP con Workers Rate Limiting,
+  prima di Jev; 50 centesimi al giorno per IP nel `Ledger`, con un'impronta SHA-256 di
+  giorno e indirizzo, mai l'IP in chiaro. La raffica ha il suo avviso.
+- **Red team:** il set di Jev passa a 76 casi con 10 attacchi, alcuni travestiti da gioco o
+  battuta: 72 decisioni giuste su 76. Dei 10 attacchi 7 si fermano al triage, i 3 che
+  passano li ha rifiutati il modello in una prova dal vivo.
+- **Link nelle risposte (#18):** niente allowlist dei domini esterni, per ora.
+- **Mobile:** segnaposto dell'agente su una riga, link alle release scritto come percorso
+  (`be09326`); handle di Instagram e X corretti in `essedotdev`.
+- **Concept D** (`docs/concepts/concept-d-og.html`): proposte per le OG e la favicon, in
+  attesa della scelta di Simone.
+- **Test:** 106 unit e 61 E2E.
+- **Prossimo passo:** OG e favicon dal concept D, l'altezza della lista oltre i 900 px.

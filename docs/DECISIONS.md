@@ -86,13 +86,17 @@ Ogni visitatore ha un budget giornaliero in dollari e il sito un tetto globale
 risposta, calcolato da pi-ai, non il numero di messaggi. Prima del modello Jev (di
 TypeSafe) classifica intento, peso e lingua in meno di un secondo: fuori tema e abuso si
 fermano lì. Si ferma quando la probabilità di essere fuori tema (fuori tema più abuso) arriva a
-0,65, o quella di abuso a 0,5: soglie fissate su 54 messaggi etichettati (`pnpm eval:jev`),
-con 0 domande legittime fermate e 1 su 19 da fermare passata. Se Jev non risponde la
+0,65, o quella di abuso a 0,5: soglie fissate sui messaggi etichettati (`pnpm eval:jev`).
+Dal Ciclo 19 l'intento `chat` (saluti, battute, domande sull'agente) passa al modello e
+non è fuori tema; la risposta breve senza tool scatta solo con `chat` almeno 0,7, perché
+una domanda vera letta per metà come chiacchiera deve cercare nel sito. Il set è di 76
+messaggi con 10 attacchi: 72 decisioni giuste. Se Jev non risponde la
 richiesta passa: il tetto in costo reale resta la garanzia.
 Jev passa da OpenRouter con la stessa chiave del modello; TypeSafe diretto e Workers AI
 restano come trasporti alternativi (`JEV_TRANSPORT` in `src/agent/site-agent.ts`).
 Scartati: un numero fisso di messaggi per visitatore (rigido, ignora quanto costa una
-domanda), il solo triage senza tetto (una classificazione si può ingannare).
+domanda), il solo triage senza tetto (una classificazione si può ingannare), le
+chiacchiere fermate come fuori tema (un saluto riceveva un avviso secco).
 Il budget per visitatore è di 10 centesimi al giorno (era 5: bastavano 3 domande con
 `delegate`). In pagina si conta in crediti (1 credito = 0,01 centesimi, 1.000 al giorno)
 e il contatore compare solo sotto il 30%: chi visita non deve sentirsi misurato. Token e
@@ -150,3 +154,42 @@ pagina è istantaneo: la view transition sembrava un sito che carica e rallentav
 tastiera. Scartati: le altre palette del concept (menta, viola, ultravioletto, ambra,
 cyberpunk), gli altri mono pixel (Geist Pixel, VT323, Doto e gli altri), la cornice piatta
 o la sola finestra, la dissolvenza tra le pagine.
+
+## #16 - Vetro dal concept C: velo continuo, sfoca solo il vetro più interno
+
+**Status:** attiva (Ciclo 19)
+
+Scelta con Simone la variante B di `docs/concepts/concept-c-vetro.html`: la finestra su uno
+sfondo colorato, cornice, lista, riquadro, campo dell'agente e menu di vetro (`glass`,
+valori in `--glass-*`), la barra in alto piatta. Lo sfondo è un velo diagonale continuo
+(`--wall`): bagliori separati diventavano macchie attraverso il vetro. Nessun velo bianco
+sul vetro, che ingrigisce; `surface` e `hover` sono veli chiari, non grigi pieni; un colore
+di testo si misura sul vetro, non sul nero. In Chromium un vetro che sfoca dentro un altro
+smette di sfocare: cornice e riquadro hanno solo il bordo. Scartati: velo bianco, bagliori
+separati, barra in alto di vetro (Simone non la voleva), la rifrazione della variante C
+(solo Chromium), la sfocatura su ogni livello.
+
+## #17 - Limiti dell'agente anche per IP, con un'impronta giornaliera
+
+**Status:** attiva (Ciclo 19)
+
+L'id del visitatore lo sceglie il browser, quindi il suo tetto (#12) si aggira cambiandolo.
+Ogni IP ha una raffica di 10 messaggi al minuto (Workers Rate Limiting, binding
+`AGENT_RATE`), controllata prima di Jev, che si paga anche sui messaggi poi fermati, e un
+budget di 50 centesimi al giorno nel `Ledger` (`IP_DAILY_USD`): cinque visitatori, perché
+uffici e reti mobili mettono tante persone dietro un indirizzo. La chiave è un'impronta
+SHA-256 di giorno e IP: l'indirizzo non si salva, e impronte di giorni diversi non si
+collegano. Scartati: il solo tetto per visitatore (aggirabile), l'IP in chiaro, un tetto
+per IP pari a quello di un visitatore (taglierebbe le reti condivise).
+
+## #18 - Niente allowlist dei link esterni nelle risposte, per ora
+
+**Status:** attiva (Ciclo 19)
+
+Le risposte dell'agente possono contenere link a qualunque dominio, senza filtro. Un link
+malevolo nella risposta serve a chi può far leggere all'agente un testo suo e poi
+mostrare la risposta a qualcun altro: oggi l'agente legge solo il sito e i repo di Simone,
+e la conversazione la vede solo chi l'ha scritta. Scartata per ora: un'allowlist dei domini
+nel renderer della trascrizione (complessità e link utili tagliati, senza un rischio da
+coprire). Si rivede quando le conversazioni diventano condivisibili o l'agente legge
+contenuti di terzi (fetch di URL, repo non di Simone).
