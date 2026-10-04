@@ -23,7 +23,7 @@ export interface NavItem {
 	/** Numero d'ordine mostrato al posto del LED (metodo). */
 	index?: string;
 	/** Icona al posto del LED, per le voci senza stato: una pagina o uno scritto. */
-	icon?: 'person' | 'text' | 'agent';
+	icon?: 'person' | 'text' | 'agent' | 'now';
 	/** Testo su cui lavora il filtro. */
 	search: string;
 	/**
@@ -87,7 +87,7 @@ export async function getNav(lang: string, t: Translate): Promise<Nav> {
 				href: base('now'),
 				title: site.sections.now,
 				meta: now[0] ? formatDate(now[0].date, lang, 'month') : undefined,
-				status: 'in-progress',
+				icon: 'now',
 				search: [site.sections.now, ...now.map((n) => n.title)].join(' ').toLowerCase()
 			},
 			{
