@@ -55,8 +55,8 @@ Principi, voce e smistamento in `docs/features/progetti.md`.
   pubblica solo voce per voce.
 - Campo `previously` nello schema: le iterazioni precedenti di un'idea come dati.
 - Schede nuove e riscritte secondo lo smistamento. I fatti (date, attività, stack) si
-  ricavano dalle fonti, il testo si scrive a mano con Simone, compresa "La scelta
-  interessante".
+  ricavano dalle fonti, il testo si scrive a mano con Simone, compreso il riquadro
+  "Il perché".
 - Cover per ogni progetto da un componente (colore, icona Lucide o SVG, scena di UI),
   screenshot veri dove esistono. Tag ripuliti.
 - Skill che propone le voci nuove o aggiornate dai repo; propone, non pubblica.
