@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="it">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Concept F - Icona dell'agente</title>
+		<style>
+			@font-face { font-family: 'Geist'; font-weight: 400; src: url(https://cdn.jsdelivr.net/fontsource/fonts/geist@latest/latin-400-normal.woff2) format('woff2'); }
+			@font-face { font-family: 'Geist'; font-weight: 500; src: url(https://cdn.jsdelivr.net/fontsource/fonts/geist@latest/latin-500-normal.woff2) format('woff2'); }
+			@font-face { font-family: 'Departure Mono'; src: url(https://cdn.jsdelivr.net/gh/rektdeckard/departure-mono@main/public/assets/DepartureMono-Regular.woff2) format('woff2'); }
+
+			/* Token di `@theme` in src/styles/global.css. */
+			:root {
+				--desk: #050507;
+				--panel: #0e0e12;
+				--pane: #0f0e15;
+				--surface: rgb(255 255 255 / 0.05);
+				--hover: rgb(255 255 255 / 0.08);
+				--fg: #efedf5;
+				--text: #cbc9d4;
+				--muted: #9c9aa8;
+				--subtle: #908e9b;
+				--accent: #b59cff;
+				--glow: #6e50ff;
+				--live: #7dff9b;
+				--accent-glow: 5px;
+				color-scheme: dark;
+			}
+			* { box-sizing: border-box; margin: 0; }
+			body {
+				min-height: 100vh;
+				padding: 40px 24px 64px;
+				font-family: 'Geist', system-ui, sans-serif;
+				color: var(--text);
+				background:
+					radial-gradient(22% 26% at 14% 6%, rgb(110 80 255 / 0.18), transparent 70%),
+					linear-gradient(135deg, rgb(110 80 255 / 0.2), rgb(110 80 255 / 0.06) 60%, transparent),
+					var(--desk);
+			}
+			header { max-width: 1180px; margin: 0 auto 32px; }
+			h1 { font-family: 'Departure Mono', monospace; font-weight: 400; font-size: 15px; color: var(--fg); letter-spacing: 0.02em; }
+			header p { margin-top: 8px; font-size: 14px; color: var(--muted); max-width: 70ch; line-height: 1.55; }
+
+			.grid { max-width: 1180px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 20px; }
+			.variant {
+				border-radius: 11px;
+				background: rgb(14 14 18 / 0.75);
+				backdrop-filter: blur(32px) saturate(110%);
+				box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.09);
+				padding: 18px 14px 20px;
+				display: flex; flex-direction: column; gap: 18px;
+			}
+			.variant.current { opacity: 0.8; }
+			.tag { display: flex; align-items: baseline; gap: 10px; padding: 0 6px; }
+			.tag b { font-family: 'Departure Mono', monospace; font-weight: 400; font-size: 13px; color: var(--accent); }
+			.variant.current .tag b { color: var(--subtle); }
+			.tag span { font-family: 'Departure Mono', monospace; font-size: 11px; color: var(--subtle); }
+			.why { padding: 0 6px; font-size: 13px; line-height: 1.5; color: var(--muted); }
+
+			/* Icona grande per leggerne la forma. */
+			.big { display: flex; gap: 22px; align-items: center; padding: 6px 6px 2px; }
+			.big svg { width: 44px; height: 44px; color: var(--accent); filter: drop-shadow(0 0 4px var(--accent)); }
+			.big svg.plain { width: 22px; height: 22px; filter: drop-shadow(0 0 calc(var(--accent-glow) / 2) var(--accent)); }
+
+			.label { font-family: 'Departure Mono', monospace; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--subtle); padding: 0 8px; margin-bottom: 4px; }
+
+			/* La lista, come NavRow.astro. */
+			.list { display: flex; flex-direction: column; }
+			.row { display: flex; align-items: center; gap: 12px; height: 36px; padding: 0 8px; border-radius: 6px; font-size: 15px; color: var(--text); }
+			.row.on { background: var(--surface); color: var(--fg); }
+			.row .ic { width: 16px; display: flex; justify-content: center; flex: none; }
+			.row svg { width: 14px; height: 14px; color: var(--subtle); }
+			.row svg.live { color: var(--live); }
+			.row svg.agent { color: var(--accent); filter: drop-shadow(0 0 calc(var(--accent-glow) / 2) var(--accent)); }
+			.row .meta { margin-left: auto; font-family: 'Departure Mono', monospace; font-size: 11px; color: var(--subtle); }
+
+			/* La voce "Da dove iniziare" della home. */
+			.start { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 4px 14px; align-items: baseline; padding: 12px 8px; border-radius: 10px; background: rgb(15 14 21 / 0.6); }
+			.start .ic { width: 16px; display: flex; justify-content: center; transform: translateY(2px); }
+			.start svg { width: 14px; height: 14px; color: var(--accent); filter: drop-shadow(0 0 calc(var(--accent-glow) / 2) var(--accent)); }
+			.start .t { color: var(--fg); font-size: 17px; font-weight: 500; letter-spacing: -0.01em; }
+			.start .n { grid-column: 2; font-family: 'Departure Mono', monospace; font-size: 12px; color: var(--muted); line-height: 1.45; }
+
+			svg { fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+		</style>
+	</head>
+	<body>
+		<header>
+			<h1>Concept F, icona dell'agente</h1>
+			<p>
+				Icone Lucide, alla taglia vera (14 px, lavanda con l'alone) nella lista e nella voce
+				della home, più una versione grande per leggerne la forma. La prima card è l'icona di
+				oggi.
+			</p>
+		</header>
+
+		<main class="grid" id="grid"></main>
+
+		<script>
+			const ICONS = {
+				'square-terminal': '<path d="m7 11 2-2-2-2"/><path d="M11 13h4"/><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/>',
+				'text-cursor-input': '<path d="M12 20h-1a2 2 0 0 1-2-2 2 2 0 0 1-2 2H6"/><path d="M13 8h7a2 2 0 0 1 2 2v4a2 2 0 0 1-2 2h-7"/><path d="M5 16H4a2 2 0 0 1-2-2v-4a2 2 0 0 1 2-2h1"/><path d="M6 4h1a2 2 0 0 1 2 2 2 2 0 0 1 2-2h1"/><path d="M9 6v12"/>',
+				'message-square-code': '<path d="M22 17a2 2 0 0 1-2 2H6.828a2 2 0 0 0-1.414.586l-2.202 2.202A.71.71 0 0 1 2 21.286V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2z"/><path d="m10 8-3 3 3 3"/><path d="m14 14 3-3-3-3"/>',
+				'square-chevron-right': '<rect width="18" height="18" x="3" y="3" rx="2"/><path d="m10 8 4 4-4 4"/>',
+				'bot-message-square': '<path d="M12 6V2H8"/><path d="M15 11v2"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="M20 16a2 2 0 0 1-2 2H8.828a2 2 0 0 0-1.414.586l-2.202 2.202A.71.71 0 0 1 4 20.286V8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2z"/><path d="M9 11v2"/>',
+				terminal: '<path d="M12 19h8"/><path d="m4 17 6-6-6-6"/>',
+				house: '<path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>',
+				user: '<path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
+				activity: '<path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2"/>'
+			};
+
+			const VARIANTS = [
+				{ tag: 'Oggi', name: 'SquareTerminal', icon: 'square-terminal', current: true,
+					why: 'Coerente con lo stile, ma dice "terminale": in un sito tutto mono e prompt non distingue l\'agente.' },
+				{ tag: 'A', name: 'TextCursorInput', icon: 'text-cursor-input',
+					why: 'Un cursore in un campo: riprende il cursore del logo e della favicon e dice "scrivi qui".' },
+				{ tag: 'B', name: 'MessageSquareCode', icon: 'message-square-code',
+					why: 'Conversazione più codice, cioè quello che l\'agente fa davvero. Più esplicita, più carica a 14 px.' },
+				{ tag: 'C', name: 'SquareChevronRight', icon: 'square-chevron-right',
+					why: 'Il prompt › nel riquadro: il terminale di oggi ripulito, con lo stesso limite.' },
+				{ tag: 'D', name: 'Terminal', icon: 'terminal',
+					why: 'Il prompt senza riquadro: il più leggero, sta in riga con il testo come un comando.' },
+				{ tag: 'E', name: 'BotMessageSquare', icon: 'bot-message-square',
+					why: 'Il fumetto con il robot: chiarissimo per chiunque, ma il più "prodotto AI" del gruppo.' }
+			];
+
+			const svg = (name, cls = '') =>
+				`<svg viewBox="0 0 24 24" class="${cls}" aria-hidden="true">${ICONS[name]}</svg>`;
+
+			document.getElementById('grid').innerHTML = VARIANTS.map((v) => `
+				<section class="variant${v.current ? ' current' : ''}">
+					<div class="tag"><b>${v.tag}</b><span>${v.name}</span></div>
+					<div class="big">${svg(v.icon)}${svg(v.icon, 'plain')}</div>
+					<p class="why">${v.why}</p>
+					<div>
+						<div class="label">Pagine</div>
+						<div class="list">
+							<div class="row"><span class="ic">${svg('house')}</span>Benvenuto</div>
+							<div class="row"><span class="ic">${svg('user')}</span>Chi sono</div>
+							<div class="row"><span class="ic">${svg('activity', 'live')}</span>Adesso<span class="meta">ott 2026</span></div>
+							<div class="row on"><span class="ic">${svg(v.icon, 'agent')}</span>Agente</div>
+						</div>
+					</div>
+					<div>
+						<div class="label">Da dove iniziare</div>
+						<div class="start">
+							<span class="ic">${svg(v.icon)}</span>
+							<span class="t">Agente</span>
+							<span class="n">› Come fa Portsage a sapere quali porte sono occupate? Mostrami il codice</span>
+						</div>
+					</div>
+				</section>`).join('');
+		</script>
+	</body>
+</html>
