@@ -70,7 +70,7 @@ senza link al repo.
   molla sul trascinamento delle finestre, prima scritto a mano in Svelte e poi con l'AI;
   oggi una cosa così è un benchmark per i modelli locali. La storia è la scheda.
 - Ethicode.
-- Pigeon, Flux (esce dalla vetrina), Budokan (sito su `budokan-v2`), L.R.L. Elettrica.
+- Pigeon, Flux (esce dalla vetrina), Bu Do Kan (sito su `budokan-v2`), L.R.L. Elettrica.
 
 **Idee**: Maia, con Cosmoscope e Upstream come iterazioni precedenti; Minerd, l'idle game
 come base di un gioco che si aggiorna da solo con l'AI.

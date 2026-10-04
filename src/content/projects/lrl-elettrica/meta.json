@@ -1,7 +1,7 @@
 {
-	"status": "completed",
-	"published": false,
+	"status": "maintained",
+	"published": true,
 	"created": "2022-03-15",
-	"updated": "2023-05-20",
-	"site": "https://lrlelettronica.eu/"
+	"updated": "2026-10-04",
+	"site": "https://lrlelettrica.it/"
 }

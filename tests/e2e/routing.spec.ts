@@ -56,10 +56,10 @@ test.describe('i18n routing & redirects', () => {
 	});
 
 	test('the project detail page shows the status badge', async ({ page }) => {
-		// budokan e' "completed": il badge deve comparire anche nel dettaglio, non
-		// solo sulle card (StatusBadge condiviso)
-		await page.goto('/en/projects/budokan');
-		await expect(page.getByText('Completed', { exact: true })).toBeVisible();
+		// Il badge deve comparire anche nel dettaglio, non solo sulle card (StatusBadge
+		// condiviso); "maintained" è lo stato più recente, il primo che si dimentica.
+		await page.goto('/en/projects/portsage');
+		await expect(page.getByText('Maintained', { exact: true })).toBeVisible();
 	});
 
 	test('the italian detail route (language-switch target) renders', async ({ page }) => {
