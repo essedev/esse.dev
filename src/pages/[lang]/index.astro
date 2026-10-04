@@ -1,6 +1,6 @@
 ---
 import { render } from 'astro:content';
-import { ArrowRight, Copy, Check, SquareTerminal } from '@lucide/astro';
+import { ArrowRight, Copy, Check, BotMessageSquare } from '@lucide/astro';
 import Page from '../../components/Page.astro';
 import SocialLinks from '../../components/SocialLinks.astro';
 import Workspace from '../../layouts/Workspace.astro';
@@ -126,7 +126,7 @@ const jsonLd = [
 									{s.index ? (
 										<span class="text-subtle font-mono text-[0.7rem]">{s.index}</span>
 									) : s.icon === 'agent' ? (
-										<SquareTerminal class="text-accent glow size-3.5 translate-y-0.5" />
+										<BotMessageSquare class="text-accent glow size-3.5 translate-y-0.5" />
 									) : (
 										<span class="led -translate-y-px" data-status={s.status} />
 									)}

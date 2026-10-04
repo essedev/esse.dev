@@ -1,5 +1,5 @@
 ---
-import { Activity, ArrowRight, FileText, House, SquareTerminal, User } from '@lucide/astro';
+import { Activity, ArrowRight, FileText, House, BotMessageSquare, User } from '@lucide/astro';
 import type { NavItem } from '../../lib/workspace';
 
 interface Props {
@@ -44,7 +44,7 @@ const isCurrent = item.key === current;
 			) : item.icon === 'now' ? (
 				<Activity class="text-live size-3.5" />
 			) : item.icon === 'agent' ? (
-				<SquareTerminal class="text-accent glow size-3.5" />
+				<BotMessageSquare class="text-accent glow size-3.5" />
 			) : item.icon === 'text' ? (
 				<FileText class="text-subtle size-3.5" />
 			) : (
