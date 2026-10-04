@@ -79,11 +79,10 @@
 		/* Il punto di luce che segue il puntatore (`data-cursor-light`). */
 		--cursor-light: 0.3;
 
-		/* Cursori in pixel art, come Departure Mono: `public/cursors/`, un pixel = 1,5 px (3 pixel
-		   fisici sugli schermi retina, quindi nitidi). */
+		/* Cursori in pixel art, come Departure Mono: `public/cursors/`, un pixel = 2 px. */
 		--cursor-default: url('/cursors/arrow.svg') 1 1, default;
-		--cursor-pointer: url('/cursors/pointer.svg') 8 1, pointer;
-		--cursor-text: url('/cursors/text.svg') 5 12, text;
+		--cursor-pointer: url('/cursors/pointer.svg') 11 1, pointer;
+		--cursor-text: url('/cursors/text.svg') 7 16, text;
 		--glass-blur: 32px;
 		--glass-sat: 110%;
 		--glass-tint: 0;
@@ -392,7 +391,7 @@ textarea {
 	opacity: 0;
 	transition: opacity 600ms var(--ease-out);
 	background: radial-gradient(
-		180px circle at var(--lx, 50%) var(--ly, 30%),
+		320px circle at var(--lx, 50%) var(--ly, 30%),
 		color-mix(in srgb, var(--color-accent) calc(var(--cursor-light) * 100%), transparent),
 		transparent 70%
 	);
