@@ -119,7 +119,21 @@
 		)
 	);
 
+	// `?q=` arriva da un link (la home): la domanda finisce nel campo, non parte da sola.
+	// Il costo resta una scelta di chi visita.
+	const PREFILL_MAX = 500;
+	function prefill() {
+		const url = new URL(location.href);
+		const q = url.searchParams.get('q')?.trim();
+		if (!q) return;
+		input = q.slice(0, PREFILL_MAX);
+		url.searchParams.delete('q');
+		history.replaceState(history.state, '', url);
+		tick().then(() => document.querySelector<HTMLTextAreaElement>('[data-agent-input]')?.focus());
+	}
+
 	onMount(() => {
+		prefill();
 		client = new AgentClient({ agent: 'SiteAgent', name: visitorId(), host: location.host });
 		client.addEventListener('open', () => (status = 'open'));
 		client.addEventListener('close', () => (status = 'closed'));
@@ -612,6 +626,7 @@
 			>
 			<textarea
 				bind:value={input}
+				data-agent-input
 				onkeydown={onKey}
 				rows="1"
 				placeholder={status === 'open'

@@ -1,0 +1,164 @@
+---
+import { ArrowRight, Copy, Check, SquareTerminal } from '@lucide/astro';
+import Page from '../../components/Page.astro';
+import Workspace from '../../layouts/Workspace.astro';
+import { languageCodes, navigation, featured } from '../../lib/config';
+import { getMethod, getPage, getProjects } from '../../lib/content';
+import { personJsonLd, socialLinks, websiteJsonLd } from '../../lib/seo';
+import { getSite, translator } from '../../lib/site';
+
+// Seconda versione della home, solo per confrontarla con la prima (`/it/v2`, fuori dagli
+// indici): meno doppioni, tre voci per iniziare, l'agente per primo. Quando si sceglie,
+// il testo va nei contenuti e questa pagina si cancella.
+const INTRO: Record<string, string[]> = {
+	it: [
+		'Porto l’AI generativa dentro aziende vere e la tengo in produzione. Per conto mio costruisco strumenti per sviluppatori, quasi tutti open source, e app mie.',
+		'Progetto l’architettura, l’AI scrive il codice, io verifico e rilascio.'
+	],
+	en: [
+		'I bring generative AI into real companies and keep it running in production. On my own I build developer tools, almost all open source, and apps of my own.',
+		'I design the architecture, the AI writes the code, I review and ship.'
+	]
+};
+
+export function getStaticPaths() {
+	return languageCodes.map((lang) => ({ params: { lang } }));
+}
+
+const { lang } = Astro.params;
+const t = await translator(lang);
+const site = await getSite(lang);
+const routes = navigation[lang];
+
+const [welcome, contact, projects, method] = await Promise.all([
+	getPage('welcome', lang),
+	getPage('contact', lang),
+	getProjects(lang),
+	getMethod(lang)
+]);
+
+const lead = projects.find((p) => p.id === featured.projects[0]) ?? projects[0];
+const email = contact.data.links.find((l) => l.url.startsWith('mailto:'))?.url.slice(7);
+
+// La domanda d'esempio apre l'agente con il campo già scritto, senza inviarla.
+const ask = t('agentAsk4');
+const starts = [
+	{
+		href: `/${lang}/${routes.agent}?q=${encodeURIComponent(ask)}`,
+		title: site.sections.agent,
+		note: `› ${ask}`,
+		icon: 'agent'
+	},
+	{
+		href: `/${lang}/${routes.projects}/${lead.text.slug}`,
+		title: lead.text.title,
+		note: lead.text.excerpt,
+		status: lead.meta.status
+	},
+	{
+		href: `/${lang}/${routes.method}`,
+		title: site.sections.method,
+		note: method.map((m) => m.text.title).join(', '),
+		index: '01'
+	}
+];
+
+const origin = Astro.site!.origin;
+const jsonLd = [
+	websiteJsonLd({ origin, lang, description: site.description }),
+	personJsonLd({ origin, sameAs: socialLinks(contact.data.links) })
+];
+---
+
+<Workspace
+	lang={lang}
+	path={`/${lang}/v2`}
+	noindex
+	current="home"
+	crumbs={[{ label: t('home') }]}
+	view="home"
+	jsonLd={jsonLd}
+>
+	<Page>
+		<div class="grid gap-x-[clamp(2rem,5vw,6rem)] gap-y-12 2xl:grid-cols-[minmax(0,1.35fr)_minmax(0,1fr)]">
+			<section class="flex flex-col">
+				<h1 class="text-[clamp(2.5rem,1.5rem+3.4vw,4.75rem)] leading-[0.98] font-medium tracking-[-0.035em]">
+					{welcome.data.title}
+				</h1>
+				<p class="text-muted mt-5 flex items-center gap-2.5 font-mono text-[0.8125rem]">
+					<span class="led" data-status="in-progress"></span>
+					{welcome.data.eyebrow}
+				</p>
+				<div class="text-text mt-8 text-[clamp(1.125rem,0.98rem+0.45vw,1.4375rem)] leading-[1.6] text-pretty [&_p+p]:mt-4">
+					{INTRO[lang].map((p) => (
+						<p>{p}</p>
+					))}
+				</div>
+
+				<dl class="mt-10 grid grid-cols-[auto_minmax(0,1fr)] items-baseline gap-x-8 gap-y-4 text-[0.9375rem]">
+					{welcome.data.facts.slice(1).map((f) => (
+						<>
+							<dt class="label">{f.label}</dt>
+							<dd class="text-text">{f.value}</dd>
+						</>
+					))}
+					{email && (
+						<>
+							<dt class="label">email</dt>
+							<dd>
+								<button
+									type="button"
+									data-copy={email}
+									data-copy-message={t('emailCopied')}
+									class="group bg-surface hover:bg-hover inline-flex items-center gap-3 rounded-[var(--radius-control)] py-1.5 pr-2.5 pl-3 font-mono text-[0.8125rem] transition-colors"
+								>
+									{email}
+									<Copy class="text-subtle size-3.5 group-data-[copied]:hidden" />
+									<Check class="text-live hidden size-3.5 group-data-[copied]:block" />
+								</button>
+							</dd>
+						</>
+					)}
+				</dl>
+			</section>
+
+			<section aria-labelledby="start-here" class="2xl:pt-14">
+				<h2 id="start-here" class="label">
+					{t('startHere')}
+				</h2>
+				<ul class="-mx-3 mt-3 flex flex-col">
+					{starts.map((s) => (
+						<li>
+							<a
+								href={s.href}
+								class="group hover:bg-panel grid grid-cols-[auto_minmax(0,1fr)_auto] items-baseline gap-x-4 rounded-[var(--radius-panel)] px-3 py-4 transition-colors"
+							>
+								<span class="flex w-4 justify-center">
+									{s.index ? (
+										<span class="text-subtle font-mono text-[0.7rem]">{s.index}</span>
+									) : s.icon === 'agent' ? (
+										<SquareTerminal class="text-accent glow size-3.5 translate-y-0.5" />
+									) : (
+										<span class="led -translate-y-px" data-status={s.status} />
+									)}
+								</span>
+								<span class="flex min-w-0 flex-col gap-1">
+									<span class="text-fg text-[1.0625rem] font-medium tracking-tight">{s.title}</span>
+									<span
+										class:list={[
+											'text-muted line-clamp-2',
+											s.icon === 'agent' ? 'font-mono text-[0.8125rem]' : 'text-[0.9375rem]'
+										]}
+									>
+										{s.note}
+									</span>
+								</span>
+								<ArrowRight class="text-subtle size-4 self-center transition-transform group-hover:translate-x-1 group-hover:text-accent" />
+							</a>
+						</li>
+					))}
+				</ul>
+			</section>
+		</div>
+	</Page>
+</Workspace>
