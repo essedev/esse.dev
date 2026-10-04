@@ -76,6 +76,13 @@
 		--wall: 0.2;
 		/* Un solo punto di luce, in alto a sinistra: si vede attraverso il vetro della lista. */
 		--wall-light: 0.18;
+		/* Il punto di luce che segue il puntatore (`data-cursor-light`). */
+		--cursor-light: 0.3;
+
+		/* Cursori in pixel art, come Departure Mono: `public/cursors/`, un pixel = 2 px. */
+		--cursor-default: url('/cursors/arrow.svg') 1 1, default;
+		--cursor-pointer: url('/cursors/pointer.svg') 11 1, pointer;
+		--cursor-text: url('/cursors/text.svg') 7 16, text;
 		--glass-blur: 32px;
 		--glass-sat: 110%;
 		--glass-tint: 0;
@@ -118,11 +125,6 @@
 		outline: 1.5px solid var(--color-accent);
 		outline-offset: 2px;
 		border-radius: 4px;
-	}
-
-	button,
-	[role='button'] {
-		cursor: pointer;
 	}
 }
 
@@ -359,6 +361,43 @@
 [data-pane-glass] {
 	-webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat));
 	backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat));
+}
+
+/* Cursori: fuori da @layer, così vincono sui default del browser e su `cursor-pointer`. */
+html {
+	cursor: var(--cursor-default);
+}
+a[href],
+button:not(:disabled),
+[role='button'],
+summary,
+label[for],
+select,
+.cursor-pointer {
+	cursor: var(--cursor-pointer);
+}
+input:not([type='checkbox'], [type='radio']),
+textarea {
+	cursor: var(--cursor-text);
+}
+
+/* Una luce sullo sfondo che segue il puntatore, con un po' di ritardo
+   (`src/scripts/workspace.ts`): si vede sfocata attraverso il vetro. Solo con il mouse. */
+[data-cursor-light] {
+	position: absolute;
+	inset: 0;
+	z-index: -1;
+	pointer-events: none;
+	opacity: 0;
+	transition: opacity 600ms var(--ease-out);
+	background: radial-gradient(
+		320px circle at var(--lx, 50%) var(--ly, 30%),
+		color-mix(in srgb, var(--color-accent) calc(var(--cursor-light) * 100%), transparent),
+		transparent 70%
+	);
+}
+[data-cursor-light][data-on] {
+	opacity: 1;
 }
 
 /* CRT su tutta la finestra: una frangia rosso-ciano sul testo, e sopra a tutto righe
