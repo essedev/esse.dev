@@ -53,6 +53,10 @@ export default defineConfig({
 		}
 	},
 	vite: {
-		plugins: [tailwindcss()]
+		plugins: [tailwindcss()],
+		// In `pnpm dev` l'agente legge l'indice del sito con `env.ASSETS.fetch` su
+		// `https://assets.local/...`, che passa da Vite: senza questo host risponde 403 e la
+		// chat resta offline. Il deploy e `wrangler dev` non passano da qui.
+		server: { allowedHosts: ['assets.local'] }
 	}
 });
