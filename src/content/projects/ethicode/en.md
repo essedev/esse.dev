@@ -9,4 +9,4 @@ tags:
   - "E-learning"
 ---
 
-A platform to learn how to code through simple, hands-on paths, started in 2023 as Let's Code Italia. SvelteKit, Tailwind and PocketBase.
+A platform to learn how to code through simple, hands-on paths, started in late 2022 as Let's Code Italia. SvelteKit, Tailwind and PocketBase.

@@ -9,4 +9,4 @@ tags:
   - "E-learning"
 ---
 
-Una piattaforma per imparare a programmare con percorsi semplici e pratici, nata nel 2023 come Let's Code Italia. SvelteKit, Tailwind e PocketBase.
+Una piattaforma per imparare a programmare con percorsi semplici e pratici, nata a fine 2022 come Let's Code Italia. SvelteKit, Tailwind e PocketBase.
