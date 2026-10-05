@@ -1,10 +1,10 @@
 # CLAUDE.md - simonesalerno.it
 
-Portfolio personale, online su `esse.dev` (dominio principale: `site` in
-`astro.config.mjs`; `simonesalerno.it` reindirizza lì con una Redirect Rule di
-Cloudflare, non nel codice). Astro 7 + TS strict + Tailwind 4, isole Svelte 5, deploy su
-Cloudflare Workers; una pagina è un agente (Durable Object con pi-durable, modelli da
-OpenRouter). Il perché delle scelte sta in `docs/ARCHITECTURE.md` e `docs/DECISIONS.md`;
+Portfolio personale, dominio principale `esse.dev` (`site` in `astro.config.mjs`).
+`simonesalerno.it` andrà su `esse.dev` con una Redirect Rule di Cloudflare, mai nel codice
+(ancora da fare: Aperte della ROADMAP). Astro 7 + TS strict + Tailwind 4, isole Svelte 5,
+deploy su Cloudflare Workers; una pagina è un agente (Durable Object con pi-durable, modelli
+da OpenRouter). Il perché delle scelte sta in `docs/ARCHITECTURE.md` e `docs/DECISIONS.md`;
 stato e log in `docs/ROADMAP.md` e `docs/CYCLES.md`.
 
 ## Comandi
@@ -85,50 +85,42 @@ Segreti in `.dev.vars` (escluso da git, modello in `.dev.vars.example`), letti d
 
 ## Design system: lo spazio di lavoro
 
-Il sito si usa come un'app (`docs/concepts/concept-a-spazio.html`, scelte in
-ARCHITECTURE): lista a sinistra, riquadro del contenuto con la sua toolbar a destra. Shell
-in `src/layouts/Workspace.astro`, ordine della lista e del pager in `src/lib/workspace.ts`,
-tastiera in `src/scripts/workspace.ts`.
+Il sito si usa come un'app: lista a sinistra, riquadro con la sua toolbar a destra (scelte
+in ARCHITECTURE, stile e vetro in DECISIONS #15-#16). Shell in `src/layouts/Workspace.astro`,
+ordine della lista e del pager in `src/lib/workspace.ts`, tastiera e cassetto mobile
+(`data-drawer`) in `src/scripts/workspace.ts`.
 
-- La lista va in ordine di importanza: pagine singole (benvenuto, chi sono, adesso,
-  agente), poi la vetrina dei progetti (`featured.json`, 6) con "tutti i N", metodo,
-  scritti, e in fondo i profili esterni. Gli altri progetti li trova la ricerca. Deve
-  stare in 900 px di altezza.
-- Un parametro nuovo nell'URL si controlla prima contro quelli in uso: `?q=` è la
-  ricerca della sidebar, `?ask=` la domanda precompilata dell'agente.
+- La lista va in ordine di importanza: pagine singole, vetrina (`featured.json`, 6) con
+  "tutti i N", metodo, scritti, profili esterni. Gli altri progetti li trova la ricerca.
+  Deve stare in 900 px di altezza.
+- Un parametro nuovo nell'URL si controlla contro quelli in uso: `?q=` ricerca della lista,
+  `?ask=` domanda precompilata dell'agente.
 - La navigazione sta nella toolbar (breadcrumb, Esc, "‹ sezione" su mobile), mai un
   "Indietro" nel contenuto. Il livello sopra si calcola dai `crumbs` in `Workspace.astro`.
-- Token in `@theme` (`src/styles/global.css`): un valore scritto a mano in un componente
-  è un errore. Profondità dal tono delle superfici. Su schermo largo la shell è una
-  finestra con due card (lista e contenuto); su mobile la finestra ha solo il riquadro e la
-  lista è un cassetto (`data-drawer`, in `src/scripts/workspace.ts`).
-- Due colori con compiti separati: la lavanda (`accent`) per identità e interazione, il
-  verde (`live`) solo per "vivo, riuscito" (LED in corso e mantenuto, copie e invii riusciti), mai
-  sul testo corrente.
-- Vetro (`docs/concepts/concept-c-vetro.html`, variante B): sfondo colorato
-  (`wallpaper`), cornice, lista, contenuto e campo dell'agente con l'utility `glass` e i
-  valori in `--glass-*`; la toolbar resta piatta. I controlli usano `surface` e `hover`,
-  veli chiari e non grigi pieni; nel riquadro anche i blocchi (`bg-surface/60`); `bg-panel` pieno sul
-  vetro non si vede. Una scala sola: hover `surface/60`, selezione `surface` (sopra l'hover,
-  così il "sei qui" resta), `hover` solo per i controlli che partono già dal velo. Un vetro che sfoca non va dentro un altro che sfoca
-  (Chromium smette di sfocare): la cornice ha solo il bordo, e il riquadro sfoca da uno strato
-  dietro il contenuto (`data-pane-glass`), che non contiene altri vetri. Un colore di testo nuovo si misura sul vetro, dove il
-  velo dietro è più chiaro, non sul nero. Lo sfondo è un velo continuo con un solo punto di
-  luce: bagliori sparsi diventano macchie attraverso il vetro.
-- Stile del concept B (`docs/concepts/concept-b-stile.html`): lavanda accesa, Departure
-  Mono per tutto il mono dell'interfaccia (il codice nella prosa resta Geist Mono), velo
-  CRT con i valori in `--crt-*` di `global.css`.
-- Nessuna larghezza massima sul contenuto: la misura la danno la colonna e la taglia
-  fluida.
+- Token in `@theme` (`src/styles/global.css`): un valore scritto a mano in un componente è
+  un errore.
+- Lavanda (`accent`) per identità e interazione; verde (`live`) solo per "vivo, riuscito"
+  (LED in corso e mantenuto, copie e invii riusciti), mai sul testo corrente.
+- Vetro: utility `glass` con i valori in `--glass-*`, la toolbar resta piatta. Un vetro che
+  sfoca non va dentro un altro (Chromium smette di sfocare): la cornice ha solo il bordo, il
+  riquadro sfoca dallo strato `data-pane-glass`, che non contiene altri vetri. Lo sfondo è un
+  velo continuo con un solo punto di luce: bagliori sparsi diventano macchie.
+- Sul vetro solo veli chiari: `bg-panel` pieno non si vede. Blocchi `bg-surface/60`; una
+  scala sola per gli stati: hover `surface/60`, selezione `surface` (sopra l'hover, così il
+  "sei qui" resta), `hover` solo per i controlli che partono già dal velo. Un colore di testo
+  nuovo si misura sul vetro, dove il fondo è più chiaro, non sul nero.
+- Departure Mono per tutto il mono dell'interfaccia (il codice nella prosa resta Geist
+  Mono), velo CRT con i valori in `--crt-*`.
+- Nessuna larghezza massima sul contenuto: la misura la danno la colonna e la taglia fluida.
 - Controlli mai nativi (`ui/Select.svelte`). Icone solo Lucide.
 - Una sola ricerca nel sito e un solo cursore lampeggiante. Mai linee o barre d'accento a
-  sinistra o sopra un elemento per indicare selezione o stato: la selezione si vede dal
-  fondo.
+  sinistra o sopra un elemento per indicare selezione o stato: la selezione si vede dal fondo.
 - Niente stili inline negli attributi: la CSP li blocca. Il cambio pagina è istantaneo:
-  niente view transition. Niente rimbalzo né scroll che passa sotto: `overscroll-none` sui
-  contenitori principali, `overscroll-x-none` sui blocchi annidati che scorrono di lato
-  (sennò la rotella sopra il codice non scorre la pagina); mai una regola su `*`.
-  `touch-action` non passa dentro un contenitore che scorre: va messo anche lì.
+  niente view transition.
+- Niente rimbalzo né scroll che passa sotto: `overscroll-none` sui contenitori principali,
+  `overscroll-x-none` sui blocchi annidati che scorrono di lato (sennò la rotella sopra il
+  codice non scorre la pagina); mai una regola su `*`. `touch-action` non passa dentro un
+  contenitore che scorre: va messo anche lì.
 
 ## Agente
 
