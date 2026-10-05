@@ -40,14 +40,6 @@ validated at build (existing ids, max 6). Rejected: a `featured` boolean in the
 `meta.json` files (it gives no order) and a scattered `featured_rank` (fragile). Featured
 applies only to the home: the listing stays neutral, ordered by date and filterable.
 
-## #6 - Excluded projects are unpublished, not deleted
-
-**Status:** active (Cycle 9, block 4)
-
-A project leaving the portfolio goes to `published: false` in `meta.json` and stays in
-the repo, recoverable without digging through git history. Rejected: deleting the
-project folder.
-
 ## #10 - Static Astro, Worker only for language and redirects
 
 **Status:** active (Cycle 11)
@@ -162,7 +154,7 @@ window alone, the fade between pages.
 
 Chosen with Simone, variant B of `docs/concepts/concept-c-vetro.html`: the window on a
 colored background, frame, list, pane, agent field and menus of glass (`glass`, values in
-`--glass-*`), the top bar flat. The background is a continuous diagonal veil (`--wall`):
+`--glass-*`), the top bar flat. The wallpaper is a continuous diagonal veil (`--wall`):
 separate glows became blotches through the glass. No white veil on the glass, which turns
 grey; `surface` and `hover` are light veils, not solid greys; a text color is measured on
 the glass, not on black. In Chromium a blurring glass inside another stops blurring: the
@@ -224,3 +216,15 @@ the meta" rule, because the note is prose to translate; name and year are facts,
 `meta.json` with the note in every language (prose outside its file), the iterations only
 in the body (neither searchable nor visible to the agent as a list), an entry for each
 attempt (many items of a few commits instead of a family).
+
+## #21 - In a public repo, a reserved project is deleted, not unpublished
+
+**Status:** active (Cycle 22)
+
+The repo is public and the agent reads its docs, so `published: false` hides a project
+from the site but not from anyone reading the files. A project that must not be named
+(unpublished crypto experiments, work that depends on third parties, internal mockups) is
+deleted from the working tree; git history keeps it if it comes back. A project that is
+only out of the portfolio still goes to `published: false`, as #6 said. Rejected:
+`published: false` for everything (the name stays readable), rewriting history (the repo
+is already public and cloned, a rewrite removes nothing).

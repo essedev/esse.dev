@@ -34,6 +34,14 @@ the OG images the outputs are committed and the script is not in the `pnpm build
 it is rerun by hand with `pnpm generate-favicons` when the drawing or the default accent
 changes. Rejected: hand-prepared files per size (the old set had diverged).
 
+## #6 - Excluded projects are unpublished, not deleted
+
+**Status:** superseded by #21 (Cycle 22), was active (Cycle 9, block 4)
+
+A project leaving the portfolio goes to `published: false` in `meta.json` and stays in
+the repo, recoverable without digging through git history. Rejected: deleting the
+project folder.
+
 ## #8 - Tokens and materials: no hand-written visual value in components
 
 **Status:** suspended on `restyle/base` (Cycle 10), was active (Cycle 9, block 5)

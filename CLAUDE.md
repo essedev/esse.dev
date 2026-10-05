@@ -58,8 +58,8 @@ Secrets in `.dev.vars` (excluded from git, template in `.dev.vars.example`), rea
   `CollectionEntry`.
 - `src/lib/content.ts` is the only access to content. It joins meta and text and fails the
   build if a language is missing, a text has no meta, a slug repeats or the showcase points
-  to an unpublished project. A project to hide goes to `published: false`, it is not
-  deleted. Which projects, how to tell them and the site's voice:
+  to an unpublished project. A project to hide goes to `published: false`; one that
+  must not be named is deleted, since the files are public (DECISIONS #21). Which projects, how to tell them and the site's voice:
   `docs/features/progetti.md`. The repo is public and the agent reads its docs: no client
   or reserved project names in any file.
 - Site texts and UI strings: `site` collection (`src/content/site/<lang>.json`), read with
@@ -116,7 +116,7 @@ mobile drawer (`data-drawer`) in `src/scripts/workspace.ts`.
 - Glass: `glass` utility with the values in `--glass-*`, the toolbar stays flat. A blurring
   glass does not go inside another (Chromium stops blurring): the frame has only the
   border, the pane blurs from the `data-pane-glass` layer, which contains no other glass.
-  The background is a continuous veil with a single point of light: scattered glows turn
+  The wallpaper is a continuous veil with a single point of light: scattered glows turn
   into blotches.
 - On the glass only light veils: solid `bg-panel` does not show. Blocks `bg-surface/60`; a
   single scale for states: hover `surface/60`, selection `surface` (above the hover, so the
