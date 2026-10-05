@@ -1,7 +1,11 @@
-<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
-  <rect width="512" height="512" rx="112" fill="#12100f"/>
-  <g transform="translate(40 40) scale(18)" fill="none" stroke="#6bb88d"
-     stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2"/>
-  </g>
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+	<defs>
+		<linearGradient id="t" x1="0" y1="0" x2="1" y2="1">
+			<stop offset="0" stop-color="#6bb88d" stop-opacity="0.24"/>
+			<stop offset="1" stop-color="#6bb88d" stop-opacity="0.08"/>
+		</linearGradient>
+	</defs>
+	<rect width="128" height="128" rx="28" fill="#121019"/>
+	<rect width="128" height="128" rx="28" fill="url(#t)"/>
+	<g transform="translate(32 32) scale(2.6666666666666665)" fill="none" stroke="#6bb88d" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2"/></g>
 </svg>

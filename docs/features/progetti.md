@@ -114,9 +114,10 @@ Both are files in the project's folder, declared in `meta.json` (`logo`, `cover`
   looked at before it is saved. Dark interfaces where the project has a dark mode.
 - **Cover file**: WebP, at least 1600 px wide, at most 300 KB; it is cropped to 21:9 on
   desktop and 16:9 on mobile around `focus` (`top`, `center`, `bottom`).
-- **Logo file**: square, without margin around the mark (an app icon with its built-in
-  padding becomes an empty tile at 20 px). SVG when it exists, otherwise PNG of at least
-  256 px. A project's own logo when it has one; otherwise a designed mark: a rounded tile
-  tinted with the project's accent and one Lucide glyph, never a template favicon (Vite,
-  Astro) and never the logo of a third party.
+- **Logo file**: always a tile, so the list reads as one row of icons and the logo stands out
+  over a bright cover. An app icon that already is a tile (Relay, Copilota, Portsage) is used
+  as it is, square and without margin; a free mark (pgbee, Zeno, Nexus, Budokan) goes on the
+  shared tile with `scripts/render-logo.ts <mark-file> <accent>`; a project without a mark gets
+  a Lucide glyph on the same tile (`render-logo.ts <lucide-name> <accent>`). Never a template
+  favicon (Vite, Astro) and never the logo of a third party.
 - **Weight**: no source file over 300 KB. The pixel-art archive cost 80 MB of history.

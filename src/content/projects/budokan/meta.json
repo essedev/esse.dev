@@ -4,7 +4,7 @@
 	"created": "2024-09-09",
 	"updated": "2026-09-22",
 	"site": "https://budokan.it",
-	"logo": "./logo.png",
+	"logo": "./logo.svg",
 	"cover": {
 		"src": "./cover.webp",
 		"focus": "top"
