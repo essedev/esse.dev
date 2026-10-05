@@ -315,9 +315,10 @@
 	transform-box: fill-box;
 	transform-origin: center;
 }
-/* Le frecce escono e rientrano: il riquadro dell'icona le taglia. */
+/* Le frecce escono e rientrano, la linea di Adesso scorre: il riquadro dell'icona le taglia. */
 [data-motion='arrow'],
-[data-motion='external'] {
+[data-motion='external'],
+[data-motion='activity'] {
 	overflow: hidden;
 }
 [data-motion='house'],
@@ -331,9 +332,10 @@
 [data-motion='bot'] > :first-child {
 	transform-origin: 100% 100%;
 }
-[data-motion='activity'] {
-	--len: 49.21px;
-	--gap: 7px;
+/* Adesso è scritta in NavRow con quattro copie del tracciato in fila: a riposo si vede solo
+   la seconda, quella al suo posto. */
+[data-motion='activity'] path:not(:nth-child(2)) {
+	opacity: 0;
 }
 [data-motion='file'] > :nth-child(3) {
 	--len: 2px;
@@ -375,9 +377,14 @@
 	:is(a, button, label):hover [data-motion='user'] > :nth-child(2) {
 		animation: icon-nod 700ms var(--ease-out) 250ms;
 	}
-	:is(a, button, label):hover [data-motion='activity'] > * {
-		stroke-dasharray: var(--len) var(--gap);
-		animation: icon-sweep 1.1s linear infinite;
+	:is(a, button, label):hover [data-motion='activity'] {
+		mask-image: linear-gradient(to right, transparent, black 30%, black 70%, transparent);
+	}
+	:is(a, button, label):hover [data-motion='activity'] path {
+		opacity: 1;
+	}
+	:is(a, button, label):hover [data-motion='activity'] > g {
+		animation: icon-scroll 0.9s linear infinite;
 	}
 	:is(a, button, label):hover [data-motion='bot'] {
 		animation: icon-tilt 800ms var(--ease-out);
@@ -464,15 +471,11 @@
 	}
 }
 
-/* La scansione di un monitor: la linea resta, un varco la percorre da sinistra a destra. Il
-   tracciato di Activity va da destra a sinistra, e un giro è un periodo intero del tratteggio
-   (linea più varco), così il loop si richiude senza un frame vuoto. */
-@keyframes icon-sweep {
-	from {
-		stroke-dashoffset: 0;
-	}
+/* La striscia di un monitor: il tracciato scorre a sinistra di un battito (20 unità, la
+   distanza fra le copie), così il loop si richiude su sé stesso. */
+@keyframes icon-scroll {
 	to {
-		stroke-dashoffset: calc(var(--len) + var(--gap));
+		transform: translateX(-20px);
 	}
 }
 

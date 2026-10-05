@@ -1,5 +1,5 @@
 ---
-import { Activity, ArrowRight, FileText, House, BotMessageSquare, User } from '@lucide/astro';
+import { ArrowRight, FileText, House, BotMessageSquare, User } from '@lucide/astro';
 import type { NavItem } from '../../lib/workspace';
 
 interface Props {
@@ -11,6 +11,11 @@ interface Props {
 
 const { item, current, more = false } = Astro.props;
 const isCurrent = item.key === current;
+
+// Il tracciato di Activity di Lucide. Adesso lo ripete quattro volte in fila, a un battito
+// (20 unità) l'una dall'altra, così all'hover la linea scorre come su un monitor senza fine.
+const PULSE =
+	'M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2';
 
 // Una voce della lista. Il segno a sinistra sta in una colonna fissa, così i titoli si
 // allineano qualunque sia: LED (stato), indice (metodo), icona (pagine e scritti), freccia (tutti).
@@ -42,7 +47,23 @@ const isCurrent = item.key === current;
 			) : item.icon === 'person' ? (
 				<User data-motion="user" class="text-subtle size-3.5" />
 			) : item.icon === 'now' ? (
-				<Activity data-motion="activity" class="text-live size-3.5" />
+				<svg
+					data-motion="activity"
+					class="text-live size-3.5"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+					aria-hidden="true"
+				>
+					<g>
+						{[-20, 0, 20, 40].map((x) => (
+							<path d={PULSE} transform={`translate(${x} 0)`} />
+						))}
+					</g>
+				</svg>
 			) : item.icon === 'agent' ? (
 				<BotMessageSquare data-motion="bot" class="text-accent glow size-3.5" />
 			) : item.icon === 'text' ? (
