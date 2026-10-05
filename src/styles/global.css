@@ -19,8 +19,6 @@
 	--color-frame: #08080b;
 	--color-bg: #0a0a0d;
 	--color-panel: #0e0e12;
-	/* The content pane: the average color of the glass list, measured on the page. */
-	--color-pane: #0f0e15;
 	/* Controls and panes inside the cards: a light veil and not a solid gray, so on glass they
 	   lighten instead of acting as a dark hole. On bg they give about #151518 and #1b1b1f. */
 	--color-surface: rgb(255 255 255 / 0.05);

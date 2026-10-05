@@ -65,7 +65,10 @@ const up =
 			>
 				{/* The pane's glass is a layer behind the content, not the pane itself: so the agent
 				    field and the menus, which are in the content, still blur. */}
-				<div data-pane-glass class="bg-pane/75 pointer-events-none absolute inset-0 -z-10"></div>
+				<div
+					data-pane-glass
+					class="bg-panel/75 lg:bg-panel/48 pointer-events-none absolute inset-0 -z-10"
+				></div>
 				<Toolbar lang={lang} path={path} crumbs={crumbs} up={up} t={t}>
 					<slot name="actions" slot="actions" />
 				</Toolbar>

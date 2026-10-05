@@ -113,7 +113,8 @@ no white veil, which turns grey, and a border that catches a little light; value
 `--glass-*` and `--wall`). Only the glasses that contain no other glass blur (list, agent
 field, menus): in Chromium a blurring glass inside another stops blurring, so the frame
 has only the border and the pane blurs from a layer behind the content
-(`data-pane-glass`, `pane` #0f0e15 at 75%), a sibling and not an ancestor of the agent
+(`data-pane-glass`, the same `panel` glass as the list, 48% on desktop: a darker pane read
+as a different material), a sibling and not an ancestor of the agent
 field and the menus, which therefore still blur. The toolbar stays flat. `surface` and
 `hover` are light veils and not solid greys, so controls on the glass lighten instead of
 acting as a hole: a single scale, hover `surface/60` and selection `surface` (the "you
