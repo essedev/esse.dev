@@ -5,3 +5,5 @@ src/content/site/it.json
 docs/archive/**
 # Mockups, in the language of the UI they show.
 docs/concepts/**
+# The prose check holds Italian stopwords by design: they are its data.
+scripts/check-prose.py

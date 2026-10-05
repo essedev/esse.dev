@@ -4,6 +4,7 @@ import astro from 'eslint-plugin-astro';
 import { defineConfig, includeIgnoreFile } from 'eslint/config';
 import svelte from 'eslint-plugin-svelte';
 import globals from 'globals';
+import jsdoc from 'eslint-plugin-jsdoc';
 import { fileURLToPath } from 'node:url';
 import ts from 'typescript-eslint';
 
@@ -22,6 +23,26 @@ export default defineConfig(
 		languageOptions: { globals: { ...globals.browser, ...globals.node } },
 		// typescript-eslint recommends turning no-undef off on TypeScript projects.
 		rules: { 'no-undef': 'off' }
+	},
+	{
+		// Logic folders: every export carries a doc comment. Components and pages are exempt.
+		files: ['src/lib/**/*.ts', 'src/agent/**/*.ts'],
+		plugins: { jsdoc },
+		rules: {
+			'jsdoc/require-jsdoc': [
+				'error',
+				{
+					publicOnly: true,
+					require: {
+						FunctionDeclaration: true,
+						ClassDeclaration: true,
+						ArrowFunctionExpression: true,
+						MethodDefinition: true
+					},
+					contexts: ['TSInterfaceDeclaration', 'TSTypeAliasDeclaration']
+				}
+			]
+		}
 	},
 	{
 		files: ['**/*.svelte', '**/*.svelte.ts'],

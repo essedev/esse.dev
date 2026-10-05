@@ -19,7 +19,9 @@ README.it.md in the same commit. Language rules and glossary in `docs/CONVENTION
 - `pnpm preview` - build and `wrangler dev` on :8787 (production behavior).
 - `pnpm check` - astro check plus `tsc -p tsconfig.worker.json` (the Worker code has the
   Cloudflare runtime types, which clash with the DOM ones).
-- `pnpm lint` - prettier --check + eslint. `pnpm format` to write.
+- `pnpm lint` - prettier --check, eslint (doc comments required on the exports of `src/lib`
+  and `src/agent`) and `scripts/check-prose.py` (Italian outside the paths in `.prose-allow`;
+  README pair aligned). `pnpm format` to write.
 - `pnpm test:unit` - Vitest. `pnpm test:e2e` - Playwright. `pnpm test:ci` - both.
 - `pnpm eval:jev` - evaluates the agent's triage on `tests/eval/jev-triage.json` (real
   calls via OpenRouter, after a build; outside `test:ci`). Rerun if questions, thresholds
