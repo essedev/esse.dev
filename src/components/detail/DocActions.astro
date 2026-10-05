@@ -18,7 +18,7 @@ const { external, t } = Astro.props;
 	data-copy="url"
 	data-copy-message={t('linkCopied')}
 	aria-label={t('copyLink')}
-	class="hover:text-fg hover:bg-surface group flex h-8 items-center gap-1.5 rounded-[var(--radius-control)] px-2 transition-colors"
+	class="hover:text-fg hover:bg-surface/60 group flex h-8 items-center gap-1.5 rounded-[var(--radius-control)] px-2 transition-colors"
 >
 	<Link2 class="size-3.5 group-data-[copied]:text-live" />
 	<span class="hidden sm:inline group-data-[copied]:hidden">{t('copyLink')}</span>
@@ -30,7 +30,7 @@ const { external, t } = Astro.props;
 		target="_blank"
 		rel="noopener noreferrer"
 		aria-label={external.label}
-		class="hover:text-fg hover:bg-surface flex h-8 items-center gap-1.5 rounded-[var(--radius-control)] px-2 transition-colors"
+		class="hover:text-fg hover:bg-surface/60 flex h-8 items-center gap-1.5 rounded-[var(--radius-control)] px-2 transition-colors"
 	>
 		<ArrowUpRight class="size-3.5" />
 		<span class="hidden sm:inline">{external.label}</span>

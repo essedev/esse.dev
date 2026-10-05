@@ -28,7 +28,7 @@ const isCurrent = item.key === current;
 		data-search={more ? undefined : item.search.toLowerCase()}
 		aria-current={isCurrent ? 'page' : undefined}
 		class:list={[
-			'hover:bg-hover hover:text-fg aria-[current=page]:bg-surface aria-[current=page]:text-fg focus-visible:bg-hover focus-visible:text-fg group flex h-9 items-center gap-3 rounded-[var(--radius-control)] px-2 transition-colors',
+			'hover:bg-surface/60 hover:text-fg aria-[current=page]:bg-surface aria-[current=page]:text-fg focus-visible:bg-surface focus-visible:text-fg group flex h-9 items-center gap-3 rounded-[var(--radius-control)] px-2 transition-colors',
 			more ? 'text-subtle' : 'text-text'
 		]}
 	>

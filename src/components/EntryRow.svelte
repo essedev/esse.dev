@@ -11,7 +11,7 @@
 
 <a
 	href={item.href}
-	class="group grid grid-cols-[auto_minmax(0,1fr)_auto] items-baseline gap-x-4 gap-y-1 rounded-[var(--radius-panel)] px-3 py-4 transition-colors hover:bg-surface sm:px-4"
+	class="group grid grid-cols-[auto_minmax(0,1fr)_auto] items-baseline gap-x-4 gap-y-1 rounded-[var(--radius-panel)] px-3 py-4 transition-colors hover:bg-surface/60 sm:px-4"
 >
 	{#if item.status && item.statusLabel}
 		<span class="led -translate-y-px" data-status={item.status} title={item.statusLabel}></span>

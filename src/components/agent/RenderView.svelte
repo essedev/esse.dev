@@ -55,7 +55,7 @@
 				</thead>
 				<tbody>
 					{#each view.rows as row, r (r)}
-						<tr class="transition-colors hover:bg-hover">
+						<tr class="transition-colors hover:bg-surface/60">
 							{#each row as cell, i (i)}
 								<td
 									class={[

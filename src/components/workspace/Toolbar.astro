@@ -29,7 +29,7 @@ const slugMap = await getSlugMap();
 		aria-controls="sidebar"
 		aria-expanded="false"
 		aria-label={t('openIndex')}
-		class="text-muted hover:text-fg hover:bg-surface flex size-8 shrink-0 items-center justify-center rounded-[var(--radius-control)] transition-colors lg:hidden"
+		class="text-muted hover:text-fg hover:bg-surface/60 flex size-8 shrink-0 items-center justify-center rounded-[var(--radius-control)] transition-colors lg:hidden"
 	>
 		<PanelLeft class="size-[1.0625rem]" />
 	</button>
@@ -94,7 +94,7 @@ const slugMap = await getSlugMap();
 			data-drawer-open="search"
 			aria-controls="sidebar"
 			aria-label={t('search')}
-			class="hover:text-fg hover:bg-surface flex size-8 items-center justify-center rounded-[var(--radius-control)] transition-colors lg:hidden"
+			class="hover:text-fg hover:bg-surface/60 flex size-8 items-center justify-center rounded-[var(--radius-control)] transition-colors lg:hidden"
 		>
 			<Search class="size-4" />
 		</button>

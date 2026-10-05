@@ -485,7 +485,7 @@
 										onmouseenter={() => (picked = tool.name)}
 										onfocus={() => (picked = tool.name)}
 										onclick={() => (picked = tool.name)}
-										class="cursor-pointer rounded-[var(--radius-control)] px-1.5 py-0.5 font-mono text-sm text-text transition-colors hover:bg-hover hover:text-fg data-active:bg-hover data-active:text-fg"
+										class="cursor-pointer rounded-[var(--radius-control)] px-1.5 py-0.5 font-mono text-sm text-text transition-colors hover:bg-surface/60 hover:text-fg data-active:bg-surface data-active:text-fg"
 									>
 										{tool.name}
 									</button>
