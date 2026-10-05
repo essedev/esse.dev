@@ -108,7 +108,7 @@ test.describe('workspace keyboard', () => {
 			'href',
 			'/en/projects'
 		);
-		await page.locator('[data-filter]').fill('watch-os');
+		await page.locator('[data-filter]').fill('watch os');
 		await expect(watch).toBeVisible();
 		await expect(page.locator('[data-sidebar] [data-more]')).toBeHidden();
 	});
