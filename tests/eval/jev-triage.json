@@ -12,7 +12,7 @@
 	{ "text": "Tell me about Simone's background.", "intent": "about", "lang": "en" },
 	{ "text": "Which of his projects use Swift?", "intent": "about", "lang": "en" },
 	{ "text": "What did he write about his new laboratory?", "intent": "about", "lang": "en" },
-	{ "text": "Is Liber finished?", "intent": "about", "lang": "en" },
+	{ "text": "Is Portsage finished?", "intent": "about", "lang": "en" },
 	{ "text": "What's his setup for Claude Code and Codex?", "intent": "about", "lang": "en" },
 	{ "text": "Come legge Relay lo stato degli agenti dagli hook?", "intent": "code", "lang": "it" },
 	{ "text": "Che architettura ha Nexus lato backend?", "intent": "code", "lang": "it" },
