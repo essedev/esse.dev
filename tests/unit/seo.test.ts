@@ -12,7 +12,7 @@ import {
 import type { Language, NavigationConfig } from '../../src/lib/config';
 import type { SlugMap } from '../../src/lib/i18n';
 
-const origin = 'https://simonesalerno.it';
+const origin = 'https://esse.dev';
 
 const languages: Language[] = [
 	{ code: 'en', name: 'English' },
@@ -46,7 +46,7 @@ const slugMap: SlugMap = {
 
 describe('buildCanonical', () => {
 	it('builds an absolute canonical from origin + pathname', () => {
-		expect(buildCanonical(origin, '/en/writing')).toBe('https://simonesalerno.it/en/writing');
+		expect(buildCanonical(origin, '/en/writing')).toBe('https://esse.dev/en/writing');
 	});
 
 	it('returns origin for the root path', () => {
@@ -55,7 +55,7 @@ describe('buildCanonical', () => {
 	});
 
 	it('strips a superfluous trailing slash', () => {
-		expect(buildCanonical(origin, '/en/writing/')).toBe('https://simonesalerno.it/en/writing');
+		expect(buildCanonical(origin, '/en/writing/')).toBe('https://esse.dev/en/writing');
 	});
 });
 
@@ -69,9 +69,9 @@ describe('buildAlternates', () => {
 			languages
 		});
 		expect(alts).toEqual([
-			{ hreflang: 'en', href: 'https://simonesalerno.it/en/writing' },
-			{ hreflang: 'it', href: 'https://simonesalerno.it/it/scritti' },
-			{ hreflang: 'x-default', href: 'https://simonesalerno.it/en/writing' }
+			{ hreflang: 'en', href: 'https://esse.dev/en/writing' },
+			{ hreflang: 'it', href: 'https://esse.dev/it/scritti' },
+			{ hreflang: 'x-default', href: 'https://esse.dev/en/writing' }
 		]);
 	});
 
@@ -84,7 +84,7 @@ describe('buildAlternates', () => {
 			languages
 		});
 		expect(alts.find((a) => a.hreflang === 'it')?.href).toBe(
-			'https://simonesalerno.it/it/scritti/il-mio-nuovo-laboratorio'
+			'https://esse.dev/it/scritti/il-mio-nuovo-laboratorio'
 		);
 	});
 
@@ -126,7 +126,7 @@ describe('JSON-LD builders', () => {
 	it('websiteJsonLd carries name, url and language', () => {
 		const ld = websiteJsonLd({ origin, lang: 'en', description: 'Portfolio' });
 		expect(ld['@type']).toBe('WebSite');
-		expect(ld.url).toBe('https://simonesalerno.it/en');
+		expect(ld.url).toBe('https://esse.dev/en');
 		expect(ld.inLanguage).toBe('en');
 	});
 
@@ -151,7 +151,7 @@ describe('JSON-LD builders', () => {
 		expect(ld.headline).toBe('My Lab');
 		expect(ld.datePublished).toBe('2025-01-01');
 		expect((ld.mainEntityOfPage as Record<string, unknown>)['@id']).toBe(
-			'https://simonesalerno.it/en/writing/lab'
+			'https://esse.dev/en/writing/lab'
 		);
 	});
 

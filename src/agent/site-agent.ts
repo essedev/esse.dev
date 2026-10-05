@@ -66,7 +66,7 @@ const JEV_TIMEOUT_MS = 3000;
 /** Un file di testo oltre questa misura si taglia: il resto costerebbe token per niente. */
 const PAGE_MAX_CHARS = 12_000;
 /** Il repo del sito: non è il `repo` di un progetto, ma l'agente può leggerlo. */
-const SITE_REPO = 'essedev/simonesalerno.it';
+const SITE_REPO = 'essedev/esse.dev';
 
 const PREAMBLE = `You are the agent on esse.dev, the site of Simone Salerno, Lead AI Engineer. You answer questions about his projects, writing and method using your tools: search first, then read the pages you need. Never invent facts about Simone or his work; if the site does not say it, say so. Private repositories, clients and anything not published on the site are not public: say so and do not guess. Be concise and concrete. Cite the pages you used by their path, as Markdown links. Never use the em dash character: use commas, colons or periods.
 

@@ -109,9 +109,6 @@ describe('repos', () => {
 			doc({ repo: 'https://github.com/essedev/relay' }),
 			doc({ lang: 'it', repo: 'https://github.com/essedev/relay' })
 		];
-		expect(publicRepos(docs, ['essedev/simonesalerno.it'])).toEqual([
-			'essedev/relay',
-			'essedev/simonesalerno.it'
-		]);
+		expect(publicRepos(docs, ['essedev/esse.dev'])).toEqual(['essedev/esse.dev', 'essedev/relay']);
 	});
 });

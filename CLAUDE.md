@@ -1,6 +1,8 @@
-# CLAUDE.md - simonesalerno.it
+# CLAUDE.md - esse.dev
 
-Portfolio personale, dominio principale `esse.dev` (`site` in `astro.config.mjs`).
+Portfolio personale, dominio principale `esse.dev` (`site` in `astro.config.mjs`), repo
+`essedev/esse.dev` (era `simonesalerno.it`). Worker e package restano `simonesalerno`:
+rinominare il Worker ne crea uno nuovo, senza Durable Object, segreti e dominio.
 `simonesalerno.it` andrà su `esse.dev` con una Redirect Rule di Cloudflare, mai nel codice
 (ancora da fare: Aperte della ROADMAP). Astro 7 + TS strict + Tailwind 4, isole Svelte 5,
 deploy su Cloudflare Workers; una pagina è un agente (Durable Object con pi-durable, modelli
