@@ -2,8 +2,8 @@ import { expect, test, type Page } from '@playwright/test';
 
 const cards = (page: Page) => page.locator('main a[href*="/en/projects/"]');
 
-// I controlli sono un'isola Svelte: finché non è idratata (Astro toglie l'attributo
-// `ssr`) un clic non fa niente. Con il server a freddo succede davvero.
+// The controls are a Svelte island: until it is hydrated (Astro removes the `ssr`
+// attribute) a click does nothing. With a cold server this really happens.
 async function open(page: Page, path: string) {
 	await page.goto(path);
 	await page.locator('astro-island:not([ssr])').first().waitFor({ state: 'attached' });
@@ -36,7 +36,7 @@ test.describe('listing filters', () => {
 		const combo = page.getByRole('combobox');
 		await expect(combo).toBeFocused();
 		await combo.fill('swif');
-		// L'opzione attiva è la prima, ordinata per frequenza.
+		// The active option is the first, ordered by frequency.
 		await expect(page.getByRole('option').first()).toContainText('Swift');
 		await page.keyboard.press('Enter');
 		await combo.fill('rust');
@@ -81,7 +81,7 @@ test.describe('hardening', () => {
 	test('the 404 page is localized and not indexable', async ({ page }) => {
 		const res = await page.goto('/it/progetti/non-esiste');
 		expect(res?.status()).toBe(404);
-		// Risposta del Worker: gli header arrivano dal middleware, non da _headers.
+		// A Worker response: the headers come from the middleware, not from _headers.
 		expect(res?.headers()['x-content-type-options']).toBe('nosniff');
 		expect(res?.headers()['content-security-policy']).toContain("frame-ancestors 'none'");
 		await expect(page.getByRole('heading', { level: 1 })).toHaveText('Pagina non trovata');

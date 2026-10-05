@@ -2,13 +2,13 @@ import { defineCollection } from 'astro:content';
 import { glob } from 'astro/loaders';
 import { z } from 'astro/zod';
 
-// Ogni progetto e articolo è una cartella: `meta.json` tiene i campi condivisi tra le
-// lingue, `<lang>.md` il testo di quella lingua (frontmatter + corpo in Markdown).
-// Le due metà sono collection separate e si uniscono in `src/lib/content.ts`.
+// Every project and article is a folder: `meta.json` holds the fields shared across
+// languages, `<lang>.md` the text in that language (frontmatter + Markdown body). The two
+// halves are separate collections and are joined in `src/lib/content.ts`.
 
 const isoDate = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'data in formato YYYY-MM-DD');
 
-// L'id di un meta è il nome della cartella; quello di un testo è `<cartella>/<lingua>`.
+// The id of a meta is the folder name; that of a text is `<folder>/<language>`.
 const folderId = ({ entry }: { entry: string }) => entry.split('/')[0];
 const textId = ({ entry }: { entry: string }) => entry.replace(/\.md$/, '');
 
@@ -21,12 +21,12 @@ const projects = defineCollection({
 		published: z.boolean(),
 		created: isoDate,
 		updated: isoDate,
-		/** Codice pubblico: c'è il repo. Senza, il progetto è privato. */
+		/** Public code: the repo. Without it the project is private. */
 		repo: z.url().optional(),
-		/** Il progetto online, se esiste. */
+		/** The project online, if it exists. */
 		site: z.url().optional(),
 		license: z.string().optional(),
-		/** Comando di installazione da copiare, se il progetto si installa. */
+		/** Install command to copy, if the project is installable. */
 		install: z.string().optional()
 	})
 });
@@ -38,12 +38,12 @@ const projectTexts = defineCollection({
 		title: z.string().min(1),
 		excerpt: z.string().min(1),
 		tags: z.array(z.string().min(1)),
-		/** La decisione tecnica interessante, per i progetti in vetrina. */
+		/** The interesting technical decision, for showcase projects. */
 		why: z.string().min(1).optional(),
 		/**
-		 * Le iterazioni precedenti dell'idea, dalla più vecchia: anche quelle abbandonate, per
-		 * trasparenza (docs/features/progetti.md). Nome e anno uguali in ogni lingua, la nota
-		 * tradotta; `src/lib/content.ts` lo controlla.
+		 * The earlier iterations of the idea, oldest first: abandoned ones too, for
+		 * transparency (docs/features/progetti.md). Name and year are the same in every
+		 * language, the note is translated; `src/lib/content.ts` checks it.
 		 */
 		previously: z
 			.array(
@@ -77,7 +77,7 @@ const articleTexts = defineCollection({
 	})
 });
 
-// Metodo: i principi, uno per cartella, nell'ordine di `order`.
+// Method: the principles, one per folder, in the order of `order`.
 const method = defineCollection({
 	loader: glob({ pattern: '*/meta.json', base: './src/content/method', generateId: folderId }),
 	schema: z.object({ order: z.number().int().positive() })
@@ -92,7 +92,7 @@ const methodTexts = defineCollection({
 	})
 });
 
-// Adesso: voci datate su cosa sto facendo, ognuna legata a un progetto.
+// Now: dated entries about what I am doing, each tied to a project.
 const now = defineCollection({
 	loader: glob({ pattern: '*/meta.json', base: './src/content/now', generateId: folderId }),
 	schema: z.object({ date: isoDate, project: z.string().min(1) })
@@ -103,7 +103,7 @@ const nowTexts = defineCollection({
 	schema: z.object({ title: z.string().min(1) })
 });
 
-// Pagine della home: un file per lingua, l'id è il codice lingua.
+// Home pages: one file per language, the id is the language code.
 const langId = ({ entry }: { entry: string }) => entry.replace(/\.md$/, '');
 
 const welcome = defineCollection({
@@ -111,7 +111,7 @@ const welcome = defineCollection({
 	schema: z.object({
 		eyebrow: z.string().min(1),
 		title: z.string().min(1),
-		/** Righe brevi chiave e valore sotto la presentazione. */
+		/** Short key and value rows under the introduction. */
 		facts: z.array(z.object({ label: z.string().min(1), value: z.string().min(1) })).default([])
 	})
 });
@@ -130,9 +130,9 @@ const contact = defineCollection({
 	})
 });
 
-// Testi del sito per lingua: titolo, descrizione, nomi delle sezioni e stringhe della UI.
-// Lo schema è rigido: ogni lingua deve avere tutte le chiavi e nessuna in più, così una
-// traduzione mancante ferma la build e le chiavi sono un tipo (`UiKey` in src/lib/site.ts).
+// Site texts per language: title, description, section names and UI strings. The schema is
+// strict: every language must have all the keys and no extra ones, so a missing translation
+// stops the build and the keys are a type (`UiKey` in src/lib/site.ts).
 const text = z.string().min(1);
 const sections = z
 	.object({ projects: text, articles: text, method: text, now: text, about: text, agent: text })
@@ -149,7 +149,7 @@ const site = defineCollection({
 			title: text,
 			description: text,
 			sections,
-			/** Descrizione per i motori di ricerca delle pagine di lista. */
+			/** Description for search engines, for the list pages. */
 			sectionDescriptions: sections,
 			ui: z
 				.object({

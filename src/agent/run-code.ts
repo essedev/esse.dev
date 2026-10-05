@@ -8,27 +8,29 @@ import {
 } from '@cloudflare/codemode';
 
 /**
- * `run_code`: il Code Mode di Cloudflare. Il modello scrive una funzione JavaScript che
- * chiama gli altri tool di sola lettura come `codemode.nome({ ... })`, e la funzione gira
- * in un Dynamic Worker usa e getta: niente rete (`globalOutbound: null`), niente
- * ambiente, un tempo massimo. Serve quando una domanda chiede tante chiamate o un calcolo
- * sui risultati: un solo giro del modello invece di dieci.
+ * `run_code`: Cloudflare's Code Mode. The model writes a JavaScript function that calls the
+ * other read-only tools as `codemode.name({ ... })`, and the function runs in a throwaway
+ * Dynamic Worker: no network (`globalOutbound: null`), no environment, a time limit. It
+ * helps when a question needs many calls or a computation over the results: one model turn
+ * instead of ten.
  *
- * Ogni chiamata dal sandbox passa dalla stessa validazione degli argomenti che pi fa per
- * il modello, e dallo stesso `execute` del tool.
+ * Every call from the sandbox goes through the same argument validation pi applies for the
+ * model, and through the tool's own `execute`.
  */
 
+/** The limits of one execution. */
 export const RUN_LIMITS = {
-	/** Tempo massimo di un'esecuzione, chiamate ai tool comprese. */
+	/** Maximum time of an execution, tool calls included. */
 	timeoutMs: 20_000,
-	/** Chiamate ai tool per esecuzione: un ciclo sbagliato non svuota la quota di GitHub. */
+	/** Tool calls per execution: a wrong loop does not drain the GitHub quota. */
 	calls: 40,
 	codeChars: 8000,
-	/** Il risultato che torna al modello, serializzato. */
+	/** The result that goes back to the model, serialized. */
 	resultChars: 8000,
 	logLines: 50
 } as const;
 
+/** The outcome of one execution. */
 export interface RunOutcome {
 	result?: unknown;
 	error?: string;
@@ -36,7 +38,7 @@ export interface RunOutcome {
 	calls: number;
 }
 
-/** Il testo di un risultato di tool, come JSON se lo è. */
+/** The text of a tool result, as JSON when it parses. */
 function payload(content: readonly { type: string }[] | undefined): unknown {
 	const text = (content ?? [])
 		.filter((c): c is TextContent => c.type === 'text')
@@ -49,7 +51,7 @@ function payload(content: readonly { type: string }[] | undefined): unknown {
 	}
 }
 
-/** Le dichiarazioni TypeScript dei tool, da mettere nella descrizione di `run_code`. */
+/** The TypeScript declarations of the tools, for the description of `run_code`. */
 export function sandboxTypes(tools: readonly ToolRegistration[]): string {
 	return generateTypesFromJsonSchema(
 		Object.fromEntries(
@@ -61,6 +63,7 @@ export function sandboxTypes(tools: readonly ToolRegistration[]): string {
 	);
 }
 
+/** Runs `code` in a Dynamic Worker with the tools exposed as `codemode.*`. */
 export async function runCode(
 	loader: WorkerLoader,
 	tools: readonly ToolRegistration[],
@@ -83,7 +86,7 @@ export async function runCode(
 					name: tool.name,
 					arguments: (args[0] ?? {}) as JsonObject
 				});
-				// I tool di sola lettura non usano l'api dell'invocazione né il contesto di pi.
+				// Read-only tools use neither the invocation api nor pi's context.
 				const out = await tool.execute(valid, undefined as never, undefined as never);
 				if (out.isError) throw new Error(String(payload(out.content)));
 				return payload(out.content);

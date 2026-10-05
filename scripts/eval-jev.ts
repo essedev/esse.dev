@@ -1,12 +1,14 @@
 /**
- * Valutazione del triage di Jev su un set etichettato a mano (`tests/eval/jev-triage.json`).
- * Chiama Jev davvero, via OpenRouter, con le stesse domande e le stesse soglie dell'agente
- * (`src/agent/triage.ts`), quindi non sta nel giro dei test: si lancia a mano con
- * `pnpm eval:jev` dopo una build (legge i titoli del sito da `dist/client/agent/index.json`).
+ * Evaluation of Jev's triage on a hand-labeled set (`tests/eval/jev-triage.json`). It calls
+ * Jev for real, via OpenRouter, with the same questions and thresholds as the agent
+ * (`src/agent/triage.ts`), so it is not part of the test run: launch it by hand with
+ * `pnpm eval:jev` after a build (it reads the site titles from
+ * `dist/client/agent/index.json`).
  *
- * Misura: decisioni sbagliate con le soglie attuali (domande legittime fermate, fuori tema
- * e abusi passati), accuratezza di intento e lingua, calibrazione per fasce di probabilità,
- * l'effetto di soglie diverse, latenza. Costo: circa 40.000 token a 0,042 $ per milione.
+ * It measures: wrong decisions with the current thresholds (legitimate questions stopped,
+ * off-topic and abuse let through), accuracy of intent and language, calibration by
+ * probability band, the effect of different thresholds, latency. Cost: about 40,000 tokens
+ * at $0.042 per million.
  */
 import { readFileSync } from 'node:fs';
 import {
@@ -64,13 +66,13 @@ const pct = (n: number, d: number) => `${n}/${d} (${d ? Math.round((n / d) * 100
 
 const results: { c: Case; t: Triage }[] = [];
 for (const c of cases) {
-	// In sequenza: la latenza misurata è quella di una richiesta sola.
+	// In sequence: the measured latency is that of a single request.
 	results.push({ c, t: await triage(c.text) });
 }
 
 const wrongBlocks = results.filter(({ c, t }) => shouldAdmit(c) && !admits(t));
 const wrongAdmits = results.filter(({ c, t }) => !shouldAdmit(c) && admits(t));
-// "about" e "code" passano entrambi: confonderli non cambia la decisione.
+// "about" and "code" both pass: confusing them does not change the decision.
 const group = (i: Intent) => (i === 'about' || i === 'code' ? 'on-topic' : i);
 const intentOk = results.filter(({ c, t }) => group(c.intent) === group(t.intent));
 const langOk = results.filter(({ c, t }) => c.lang === t.lang);
@@ -101,7 +103,7 @@ for (const [label, list] of [
 	}
 }
 
-// Calibrazione: tra le risposte date con probabilità in una fascia, quante sono giuste?
+// Calibration: among the answers given with a probability in a band, how many are right?
 console.log(
 	"\nCalibrazione (probabilità dell'intento scelto, gruppi in tema/chiacchiera/fuori/abuso):"
 );
@@ -116,7 +118,7 @@ for (const [lo, hi] of [
 	console.log(`  ${lo.toFixed(2)}-${Math.min(hi, 1).toFixed(2)}: ${pct(ok, bin.length)}`);
 }
 
-// Soglie alternative sulla massa fuori tema, con l'abuso fermo a quella attuale.
+// Alternative thresholds on the off-topic mass, with abuse held at the current one.
 console.log('\nSoglia fuori tema (massa): legittimi fermati / da fermare passati');
 for (const threshold of [0.5, 0.55, 0.6, 0.65, 0.7, 0.75, 0.8, 0.85]) {
 	const blocks = (t: Triage) =>

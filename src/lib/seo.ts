@@ -2,13 +2,14 @@ import type { Language, NavigationConfig } from './config';
 import { getLanguageUrl, type SlugMap } from './i18n';
 
 /**
- * Helper SEO puri (canonical, hreflang, JSON-LD). Tutte le funzioni sono
- * deterministiche e prive di side effect, così da essere testabili in isolamento
- * e riusabili dal layout. La serializzazione JSON-LD avviene via serializeJsonLd.
+ * Pure SEO helpers (canonical, hreflang, JSON-LD). Every function is deterministic and
+ * free of side effects, so it can be tested in isolation and reused by the layout. JSON-LD
+ * is serialized through `serializeJsonLd`.
  */
 
 const AUTHOR_NAME = 'Simone Salerno';
 
+/** One hreflang alternate link. */
 export interface AlternateLink {
 	hreflang: string;
 	href: string;
@@ -17,9 +18,9 @@ export interface AlternateLink {
 type JsonLd = Record<string, unknown>;
 
 /**
- * URL canonico assoluto per il path corrente (senza query string, senza trailing
- * slash superfluo). Ogni versione di lingua è canonica di se stessa: le altre
- * lingue sono dichiarate via hreflang.
+ * The absolute canonical URL for the current path (no query string, no superfluous
+ * trailing slash). Each language version is canonical to itself: the other languages are
+ * declared through hreflang.
  */
 export function buildCanonical(origin: string, pathname: string): string {
 	if (!pathname || pathname === '/') return origin;
@@ -28,8 +29,8 @@ export function buildCanonical(origin: string, pathname: string): string {
 }
 
 /**
- * Link alternate hreflang per tutte le lingue + x-default. L'URL equivalente in
- * ogni lingua è calcolato con getLanguageUrl (stessa logica del language switcher).
+ * The hreflang alternate links for all languages plus x-default. The equivalent URL in each
+ * language is computed with `getLanguageUrl` (same logic as the language switcher).
  */
 export function buildAlternates(params: {
 	origin: string;
@@ -54,12 +55,13 @@ export function buildAlternates(params: {
 	return alternates;
 }
 
-/** Estrae i soli profili social (http/https) dai link di contatto, per sameAs. */
+/** Extracts only the social profiles (http/https) from the contact links, for sameAs. */
 export function socialLinks(links: { url: string }[] | undefined): string[] {
 	if (!links) return [];
 	return links.filter((l) => /^https?:\/\//.test(l.url)).map((l) => l.url);
 }
 
+/** The `WebSite` JSON-LD of a language home. */
 export function websiteJsonLd(params: {
 	origin: string;
 	lang: string;
@@ -75,6 +77,7 @@ export function websiteJsonLd(params: {
 	};
 }
 
+/** The `Person` JSON-LD of the author. */
 export function personJsonLd(params: { origin: string; sameAs: string[] }): JsonLd {
 	return {
 		'@context': 'https://schema.org',
@@ -85,6 +88,7 @@ export function personJsonLd(params: { origin: string; sameAs: string[] }): Json
 	};
 }
 
+/** The `BlogPosting` JSON-LD of an article. */
 export function blogPostingJsonLd(params: {
 	canonical: string;
 	title: string;
@@ -110,6 +114,7 @@ export function blogPostingJsonLd(params: {
 	};
 }
 
+/** The `CreativeWork` JSON-LD of a project. */
 export function creativeWorkJsonLd(params: {
 	canonical: string;
 	title: string;
@@ -134,8 +139,8 @@ export function creativeWorkJsonLd(params: {
 }
 
 /**
- * Serializza JSON-LD per inserimento inline in <script type="application/ld+json">.
- * Esegue l'escape di '<' per impedire la chiusura prematura del tag script.
+ * Serializes JSON-LD for inline insertion in <script type="application/ld+json">. Escapes
+ * '<' so the script tag cannot be closed early.
  */
 export function serializeJsonLd(data: JsonLd | JsonLd[]): string {
 	return JSON.stringify(data).replace(/</g, '\\u003c');

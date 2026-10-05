@@ -11,9 +11,9 @@ interface Props {
 
 const { prev, next, t } = Astro.props;
 
-// Precedente e successivo nello stesso gruppo della lista. Sta in fondo al riquadro anche
-// quando la pagina è corta (`mt-auto` dentro `Page`), subito dopo il testo quando è lunga.
-// Righe senza fondo come le voci della lista; h e l (o le frecce) le aprono da tastiera.
+// Previous and next in the same group of the list. It sits at the bottom of the pane even
+// when the page is short (`mt-auto` inside `Page`), right after the text when it is long.
+// Rows with no background, like the list rows; h and l (or the arrows) open them by keyboard.
 ---
 
 {(prev || next) && (

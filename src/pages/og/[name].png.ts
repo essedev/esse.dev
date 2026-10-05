@@ -10,9 +10,9 @@ import { formatDate, STATUS_KEY } from '../../lib/items';
 import { OG_HEIGHT, OG_WIDTH, ogLayout, type OgData } from '../../lib/og';
 import { getSite, translator } from '../../lib/site';
 
-// Immagini OG generate a build, una per pagina: `home`, `listing-<sezione>-<lingua>`,
-// `detail-<sezione>-<id>-<lingua>`. Il nome è deterministico e il layout lo ricostruisce
-// senza parsing. Il prerender gira in Node (astro.config.mjs) perché resvg è nativo.
+// OG images generated at build time, one per page: `home`, `listing-<section>-<language>`,
+// `detail-<section>-<id>-<language>`. The name is deterministic and the layout rebuilds it
+// without parsing. Prerendering runs in Node (astro.config.mjs) because resvg is native.
 
 export const getStaticPaths: GetStaticPaths = async () => {
 	const paths: { params: { name: string }; props: OgData }[] = [];
@@ -23,7 +23,7 @@ export const getStaticPaths: GetStaticPaths = async () => {
 			command: 'whoami',
 			title: 'Simone Salerno',
 			excerpt: en.description,
-			// Il ruolo è già nel sommario: in basso resterebbe un doppione.
+			// The role is already in the excerpt: at the bottom it would be a duplicate.
 			meta: []
 		}
 	});
@@ -76,13 +76,13 @@ export const getStaticPaths: GetStaticPaths = async () => {
 	return paths;
 };
 
-// Satori legge woff e ttf, non woff2: Departure Mono ha qui anche la versione woff.
+// Satori reads woff and ttf, not woff2: Departure Mono also ships a woff version here.
 const require = createRequire(import.meta.url);
 const geist = (weight: number) =>
 	readFileSync(
 		require.resolve(`@fontsource/geist-sans/files/geist-sans-latin-${weight}-normal.woff`)
 	);
-// Il prerender gira dalla radice del progetto: `import.meta.url` qui punterebbe a `dist/`.
+// Prerendering runs from the project root: `import.meta.url` here would point to `dist/`.
 const departure = () =>
 	readFileSync(resolve(process.cwd(), 'src/assets/fonts/DepartureMono-Regular.woff'));
 

@@ -64,13 +64,13 @@ describe('triage', () => {
 				},
 				0
 			);
-		// Fuori tema 0,61 più abuso 0,09: nessuna sopra soglia da sola, insieme sì.
+		// Off-topic 0.61 plus abuse 0.09: neither is over the threshold alone, together they are.
 		const impersonation = triage({ offtopic: 0.61, abuse: 0.09, about: 0.3, code: 0 }, 'offtopic');
 		expect(admits(impersonation)).toBe(false);
 		expect(blockReason(impersonation)).toBe('offtopic');
-		// Domanda di confine data per fuori tema 0,53: in tema per 0,47, passa.
+		// A borderline question scored 0.53 off-topic: 0.47 on topic, it passes.
 		expect(admits(triage({ offtopic: 0.53, about: 0.47 }, 'offtopic'))).toBe(true);
-		// L'abuso ha una soglia sua.
+		// Abuse has a threshold of its own.
 		const passwd = triage({ abuse: 0.55, offtopic: 0.44, code: 0.01 }, 'abuse');
 		expect(admits(passwd)).toBe(false);
 		expect(blockReason(passwd)).toBe('abuse');
@@ -89,14 +89,14 @@ describe('triage', () => {
 				0
 			);
 		expect(isSmallTalk(triage({ chat: 1 }, 'chat'))).toBe(true);
-		// Una domanda vera letta per metà come chiacchiera resta una domanda.
+		// A real question half-read as small talk stays a question.
 		expect(isSmallTalk(triage({ chat: 0.38, about: 0.28, offtopic: 0.34 }, 'chat'))).toBe(false);
 	});
 
 	it('lets on-topic requests and small talk through, not off-topic tasks or abuse', () => {
 		expect(admits(parseTriage(output('about', 0, 'it'), 0))).toBe(true);
 		expect(admits(parseTriage(output('code', 2, 'en'), 0))).toBe(true);
-		// Un saluto o una battuta passano: l'agente risponde in breve, senza tool.
+		// A greeting or a joke goes through: the agent answers briefly, without tools.
 		expect(admits(parseTriage(output('chat', 0, 'it'), 0))).toBe(true);
 		expect(admits(parseTriage(output('offtopic', 0, 'en'), 0))).toBe(false);
 		expect(admits(parseTriage(output('abuse', 0, 'en'), 0))).toBe(false);

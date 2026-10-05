@@ -1,25 +1,28 @@
 /**
- * I repo pubblici dei progetti, letti dall'API REST di GitHub per i tool dell'agente. Solo
- * lettura e solo i repo ammessi (`publicRepos` in `site-index.ts`): il modello sceglie un
- * repo dall'elenco, mai un URL.
+ * The public repos of the projects, read from the GitHub REST API for the agent's tools.
+ * Read-only and only the allowed repos (`publicRepos` in `site-index.ts`): the model picks a
+ * repo from the list, never a URL.
  *
- * Con `GITHUB_TOKEN` (fine-grained, solo lettura dei repo pubblici) il limite è 5.000
- * richieste l'ora e c'è la ricerca nel codice; senza, 60 l'ora per IP, che sul Worker è
- * condiviso, e la ricerca guarda solo i nomi dei file. Ogni risposta resta in memoria per
- * qualche minuto: una conversazione torna spesso sugli stessi file.
+ * With `GITHUB_TOKEN` (fine-grained, read-only on public repos) the limit is 5,000 requests
+ * per hour and code search is available; without it the limit is 60 per hour per IP, which
+ * is shared on the Worker, and search looks at file names only. Every response stays in
+ * memory for a few minutes: a conversation often returns to the same files.
  */
 
 const API = 'https://api.github.com';
 const CACHE_MS = 5 * 60_000;
 const TIMEOUT_MS = 8000;
-/** Oltre questa misura un file si legge a pezzi (`start_line`). */
+/** Past this size a file is read in slices (`start_line`). */
 export const FILE_MAX_CHARS = 16_000;
+
+/** Past this many lines a file is read in slices (`start_line`). */
 export const FILE_MAX_LINES = 400;
-/** Un file più grande (dati, bundle) non si legge proprio. */
+/** A larger file (data, bundle) is not read at all. */
 const FILE_MAX_BYTES = 1_000_000;
 const README_MAX_CHARS = 6000;
 const TREE_MAX_ENTRIES = 250;
 
+/** What the agent knows about a repo at a glance. */
 export interface RepoOverview {
 	repo: string;
 	url: string;
@@ -30,17 +33,19 @@ export interface RepoOverview {
 	stars: number;
 	defaultBranch: string;
 	lastPush: string;
-	/** Linguaggi per quota del codice, in percentuale. */
+	/** Languages by share of the code, in percent. */
 	languages: Record<string, number>;
 	readme: string | null;
 }
 
+/** One line of a commit log. */
 export interface CommitRow {
 	sha: string;
 	date: string;
 	message: string;
 }
 
+/** A file that matched a search, with the matching fragments when GitHub gives them. */
 export interface SearchMatch {
 	path: string;
 	fragments: string[];
@@ -52,9 +57,10 @@ interface TreeEntry {
 	size?: number;
 }
 
+/** A GitHub failure whose message is safe to show to the model. */
 export class GitHubError extends Error {}
 
-/** Percentuali intere dai byte per linguaggio, senza quelli sotto l'1%. */
+/** Whole percentages from bytes per language, leaving out those under 1%. */
 export function languageShare(bytes: Record<string, number>): Record<string, number> {
 	const total = Object.values(bytes).reduce((a, b) => a + b, 0);
 	if (total === 0) return {};
@@ -66,8 +72,8 @@ export function languageShare(bytes: Record<string, number>): Record<string, num
 }
 
 /**
- * Le voci dell'albero sotto `path`, fino a `depth` livelli; le cartelle finiscono con `/`.
- * Restituisce anche quante voci restano fuori dal tetto.
+ * The tree entries under `path`, down to `depth` levels; folders end with `/`. Also returns
+ * how many entries fall outside the cap.
  */
 export function listTree(
 	tree: readonly TreeEntry[],
@@ -87,9 +93,9 @@ export function listTree(
 }
 
 /**
- * Un pezzo di file con i numeri di riga, così il modello può citarli e chiedere il seguito.
- * L'intestazione dice quali righe sono, quante sono in tutto e, con `url`, il link a GitHub
- * da citare (`#L12-L40` per le righe).
+ * A slice of a file with line numbers, so the model can cite them and ask for the rest. The
+ * header says which lines they are, how many there are in total and, with `url`, the GitHub
+ * link to cite (`#L12-L40` for the lines).
  */
 export function fileSlice(path: string, text: string, startLine = 1, url?: string): string {
 	if (text.includes('\u0000')) throw new GitHubError(`${path} is a binary file.`);
@@ -110,21 +116,24 @@ export function fileSlice(path: string, text: string, startLine = 1, url?: strin
 	return `${path}, lines ${start}-${end} of ${lines.length}${more}${link}\n\n${out.join('\n')}`;
 }
 
-/** Il tetto di un testo lungo, con il segno del taglio. */
+/** Caps a long text, with a mark where it was cut. */
 const clip = (text: string, max: number) =>
 	text.length > max ? `${text.slice(0, max)}\n[…]` : text;
 
+/** A cached, read-only client for the GitHub REST API. */
 export class GitHubReader {
 	readonly #token: string | undefined;
 	readonly #fetch: typeof fetch;
 	readonly #cache = new Map<string, { at: number; value: Promise<unknown> }>();
 
+	/** `token` enables code search and the higher rate limit; `fetcher` replaces `fetch` in tests. */
 	constructor(token: string | undefined, fetcher?: typeof fetch) {
 		this.#token = token;
-		// Sul Worker `fetch` staccato dal suo `globalThis` lancia "Illegal invocation".
+		// On the Worker, `fetch` detached from its `globalThis` throws "Illegal invocation".
 		this.#fetch = fetcher ?? ((input, init) => fetch(input, init));
 	}
 
+	/** Whether code search is available, which needs the token. */
 	get canSearchCode(): boolean {
 		return Boolean(this.#token);
 	}
@@ -135,7 +144,7 @@ export class GitHubReader {
 		if (hit && Date.now() - hit.at < CACHE_MS) return hit.value as Promise<T>;
 		const value = this.#request<T>(path, accept);
 		this.#cache.set(key, { at: Date.now(), value });
-		// Un errore non resta in cache: la prossima chiamata riprova.
+		// A failure is not cached: the next call retries.
 		value.catch(() => this.#cache.delete(key));
 		return value;
 	}
@@ -164,6 +173,7 @@ export class GitHubReader {
 		return (await this.#get<{ default_branch: string }>(`/repos/${repo}`)).default_branch;
 	}
 
+	/** The overview of a repo: metadata, language shares and the README. */
 	async overview(repo: string): Promise<RepoOverview> {
 		const [meta, languages, readme] = await Promise.all([
 			this.#get<{
@@ -204,6 +214,7 @@ export class GitHubReader {
 		return this.#get(`/repos/${repo}/git/trees/${encodeURIComponent(branch)}?recursive=1`);
 	}
 
+	/** The entries under `path`, `depth` levels deep, and whether GitHub truncated the tree. */
 	async files(repo: string, path = '', depth = 2) {
 		const { tree, truncated } = await this.#tree(repo);
 		const listed = listTree(tree, path, Math.min(Math.max(1, depth), 6));
@@ -211,9 +222,10 @@ export class GitHubReader {
 		return { ...listed, truncated };
 	}
 
+	/** A slice of a file with line numbers, from `startLine`. */
 	async file(repo: string, path: string, startLine = 1): Promise<string> {
 		const clean = path.replace(/^\/+|\/+$/g, '');
-		// Prima l'albero (già in cache di solito): distingue cartelle, file mancanti e troppo grandi.
+		// The tree comes first (usually cached): it tells folders, missing files and oversized files apart.
 		const entry = (await this.#tree(repo)).tree.find((e) => e.path === clean);
 		if (!entry)
 			throw new GitHubError(`No file ${clean} in ${repo}: use list_files or search_code.`);
@@ -231,8 +243,8 @@ export class GitHubReader {
 	}
 
 	/**
-	 * Con il token, la ricerca nel codice di GitHub (ramo principale, con i frammenti).
-	 * Senza, solo i nomi dei file che contengono tutte le parole.
+	 * With the token, GitHub code search (default branch, with fragments). Without it, only
+	 * the names of files that contain every word.
 	 */
 	async search(
 		repo: string,
@@ -262,6 +274,7 @@ export class GitHubReader {
 		};
 	}
 
+	/** The latest commits, at most 30. */
 	async commits(repo: string, limit = 10): Promise<CommitRow[]> {
 		const list = await this.#get<
 			{ sha: string; commit: { message: string; author: { date: string } | null } }[]

@@ -9,23 +9,23 @@ import {
 } from '@earendil-works/pi-durable';
 
 /**
- * Il tetto di token di un sotto-agente di `delegate`. Ogni giro del modello rimanda tutto
- * il contesto, quindi i token crescono più che in proporzione alle letture: senza tetto un
- * figlio ne ha usati fino a 41.000. Arrivato al tetto, il figlio deve rispondere con quello
- * che ha: prima della richiesta gli si chiede la risposta finale, e un tool chiamato lo
- * stesso viene bloccato. L'estensione è selezionata solo sui figli.
+ * The token cap of a `delegate` sub-agent. Every model turn resends the whole context, so
+ * tokens grow faster than the number of reads: without a cap a child used up to 41,000. At
+ * the cap the child must answer with what it has: the request is rewritten to ask for the
+ * final answer, and a tool call made anyway is blocked. The extension is selected on
+ * children only.
  */
 
-/** Token per figlio, input e output di tutti i giri sommati. */
+/** Tokens per child, input and output of all turns summed. */
 export const CHILD_TOKEN_CAP = 12_000;
 
-/** Un giro in più dopo il tetto: la richiesta che porta la risposta finale. */
+/** One extra turn past the cap: the request that carries the final answer. */
 export const CHILD_TOKEN_OVERSHOOT = 8000;
 
 const WRAP_UP =
 	'Your token budget for this task is used up. Do not call tools: write your final findings now, with what you already found.';
 
-/** I token usati da una conversazione, da `pi.usage`. */
+/** The tokens used by a conversation, from `pi.usage`. */
 export function usedTokens(state: Readonly<UsageState> | undefined): number {
 	if (!state) return 0;
 	return Object.values(state.models).reduce((sum, usage) => {
@@ -34,16 +34,17 @@ export function usedTokens(state: Readonly<UsageState> | undefined): number {
 	}, 0);
 }
 
-/** Una stima grezza dei token di una richiesta: quattro caratteri per token. */
+/** A rough token estimate for a request: four characters per token. */
 export function estimateTokens(messages: readonly Message[]): number {
 	return Math.ceil(JSON.stringify(messages).length / 4);
 }
 
-/** La prossima richiesta porterebbe il figlio oltre il tetto? */
+/** Would the next request take the child over the cap? */
 export function overCap(used: number, nextRequest: number): boolean {
 	return used + nextRequest > CHILD_TOKEN_CAP;
 }
 
+/** The pi-durable extension that enforces the child token cap. */
 export const ChildBudget = defineExtension({
 	name: 'child-budget',
 	hooks: [

@@ -1,4 +1,4 @@
-// Adattato dall'esempio Pi harness di cloudflare/agents (MIT):
+// Adapted from the Pi harness example of cloudflare/agents (MIT):
 // https://github.com/cloudflare/agents/tree/main/examples/next/harnesses/pi
 
 import type { AssistantMessage } from '@earendil-works/pi-ai';
@@ -39,11 +39,7 @@ export type PiSessionView = {
 	readonly error: string | null;
 };
 
-/**
- * Folds pi's agent events into what a UI shows. Pure, so the browser and
- * the tests run the same code: pi's events are the wire format, and this is
- * the only place that interprets them. App glue, not part of the harness.
- */
+/** The view of a session before any event has arrived. */
 export const EMPTY_VIEW: PiSessionView = {
 	messages: [],
 	live: null,
@@ -128,6 +124,11 @@ function applyChanges(live: PiMessage | null, changes: readonly MessageChange[])
 	return message;
 }
 
+/**
+ * Folds one of pi's agent events into the view. Pure, so the browser and the tests run the
+ * same code: pi's events are the wire format, and this is the only place that interprets
+ * them. App glue, not part of the harness.
+ */
 export function reduceView(view: PiSessionView, event: AgentEvent): PiSessionView {
 	switch (event.type) {
 		case 'snapshot': {
@@ -214,6 +215,7 @@ export function reduceView(view: PiSessionView, event: AgentEvent): PiSessionVie
 	}
 }
 
+/** Folds a batch of events into the view. */
 export function reduceEvents(view: PiSessionView, events: readonly AgentEvent[]): PiSessionView {
 	return events.reduce(reduceView, view);
 }

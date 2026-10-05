@@ -6,48 +6,52 @@ import type { Section } from './i18n';
 import { getSite, type Translate } from './site';
 
 /**
- * L'indice dello spazio di lavoro, in ordine di importanza: prima le pagine singole (chi
- * sono, adesso), poi le raccolte (progetti, metodo, scritti), nell'ordine in cui la
- * tastiera le percorre. È anche la fonte del pager, così l'ordine è uno solo in tutto il
- * sito. Deve stare in una finestra alta 900 px senza scrollare.
+ * The workspace index, in order of importance: single pages first (about, now), then the
+ * collections (projects, method, writing), in the order the keyboard walks them. It is also
+ * the source of the pager, so there is one order across the whole site. It must fit a
+ * 900 px tall window without scrolling.
  */
 
+/** One row of the list. */
 export interface NavItem {
-	/** Chiave stabile della voce, `sezione/id` o la sezione, per evidenziare quella aperta. */
+	/** Stable key of the row, `section/id` or the section, to highlight the open one. */
 	key: string;
 	href: string;
 	title: string;
-	/** Testo breve a destra: anno, data. */
+	/** Short text on the right: year, date. */
 	meta?: string;
 	status?: ProjectStatus;
-	/** Numero d'ordine mostrato al posto del LED (metodo). */
+	/** Order number shown in place of the LED (method). */
 	index?: string;
-	/** Icona al posto del LED, per le voci senza stato: una pagina o uno scritto. */
+	/** Icon in place of the LED, for rows without a status: a page or a piece of writing. */
 	icon?: 'home' | 'person' | 'text' | 'agent' | 'now';
-	/** Testo su cui lavora il filtro. */
+	/** The text the filter works on. */
 	search: string;
 	/**
-	 * Fuori dalla vetrina: la voce c'è (la ricerca la trova, il pager la percorre) ma si
-	 * vede solo se la ricerca la cerca o se è la pagina aperta.
+	 * Outside the showcase: the row exists (search finds it, the pager walks it) but it shows
+	 * only if the search asks for it or it is the open page.
 	 */
 	rest?: boolean;
 }
 
+/** A group of rows: one section. */
 export interface NavGroup {
 	section: Section;
 	label: string;
 	href: string;
 	count: number;
 	items: NavItem[];
-	/** Riga finale verso la raccolta intera, quando la lista ne mostra solo una parte. */
+	/** Final row to the whole collection, when the list shows only part of it. */
 	more?: { label: string; href: string };
 }
 
+/** The whole index. */
 export interface Nav {
 	pages: NavItem[];
 	groups: NavGroup[];
 }
 
+/** Builds the workspace index for a language. */
 export async function getNav(lang: string, t: Translate): Promise<Nav> {
 	const [site, now, projects, method, articles] = await Promise.all([
 		getSite(lang),
@@ -160,7 +164,7 @@ export async function getNav(lang: string, t: Translate): Promise<Nav> {
 	};
 }
 
-/** Voce precedente e successiva dentro lo stesso gruppo, per il pager del dettaglio. */
+/** The previous and next rows within the same group, for the detail pager. */
 export function neighbours(groups: NavGroup[], key: string): { prev?: NavItem; next?: NavItem } {
 	for (const group of groups) {
 		const i = group.items.findIndex((item) => item.key === key);

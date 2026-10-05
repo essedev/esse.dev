@@ -8,15 +8,15 @@ import { getSite } from '../lib/site';
 
 interface Props {
 	lang: string;
-	/** Path canonico della pagina, senza slash finale (es. `/it/progetti/relay`). */
+	/** Canonical path of the page, without a trailing slash (e.g. `/it/progetti/relay`). */
 	path: string;
-	/** Titolo della pagina; il nome del sito si aggiunge da solo. Assente = home. */
+	/** Page title; the site name is appended on its own. Absent = home. */
 	title?: string;
 	description?: string;
-	/** Nome del file OG in /og, senza estensione. */
+	/** Name of the OG file in /og, without extension. */
 	og?: string;
 	jsonLd?: Record<string, unknown>[];
-	/** Pagine che non vanno indicizzate (404). */
+	/** Pages that must not be indexed (404). */
 	noindex?: boolean;
 }
 

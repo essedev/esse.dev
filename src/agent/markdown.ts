@@ -1,10 +1,9 @@
 import { Marked } from 'marked';
 
 /**
- * Markdown delle risposte dell'agente in HTML sicuro. Il testo viene da un modello, quindi
- * l'HTML scritto dentro si mostra come testo, le immagini diventano link, e i link
- * accettano solo path del sito e https: niente `javascript:`. Nessuno stile inline (la
- * CSP li blocca comunque).
+ * Markdown of the agent's answers rendered to safe HTML. The text comes from a model, so
+ * HTML written inside it is shown as text, images become links, and links accept only site
+ * paths and https: no `javascript:`. No inline styles (the CSP blocks them anyway).
  */
 
 const escape = (s: string) =>
@@ -35,6 +34,7 @@ const marked = new Marked({
 	}
 });
 
+/** The HTML for a Markdown answer. */
 export function renderMarkdown(text: string): string {
 	return marked.parse(text, { async: false });
 }

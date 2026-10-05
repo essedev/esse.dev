@@ -1,8 +1,8 @@
 /**
- * Riordina una collezione mettendo davanti gli item featured, nell'ordine dato, seguiti
- * dal resto nell'ordine originale (già per data). Gli id inesistenti sono ignorati e non
- * ci sono duplicati anche se un id compare due volte. Non applica limiti: il taglio lo
- * fa chi chiama. Pura e testabile.
+ * Reorders a collection with the featured items first, in the given order, followed by the
+ * rest in the original order (already by date). Unknown ids are ignored and there are no
+ * duplicates even if an id appears twice. It applies no limit: the caller cuts. Pure and
+ * testable.
  */
 export function orderFeaturedFirst<T extends { id: string }>(
 	items: T[],

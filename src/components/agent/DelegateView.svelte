@@ -3,8 +3,8 @@
 	import { renderMarkdown } from '../../agent/markdown';
 
 	/**
-	 * I sotto-agenti di `delegate`: mentre lavorano, i loro compiti (dagli argomenti); a
-	 * lavoro finito, per ognuno le chiamate fatte, token, costo e la risposta, apribile.
+	 * The sub-agents of `delegate`: while they work, their tasks (from the arguments); when
+	 * done, for each one the calls made, tokens, cost and the answer, expandable.
 	 */
 	let {
 		tasks,
@@ -57,7 +57,7 @@
 							<div
 								class="prose mt-2 max-w-none text-sm prose-invert prose-p:my-2 prose-p:text-muted prose-a:text-fg prose-a:decoration-subtle prose-code:font-normal prose-code:text-fg prose-code:before:content-none prose-code:after:content-none prose-li:text-muted"
 							>
-								<!-- eslint-disable-next-line svelte/no-at-html-tags -- renderMarkdown neutralizza HTML e link (src/agent/markdown.ts, con test) -->
+								<!-- eslint-disable-next-line svelte/no-at-html-tags -- renderMarkdown neutralizes HTML and links (src/agent/markdown.ts, with tests) -->
 								{@html renderMarkdown(report.answer)}
 							</div>
 						</details>

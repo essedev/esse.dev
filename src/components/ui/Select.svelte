@@ -11,11 +11,11 @@
 	import { tick } from 'svelte';
 
 	/**
-	 * Select custom con il pattern ARIA listbox: trigger a pulsante, pannello con ricerca
-	 * opzionale, selezione singola o multipla. Il focus resta sul campo di ricerca (o
-	 * sulla lista) e l'opzione attiva passa con aria-activedescendant. Tastiera: frecce,
-	 * Home/End, Invio (e Spazio senza ricerca) per scegliere, Esc per chiudere, digitare
-	 * per saltare a un'opzione quando non c'è la ricerca.
+	 * Custom select with the ARIA listbox pattern: button trigger, panel with optional search,
+	 * single or multiple selection. Focus stays on the search field (or the list) and the
+	 * active option moves with aria-activedescendant. Keyboard: arrows, Home/End, Enter (and
+	 * Space without search) to choose, Esc to close, typing to jump to an option when there is
+	 * no search.
 	 */
 	let {
 		label,
@@ -28,10 +28,10 @@
 		clearLabel = '',
 		align = 'start'
 	}: {
-		/** Nome del controllo: etichetta accessibile e testo del trigger senza selezione. */
+		/** Name of the control: accessible label and trigger text when nothing is selected. */
 		label: string;
 		options: SelectOption[];
-		/** Valori scelti. In modalità singola contiene sempre un solo valore. */
+		/** Chosen values. In single mode it always holds exactly one value. */
 		selected?: string[];
 		multiple?: boolean;
 		searchable?: boolean;
@@ -53,7 +53,7 @@
 	let searchInput: HTMLInputElement | undefined = $state();
 	let listbox: HTMLUListElement | undefined = $state();
 	let panel: HTMLDivElement | undefined = $state();
-	// Lato a cui si aggancia il pannello: quello richiesto, salvo che esca dallo schermo.
+	// The side the panel anchors to: the requested one, unless it would leave the screen.
 	let side: 'start' | 'end' = $state('start');
 	let typeahead = '';
 	let typeaheadTimer: ReturnType<typeof setTimeout> | undefined;
@@ -87,7 +87,7 @@
 		scrollActive();
 	}
 
-	/** Se il pannello esce dallo schermo, lo aggancia all'altro bordo del trigger. */
+	/** If the panel would leave the screen, anchors it to the other edge of the trigger. */
 	function place() {
 		if (!panel) return;
 		const margin = 8;

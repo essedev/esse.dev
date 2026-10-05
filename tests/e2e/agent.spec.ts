@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 
-// L'agente: la pagina si collega via WebSocket al suo Durable Object e pi apre la
-// sessione (arriva il modello). Nessun messaggio: un prompt chiamerebbe un modello vero.
+// The agent: the page connects over WebSocket to its Durable Object and pi opens the
+// session (the model arrives). No message is sent: a prompt would call a real model.
 test.describe('agent', () => {
 	test('the page connects to its Durable Object and gets a session', async ({ page }) => {
 		await page.goto('/it/agente');

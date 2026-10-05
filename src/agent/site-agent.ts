@@ -40,32 +40,32 @@ import {
 } from './triage';
 
 /**
- * L'agente del sito: un Durable Object per visitatore, con pi-durable dentro (PiHarness
- * dell'Agents SDK) e i modelli da OpenRouter (`models.ts`). Pi tiene la conversazione nel
- * SQLite dell'oggetto e la riprende se l'oggetto viene sospeso.
+ * The site's agent: one Durable Object per visitor, with pi-durable inside (the Agents SDK
+ * PiHarness) and the models from OpenRouter (`models.ts`). Pi keeps the conversation in the
+ * object's SQLite and resumes it if the object is suspended.
  *
- * Prima del modello ogni messaggio passa da Jev (`triage.ts`): fuori tema e abuso si
- * fermano lì, la lingua decide quella della risposta. Il costo reale di ogni risposta si
- * scala dal budget del visitatore e da quello del sito (`Ledger`).
+ * Before the model every message goes through Jev (`triage.ts`): off-topic and abuse stop
+ * there, and the language decides the language of the answer. The real cost of every answer
+ * is charged to the visitor's budget and the site's (`Ledger`).
  */
 
 /**
- * Da dove passa Jev. Stesse domande e stesse risposte (protocollo System One di TypeSafe),
- * cambia solo il trasporto:
- * - `openrouter`: la stessa chiave del modello (`OPENROUTER_API_KEY`);
- * - `typesafe`: API di TypeSafe con `TYPESAFE_API_KEY`;
- * - `workers-ai`: binding `AI`, senza chiavi, ma con crediti AI Gateway sull'account.
+ * How Jev is reached. Same questions and same answers (TypeSafe's System One protocol),
+ * only the transport changes:
+ * - `openrouter`: the same key as the model (`OPENROUTER_API_KEY`);
+ * - `typesafe`: TypeSafe's API with `TYPESAFE_API_KEY`;
+ * - `workers-ai`: the `AI` binding, no keys, but needs AI Gateway credits on the account.
  */
 const JEV_TRANSPORT: 'openrouter' | 'typesafe' | 'workers-ai' = 'openrouter';
 const JEV_ENDPOINTS = {
 	openrouter: { url: 'https://openrouter.ai/api/v1/systemone', model: 'typesafe/jev-1.13' },
 	typesafe: { url: 'https://api.typesafe.ai/v1/systemone', model: 'jev-latest' }
 } as const;
-/** Oltre questo tempo il triage si abbandona e il messaggio passa (il tetto resta). */
+/** Past this time triage is dropped and the message goes through (the cap still applies). */
 const JEV_TIMEOUT_MS = 3000;
-/** Un file di testo oltre questa misura si taglia: il resto costerebbe token per niente. */
+/** A text file past this size is cut: the rest would cost tokens for nothing. */
 const PAGE_MAX_CHARS = 12_000;
-/** Il repo del sito: non è il `repo` di un progetto, ma l'agente può leggerlo. */
+/** The site's repo: not a project's `repo`, but the agent may read it. */
 const SITE_REPO = 'essedev/esse.dev';
 
 const PREAMBLE = `You are the agent on esse.dev, the site of Simone Salerno, Lead AI Engineer. You answer questions about his projects, writing and method using your tools: search first, then read the pages you need. Never invent facts about Simone or his work; if the site does not say it, say so. Private repositories, clients and anything not published on the site are not public: say so and do not guess. Be concise and concrete. Cite the pages you used by their path, as Markdown links. Never use the em dash character: use commas, colons or periods.
@@ -76,7 +76,7 @@ When you point the visitor to one or two pages worth opening, call show_page for
 
 Your voice: sharp, warm and a little playful, like a good engineer who enjoys the conversation. You know what you are: an AI agent on Simone's site, running on a harness he built, with tools you can show; you can joke, also about yourself, but you never pretend to be human and never invent facts to be funny. No emoji.`;
 
-/** Per un saluto o una battuta: due o tre frasi, senza tool, e un aggancio a cosa sa fare. */
+/** For a greeting or a joke: two or three sentences, no tools, and a hook to what it can do. */
 const CHAT_MODE = `This message is small talk: a greeting, a joke, thanks, something playful, or a question about you. Reply in one to three sentences, with wit, without calling tools. If asked for a joke, tell a short one, ideally about software or agents. When it fits, end with a light hook to what you can do: his projects, his code, how he works.`;
 
 const Lang = Type.Union([Type.Literal('it'), Type.Literal('en')], {
@@ -106,7 +106,7 @@ const ListProjects = Type.Object({
 	tag: Type.Optional(Type.String({ description: 'Only projects with this tag, e.g. "Swift".' }))
 });
 
-/** I parametri dei tool sui repo: il repo è uno di quelli ammessi, scritto `owner/name`. */
+/** The parameters of the repo tools: the repo is one of the allowed ones, as `owner/name`. */
 function repoSchemas(repos: readonly string[]) {
 	const Repo = Type.Union(
 		repos.map((r) => Type.Literal(r)),
@@ -217,19 +217,20 @@ const json = (value: unknown) => ({
 
 type Reply = (message: PiServerMessage) => void;
 
+/** The per-visitor agent Durable Object. */
 export class SiteAgent extends DurableObject<Env> {
 	readonly models = siteModels(this.#secret('OPENROUTER_API_KEY'));
 	readonly github = new GitHubReader(this.#secret('GITHUB_TOKEN'));
 	readonly registry = createRegistry();
 	#index: Promise<SiteDoc[]> | undefined;
-	/** La lingua dell'ultimo messaggio secondo Jev; `null` se il triage non ha risposto. */
+	/** The language of the last message according to Jev; `null` if triage did not answer. */
 	#lang: Lang | null = null;
-	/** Se l'ultimo messaggio è una chiacchiera, secondo Jev: il prompt cambia tono. */
+	/** Whether the last message is small talk according to Jev: the prompt changes tone. */
 	#smallTalk = false;
-	/** L'impronta di oggi dell'IP dell'ultimo messaggio, per i limiti per IP (`budget.ts`). */
+	/** Today's fingerprint of the last message's IP, for the per-IP limits (`budget.ts`). */
 	#ip: string | null = null;
 
-	/** Un secret del Worker (`.dev.vars` in locale, `wrangler secret put` in produzione). */
+	/** A Worker secret (`.dev.vars` locally, `wrangler secret put` in production). */
 	#secret(
 		name:
 			'OPENROUTER_API_KEY' | 'TYPESAFE_API_KEY' | 'GITHUB_TOKEN' | 'TURNSTILE_SECRET' | 'MAIL_TO'
@@ -237,14 +238,14 @@ export class SiteAgent extends DurableObject<Env> {
 		return (this.env as Env & Partial<Record<typeof name, string>>)[name];
 	}
 
-	/** Il modello dell'agente, dal registro: pi lo salva per provider e id. */
+	/** The agent's model, from the registry: pi stores it by provider and id. */
 	#model() {
 		const model = this.models.getModel(MODEL.provider, MODEL.id);
 		if (!model) throw new Error(`Model ${MODEL.provider}/${MODEL.id} is not registered`);
 		return model;
 	}
 
-	/** L'indice del sito, letto una volta per isolate dagli asset statici. */
+	/** The site index, read once per isolate from the static assets. */
 	siteIndex(): Promise<SiteDoc[]> {
 		this.#index ??= this.env.ASSETS.fetch('https://assets.local/agent/index.json').then(
 			async (res) => {
@@ -327,15 +328,15 @@ export class SiteAgent extends DurableObject<Env> {
 	};
 
 	/**
-	 * `run_code` con i tool di sola lettura dentro il sandbox. La descrizione porta le loro
-	 * dichiarazioni TypeScript, generate dagli schemi: il modello scrive codice tipizzato.
+	 * `run_code` with the read-only tools inside the sandbox. The description carries their
+	 * TypeScript declarations, generated from the schemas: the model writes typed code.
 	 */
 	#runTool(tools: readonly ToolRegistration[]): ToolRegistration<typeof RunCode> {
 		return {
 			name: 'run_code',
 			description: `Run JavaScript in an isolated sandbox without network, to combine many tool calls or compute over their results in one step (counts, joins, comparisons across repos). Call the tools as async functions of \`codemode\`; they return parsed JSON. Return the value you need, console.log for notes. At most ${RUN_LIMITS.calls} tool calls and ${RUN_LIMITS.timeoutMs / 1000} s per run.\n\n${sandboxTypes(tools)}`,
 			parameters: RunCode,
-			// Rieseguirlo rifà solo letture.
+			// Rerunning it only repeats reads.
 			replay: 'safe',
 			execute: async ({ code }) => {
 				const outcome = await runCode(this.env.LOADER, tools, code);
@@ -345,18 +346,18 @@ export class SiteAgent extends DurableObject<Env> {
 	}
 
 	/**
-	 * `delegate`: un figlio per compito, posseduto da questa chiamata. I figli partono come
-	 * copia dell'agente del padre, meno i tool in `exclude`, con istruzioni da sotto-agente.
+	 * `delegate`: one child per task, owned by this call. Children start as a copy of the
+	 * parent's agent, minus the tools in `exclude`, with sub-agent instructions.
 	 */
 	#delegateTool(exclude: () => readonly ToolRegistration[]): ToolRegistration<typeof Delegate> {
 		return {
 			name: 'delegate',
 			description: `Split a broad question into ${DELEGATE_LIMITS.min}-${DELEGATE_LIMITS.max} independent parts and give each to a sub-agent that works in parallel with the read-only tools, then combine their findings. Use it only when the parts are really independent, such as comparing several projects or repos in depth; each sub-agent costs a full answer.`,
 			parameters: Delegate,
-			// Una ripresa ritrova i figli (indice di possesso) e le richieste (requestId).
+			// A resume finds the children (ownership index) and the requests (requestId) again.
 			replay: 'safe',
 			execute: async ({ tasks }, api, context) => {
-				// Senza crediti per tutti i figli nel caso peggiore, niente figli: risponde il padre.
+				// Without credits for all children in the worst case there are no children: the parent answers.
 				const worst =
 					(tasks.length * (CHILD_TOKEN_CAP + CHILD_TOKEN_OVERSHOOT) * this.#model().cost.input) /
 					1e6;
@@ -411,7 +412,7 @@ export class SiteAgent extends DurableObject<Env> {
 						}
 					})
 				);
-				// I figli non sono nella conversazione principale: il loro costo si scala qui, una volta.
+				// Children are not in the main conversation: their cost is charged here, once.
 				if (!(await api.memo<boolean>('charged', context))) {
 					await this.#charge(reports.reduce((sum, r) => sum + r.usd, 0));
 					await api.memo('charged', true, context);
@@ -437,7 +438,7 @@ export class SiteAgent extends DurableObject<Env> {
 		})
 	};
 
-	/** I tool sui repo pubblici, con l'elenco dei repo ammessi nei parametri. */
+	/** The public repo tools, with the allowed repos listed in the parameters. */
 	#repoTools(repos: readonly string[]): ToolRegistration[] {
 		const schemas = repoSchemas(repos);
 		const allowed = (repo: string) => {
@@ -515,8 +516,8 @@ export class SiteAgent extends DurableObject<Env> {
 				this.showTool as unknown as ToolRegistration,
 				this.draftTool as unknown as ToolRegistration
 			]);
-			// `child-budget` è installata ma fuori dalla selezione predefinita: la aggiungono
-			// solo i figli di `delegate`.
+			// `child-budget` is installed but not in the default selection: only the children of
+			// `delegate` add it.
 			this.registry.install(ChildBudget);
 			const site = {
 				name: 'site',
@@ -524,13 +525,13 @@ export class SiteAgent extends DurableObject<Env> {
 					{ key: 'preamble', render: () => PREAMBLE, tag: false },
 					{
 						key: 'language',
-						// Senza triage decide il modello, dalla lingua del messaggio.
+						// Without triage the model decides, from the language of the message.
 						render: () =>
 							this.#lang
 								? `Reply in ${this.#lang === 'it' ? 'Italian' : 'English'}, and pass "${this.#lang}" to search_site.`
 								: 'Reply in the language of the last visitor message, and pass it to search_site ("it" for Italian, "en" otherwise).'
 					},
-					// `undefined` toglie la sezione: c'è solo quando l'ultimo messaggio è una chiacchiera.
+					// `undefined` drops the section: it exists only when the last message is small talk.
 					{ key: 'mode', render: () => (this.#smallTalk ? CHAT_MODE : undefined) }
 				],
 				tools: [
@@ -577,14 +578,15 @@ export class SiteAgent extends DurableObject<Env> {
 	readonly webSockets = new WebSockets(this.sockets.options());
 	readonly lifecycle = Lifecycle.install(this).use(this.webSockets).use(this.harness);
 
+	/** Syncs the model and gives sockets that outlived the last isolate a new watch. */
 	async onStart(): Promise<void> {
 		await this.#syncModel();
 		await this.sockets.reattach();
 	}
 
 	/**
-	 * Una sessione tiene il modello con cui è nata: `defaults` vale solo per quelle nuove.
-	 * Quando il modello del sito cambia, le conversazioni esistenti passano al nuovo.
+	 * A session keeps the model it was born with: `defaults` applies only to new ones. When
+	 * the site's model changes, existing conversations move to the new one.
 	 */
 	async #syncModel(): Promise<void> {
 		const session = this.harness.session(ROOT_SESSION);
@@ -604,7 +606,7 @@ export class SiteAgent extends DurableObject<Env> {
 		return today(await this.ctx.storage.get<Spend>('spend'), new Date());
 	}
 
-	/** Quanto resta oggi al visitatore: il minimo tra il suo budget, quello del suo IP e del sito. */
+	/** What is left today for the visitor: the minimum of their budget, their IP's and the site's. */
 	async #remaining(): Promise<number> {
 		const [spend, site] = await Promise.all([
 			this.#spend(),
@@ -613,12 +615,13 @@ export class SiteAgent extends DurableObject<Env> {
 		return Math.min(remaining(spend, VISITOR_DAILY_USD), site);
 	}
 
+	/** Tells the client the current budget and the drafts already sent. */
 	async status(reply: Reply): Promise<void> {
 		reply({ type: 'budget', remaining: await this.#remaining(), limit: VISITOR_DAILY_USD });
 		reply({ type: 'drafts', sent: (await this.ctx.storage.get<string[]>('drafts-sent')) ?? [] });
 	}
 
-	/** Turnstile: il token del widget, verificato da Cloudflare con il secret del sito. */
+	/** Turnstile: the widget token, verified by Cloudflare with the site's secret. */
 	async #human(token: string): Promise<boolean> {
 		const secret = this.#secret('TURNSTILE_SECRET');
 		if (!secret) throw new DraftError('TURNSTILE_SECRET is not set');
@@ -631,8 +634,8 @@ export class SiteAgent extends DurableObject<Env> {
 	}
 
 	/**
-	 * Spedisce una bozza approvata. In ordine: la bozza esiste in questa conversazione e non
-	 * è già partita, Turnstile, il tetto del visitatore, quello del sito, poi l'email.
+	 * Sends an approved draft. In order: the draft exists in this conversation and has not
+	 * gone out yet, Turnstile, the visitor's cap, the site's cap, then the email.
 	 */
 	async sendDraft(
 		session: PiSessionId,
@@ -685,10 +688,10 @@ export class SiteAgent extends DurableObject<Env> {
 		}
 	}
 
-	/** Una chiamata a Jev sul trasporto scelto; la forma della risposta la valida `parseTriage`. */
+	/** A call to Jev over the chosen transport; `parseTriage` validates the shape of the answer. */
 	async #jev(input: ReturnType<typeof jevInput>): Promise<JevOutput> {
 		if (JEV_TRANSPORT === 'workers-ai') {
-			// Jev non ha un tipo nel catalogo dei modelli del binding.
+			// Jev has no type in the binding's model catalog.
 			const run = this.env.AI.run as (model: string, input: unknown) => Promise<unknown>;
 			return (await run('typesafe/jev', input)) as JevOutput;
 		}
@@ -712,15 +715,16 @@ export class SiteAgent extends DurableObject<Env> {
 			const topics = [...new Set((await this.siteIndex()).map((d) => d.title))];
 			return parseTriage(await this.#jev(jevInput(text, topics)), Date.now() - started);
 		} catch (error) {
-			// Senza triage la richiesta passa: il limite vero è il budget in costo reale.
+			// Without triage the request goes through: the real limit is the real-cost budget.
 			console.error('Jev triage failed', error);
 			return null;
 		}
 	}
 
 	/**
-	 * Prima del modello: raffica per IP, budget, poi triage. Restituisce se il messaggio può
-	 * passare. La raffica viene prima di Jev, che si paga anche per i messaggi poi fermati.
+	 * Before the model: per-IP burst, budget, then triage. Returns whether the message may
+	 * pass. The burst check comes before Jev, which is paid for even when the message is then
+	 * stopped.
 	 */
 	async admit(text: string, reply: Reply, ip: string | null): Promise<boolean> {
 		if (ip) {
@@ -746,9 +750,9 @@ export class SiteAgent extends DurableObject<Env> {
 	}
 
 	/**
-	 * A risposta finita, scala il costo reale dei messaggi del modello non ancora addebitati.
-	 * Il segno è l'id dell'ultima voce addebitata (gli id di pi crescono): così due richieste
-	 * accodate non si contano due volte, e una risposta non si perde se l'altra finisce prima.
+	 * When an answer is done, charges the real cost of the model messages not yet charged.
+	 * The mark is the id of the last charged entry (pi ids grow): so two queued requests are
+	 * not counted twice, and an answer is not lost if the other finishes first.
 	 */
 	async settle(session: PiSessionId, receipt: PiReceipt): Promise<void> {
 		const handle = this.harness.session(session);
@@ -763,7 +767,7 @@ export class SiteAgent extends DurableObject<Env> {
 		await this.#charge(usd);
 	}
 
-	/** Scala una spesa dal budget del visitatore e da quello del sito, e lo dice alle pagine aperte. */
+	/** Charges a spend to the visitor's and the site's budgets, and tells the open pages. */
 	async #charge(usd: number): Promise<void> {
 		if (usd <= 0) return;
 		const spend = await this.#spend();

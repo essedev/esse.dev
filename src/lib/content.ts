@@ -4,17 +4,21 @@ import { orderFeaturedFirst } from './featured';
 import type { SlugMap } from './i18n';
 
 /**
- * Unico accesso ai contenuti per pagine ed endpoint. Unisce il meta condiviso di ogni
- * progetto o articolo al suo testo nella lingua richiesta e fa rispettare a build le
- * regole che lo schema da solo non vede: ogni contenuto pubblicato ha il testo in tutte
- * le lingue, ogni testo ha il suo meta, gli slug sono unici per lingua, la vetrina
- * punta a progetti esistenti e pubblicati.
+ * The only access to content for pages and endpoints. It joins the shared meta of each
+ * project or article to its text in the requested language and enforces at build time the
+ * rules the schema alone cannot see: every published item has its text in all languages,
+ * every text has its meta, slugs are unique per language, the showcase points to existing
+ * published projects.
  */
 
+/** The shared fields of a project. */
 export type ProjectMeta = CollectionEntry<'projects'>['data'];
+/** The shared fields of an article. */
 export type ArticleMeta = CollectionEntry<'articles'>['data'];
+/** The status of a project. */
 export type ProjectStatus = ProjectMeta['status'];
 
+/** A project in one language: meta, text and the raw entry. */
 export interface Project {
 	id: string;
 	lang: string;
@@ -23,6 +27,7 @@ export interface Project {
 	entry: CollectionEntry<'projectTexts'>;
 }
 
+/** An article in one language: meta, text and the raw entry. */
 export interface Article {
 	id: string;
 	lang: string;
@@ -31,6 +36,7 @@ export interface Article {
 	entry: CollectionEntry<'articleTexts'>;
 }
 
+/** A method principle in one language. */
 export interface MethodEntry {
 	id: string;
 	lang: string;
@@ -39,11 +45,12 @@ export interface MethodEntry {
 	entry: CollectionEntry<'methodTexts'>;
 }
 
+/** An entry of the "now" section in one language. */
 export interface NowEntry {
 	id: string;
 	lang: string;
 	date: string;
-	/** Il progetto a cui si riferisce, nella stessa lingua. */
+	/** The project it refers to, in the same language. */
 	project: Project;
 	title: string;
 	entry: CollectionEntry<'nowTexts'>;
@@ -71,7 +78,7 @@ function join<M extends object, E extends TextEntry>(
 			throw new Error(`${kind}/${id}/${lang}.md: lingua sconosciuta`);
 		item.texts[lang] = text;
 	}
-	// Senza il campo `published` (metodo, adesso) una voce è sempre pubblica.
+	// Without the `published` field (method, now) an entry is always published.
 	const published = [...byId.values()].filter(
 		(item) => !('published' in item.meta) || item.meta.published !== false
 	);
@@ -112,7 +119,7 @@ function loadAll() {
 		const articles = join('articles', am, at);
 		const method = join('method', mm, mt);
 		const now = join('now', nm, nt);
-		// Le iterazioni precedenti sono le stesse in ogni lingua: cambia solo la nota.
+		// The earlier iterations are the same in every language: only the note changes.
 		for (const p of projects) {
 			const shape = (lang: string) =>
 				JSON.stringify((p.texts[lang].data.previously ?? []).map((x) => [x.name, x.year]));
@@ -143,7 +150,7 @@ function load() {
 	return cache;
 }
 
-/** Progetti pubblicati in una lingua, dal più recente. */
+/** Published projects in one language, most recent first. */
 export async function getProjects(lang: string): Promise<Project[]> {
 	const { projects } = await load();
 	return projects
@@ -154,7 +161,7 @@ export async function getProjects(lang: string): Promise<Project[]> {
 		);
 }
 
-/** Articoli pubblicati in una lingua, dal più recente. */
+/** Published articles in one language, most recent first. */
 export async function getArticles(lang: string): Promise<Article[]> {
 	const { articles } = await load();
 	return articles
@@ -162,13 +169,13 @@ export async function getArticles(lang: string): Promise<Article[]> {
 		.sort((a, b) => b.meta.date.localeCompare(a.meta.date));
 }
 
-/** Vetrina della home: i featured nell'ordine dato, poi i più recenti, al massimo sei. */
+/** The home showcase: the featured projects in the given order, then the most recent, at most six. */
 export async function getShowcase(lang: string): Promise<Project[]> {
 	const projects = await getProjects(lang);
 	return orderFeaturedFirst(projects, featured.projects).slice(0, 6);
 }
 
-/** Principi del metodo in una lingua, nell'ordine stabilito. */
+/** The method principles in one language, in their set order. */
 export async function getMethod(lang: string): Promise<MethodEntry[]> {
 	const { method } = await load();
 	return method
@@ -182,7 +189,7 @@ export async function getMethod(lang: string): Promise<MethodEntry[]> {
 		.sort((a, b) => a.order - b.order);
 }
 
-/** Voci di "adesso" in una lingua, dalla più recente, col progetto collegato. */
+/** The "now" entries in one language, most recent first, with the linked project. */
 export async function getNow(lang: string): Promise<NowEntry[]> {
 	const [{ now }, projects] = await Promise.all([load(), getProjects(lang)]);
 	const byId = new Map(projects.map((p) => [p.id, p]));
@@ -198,6 +205,7 @@ export async function getNow(lang: string): Promise<NowEntry[]> {
 		.sort((a, b) => b.date.localeCompare(a.date));
 }
 
+/** The slug of every item in every language, for the translation of URLs. */
 export async function getSlugMap(): Promise<SlugMap> {
 	const { projects, articles, method } = await load();
 	const toMap = (items: { id: string; texts: Record<string, TextEntry> }[]) =>
@@ -212,6 +220,7 @@ export async function getSlugMap(): Promise<SlugMap> {
 	return { projects: toMap(projects), articles: toMap(articles), method: toMap(method) };
 }
 
+/** A single page (welcome, about, contact) in one language. */
 export async function getPage<C extends 'welcome' | 'about' | 'contact'>(
 	collection: C,
 	lang: string

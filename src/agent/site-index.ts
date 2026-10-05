@@ -1,10 +1,12 @@
 /**
- * L'indice del sito che i tool dell'agente leggono (`/agent/index.json`, generato alla
- * build). Logica pura: la ricerca gira uguale nel Durable Object e nei test.
+ * The site index the agent's tools read (`/agent/index.json`, generated at build time).
+ * Pure logic: search runs the same in the Durable Object and in tests.
  */
 
+/** The kinds of page the index holds. */
 export type SiteDocKind = 'project' | 'article' | 'method' | 'now' | 'about';
 
+/** One page of the site in one language. */
 export interface SiteDoc {
 	path: string;
 	lang: string;
@@ -14,17 +16,18 @@ export interface SiteDoc {
 	tags: string[];
 	status?: string;
 	date?: string;
-	/** Solo progetti: in vetrina (`featured.json`). */
+	/** Projects only: in the showcase (`featured.json`). */
 	featured?: boolean;
 	repo?: string;
 	site?: string;
 	why?: string;
-	/** Solo progetti: le iterazioni precedenti dell'idea, dalla più vecchia. */
+	/** Projects only: the earlier iterations of the idea, oldest first. */
 	previously?: { name: string; year: number; note: string }[];
-	/** Il testo della pagina in Markdown. */
+	/** The text of the page in Markdown. */
 	body: string;
 }
 
+/** One result of `searchSite`. */
 export interface SearchHit {
 	path: string;
 	kind: SiteDocKind;
@@ -36,8 +39,8 @@ export interface SearchHit {
 const normalize = (s: string) => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
 
 /**
- * Cerca per parole: ogni parola della query vale di più nel titolo, poi nei tag e nel
- * sommario, poi nel testo. Una lingua sola, così l'agente non mescola le traduzioni.
+ * Searches by words: each query word weighs most in the title, then in tags and excerpt,
+ * then in the body. One language only, so the agent does not mix translations.
  */
 export function searchSite(
 	docs: readonly SiteDoc[],
@@ -51,7 +54,7 @@ export function searchSite(
 		if (doc.lang !== options.lang) continue;
 		if (options.kind && doc.kind !== options.kind) continue;
 		const title = normalize(doc.title);
-		// Il nome di un'iterazione precedente porta al progetto che l'ha presa in carico.
+		// The name of an earlier iteration leads to the project that took it over.
 		const before = (doc.previously ?? []).map((p) => p.name).join(' ');
 		const meta = normalize(`${doc.summary} ${doc.tags.join(' ')} ${before}`);
 		const body = normalize(doc.body);
@@ -68,6 +71,7 @@ export function searchSite(
 	return hits.sort((a, b) => b.score - a.score).slice(0, options.limit ?? 8);
 }
 
+/** One line of the project registry. */
 export interface ProjectRow {
 	path: string;
 	title: string;
@@ -76,14 +80,14 @@ export interface ProjectRow {
 	tags: string[];
 	date?: string;
 	featured: boolean;
-	/** `owner/name` del repo pubblico; senza, il codice è privato. */
+	/** `owner/name` of the public repo; without it the code is private. */
 	repo?: string;
 	site?: string;
 }
 
 /**
- * Il registro dei progetti in una lingua, con i filtri della pagina progetti: stato e
- * tag (senza distinguere maiuscole). La vetrina prima, poi dal più recente.
+ * The project registry in one language, with the filters of the projects page: status and
+ * tag (case-insensitive). The showcase first, then the most recent.
  */
 export function listProjects(
 	docs: readonly SiteDoc[],
@@ -112,13 +116,13 @@ export function listProjects(
 		}));
 }
 
-/** `owner/name` da un URL di GitHub; `null` se non è un repo di GitHub. */
+/** `owner/name` from a GitHub URL; `null` if it is not a GitHub repo. */
 export function repoName(url: string): string | null {
 	const match = /^https:\/\/github\.com\/([\w.-]+)\/([\w.-]+?)(?:\.git)?\/?$/.exec(url);
 	return match ? `${match[1]}/${match[2]}` : null;
 }
 
-/** I repo che l'agente può leggere: quelli dei progetti pubblicati, più quelli dati. */
+/** The repos the agent may read: those of the published projects, plus the given ones. */
 export function publicRepos(docs: readonly SiteDoc[], extra: readonly string[] = []): string[] {
 	const repos = docs.flatMap((d) => (d.repo ? [repoName(d.repo)] : [])).filter(Boolean);
 	return [...new Set([...(repos as string[]), ...extra])].sort();

@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 
-// Le OG sono PNG statici pre-generati (static/og/). Verifichiamo che i meta tag
-// puntino al file giusto e che il file sia effettivamente servito.
+// The OG images are pre-generated static PNGs (static/og/). We check that the meta tags
+// point to the right file and that the file is actually served.
 
 test.describe('OG images', () => {
 	test('homepage og:image points to the static home image (served 200)', async ({

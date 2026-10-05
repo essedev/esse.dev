@@ -1,6 +1,6 @@
 /**
- * Articoli correlati: quelli con più tag in comune con l'articolo corrente, escluso lui
- * stesso, a parità di tag nell'ordine dato (che è già per data). Pura e testabile.
+ * Related articles: those sharing the most tags with the current one, excluding itself; on
+ * ties, the given order (already by date). Pure and testable.
  */
 export function relatedByTags<T extends { id: string; tags: string[] }>(
 	current: T,

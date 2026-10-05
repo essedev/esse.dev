@@ -1,4 +1,8 @@
-/** Escape per testo dentro XML/HTML (feed, sitemap, layout delle OG). */
+/**
+ * XML escaping, shared by the feed, the sitemap and the OG layout.
+ */
+
+/** Escapes text for XML/HTML (feed, sitemap, OG layout). */
 export function escapeXml(value: string): string {
 	return value
 		.replace(/&/g, '&amp;')

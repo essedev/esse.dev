@@ -1,7 +1,7 @@
 import { defineMiddleware } from 'astro:middleware';
 
-// Header di sicurezza per le risposte del Worker (catch-all dei redirect, 404, root).
-// Gli asset statici li ricevono da public/_headers: i due elenchi vanno tenuti allineati.
+// Security headers for the Worker's responses (redirect catch-all, 404, root). Static
+// assets get them from public/_headers: the two lists must be kept aligned.
 const SECURITY_HEADERS: Record<string, string> = {
 	'X-Content-Type-Options': 'nosniff',
 	'Referrer-Policy': 'strict-origin-when-cross-origin',
@@ -9,14 +9,15 @@ const SECURITY_HEADERS: Record<string, string> = {
 	'Permissions-Policy': 'geolocation=(), camera=(), microphone=(), payment=()'
 };
 
+/** Adds the security headers and `frame-ancestors` to every response of the Worker. */
 export const onRequest = defineMiddleware(async (_context, next) => {
-	// Una copia, perché alcune risposte (i redirect) hanno gli header immutabili.
+	// A copy, because some responses (redirects) have immutable headers.
 	const original = await next();
 	const response = new Response(original.body, original);
 	for (const [key, value] of Object.entries(SECURITY_HEADERS)) {
 		response.headers.set(key, value);
 	}
-	// frame-ancestors nel meta tag è ignorato: va aggiunto alla CSP dell'header.
+	// frame-ancestors in the meta tag is ignored: it must be added to the header's CSP.
 	const csp = response.headers.get('Content-Security-Policy');
 	response.headers.set(
 		'Content-Security-Policy',

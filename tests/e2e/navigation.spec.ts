@@ -1,8 +1,8 @@
 import { expect, type Page, test } from '@playwright/test';
 
-// Il livello sopra (breadcrumb, Esc, "‹" su mobile) porta sempre al genitore della
-// pagina. Se si arriva proprio da lì torna con la history, così il registro ritrova i
-// filtri; altrimenti (atterraggio diretto, arrivo da un'altra pagina) apre il link.
+// The level up (breadcrumb, Esc, "‹" on mobile) always leads to the page's parent. If you
+// came from there it goes back through history, so the registry finds its filters again;
+// otherwise (direct landing, arrival from another page) it opens the link.
 const crumbUp = (page: Page) => page.locator('nav[aria-label="Percorso"] a[data-up]');
 
 async function open(page: Page, path: string) {
@@ -90,7 +90,7 @@ test.describe('mobile toolbar', () => {
 		await page.getByRole('button', { name: "Apri l'indice" }).click();
 		const workspace = page.locator('[data-workspace]');
 		await expect(workspace).toHaveAttribute('data-drawer', 'open');
-		// Tocchi veri via CDP: generano pointer event di tipo touch, come un dito.
+		// Real touches via CDP: they generate touch pointer events, like a finger.
 		const cdp = await page.context().newCDPSession(page);
 		const touch = (type: 'touchStart' | 'touchMove' | 'touchEnd', x = 0, y = 0) =>
 			cdp.send('Input.dispatchTouchEvent', {

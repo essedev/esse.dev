@@ -4,8 +4,9 @@ import { getArticles, getMethod, getProjects, getSlugMap } from '../lib/content'
 import { getLanguageUrl } from '../lib/i18n';
 import { escapeXml } from '../lib/xml';
 
-// Sitemap con alternate hreflang per ogni lingua più x-default, come l'HTML: se le due
-// annotazioni divergono Google può ignorarle. lastmod viene dal contenuto, non dal build.
+// Sitemap with hreflang alternates for each language plus x-default, like the HTML: if the
+// two annotations diverge Google may ignore them. lastmod comes from the content, not from
+// the build.
 export const GET: APIRoute = async ({ site }) => {
 	const origin = site!.origin;
 	const slugMap = await getSlugMap();

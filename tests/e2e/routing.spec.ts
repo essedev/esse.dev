@@ -26,8 +26,8 @@ test.describe('i18n routing & redirects', () => {
 		const res = await page.goto('/en/projects');
 		expect(res?.status()).toBe(200);
 		expect(page.url()).toContain('/en/projects');
-		// ci sono link alle pagine di dettaglio progetto (i card sono lazy/opacity-0,
-		// quindi verifichiamo la presenza nel DOM, non la visibilita')
+		// there are links to the project detail pages (cards are lazy/opacity-0, so we check
+		// presence in the DOM, not visibility)
 		expect(await page.locator('a[href*="/projects/"]').count()).toBeGreaterThan(0);
 	});
 
@@ -40,7 +40,7 @@ test.describe('i18n routing & redirects', () => {
 	test('wrong-language route redirects once, without trailing slash', async ({ request }) => {
 		const res = await request.get('/en/progetti', { maxRedirects: 0 });
 		expect(res.status()).toBe(302);
-		// un solo hop al canonico, niente /en/projects/ con slash finale
+		// a single hop to the canonical, no /en/projects/ with a trailing slash
 		expect(res.headers()['location']).toMatch(/\/en\/projects$/);
 	});
 
@@ -56,14 +56,14 @@ test.describe('i18n routing & redirects', () => {
 	});
 
 	test('the project detail page shows the status badge', async ({ page }) => {
-		// Il badge deve comparire anche nel dettaglio, non solo sulle card (StatusBadge
-		// condiviso); "maintained" è lo stato più recente, il primo che si dimentica.
+		// The badge must show in the detail too, not only on the cards (shared StatusBadge);
+		// "maintained" is the most recent status, the first one to be forgotten.
 		await page.goto('/en/projects/portsage');
 		await expect(page.getByText('Maintained', { exact: true })).toBeVisible();
 	});
 
 	test('the italian detail route (language-switch target) renders', async ({ page }) => {
-		// /it/progetti/budokan e' la destinazione dello switch EN->IT (cfr. unit getLanguageUrl)
+		// /it/progetti/budokan is the destination of the EN->IT switch (see the getLanguageUrl unit test)
 		const res = await page.goto('/it/progetti/budokan');
 		expect(res?.status()).toBe(200);
 		await expect(page.locator('h1, h2').first()).toBeVisible();
@@ -72,7 +72,7 @@ test.describe('i18n routing & redirects', () => {
 	test('invalid language with a valid route redirects to the canonical language', async ({
 		request
 	}) => {
-		// /xx/projects -> /en/projects (la route 'projects' appartiene a en)
+		// /xx/projects -> /en/projects (the route 'projects' belongs to en)
 		const res = await request.get('/xx/projects', { maxRedirects: 0 });
 		expect(res.status()).toBe(302);
 		expect(res.headers()['location']).toMatch(/\/en\/projects$/);
@@ -87,7 +87,7 @@ test.describe('i18n routing & redirects', () => {
 	test('wrong-language route with a slug translates the route and keeps the slug', async ({
 		request
 	}) => {
-		// /en/progetti/budokan -> /en/projects/budokan (slug condiviso tra le lingue)
+		// /en/progetti/budokan -> /en/projects/budokan (slug shared across languages)
 		const res = await request.get('/en/progetti/budokan', { maxRedirects: 0 });
 		expect(res.status()).toBe(302);
 		expect(res.headers()['location']).toMatch(/\/en\/projects\/budokan$/);
@@ -100,9 +100,9 @@ test.describe('i18n routing & redirects', () => {
 });
 
 test.describe('article slug translation (cross-language)', () => {
-	// L'unico contenuto con slug diversi tra le lingue (en: my-new-laboratory,
-	// it: il-mio-nuovo-laboratorio): esercita la traduzione slug del hook, che sui
-	// progetti non scatta mai perche' i loro slug coincidono tra en e it.
+	// The only content with different slugs across languages (en: my-new-laboratory, it:
+	// il-mio-nuovo-laboratorio): it exercises the hook's slug translation, which never fires on
+	// projects because their slugs are the same in en and it.
 	test('italian article slug under /en redirects to the english slug', async ({ request }) => {
 		const res = await request.get('/en/writing/il-mio-nuovo-laboratorio', { maxRedirects: 0 });
 		expect(res.status()).toBe(302);

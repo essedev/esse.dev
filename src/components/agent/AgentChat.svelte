@@ -20,11 +20,11 @@
 	import { EMPTY_VIEW, reduceEvents, type PiSessionView } from '../../agent/view';
 
 	/**
-	 * La trascrizione dell'agente: un WebSocket verso il Durable Object del visitatore,
-	 * gli eventi di pi piegati da `reduceEvents` (lo stesso riduttore del server). Si vede
-	 * come lavora: il triage di Jev su ogni messaggio, ogni chiamata ai tool (apribile),
-	 * token e costo di ogni risposta, il budget che resta. Il visitatore ha un oggetto suo,
-	 * ricordato nel browser, così ritrova la conversazione.
+	 * The agent's transcript: a WebSocket to the visitor's Durable Object, pi's events folded
+	 * by `reduceEvents` (the same reducer as the server). It shows how the agent works: Jev's
+	 * triage of every message, every tool call (expandable), tokens and cost of every answer,
+	 * the budget that is left. The visitor has an object of their own, remembered in the
+	 * browser, so they find the conversation again.
 	 */
 
 	type Labels = {
@@ -37,11 +37,11 @@
 		retrying: string;
 		tools: string;
 		toolsNote: string;
-		/** Descrizione per il visitatore; senza, quella che il server dà al modello. */
+		/** Description for the visitor; without it, the one the server gives the model. */
 		toolLabels: Record<string, string>;
-		/** Come raggruppare il catalogo; un tool fuori dai gruppi finisce in coda. */
+		/** How to group the catalog; a tool outside the groups goes last. */
 		toolGroups: { label: string; names: string[] }[];
-		/** Il nome della sezione per ogni tipo di pagina, sulle schede di `show_page`. */
+		/** The section name for each kind of page, on the `show_page` cards. */
 		kinds: Record<string, string>;
 		open: string;
 		subagents: string;
@@ -61,7 +61,7 @@
 		budget: string;
 		credit: string;
 		credits: string;
-		/** Per lingua: l'avviso segue la lingua del messaggio, non quella della pagina. */
+		/** Per language: the notice follows the message's language, not the page's. */
 		notice: Record<string, Record<NoticeReason, string>>;
 		intent: Record<Triage['intent'], string>;
 		weight: Record<Triage['weight'], string>;
@@ -71,7 +71,7 @@
 
 	const VISITOR_KEY = 'agent-visitor';
 
-	/** Un messaggio fermato prima del modello: vive solo nel browser. */
+	/** A message stopped before the model: it lives only in the browser. */
 	type Local = { text: string; reason: NoticeReason; after: number };
 
 	let view: PiSessionView = $state(EMPTY_VIEW);
@@ -81,7 +81,7 @@
 	let locals: Local[] = $state([]);
 	let budget: { remaining: number; limit: number } | null = $state(null);
 	let catalog: { name: string; description: string }[] = $state([]);
-	/** Lo stato degli invii delle bozze, per id della chiamata a `draft_message`. */
+	/** The state of draft sends, by id of the `draft_message` call. */
 	let drafts: Record<string, { status: 'sending' | 'sent' | 'error'; message?: string }> = $state(
 		{}
 	);
@@ -95,12 +95,12 @@
 			localStorage.setItem(VISITOR_KEY, id);
 			return id;
 		} catch {
-			// Niente storage (navigazione privata): una conversazione per visita.
+			// No storage (private browsing): one conversation per visit.
 			return crypto.randomUUID();
 		}
 	}
 
-	// Il catalogo è quello che il server annuncia: i gruppi lo ordinano, non lo decidono.
+	// The catalog is what the server announces: groups order it, they do not decide it.
 	const groups = $derived.by(() => {
 		const known = new Set(labels.toolGroups.flatMap((g) => g.names));
 		const pick = (names: string[]) => catalog.filter((t) => names.includes(t.name));
@@ -113,7 +113,7 @@
 		].filter((g) => g.tools.length > 0);
 	});
 
-	/** Il tool di cui si legge la descrizione: quello sotto il puntatore, a fuoco o toccato. */
+	/** The tool whose description is shown: the one under the pointer, focused or touched. */
 	let picked: string | null = $state(null);
 	const toolLabel = (name: string) =>
 		labels.toolLabels[name] ?? catalog.find((t) => t.name === name)?.description ?? '';
@@ -124,8 +124,8 @@
 		)
 	);
 
-	// `?ask=` arriva da un link (la home): la domanda finisce nel campo, non parte da sola.
-	// Il costo resta una scelta di chi visita. Non `?q=`: è la ricerca della sidebar.
+	// `?ask=` comes from a link (the home): the question lands in the field, it does not send
+	// itself. The cost stays the visitor's choice. Not `?q=`: that is the sidebar search.
 	const PREFILL_PARAM = 'ask';
 	const PREFILL_MAX = 500;
 	function prefill() {
@@ -184,7 +184,7 @@
 					break;
 			}
 		});
-		// "Nuova conversazione" sta nella toolbar della pagina, fuori dall'isola.
+		// "Nuova conversazione" lives in the page toolbar, outside the island.
 		const onReset = (event: MouseEvent) => {
 			if ((event.target as HTMLElement).closest('[data-agent-reset]')) reset();
 		};
@@ -195,9 +195,9 @@
 		};
 	});
 
-	// La trascrizione segue l'ultima riga mentre arriva, ma solo se chi legge è già in
-	// fondo: chi è risalito a rileggere non viene riportato giù. Scorre il riquadro su
-	// desktop e la finestra su mobile, dove il riquadro non ha uno scroll suo.
+	// The transcript follows the last line as it arrives, but only if the reader is already at
+	// the bottom: someone who scrolled up to reread is not pulled back down. The pane scrolls on
+	// desktop and the window on mobile, where the pane has no scroll of its own.
 	const NEAR_BOTTOM = 160;
 	function scroller(): { el: Element; top: number; height: number; client: number } {
 		const main = document.querySelector('[data-main-scroll]');
@@ -224,7 +224,7 @@
 		void shown.length;
 		void view.live;
 		void locals.length;
-		// A conversazione vuota non c'è nulla da seguire: la pagina parte dall'alto.
+		// With an empty conversation there is nothing to follow: the page starts from the top.
 		if (!following || empty) return;
 		tick().then(() => {
 			const s = scroller();
@@ -253,7 +253,7 @@
 		}
 	}
 
-	// "Riprova" dopo un errore: rimanda l'ultimo messaggio del visitatore.
+	// "Riprova" after an error: resends the visitor's last message.
 	const lastUserText = $derived(
 		[...view.messages]
 			.reverse()
@@ -274,21 +274,21 @@
 		send({ type: 'submit', input: text, whenBusy: 'followUp' });
 	}
 
-	// Lo stato vuoto sparisce al primo invio, senza aspettare che il server lo confermi.
+	// The empty state disappears on the first send, without waiting for the server to confirm.
 	let sent = $state(false);
 	const empty = $derived(!sent && shown.length === 0 && locals.length === 0 && !view.running);
 
-	// Titolo e sottotitolo della pagina sono il benvenuto, come le domande d'esempio: quando
-	// la conversazione parte spariscono (restano per gli screen reader). Finché non arriva la
-	// trascrizione decide il ricordo dell'ultima visita, così una conversazione già aperta
-	// non mostra il titolo per un attimo.
+	// The page title and subtitle are the welcome, like the example questions: when the
+	// conversation starts they disappear (they stay for screen readers). Until the transcript
+	// arrives, the memory of the last visit decides, so an already open conversation does not
+	// flash the title for a moment.
 	const STARTED_KEY = 'agent-started';
 	let loaded = $state(false);
 	let remembered = false;
 	try {
 		remembered = localStorage.getItem(STARTED_KEY) === '1';
 	} catch {
-		// Niente storage: si aspetta la trascrizione.
+		// No storage: wait for the transcript.
 	}
 	const started = $derived(loaded ? !empty : remembered);
 	$effect(() => {
@@ -298,7 +298,7 @@
 			if (started) localStorage.setItem(STARTED_KEY, '1');
 			else localStorage.removeItem(STARTED_KEY);
 		} catch {
-			// vedi sopra
+			// See above.
 		}
 	});
 
@@ -309,7 +309,7 @@
 		locals = [];
 	}
 
-	// I risultati dei tool arrivano come messaggi a sé: li si aggancia alla loro chiamata.
+	// Tool results arrive as separate messages: attach them to their call.
 	type ToolResult = Extract<TranscriptPart, { type: 'tool-result' }>;
 	const results = $derived(
 		new Map(
@@ -322,20 +322,20 @@
 	const resultText = (part: ToolResult) =>
 		part.content.map((c) => (c.type === 'text' ? c.text : '[image]')).join('\n');
 
-	/** Il codice di `run_code`, da mostrare come codice e non come stringa JSON. */
+	/** The code of `run_code`, to show as code and not as a JSON string. */
 	const code = (args: unknown) =>
 		args && typeof args === 'object' && typeof (args as { code?: unknown }).code === 'string'
 			? (args as { code: string }).code
 			: undefined;
 
-	/** Nella riga chiusa, la prima riga che dice qualcosa: non la firma della funzione. */
+	/** In the collapsed row, the first line that says something: not the function signature. */
 	const codeLine = (args: unknown) =>
 		code(args)
 			?.split('\n')
 			.map((l) => l.trim())
 			.find((l) => l && !/^async\s*\(.*\)\s*=>\s*\{$/.test(l));
 
-	/** La bozza di `draft_message` dagli argomenti, se il server l'ha accettata. */
+	/** The `draft_message` draft from the arguments, if the server accepted it. */
 	function drafted(
 		args: unknown,
 		part: ToolResult | undefined
@@ -355,7 +355,7 @@
 		send({ type: 'send-draft', draftId, ...fields });
 	}
 
-	/** I compiti di `delegate` dagli argomenti, e i resoconti dal risultato quando c'è. */
+	/** The `delegate` tasks from the arguments, and the reports from the result when there is one. */
 	function delegated(
 		args: unknown,
 		part: ToolResult | undefined
@@ -371,7 +371,7 @@
 		}
 	}
 
-	/** La vista di `render`, dagli argomenti, solo se il server l'ha accettata. */
+	/** The `render` view, from the arguments, only if the server accepted it. */
 	function drawn(args: unknown, part: ToolResult | undefined): View | null {
 		if (!part || part.error) return null;
 		try {
@@ -381,7 +381,7 @@
 		}
 	}
 
-	/** La scheda di `show_page`, dal risultato del tool; `null` se non è leggibile. */
+	/** The `show_page` card, from the tool result; `null` if it cannot be read. */
 	type Card = { path: string; kind: string; title: string; summary: string; status?: string };
 	function card(part: ToolResult | undefined): Card | null {
 		if (!part || part.error) return null;
@@ -395,19 +395,19 @@
 	const userText = (m: TranscriptMessage) =>
 		m.parts.map((p) => (p.type === 'text' ? p.text : '')).join('');
 
-	// In pagina i costi sono crediti (`budget.ts`); il costo vero resta nel tooltip.
+	// On the page costs are credits (`budget.ts`); the real cost stays in the tooltip.
 	const spent = (usd: number) => {
 		const n = credits(usd);
 		return `${n.toLocaleString(locale)} ${n === 1 ? labels.credit : labels.credits}`;
 	};
 	const dollars = (usd: number) => `$${usd.toLocaleString('en', { maximumSignificantDigits: 3 })}`;
-	// Il contatore si vede solo quando i crediti stanno per finire.
+	// The counter shows only when credits are about to run out.
 	const lowBudget = $derived(
 		budget !== null && budget.remaining < budget.limit * SHOW_BUDGET_BELOW
 	);
 	/**
-	 * Il testo di un avviso, nella lingua del messaggio quando Jev l'ha riconosciuta ("ciao"
-	 * su `/en` riceve l'avviso in italiano), con l'ora della ricarica nel fuso di chi legge.
+	 * The text of a notice, in the message's language when Jev recognized it ("ciao" on `/en`
+	 * gets the notice in Italian), with the refill time in the reader's time zone.
 	 */
 	function noticeText(item: Local) {
 		const lang = triages[item.text]?.lang ?? locale;
@@ -464,7 +464,7 @@
 				</ul>
 			</section>
 			{#if catalog.length}
-				<!-- Solo i nomi, per gruppo; la descrizione di uno alla volta nella riga sotto. -->
+				<!-- Names only, per group; one description at a time in the row below. -->
 				<section
 					class="flex flex-col gap-3"
 					onmouseleave={() => (picked = null)}
@@ -535,7 +535,7 @@
 							<div
 								class="prose max-w-none text-[1.0625rem] leading-relaxed prose-invert prose-headings:mt-6 prose-headings:mb-2 prose-headings:font-medium prose-headings:text-fg prose-h1:text-[1.2em] prose-h2:text-[1.1em] prose-h3:text-[1em] prose-p:my-3 prose-p:text-text prose-a:text-fg prose-a:decoration-subtle prose-a:underline-offset-4 prose-strong:font-medium prose-strong:text-fg prose-code:rounded prose-code:bg-surface prose-code:px-1.5 prose-code:py-0.5 prose-code:font-normal prose-code:text-fg prose-code:before:content-none prose-code:after:content-none prose-pre:rounded-[var(--radius-control)] prose-pre:bg-surface/60 prose-pre:text-xs prose-ol:my-3 prose-ul:my-3 prose-li:my-1 prose-li:text-text prose-li:marker:text-accent [&_pre_code]:bg-transparent [&_pre_code]:p-0 [&>:first-child]:mt-0 [&>:last-child]:mb-0"
 							>
-								<!-- eslint-disable-next-line svelte/no-at-html-tags -- renderMarkdown neutralizza HTML e link (src/agent/markdown.ts, con test) -->
+								<!-- eslint-disable-next-line svelte/no-at-html-tags -- renderMarkdown neutralizes HTML and links (src/agent/markdown.ts, with tests) -->
 								{@html renderMarkdown(part.text)}
 							</div>
 						{:else if part.type === 'thinking' && part.text.trim()}
@@ -662,7 +662,7 @@
 		{/if}
 	</div>
 
-	<!-- Un pannello di vetro ancorato in fondo al riquadro: la conversazione ci scorre dietro. -->
+	<!-- A glass panel anchored at the bottom of the pane: the conversation scrolls behind it. -->
 	<div
 		class="glass sticky bottom-3 z-10 mt-8 mb-3 rounded-[var(--radius-panel)] bg-panel/60 px-3 pt-3 pb-2.5"
 	>

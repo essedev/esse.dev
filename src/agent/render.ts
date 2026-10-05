@@ -1,13 +1,15 @@
 /**
- * Le viste che l'agente può disegnare con `render`: barre, tabella, linea del tempo. Il
- * modello manda dati, mai HTML (la CSP bloccherebbe stili e script, e un HTML del
- * modello sarebbe da sanificare); la pagina le disegna con i token del sito. La stessa
- * validazione gira nel Durable Object, che risponde al modello con l'errore preciso, e
- * nel browser, che disegna solo una vista valida.
+ * The views the agent can draw with `render`: bars, table, timeline. The model sends data,
+ * never HTML (the CSP would block styles and scripts, and model HTML would need
+ * sanitizing); the page draws the views with the site's tokens. The same validation runs in
+ * the Durable Object, which answers the model with the precise error, and in the browser,
+ * which draws only a valid view.
  */
 
+/** Size limits of a view. */
 export const RENDER_LIMITS = { items: 30, columns: 6, rows: 30, text: 120 } as const;
 
+/** A view the agent asks the page to draw. */
 export type RenderView =
 	| {
 			type: 'bars';
@@ -27,6 +29,7 @@ export type RenderView =
 			items: { date: string; label: string; detail?: string }[];
 	  };
 
+/** A validation failure of `render` arguments; the message names the wrong field. */
 export class RenderError extends Error {}
 
 const text = (value: unknown, field: string, optional = false): string | undefined => {
@@ -59,7 +62,7 @@ const record = (value: unknown, field: string): Record<string, unknown> => {
 	return value as Record<string, unknown>;
 };
 
-/** Valida e normalizza gli argomenti di `render`; lancia `RenderError` con il campo sbagliato. */
+/** Validates and normalizes the `render` arguments; throws `RenderError` naming the bad field. */
 export function parseRender(args: unknown): RenderView {
 	const a = record(args, 'arguments');
 	const title = text(a.title, 'title')!;
@@ -104,5 +107,5 @@ export function parseRender(args: unknown): RenderView {
 	}
 }
 
-/** Una cella che è un numero si allinea a destra. */
+/** A cell that is a number is aligned to the right. */
 export const isNumeric = (cell: string) => /^[-+]?[\d.,]+\s*%?$/.test(cell.trim());

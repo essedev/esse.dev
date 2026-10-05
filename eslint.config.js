@@ -20,7 +20,7 @@ export default defineConfig(
 	...svelte.configs.prettier,
 	{
 		languageOptions: { globals: { ...globals.browser, ...globals.node } },
-		// typescript-eslint sconsiglia no-undef sui progetti TypeScript.
+		// typescript-eslint recommends turning no-undef off on TypeScript projects.
 		rules: { 'no-undef': 'off' }
 	},
 	{

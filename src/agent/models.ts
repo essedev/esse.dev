@@ -3,13 +3,14 @@ import { createModels, type MutableModels } from '@earendil-works/pi-ai/models';
 import { openrouterProvider } from '@earendil-works/pi-ai/providers/openrouter';
 
 /**
- * I modelli dell'agente, da OpenRouter. Un solo modello per ora, `glm-5.3-flash`, sui
- * provider più veloci (Artificial Analysis: BaseTen 225 token/s e 0,5 s al primo token,
- * contro i 45 e 3,3 s di Z.ai): OpenRouter li prova in ordine e passa al successivo se uno
- * non risponde, nella stessa richiesta. Stesso prezzo su tutti e tre, quindi il costo che
- * pi-ai calcola resta esatto anche dopo un cambio di provider.
+ * The agent's models, from OpenRouter. One model for now, `glm-5.3-flash`, on the fastest
+ * providers (Artificial Analysis: BaseTen 225 tokens/s and 0.5 s to first token, against 45
+ * and 3.3 s for Z.ai): OpenRouter tries them in order and moves to the next if one does not
+ * answer, within the same request. The price is the same on all three, so the cost pi-ai
+ * computes stays exact even after a provider change.
  */
 
+/** The model the agent runs on. */
 export const MODEL = { provider: 'openrouter', id: 'z-ai/glm-5.3-flash' } as const;
 
 const ROUTING = {
@@ -18,13 +19,13 @@ const ROUTING = {
 };
 
 /**
- * Oltre questo tempo senza risposta la chiamata fallisce e pi la riprova (`retry` nelle
- * impostazioni dell'harness). Copre il provider che smette di mandare token senza
- * chiudere la connessione; il predefinito sarebbe 10 minuti.
+ * Past this time without a response the call fails and pi retries it (`retry` in the
+ * harness settings). It covers a provider that stops sending tokens without closing the
+ * connection; the default would be 10 minutes.
  */
 const STREAM_TIMEOUT_MS = 30_000;
 
-/** Il provider di OpenRouter con solo i nostri modelli, il routing e il timeout. */
+/** The OpenRouter provider with only our models, the routing and the timeout. */
 function siteProvider(): Provider {
 	const base = openrouterProvider() as Provider;
 	const model = base.getModels().find((m) => m.id === MODEL.id);
@@ -37,7 +38,7 @@ function siteProvider(): Provider {
 		...base,
 		getModels: () => [routed],
 		getAllModels: undefined,
-		// Il cast tiene il generico di `stream`: le opzioni sono le stesse, più il timeout.
+		// The cast keeps the generic of `stream`: the options are the same, plus the timeout.
 		stream: ((m, context, options) =>
 			base.stream(m, context, {
 				timeoutMs: STREAM_TIMEOUT_MS,
@@ -49,8 +50,8 @@ function siteProvider(): Provider {
 }
 
 /**
- * Il registro dei modelli per pi. La chiave arriva dal Worker (`OPENROUTER_API_KEY`):
- * nel Worker non c'è un ambiente di processo da cui pi-ai possa leggerla da solo.
+ * The model registry for pi. The key comes from the Worker (`OPENROUTER_API_KEY`): a Worker
+ * has no process environment pi-ai could read it from on its own.
  */
 export function siteModels(apiKey: string | undefined): MutableModels {
 	const models = createModels({

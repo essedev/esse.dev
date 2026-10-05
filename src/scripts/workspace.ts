@@ -1,16 +1,16 @@
 /**
- * Interazione dello spazio di lavoro. Le pagine sono statiche e ognuna ha il suo URL:
- * questo script aggiunge solo quello che rende il sito un'app da usare con la tastiera.
+ * Workspace interaction. Pages are static and each has its own URL: this script adds only
+ * what makes the site an app to use with the keyboard.
  *
- * - j/k (o frecce) scorrono le voci della lista, Invio apre, Esc torna al livello sopra.
- * - h/l (o frecce laterali) aprono la voce precedente e successiva, dove c'è il pager.
- *   Non `[` e `]`: sulla tastiera italiana del Mac richiedono Option.
- * - "/" e Cmd/Ctrl+K portano alla ricerca, l'unica del sito: filtra la lista e il
- *   registro della pagina, se c'è.
- * - i pulsanti `[data-copy]` copiano e confermano nella riga di stato.
- * - il livello sopra (Esc, breadcrumb, "‹") torna con la history se si arriva da lì.
- * - la lista ricorda il proprio scroll fra una pagina e l'altra.
- * - su mobile la lista è un cassetto che entra da sinistra sopra il riquadro.
+ * - j/k (or arrows) move through the list rows, Enter opens, Esc goes up one level.
+ * - h/l (or side arrows) open the previous and next entry, where there is a pager. Not `[`
+ *   and `]`: on the Italian Mac keyboard they need Option.
+ * - "/" and Cmd/Ctrl+K go to the search, the only one on the site: it filters the list and
+ *   the page's registry, if there is one.
+ * - `[data-copy]` buttons copy and confirm in the status line.
+ * - the level up (Esc, breadcrumb, "‹") goes back through history if you came from there.
+ * - the list remembers its scroll between pages.
+ * - on mobile the list is a drawer that slides in from the left over the pane.
  */
 
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -21,10 +21,11 @@ const isTyping = (target: EventTarget | null) =>
 	target instanceof HTMLElement &&
 	(target.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName));
 
-// Riga di stato (in fondo alla lista): un messaggio breve al posto dei tasti, poi via.
+// Status line (at the bottom of the list): a short message in place of the keys, then gone.
 const statusLine = document.querySelector<HTMLElement>('[data-statusline]');
 const statusText = document.querySelector<HTMLElement>('[data-status-text]');
 let statusTimer: ReturnType<typeof setTimeout> | undefined;
+/** Shows a short message in the status line for a moment. */
 export function flashStatus(message: string) {
 	if (!statusLine || !statusText || !message) return;
 	statusText.textContent = message;
@@ -33,8 +34,8 @@ export function flashStatus(message: string) {
 	statusTimer = setTimeout(() => statusLine.removeAttribute('data-flash'), 1800);
 }
 
-// Il livello sopra (Esc, breadcrumb, "‹" su mobile). Se si arriva proprio da lì, si torna
-// con la history, così il registro ritrova filtri e scroll; altrimenti si apre il link.
+// The level up (Esc, breadcrumb, "‹" on mobile). If you came from there, go back through
+// history, so the registry finds its filters and scroll again; otherwise open the link.
 function goUp(href: string) {
 	const target = new URL(href, location.href);
 	const ref = document.referrer ? new URL(document.referrer) : null;
@@ -56,14 +57,14 @@ document.addEventListener('click', (event) => {
 	goUp(link.href);
 });
 
-// Il tasto modificatore giusto nelle legende.
+// The right modifier key in the legends.
 if (!isMac) {
 	for (const el of document.querySelectorAll<HTMLElement>('[data-modkey]')) {
 		el.textContent = el.textContent?.replace('⌘', 'Ctrl ') ?? '';
 	}
 }
 
-// Lista: scroll ricordato e voce aperta sempre visibile.
+// List: remembered scroll and the open row always visible.
 const scrollBox = document.querySelector<HTMLElement>('[data-sidebar-scroll]');
 const SCROLL_KEY = 'sidebar-scroll';
 if (scrollBox) {
@@ -71,7 +72,7 @@ if (scrollBox) {
 		const saved = sessionStorage.getItem(SCROLL_KEY);
 		if (saved) scrollBox.scrollTop = Number(saved);
 	} catch {
-		// sessionStorage può non esserci (navigazione privata): si parte dall'alto.
+		// sessionStorage may be missing (private browsing): start from the top.
 	}
 	scrollBox
 		.querySelector<HTMLElement>('[data-nav-item][aria-current="page"]')
@@ -80,14 +81,14 @@ if (scrollBox) {
 		try {
 			sessionStorage.setItem(SCROLL_KEY, String(scrollBox.scrollTop));
 		} catch {
-			// vedi sopra
+			// See above.
 		}
 	});
 }
 
-// Su mobile la lista è un cassetto: entra da sinistra sopra il riquadro, che intanto
-// diventa inerte. Si chiude con Esc, con un tocco fuori, con la X o trascinandola verso
-// sinistra. Da `lg` in su la lista è sempre lì e il cassetto non esiste.
+// On mobile the list is a drawer: it slides in from the left over the pane, which becomes
+// inert meanwhile. It closes with Esc, a tap outside, the X, or by dragging it to the left.
+// From `lg` up the list is always there and the drawer does not exist.
 const wide = matchMedia('(min-width: 64rem)');
 const drawer = document.querySelector<HTMLElement>('[data-drawer-panel]');
 const content = document.querySelector<HTMLElement>('[data-content]');
@@ -126,10 +127,11 @@ for (const el of document.querySelectorAll('[data-drawer-close]')) {
 }
 wide.addEventListener('change', () => wide.matches && closeDrawer());
 
-// Trascinare il cassetto: segue il dito verso sinistra e, rilasciato oltre un terzo della
-// larghezza (o con un colpo deciso), si chiude; altrimenti torna al suo posto. Lo scroll
-// verticale della lista resta al browser con `touch-pan-y`, che va messo anche sulla lista:
-// non passa dentro un contenitore che scorre, e lì il browser si prenderebbe il gesto.
+// Dragging the drawer: it follows the finger to the left and, released past a third of the
+// width (or with a firm flick), it closes; otherwise it returns to its place. The list's
+// vertical scroll stays with the browser through `touch-pan-y`, which must be set on the
+// list too: it does not pass inside a scrolling container, and there the browser would take
+// the gesture.
 if (drawer) {
 	let start: { x: number; y: number; t: number } | null = null;
 	let dx = 0;
@@ -168,14 +170,14 @@ if (drawer) {
 	drawer.addEventListener('pointercancel', release);
 }
 
-// Voci navigabili da tastiera: solo quelle visibili (il filtro ne nasconde alcune).
+// Rows reachable by keyboard: only the visible ones (the filter hides some).
 const navItems = () =>
 	[...document.querySelectorAll<HTMLAnchorElement>('[data-sidebar] [data-nav-item]')].filter(
 		(el) => el.offsetParent !== null
 	);
 
-// La voce scelta è quella col focus, e si vede dal fondo di `:focus-visible`: se il focus
-// esce dalla lista non resta una seconda voce evidenziata accanto alla pagina corrente.
+// The chosen row is the focused one, and shows through the `:focus-visible` background: if
+// focus leaves the list, no second highlighted row is left next to the current page.
 function select(el: HTMLAnchorElement | undefined) {
 	if (!el) return;
 	el.focus({ preventScroll: true });
@@ -193,9 +195,9 @@ function move(delta: number) {
 	select(items[Math.max(0, Math.min(items.length - 1, next))]);
 }
 
-// Filtro della lista. Senza query si vede la vetrina: le voci `data-rest` (progetti fuori
-// vetrina) restano nascoste tranne quella aperta, e c'è la riga "tutti i N". Con una
-// query si vede tutto quello che corrisponde, vetrina o no, e la riga "tutti" sparisce.
+// List filter. Without a query the showcase shows: `data-rest` rows (projects outside the
+// showcase) stay hidden except the open one, and the "all N" row is there. With a query
+// everything that matches shows, showcase or not, and the "all" row disappears.
 const filter = document.querySelector<HTMLInputElement>('[data-filter]');
 const emptyNote = document.querySelector<HTMLElement>('[data-filter-empty]');
 function applyFilter() {
@@ -230,15 +232,15 @@ function focusSearch() {
 	filter?.select();
 }
 
-// Una sola ricerca: filtra la lista e, sulle pagine con un registro (progetti, scritti),
-// anche il registro, che ascolta l'evento `workspace:search`.
+// A single search: it filters the list and, on pages with a registry (projects, writing),
+// the registry too, which listens for the `workspace:search` event.
 function onSearch() {
 	applyFilter();
 	dispatchEvent(new CustomEvent('workspace:search', { detail: filter?.value ?? '' }));
 }
 filter?.addEventListener('input', onSearch);
 
-// La ricerca riparte da quella nell'URL (?q=) e si apre da #search.
+// The search restarts from the one in the URL (?q=) and opens from #search.
 const initialQuery = new URLSearchParams(location.search).get('q');
 if (filter && initialQuery) {
 	filter.value = initialQuery;
@@ -246,7 +248,7 @@ if (filter && initialQuery) {
 }
 if (location.hash === '#search') focusSearch();
 
-// Il registro può azzerare la ricerca ("Azzera filtri"): il campo si allinea.
+// The registry can clear the search ("Azzera filtri"): the field follows.
 addEventListener('workspace:set-search', (event) => {
 	if (!filter) return;
 	filter.value = (event as CustomEvent<string>).detail;
@@ -255,7 +257,7 @@ addEventListener('workspace:set-search', (event) => {
 filter?.addEventListener('keydown', (event) => {
 	if (event.key === 'Escape') {
 		event.preventDefault();
-		// A campo vuoto, nel cassetto, Esc lo chiude invece di non fare nulla.
+		// With an empty field, in the drawer, Esc closes it instead of doing nothing.
 		if (!filter.value && drawerOpen()) return closeDrawer();
 		filter.value = '';
 		onSearch();
@@ -270,7 +272,7 @@ filter?.addEventListener('keydown', (event) => {
 	}
 });
 
-// Copia con conferma: nel pulsante e nella riga di stato.
+// Copy with confirmation: in the button and in the status line.
 async function copy(text: string, message: string, button: HTMLElement) {
 	try {
 		await navigator.clipboard.writeText(text);
@@ -289,7 +291,7 @@ document.addEventListener('click', (event) => {
 	copy(text, button.dataset.copyMessage ?? '', button);
 });
 
-// Tastiera globale.
+// Global keyboard.
 document.addEventListener('keydown', (event) => {
 	if (event.defaultPrevented) return;
 	if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
@@ -339,15 +341,15 @@ document.addEventListener('keydown', (event) => {
 	}
 });
 
-// Etichette che si decodificano una volta entrando e una uscendo: 280 ms, poi il testo vero.
-// Il bersaglio è il link o il bottone che le contiene (la riga intera nella lista), così
-// muoversi dentro la riga non le fa ripartire; un testo fuori da un link fa da sé.
+// Labels that decode once on entering and once on leaving: 280 ms, then the real text. The
+// target is the link or button that contains them (the whole row in the list), so moving
+// inside the row does not restart them; text outside a link is its own target.
 const GLYPHS = '01<>/_-=+*#';
 const SCRAMBLE_MS = 280;
 const scrambling = new WeakMap<HTMLElement, number>();
 
 function scramble(el: HTMLElement) {
-	// Il testo vero si legge una volta sola: a metà animazione `textContent` è fatto di glifi.
+	// The real text is read once: mid-animation `textContent` is made of glyphs.
 	const final = (el.dataset.text ??= el.textContent ?? '');
 	cancelAnimationFrame(scrambling.get(el) ?? 0);
 	const start = performance.now();
@@ -379,7 +381,7 @@ function scrambleTargets(target: EventTarget | null): HTMLElement[] {
 	return target.matches('[data-scramble]') && !target.closest('a, button') ? [target] : [];
 }
 
-// pointerenter e pointerleave non risalgono: si ascoltano in cattura sul documento.
+// pointerenter and pointerleave do not bubble: listen in the capture phase on the document.
 for (const type of ['pointerenter', 'pointerleave'] as const) {
 	document.addEventListener(
 		type,

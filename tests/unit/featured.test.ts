@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { orderFeaturedFirst } from '../../src/lib/featured';
 
-// L'input simula l'ordine per data, dal più recente: d, c, b, a.
+// The input simulates date order, most recent first: d, c, b, a.
 const items = ['d', 'c', 'b', 'a'].map((id) => ({ id }));
 const ids = (list: { id: string }[]) => list.map((i) => i.id);
 

@@ -1,28 +1,31 @@
 /**
- * Dati serializzabili per card, righe e filtri delle liste. Le pagine li costruiscono a
- * build; i componenti Svelte li usano sia renderizzati statici (home) sia come isola
- * interattiva (listing con filtri). Il filtro è puro e testabile.
+ * Serializable data for cards, rows and list filters. Pages build them at build time;
+ * Svelte components use them both statically rendered (home) and as an interactive island
+ * (listing with filters). The filter is pure and testable.
  */
 
+/** The status of a list item. */
 export type Status = 'in-progress' | 'maintained' | 'completed' | 'idea' | 'archived';
 
+/** One row or card of a list. */
 export interface ListItem {
 	id: string;
 	href: string;
 	title: string;
 	excerpt: string;
 	tags: string[];
-	/** Data ISO usata per l'ordinamento (creazione per i progetti, pubblicazione per gli articoli). */
+	/** ISO date used for sorting (creation for projects, publication for articles). */
 	date: string;
-	/** Data già formattata nella lingua della pagina. */
+	/** The date already formatted in the page language. */
 	dateLabel: string;
 	status?: Status;
 	statusLabel?: string;
 }
 
+/** How a list is sorted. */
 export type SortKey = 'newest' | 'oldest' | 'title';
 
-/** Più tag o più stati selezionati valgono in OR: basta che l'item ne abbia uno. */
+/** Several selected tags or statuses combine with OR: an item needs only one of them. */
 export interface Filters {
 	query: string;
 	tags: string[];
@@ -30,8 +33,10 @@ export interface Filters {
 	sort: SortKey;
 }
 
+/** The filters of an untouched list. */
 export const DEFAULT_FILTERS: Filters = { query: '', tags: [], statuses: [], sort: 'newest' };
 
+/** The order in which statuses are offered. */
 export const STATUS_ORDER: Status[] = [
 	'in-progress',
 	'maintained',
@@ -42,6 +47,7 @@ export const STATUS_ORDER: Status[] = [
 
 const SORTS: SortKey[] = ['newest', 'oldest', 'title'];
 
+/** The items that pass the filters, sorted. */
 export function applyFilters(items: ListItem[], f: Filters, locale: string): ListItem[] {
 	const q = f.query.trim().toLocaleLowerCase(locale);
 	const filtered = items.filter(
@@ -59,14 +65,14 @@ export function applyFilters(items: ListItem[], f: Filters, locale: string): Lis
 	return filtered.sort(byDate);
 }
 
-/** Tag presenti nella lista, ordinati per frequenza e poi alfabeticamente. */
+/** The tags in the list, ordered by frequency and then alphabetically. */
 export function tagsByFrequency(items: ListItem[], locale: string): string[] {
 	return [...countBy(items, 'tags').entries()]
 		.sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], locale))
 		.map(([tag]) => tag);
 }
 
-/** Quanti item per ogni valore (tag o stato), per mostrare i conteggi nelle opzioni. */
+/** How many items per value (tag or status), to show the counts in the options. */
 export function countBy(items: ListItem[], key: 'tags' | 'status'): Map<string, number> {
 	const counts = new Map<string, number>();
 	for (const item of items) {
@@ -77,8 +83,8 @@ export function countBy(items: ListItem[], key: 'tags' | 'status'): Map<string, 
 }
 
 /**
- * Filtri dalla query string (`?q=&tag=a&tag=b&status=idea&sort=title`). Valori ripetuti
- * per le selezioni multiple; valori sconosciuti, vuoti o duplicati vengono scartati.
+ * Filters from the query string (`?q=&tag=a&tag=b&status=idea&sort=title`). Repeated values
+ * for multiple selections; unknown, empty or duplicate values are dropped.
  */
 export function filtersFromSearch(search: string): Filters {
 	const params = new URLSearchParams(search);
@@ -94,7 +100,7 @@ export function filtersFromSearch(search: string): Filters {
 	};
 }
 
-/** Query string dai filtri, senza i valori di default (stringa vuota se tutto è default). */
+/** The query string for the filters, without default values (empty string if all default). */
 export function searchFromFilters(f: Filters): string {
 	const params = new URLSearchParams();
 	if (f.query.trim()) params.set('q', f.query.trim());

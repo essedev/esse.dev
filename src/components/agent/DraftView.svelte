@@ -3,9 +3,9 @@
 	import { DRAFT_LIMITS } from '../../agent/draft';
 
 	/**
-	 * La bozza di `draft_message`: il visitatore la rilegge, la corregge, lascia un contatto
-	 * se vuole e la manda lui, dopo Turnstile. Il modello non può spedire: l'invio parte solo
-	 * da qui, e il server ricontrolla tutto.
+	 * The `draft_message` draft: the visitor rereads it, edits it, leaves a contact if they
+	 * want and sends it themselves, after Turnstile. The model cannot send: sending starts only
+	 * from here, and the server rechecks everything.
 	 */
 	type Labels = {
 		draft: string;
@@ -31,7 +31,7 @@
 		onsend: (fields: { subject: string; text: string; contact: string; turnstile: string }) => void;
 	} = $props();
 
-	// Si parte dalla bozza dell'agente, poi i campi sono del visitatore.
+	// Start from the agent's draft, then the fields belong to the visitor.
 	// svelte-ignore state_referenced_locally
 	let subject = $state(initialSubject);
 	// svelte-ignore state_referenced_locally
@@ -50,7 +50,7 @@
 	};
 	const SCRIPT = 'https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit';
 
-	/** Lo script di Turnstile, caricato una volta sola e solo quando serve una bozza. */
+	/** The Turnstile script, loaded once and only when a draft needs it. */
 	function turnstile(): Promise<Turnstile> {
 		const w = window as unknown as { turnstile?: Turnstile; __turnstile?: Promise<Turnstile> };
 		if (w.turnstile) return Promise.resolve(w.turnstile);
@@ -90,7 +90,7 @@
 		};
 	});
 
-	// Spedita la bozza, il widget non serve più: si toglie prima che sparisca dal DOM.
+	// Once the draft is sent the widget is no longer needed: remove it before it leaves the DOM.
 	$effect.pre(() => {
 		if (sent && api && widgetId) {
 			api.remove(widgetId);
@@ -98,7 +98,7 @@
 		}
 	});
 
-	// Un token vale una volta sola: dopo un errore il widget si rifà.
+	// A token is good only once: after an error the widget is rebuilt.
 	$effect(() => {
 		if (delivery?.status === 'error' && api && widgetId) {
 			token = '';

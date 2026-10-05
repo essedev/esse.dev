@@ -1,4 +1,4 @@
-// Adattato dall'esempio Pi harness di cloudflare/agents (MIT):
+// Adapted from the Pi harness example of cloudflare/agents (MIT):
 // https://github.com/cloudflare/agents/tree/main/examples/next/harnesses/pi
 
 import type { JsonValue } from '@earendil-works/pi-ai';
@@ -9,21 +9,23 @@ import { ROOT_SESSION, type PiHarness, type PiReceipt, type PiSessionId } from '
 import type { PiClientMessage, PiServerMessage } from './protocol';
 
 /**
- * Agganci del sito attorno all'invio (non c'erano nell'esempio): `admit` decide se il
- * messaggio arriva al modello (triage e budget) e manda al client cosa ha deciso;
- * `settled` riceve la ricevuta per addebitare il costo reale a risposta finita;
- * `sendDraft` spedisce una bozza di `draft_message` che il visitatore ha approvato.
+ * The site's hooks around a submit (the example had none): `admit` decides whether the
+ * message reaches the model (triage and budget) and tells the client what it decided;
+ * `settled` receives the receipt so the real cost is charged when the answer is done;
+ * `sendDraft` sends a `draft_message` draft the visitor approved.
  */
 export interface SubmitHooks {
-	/** `ip` è l'indirizzo della connessione (`CF-Connecting-IP`), se c'è. */
+	/** `ip` is the address of the connection (`CF-Connecting-IP`), if any. */
 	admit(
 		text: string,
 		reply: (message: PiServerMessage) => void,
 		ip: string | null
 	): Promise<boolean>;
+	/** Called with the receipt of an accepted submit. */
 	settled(session: PiSessionId, receipt: PiReceipt): void;
+	/** Sends the client the current budget. */
 	status(reply: (message: PiServerMessage) => void): Promise<void>;
-	/** L'invio di una bozza di `draft_message` approvata dal visitatore. */
+	/** Sends a `draft_message` draft the visitor approved. */
 	sendDraft(
 		session: PiSessionId,
 		message: Record<string, unknown>,
@@ -81,6 +83,7 @@ export class PiSessionSockets {
 	readonly #watches = new Map<WebSocket, AgentEventStream>();
 	readonly #hooks: SubmitHooks | undefined;
 
+	/** `hooks` are the site's hooks around a submit; without them every message is admitted. */
 	constructor(
 		harness: PiHarness,
 		/** The registry pi was opened with, for the tool list sent on connect. */
@@ -94,6 +97,7 @@ export class PiSessionSockets {
 		this.#getWebSockets = getWebSockets;
 	}
 
+	/** The `WebSockets` capability options: session tags and the connection handlers. */
 	options(): WebSocketsOptions {
 		return {
 			getConnectionTags: (_connection, ctx) => [
@@ -120,6 +124,7 @@ export class PiSessionSockets {
 		}
 	}
 
+	/** Stops every watch. */
 	async close(): Promise<void> {
 		const watches = [...this.#watches.values()];
 		this.#watches.clear();
@@ -128,8 +133,8 @@ export class PiSessionSockets {
 
 	async #onConnect(connection: Connection, ctx: ConnectionContext) {
 		const session = sessionFromRequest(ctx.request, ROOT_SESSION);
-		// L'IP si legge solo dalla richiesta di apertura: resta nello stato della connessione,
-		// che sopravvive all'ibernazione, per i limiti per IP di `admit`.
+		// The IP is read only from the opening request: it stays in the connection state, which
+		// survives hibernation, for the per-IP limits in `admit`.
 		connection.setState({ ip: ctx.request.headers.get('CF-Connecting-IP') });
 		send(connection, {
 			type: 'hello',

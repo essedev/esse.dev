@@ -2,8 +2,8 @@
 	import type { ListItem } from '../lib/listing';
 
 	/**
-	 * Riga del registro, uguale per progetti e scritti: stato (o data), titolo e
-	 * sommario, tag, anno. Densa, senza bordi: la separazione la fa lo spazio.
+	 * Registry row, the same for projects and writing: status (or date), title and excerpt,
+	 * tags, year. Dense, borderless: spacing does the separating.
 	 */
 	let { item }: { item: ListItem } = $props();
 	const MAX_TAGS = 3;

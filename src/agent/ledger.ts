@@ -3,18 +3,18 @@ import { IP_DAILY_USD, SITE_DAILY_USD, remaining, today, type Spend } from './bu
 import { DRAFT_LIMITS, todayCount, type DailyCount } from './draft';
 
 /**
- * La spesa di tutto il sito in un giorno: un Durable Object solo (`idFromName('site')`),
- * così i visitatori, che hanno ognuno il proprio oggetto, scalano dallo stesso conto.
- * Un oggetto serializza le chiamate, quindi due addebiti insieme non si perdono. Tiene
- * anche la spesa di oggi per impronta di IP (`ip:<impronta>`, cancellata al cambio di
- * giorno) e il conto dei messaggi a Simone spediti oggi da tutto il sito.
+ * The spend of the whole site in a day: a single Durable Object (`idFromName('site')`), so
+ * visitors, who each have their own object, are charged against the same account. An object
+ * serializes calls, so two charges at once are not lost. It also keeps today's spend per IP
+ * fingerprint (`ip:<fingerprint>`, deleted when the day changes) and the count of messages
+ * to Simone sent today from the whole site.
  */
 export class Ledger extends DurableObject<Env> {
 	async #spend(): Promise<Spend> {
 		const saved = await this.ctx.storage.get<Spend>('spend');
 		const spend = today(saved, new Date());
-		// Giorno nuovo: le impronte di ieri non servono più (e non tornerebbero, il giorno è
-		// nel loro calcolo).
+		// New day: yesterday's fingerprints are no longer needed (and would not recur, since the
+		// day is part of their input).
 		if (saved && saved.day !== spend.day) {
 			const old = await this.ctx.storage.list({ prefix: 'ip:' });
 			await this.ctx.storage.delete([...old.keys()]);
@@ -26,13 +26,14 @@ export class Ledger extends DurableObject<Env> {
 		return today(await this.ctx.storage.get<Spend>(`ip:${ip}`), new Date());
 	}
 
-	/** Quanto resta oggi al sito e, se c'è, all'impronta di IP: il minimo dei due. */
+	/** What is left today for the site and, if given, the IP fingerprint: the minimum of the two. */
 	async remaining(ip?: string): Promise<number> {
 		const site = remaining(await this.#spend(), SITE_DAILY_USD);
 		if (!ip) return site;
 		return Math.min(site, remaining(await this.#ipSpend(ip), IP_DAILY_USD));
 	}
 
+	/** Adds a spend to the site and IP accounts and returns what is left for the site. */
 	async charge(usd: number, ip?: string): Promise<number> {
 		const spend = await this.#spend();
 		const next = { day: spend.day, usd: spend.usd + usd };
@@ -44,7 +45,7 @@ export class Ledger extends DurableObject<Env> {
 		return remaining(next, SITE_DAILY_USD);
 	}
 
-	/** Prende un posto tra i messaggi di oggi; `false` se il tetto del sito è pieno. */
+	/** Takes a slot among today's messages; `false` if the site cap is full. */
 	async takeMessage(): Promise<boolean> {
 		const sent = todayCount(await this.ctx.storage.get<DailyCount>('messages'), new Date());
 		if (sent.count >= DRAFT_LIMITS.siteDaily) return false;

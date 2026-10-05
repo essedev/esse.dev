@@ -1,9 +1,8 @@
 {
 	"extends": "astro/tsconfigs/strict",
 	"include": [".astro/types.d.ts", "**/*"],
-	// Il codice del Worker (entry e agente) gira su workerd, non nel browser: ha i tipi del
-	// runtime di Cloudflare, che si scontrano con quelli del DOM. Lo controlla
-	// tsconfig.worker.json.
+	// The Worker code (entry and agent) runs on workerd, not in the browser: it has the
+	// Cloudflare runtime types, which clash with the DOM ones. tsconfig.worker.json checks it.
 	"exclude": [
 		"dist",
 		"src/worker.ts",

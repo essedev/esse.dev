@@ -2,8 +2,8 @@
 	import { isNumeric, type RenderView } from '../../agent/render';
 
 	/**
-	 * Una vista di `render` disegnata coi token del sito. Le barre sono SVG: la larghezza è
-	 * un attributo, non uno stile inline, che la CSP bloccherebbe.
+	 * A `render` view drawn with the site's tokens. The bars are SVG: the width is an
+	 * attribute, not an inline style, which the CSP would block.
 	 */
 	let { view, locale }: { view: RenderView; locale: string } = $props();
 

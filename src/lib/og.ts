@@ -1,19 +1,23 @@
 /**
- * Layout delle immagini Open Graph (1200x630) come albero di elementi per satori. Puro:
- * il rendering a PNG sta nell'endpoint prerenderizzato `src/pages/og/[name].png.ts`.
+ * Layout of the Open Graph images (1200x630) as an element tree for satori. Pure: the PNG
+ * rendering lives in the prerendered endpoint `src/pages/og/[name].png.ts`.
  *
- * Direzione B del concept D (`docs/concepts/concept-d-og.html`), il terminale: in alto il
- * comando che apre la pagina (`whoami`, `ls progetti`, `cat progetti/relay.md`), il titolo
- * grande con il cursore lavanda del logo, il sommario, in basso i metadati in mono e il
- * dominio. Righe CRT appena visibili e un velo viola in alto a sinistra.
+ * Direction B of concept D (`docs/concepts/concept-d-og.html`), the terminal: on top the
+ * command that opens the page (`whoami`, `ls progetti`, `cat progetti/relay.md`), the large
+ * title with the logo's lavender caret, the excerpt, at the bottom the metadata in mono and
+ * the domain. Barely visible CRT lines and a violet veil at the top left.
  *
- * Satori non legge le variabili CSS: i colori sono quelli di `@theme` in `global.css`,
- * ricopiati qui. Se cambia la palette, cambiano anche questi.
+ * Satori does not read CSS variables: the colors are those of `@theme` in `global.css`,
+ * copied here. If the palette changes, these change too.
  */
 
+/** Width of the image, in pixels. */
 export const OG_WIDTH = 1200;
+
+/** Height of the image, in pixels. */
 export const OG_HEIGHT = 630;
 
+/** A node of the satori element tree. */
 export interface OgNode {
 	type: string;
 	props: { style?: Record<string, string | number>; children?: OgChild | OgChild[] };
@@ -39,33 +43,37 @@ const COLORS = {
 	archived: '#4d4d58'
 };
 
+/** The status of a project, as the LED shows it. */
 export type OgStatus = 'in-progress' | 'maintained' | 'completed' | 'idea' | 'archived';
 
-// Un `type` e non un'`interface`: le props di `getStaticPaths` vogliono un record.
+/**
+ * What one image shows. A `type` and not an `interface`: the props of `getStaticPaths` want
+ * a record.
+ */
 export type OgData = {
-	/** Il comando nel prompt in alto: `whoami`, `ls progetti`, `cat progetti/relay.md`. */
+	/** The command in the prompt on top: `whoami`, `ls progetti`, `cat progetti/relay.md`. */
 	command: string;
 	title: string;
 	excerpt?: string;
-	/** I metadati in basso, in ordine: stato e anno, data e tag, o il ruolo. */
+	/** The metadata at the bottom, in order: status and year, date and tag, or the role. */
 	meta: string[];
-	/** Lo stato del progetto: un LED prima del primo metadato. */
+	/** The project status: an LED before the first metadata item. */
 	status?: OgStatus;
 };
 
-/** Taglia un testo lungo a parola intera, con ellissi. */
+/** Cuts a long text at a whole word, with an ellipsis. */
 export function clamp(text: string, max: number): string {
 	if (text.length <= max) return text;
 	const cut = text.slice(0, max);
 	return `${cut.slice(0, cut.lastIndexOf(' ') > 0 ? cut.lastIndexOf(' ') : max).trimEnd()}…`;
 }
 
-/** La taglia del titolo: grande se corto, più piccola se lungo, così sta in due righe. */
+/** The title size: large if short, smaller if long, so it fits in two lines. */
 export function titleSize(title: string): number {
 	return title.length > 50 ? 58 : title.length > 20 ? 84 : 112;
 }
 
-/** Il LED dello stato, come nel sito: acceso se vivo (fisso se mantenuto), vuoto se è un'idea. */
+/** The status LED, as on the site: lit if alive (steady if maintained), empty if an idea. */
 function led(status: OgStatus): OgNode {
 	const base = { display: 'flex', width: 13, height: 13, borderRadius: 999 };
 	if (status === 'idea') return h('div', { ...base, border: `2px solid ${COLORS.muted}` });
@@ -89,6 +97,7 @@ function led(status: OgStatus): OgNode {
 	});
 }
 
+/** The element tree of the image for `data`. */
 export function ogLayout(data: OgData): OgNode {
 	const { command, title, excerpt, meta, status } = data;
 	const size = titleSize(title);
@@ -148,7 +157,7 @@ export function ogLayout(data: OgData): OgNode {
 						lineHeight: 1,
 						textShadow: '0 0 16px rgba(181, 156, 255, 0.45)'
 					},
-					// Parola per parola: su due righe il cursore segue l'ultima parola, non il bordo.
+					// Word by word: on two lines the caret follows the last word, not the edge.
 					[
 						...clamp(title, 90)
 							.split(' ')

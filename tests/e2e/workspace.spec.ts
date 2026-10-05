@@ -1,6 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 
-// Lo script dello spazio di lavoro è un modulo: aspettiamo che sia caricato.
+// The workspace script is a module: we wait for it to be loaded.
 async function open(page: Page, path: string) {
 	await page.goto(path);
 	await page.waitForLoadState('networkidle');
@@ -24,7 +24,7 @@ test.describe('workspace keyboard', () => {
 		const selected = page.locator('[data-nav-item]:focus-visible');
 		await expect(selected).toHaveCount(1);
 		const item = (await selected.elementHandle())!;
-		// `transition-colors`: il fondo ci mette un attimo ad arrivare e ad andarsene.
+		// `transition-colors`: the background takes a moment to arrive and to leave.
 		const background = () => item.evaluate((el) => getComputedStyle(el).backgroundColor);
 		await expect.poll(background).not.toBe('rgba(0, 0, 0, 0)');
 		await page.locator('[data-content]').click({ position: { x: 400, y: 300 } });
@@ -75,7 +75,7 @@ test.describe('workspace keyboard', () => {
 	});
 
 	test('the wheel scrolls the list all the way down', async ({ page }) => {
-		// Con overscroll-behavior su un antenato che non scorre, Chromium si fermava al primo colpo.
+		// With overscroll-behavior on an ancestor that does not scroll, Chromium stopped at the first notch.
 		await page.setViewportSize({ width: 1440, height: 760 });
 		await open(page, '/en/projects/relay');
 		const list = page.locator('[data-sidebar-scroll]');
@@ -89,7 +89,7 @@ test.describe('workspace keyboard', () => {
 	});
 
 	test('the wheel over a command scrolls the page', async ({ page }) => {
-		// Con overscroll-behavior anche verticale sul blocco, la rotella lì sopra non scorreva.
+		// With vertical overscroll-behavior on the block too, the wheel over it did not scroll.
 		await page.setViewportSize({ width: 1440, height: 760 });
 		await open(page, '/en/projects/relay');
 		const box = (await page.locator('[data-copy] .overflow-x-auto').first().boundingBox())!;

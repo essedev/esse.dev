@@ -1,34 +1,36 @@
 import { dayKey } from './budget';
 
 /**
- * `draft_message`: l'agente scrive una bozza di messaggio a Simone, il visitatore la
- * rilegge, la corregge e la manda lui. Il modello non spedisce niente: l'invio parte solo
- * da un clic, dopo Turnstile, entro un tetto giornaliero per visitatore e per il sito, e
- * solo per una bozza che l'agente ha scritto davvero in questa conversazione.
+ * `draft_message`: the agent writes a draft message to Simone, the visitor rereads it,
+ * edits it and sends it. The model sends nothing: sending starts only from a click, after
+ * Turnstile, within a daily cap per visitor and for the site, and only for a draft the
+ * agent really wrote in this conversation.
  *
- * Qui la parte pura: limiti, validazione di quello che arriva dal browser, il testo
- * dell'email, i contatori del giorno.
+ * This is the pure part: limits, validation of what arrives from the browser, the email
+ * text, the daily counters.
  */
 
+/** Length limits of the draft fields and the daily send caps. */
 export const DRAFT_LIMITS = {
 	subjectChars: 120,
 	textChars: 4000,
 	contactChars: 200,
-	/** Invii al giorno per visitatore e per tutto il sito. */
+	/** Sends per day per visitor and for the whole site. */
 	visitorDaily: 3,
 	siteDaily: 30
 } as const;
 
 /**
- * La chiave pubblica di prova di Turnstile (passa sempre), documentata da Cloudflare: vale
- * finché non c'è `PUBLIC_TURNSTILE_SITE_KEY` alla build. In produzione serve quella vera,
- * con il suo `TURNSTILE_SECRET`.
+ * Cloudflare's documented Turnstile test site key (it always passes): used until
+ * `PUBLIC_TURNSTILE_SITE_KEY` is set at build time. Production needs the real one, with its
+ * `TURNSTILE_SECRET`.
  */
 export const TURNSTILE_TEST_SITE_KEY = '1x00000000000000000000AA';
 
-/** Il mittente sul dominio del sito; il destinatario è un secret (`MAIL_TO`). */
+/** The sender on the site's domain; the recipient is a secret (`MAIL_TO`). */
 export const MAIL_FROM = 'agente@esse.dev';
 
+/** A send request as it arrives from the browser, once validated. */
 export interface DraftSend {
 	draftId: string;
 	subject: string;
@@ -37,6 +39,7 @@ export interface DraftSend {
 	turnstile: string;
 }
 
+/** A validation failure of a send request. */
 export class DraftError extends Error {}
 
 const field = (value: unknown, name: string, max: number, optional = false): string => {
@@ -46,7 +49,7 @@ const field = (value: unknown, name: string, max: number, optional = false): str
 	return s;
 };
 
-/** Valida quello che il browser manda per un invio; lancia `DraftError`. */
+/** Validates what the browser sends for a send; throws `DraftError`. */
 export function parseSend(message: Record<string, unknown>): DraftSend {
 	return {
 		draftId: field(message.draftId, 'draftId', 200),
@@ -57,7 +60,7 @@ export function parseSend(message: Record<string, unknown>): DraftSend {
 	};
 }
 
-/** L'email che arriva a Simone: il messaggio del visitatore e come rispondergli. */
+/** The email Simone receives: the visitor's message and how to reply. */
 export function mailBody(send: DraftSend, lang: string): string {
 	return [
 		send.text,
@@ -69,12 +72,13 @@ export function mailBody(send: DraftSend, lang: string): string {
 	].join('\n');
 }
 
+/** A counter for one day. */
 export interface DailyCount {
 	day: string;
 	count: number;
 }
 
-/** Il contatore di oggi: quello salvato se è di oggi, altrimenti zero. */
+/** Today's counter: the saved one if it is from today, otherwise zero. */
 export function todayCount(saved: DailyCount | undefined, now: Date): DailyCount {
 	const day = dayKey(now);
 	return saved?.day === day ? saved : { day, count: 0 };

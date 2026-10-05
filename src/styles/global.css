@@ -2,41 +2,40 @@
 @plugin '@tailwindcss/typography';
 
 /*
- * Spazio di lavoro (concept A), con lo stile del concept B: lavanda accesa su nero appena
- * freddo, Departure Mono per tutto il monospace dell'interfaccia, un velo da monitor CRT
- * e la finestra con due card su schermo largo. Lavanda per identità e interazione, verde
- * solo per "vivo, riuscito"; profondità dal tono delle superfici. Tutto quello che è
- * colore, raggio, durata o effetto vive qui: un valore scritto a mano in un componente è
- * un errore.
+ * Workspace (concept A), with the style of concept B: bright lavender on slightly cold
+ * black, Departure Mono for all the interface monospace, a CRT monitor veil and the window
+ * with two cards on a wide screen. Lavender for identity and interaction, green only for
+ * "alive, succeeded"; depth from the tone of the surfaces. Everything that is a color,
+ * radius, duration or effect lives here: a hand-written value in a component is a mistake.
  */
 @theme {
 	--font-sans: var(--font-geist), ui-sans-serif, system-ui, sans-serif;
 	--font-mono: var(--font-departure), var(--font-geist-mono), ui-monospace, monospace;
-	/* Il codice vero (blocchi e inline nella prosa) resta in Geist Mono: si legge meglio. */
+	/* Real code (blocks and inline in prose) stays in Geist Mono: it reads better. */
 	--font-code: var(--font-geist-mono), ui-monospace, monospace;
 
-	/* Fuori dalla finestra, e la cornice attorno alle due card (solo su schermo largo). */
+	/* Outside the window, and the frame around the two cards (wide screens only). */
 	--color-desk: #050507;
 	--color-frame: #08080b;
 	--color-bg: #0a0a0d;
 	--color-panel: #0e0e12;
-	/* Il riquadro del contenuto: il colore medio della lista di vetro, misurato in pagina. */
+	/* The content pane: the average color of the glass list, measured on the page. */
 	--color-pane: #0f0e15;
-	/* Controlli e riquadri dentro le card: un velo chiaro e non un grigio pieno, così sul
-	   vetro schiariscono invece di fare da buco scuro. Su bg danno circa #151518 e #1b1b1f. */
+	/* Controls and panes inside the cards: a light veil and not a solid gray, so on glass they
+	   lighten instead of acting as a dark hole. On bg they give about #151518 and #1b1b1f. */
 	--color-surface: rgb(255 255 255 / 0.05);
 	--color-hover: rgb(255 255 255 / 0.08);
 	--color-line: #23232b;
 	--color-fg: #efedf5;
 	--color-text: #cbc9d4;
 	--color-muted: #9c9aa8;
-	/* Il grigio minimo per il testo: 4,5:1 sul vetro dove il bagliore dietro è più forte
-	   (misurato), 6:1 sul nero pieno. Sopra la soglia WCAG AA. */
+	/* The minimum gray for text: 4.5:1 on glass where the glow behind is strongest (measured),
+	   6:1 on solid black. Above the WCAG AA threshold. */
 	--color-subtle: #908e9b;
 	--color-accent: #b59cff;
 	--color-on-accent: #140c2b;
-	/* Il secondo colore, con un solo compito: "vivo, riuscito". LED in corso, l'agente che
-	   lavora, una copia o un invio andati a buon fine. Mai sul testo corrente. */
+	/* The second color, with a single job: "alive, succeeded". A running LED, the agent at work,
+	   a copy or a send that went through. Never on running text. */
 	--color-live: #7dff9b;
 	--color-danger: #f2857a;
 
@@ -53,7 +52,7 @@
 
 	--ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 
-	/* Il viola profondo del velo dietro la finestra, dopo la lavanda. */
+	/* The deep violet of the veil behind the window, after the lavender. */
 	--color-glow: #6e50ff;
 }
 
@@ -63,8 +62,8 @@
 		--pad: clamp(1.25rem, 3.5vw, 4.5rem);
 		color-scheme: dark;
 
-		/* Il velo CRT: alone da fosforo su titoli ed etichette, alone sull'accento, una
-		   frangia rosso-ciano sul testo, righe orizzontali e vignetta sopra a tutto. */
+		/* The CRT veil: phosphor glow on titles and labels, glow on the accent, a red-cyan fringe
+		   on text, horizontal lines and a vignette over everything. */
 		--crt-title-glow: 3.5px;
 		--crt-accent-glow: 5px;
 		--crt-aberration: 0.22px;
@@ -72,10 +71,10 @@
 		--crt-scan-gap: 3px;
 		--crt-vignette: 0.14;
 
-		/* Il vetro (concept C, variante B): finestra su uno sfondo colorato, cornice, lista e
-		   campo dell'agente traslucidi. `--wall` è l'intensità del bagliore dietro. */
+		/* The glass (concept C, variant B): a window on a colored wallpaper, frame, list and agent
+		   field translucent. `--wall` is the intensity of the glow behind. */
 		--wall: 0.2;
-		/* Un solo punto di luce, in alto a sinistra: si vede attraverso il vetro della lista. */
+		/* A single point of light, at the top left: it shows through the list's glass. */
 		--wall-light: 0.18;
 		--glass-blur: 32px;
 		--glass-sat: 110%;
@@ -84,12 +83,12 @@
 		--glass-shadow: 0 12px 32px rgb(0 0 0 / 0.35);
 	}
 
-	/* Niente rimbalzo elastico (macOS, iOS) né scroll che passa al contenitore sotto: la
-	   finestra resta ferma come un'app. `overscroll-none` sulla pagina e sui contenitori
-	   principali (contenuto, lista, menu); sui blocchi annidati che scorrono di lato (codice,
-	   tabelle) solo `overscroll-x-none`, che ferma lo swipe "indietro" del Mac e lascia
-	   passare la rotella verticale al contenuto. Mai su tutto: su un elemento che non
-	   scorre Chromium ci aggancia la rotella e la lista si ferma dopo il primo colpo. */
+	/* No elastic bounce (macOS, iOS) and no scroll that passes to the container below: the
+	   window stays still like an app. `overscroll-none` on the page and on the main containers
+	   (content, list, menu); on nested blocks that scroll sideways (code, tables) only
+	   `overscroll-x-none`, which stops the Mac "back" swipe and lets the vertical wheel pass to
+	   the content. Never on everything: on an element that does not scroll Chromium grabs the
+	   wheel there and the list stops after the first notch. */
 	html,
 	body {
 		overscroll-behavior: none;
@@ -128,8 +127,8 @@
 }
 
 @layer components {
-	/* Stato di un progetto come LED: pieno e acceso se è vivo (respira se in corso, fisso se
-	   mantenuto), vuoto se è un'idea. L'anello del suo colore si allarga all'hover della riga. */
+	/* Status of a project as an LED: filled and lit if alive (breathing if in progress, steady
+	   if maintained), empty if an idea. A ring of its color widens on row hover. */
 	.led {
 		--led-ring: var(--color-status-archived);
 		position: relative;
@@ -171,7 +170,7 @@
 		box-shadow: inset 0 0 0 1.5px var(--color-status-idea);
 	}
 
-	/* Tasto come nelle legende: mono piccolo, bordo leggero. */
+	/* Key as in the legends: small mono, light border. */
 	.kbd {
 		display: inline-flex;
 		align-items: center;
@@ -187,7 +186,7 @@
 		line-height: 1;
 	}
 
-	/* Etichetta mono maiuscola per i gruppi e i metadati. */
+	/* Uppercase mono label for groups and metadata. */
 	.label {
 		font-family: var(--font-mono);
 		font-size: 0.7rem;
@@ -219,7 +218,7 @@
 		background: var(--color-hover);
 	}
 
-	/* Link testuale: la sottolineatura si disegna da sinistra. */
+	/* Text link: the underline is drawn from the left. */
 	.ulink {
 		background: linear-gradient(var(--color-accent), var(--color-accent)) no-repeat left bottom / 0
 			1px;
@@ -244,8 +243,8 @@
 		animation: caret-blink 1.1s steps(1) infinite;
 	}
 
-	/* CRT: alone da fosforo, nel colore dell'accento, su titoli, etichette e su quello che
-	   ha `data-glow` (logo, percorso). */
+	/* CRT: phosphor glow, in the accent color, on titles, labels and whatever has `data-glow`
+	   (logo, path). */
 	h1,
 	.label,
 	[data-glow] {
@@ -254,7 +253,7 @@
 			0 0 calc(var(--crt-title-glow) / 4) color-mix(in srgb, var(--color-accent) 35%, transparent);
 	}
 
-	/* Il codice vero nella prosa resta in Geist Mono. */
+	/* Real code in prose stays in Geist Mono. */
 	.prose :where(code, pre, kbd) {
 		font-family: var(--font-code);
 	}
@@ -274,8 +273,8 @@
 	}
 }
 
-/* Il cassetto della lista su mobile. La visibilità cambia subito in apertura, così il focus
-   può entrarci nello stesso gesto, e solo a fine corsa in chiusura. */
+/* The list drawer on mobile. Visibility changes at once on opening, so focus can enter in
+   the same gesture, and only at the end of the travel on closing. */
 @media (width < 64rem) {
 	[data-drawer-panel],
 	[data-drawer-backdrop] {
@@ -302,12 +301,11 @@
 	}
 }
 
-/* Le icone in movimento (concept E): un'icona con `data-motion` fa il suo gesto, una volta,
-   quando il puntatore entra nel link, nel bottone o nel campo che la contiene; Adesso
-   ritraccia la linea finché resti sopra. Solo col puntatore: con la tastiera (j/k) e sul
-   touch non si muove nulla. Le parti si prendono per posizione nel tracciato di Lucide e i
-   tratti che si ridisegnano usano la loro lunghezza misurata (`--len`): aggiornando Lucide
-   vanno ricontrollate entrambe. */
+/* Moving icons (concept E): an icon with `data-motion` makes its gesture, once, when the
+   pointer enters the link, button or field that contains it; "adesso" (now) retraces the
+   line while you stay over it. Pointer only: with the keyboard (j/k) and on touch nothing
+   moves. Parts are picked by position in the Lucide path and redrawn strokes use their
+   measured length (`--len`): when Lucide is updated both need rechecking. */
 [data-motion] {
 	overflow: visible;
 }
@@ -315,7 +313,7 @@
 	transform-box: fill-box;
 	transform-origin: center;
 }
-/* Le frecce escono e rientrano: il riquadro dell'icona le taglia. */
+/* The arrows leave and come back in: the icon's box clips them. */
 [data-motion='arrow'],
 [data-motion='external'] {
 	overflow: hidden;
@@ -357,7 +355,7 @@
 	transition: translate 300ms var(--ease-out);
 }
 
-/* La spunta di una copia riuscita si disegna quando compare. */
+/* The check of a successful copy is drawn when it appears. */
 [data-motion='check'] > * {
 	--len: 22.63px;
 	stroke-dasharray: var(--len) var(--len);
@@ -463,10 +461,10 @@
 	}
 }
 
-/* Adesso a serpente: la linea si traccia da sinistra e si ritira nello stesso verso, poi
-   riparte. Il tracciato di Activity va da destra a sinistra, quindi si scopre dalla fine. Il
-   varco del tratteggio supera la linea di 4 unità e gli estremi stanno 2 unità oltre: così a
-   linea nascosta non resta il puntino della punta arrotondata. */
+/* "Now" as a snake: the line is traced from the left and withdrawn in the same direction,
+   then restarts. The Activity path runs right to left, so it is revealed from the end. The
+   dash gap exceeds the line by 4 units and the ends sit 2 units beyond: so with the line
+   hidden no dot of the rounded tip is left. */
 @keyframes icon-snake {
 	0% {
 		stroke-dashoffset: calc(var(--len) * -1 - 2px);
@@ -521,7 +519,7 @@
 	}
 }
 
-/* Il tratto si scopre dalla fine: le righe di FileText e la spunta vanno da destra a sinistra. */
+/* The stroke is revealed from the end: the FileText lines and the check run right to left. */
 @keyframes icon-write {
 	from {
 		stroke-dashoffset: calc(var(--len) * -1);
@@ -606,10 +604,10 @@
 	}
 }
 
-/* Lo sfondo dietro la finestra: un velo continuo in diagonale, da lavanda in alto a
-   sinistra a viola profondo, che sfuma nel nero in basso a destra, su una griglia fine, e
-   un solo punto di luce tenue in alto a sinistra. Più bagliori separati, attraverso il
-   vetro, diventavano macchie. */
+/* The wallpaper behind the window: a continuous diagonal veil, from lavender at the top left
+   to deep violet, fading to black at the bottom right, on a fine grid, and a single faint
+   point of light at the top left. Several separate glows, seen through the glass, turned
+   into blotches. */
 @utility wallpaper {
 	background:
 		repeating-linear-gradient(to right, rgb(255 255 255 / 0.03) 0 1px, transparent 1px 48px),
@@ -628,9 +626,9 @@
 		var(--color-desk);
 }
 
-/* Vetro: quello che sta dietro, sfocato e con i colori ripresi (senza saturazione sembra
-   plastica sporca), una velatura chiara e un bordo che prende luce in alto a sinistra. Il
-   colore di fondo lo mette l'elemento (`bg-panel/50`); serve una posizione per il bordo. */
+/* Glass: what is behind it, blurred and with colors lifted (without saturation it looks like
+   dirty plastic), a light tint and a border that catches light at the top left. The
+   background color is set by the element (`bg-panel/50`); the border needs a position. */
 @utility glass {
 	background-image: linear-gradient(
 		rgb(255 255 255 / var(--glass-tint)),
@@ -666,29 +664,28 @@
 	}
 }
 
-/* Alone sull'accento per le icone (filtro, così vale anche per gli SVG). */
+/* Glow on the accent for icons (a filter, so it works on SVGs too). */
 @utility glow {
 	filter: drop-shadow(0 0 calc(var(--crt-accent-glow) / 2) var(--color-accent));
 }
 
-/* La cornice e il riquadro del contenuto hanno il bordo del vetro ma non la sfocatura: in
-   Chromium un vetro che sfoca dentro un altro che sfoca smette di sfocare (il campo
-   dell'agente mostrava nitido il testo dietro). Sfocano solo i vetri che non ne contengono
-   altri: lista, campo dell'agente, menu, e lo strato dietro il contenuto. Fuori da @layer,
-   vince sull'utility. */
+/* The frame and the content pane have the glass border but not the blur: in Chromium a
+   blurring glass inside another blurring glass stops blurring (the agent field showed the
+   text behind it sharp). Only glasses that contain no others blur: list, agent field, menus,
+   and the layer behind the content. Outside @layer, it wins over the utility. */
 [data-workspace],
 [data-content] {
 	-webkit-backdrop-filter: none;
 	backdrop-filter: none;
 }
-/* Il riquadro sfoca lo stesso, da uno strato dietro il contenuto che non contiene altri vetri. */
+/* The pane blurs all the same, from a layer behind the content that contains no other glasses. */
 [data-pane-glass] {
 	-webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat));
 	backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat));
 }
 
-/* CRT su tutta la finestra: una frangia rosso-ciano sul testo, e sopra a tutto righe
-   orizzontali e vignetta. Il velo non riceve clic e non va in stampa. */
+/* CRT over the whole window: a red-cyan fringe on text, and over everything horizontal lines
+   and a vignette. The veil receives no clicks and does not print. */
 [data-workspace] {
 	text-shadow:
 		calc(-1 * var(--crt-aberration)) 0 rgb(255 40 140 / 0.45),

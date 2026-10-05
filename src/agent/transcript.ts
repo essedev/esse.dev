@@ -1,4 +1,4 @@
-// Adattato dall'esempio Pi harness di cloudflare/agents (MIT):
+// Adapted from the Pi harness example of cloudflare/agents (MIT):
 // https://github.com/cloudflare/agents/tree/main/examples/next/harnesses/pi
 
 import type {
@@ -44,7 +44,7 @@ export type PiMessage = {
 	readonly timestamp: number;
 	readonly stopReason?: string;
 	readonly error?: string;
-	/** Token e costo reale della risposta del modello (aggiunto per il sito). */
+	/** Tokens and real cost of the model's response (added for the site). */
 	readonly usage?: { readonly tokens: number; readonly usd: number };
 };
 
@@ -131,6 +131,7 @@ export function projectEntry(entry: EntryRecord): PiMessage | undefined {
 	return projectMessage(message, String(entry.id));
 }
 
+/** Projects a list of transcript entries, dropping those with no projection. */
 export function projectEntries(entries: readonly EntryRecord[]): PiMessage[] {
 	return entries.flatMap((entry) => {
 		const message = projectEntry(entry);

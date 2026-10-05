@@ -1,6 +1,6 @@
-# Header per gli asset statici serviti da Cloudflare (pagine prerenderizzate comprese).
-# La CSP principale la mette Astro come meta tag nelle pagine (security.csp in
-# astro.config.mjs); qui solo frame-ancestors, che nel meta tag è ignorato.
+# Headers for the static assets served by Cloudflare (prerendered pages included).
+# The main CSP is set by Astro as a meta tag in the pages (security.csp in
+# astro.config.mjs); here only frame-ancestors, which is ignored in the meta tag.
 /*
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin

@@ -8,9 +8,9 @@ import type { Translate } from '../../lib/site';
 interface Props {
 	lang: string;
 	path: string;
-	/** Percorso della pagina, dal generale al particolare. */
+	/** Path of the page, from general to specific. */
 	crumbs: { label: string; href?: string }[];
-	/** Il livello sopra: su mobile è il "‹ indietro" della barra, come in un'app. */
+	/** The level up: on mobile it is the bar's "‹ back", as in an app. */
 	up?: { label: string; href: string };
 	t: Translate;
 }
@@ -18,8 +18,9 @@ interface Props {
 const { lang, path, crumbs, up, t } = Astro.props;
 const slugMap = await getSlugMap();
 
-// La toolbar del riquadro: dice dove sei e porta le azioni sul documento. Ha il tono del
-// contenuto, perché ne fa parte, e resta ferma sopra lo scroll. Su mobile apre la lista.
+// The pane's toolbar: it says where you are and carries the document actions. It has the
+// tone of the content, because it is part of it, and stays fixed above the scroll. On mobile
+// it opens the list.
 ---
 
 <header class="flex h-12 shrink-0 items-center gap-2 pr-3 pl-2 lg:gap-3 lg:px-(--pad)">

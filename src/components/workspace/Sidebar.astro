@@ -8,7 +8,7 @@ import type { Translate } from '../../lib/site';
 interface Props {
 	lang: string;
 	nav: Nav;
-	/** Chiave della voce aperta (`progetti/relay`) o della sezione (`projects`). */
+	/** Key of the open row (`progetti/relay`) or of the section (`projects`). */
 	current: string;
 	social: { name: string; url: string }[];
 	t: Translate;
@@ -102,7 +102,7 @@ const keys: [string[], string][] = [
 		</p>
 	</div>
 
-	{/* Riga di stato: legenda dei LED, tasti, e per un attimo la conferma di un'azione. */}
+	{/* Status line: LED legend, keys, and for a moment the confirmation of an action. */}
 	<div
 		data-statusline
 		class="group/status text-subtle flex shrink-0 flex-col gap-2.5 px-5 pt-3 pb-4 font-mono text-[0.7rem] lg:px-6"
@@ -126,7 +126,7 @@ const keys: [string[], string][] = [
 				{t('statusIdea').toLowerCase()}
 			</span>
 		</div>
-		{/* I tasti servono solo con la tastiera: su mobile la riga non c'è. */}
+		{/* The keys matter only with a keyboard: on mobile the row is not there. */}
 		<div class="hidden h-[1.4rem] items-center lg:grid">
 			<ul
 				class="flex items-center gap-4 whitespace-nowrap transition-opacity duration-150 [grid-area:1/1] group-data-[flash]/status:opacity-0"

@@ -44,16 +44,16 @@
 		locale: string;
 	} = $props();
 
-	// Il render statico parte dai filtri di default (lista completa); quelli dell'URL si
-	// applicano al mount, così un link con ?tag=... apre la lista già filtrata.
+	// The static render starts from the default filters (full list); those from the URL are
+	// applied on mount, so a link with ?tag=... opens the list already filtered.
 	let filters: Filters = $state({ ...DEFAULT_FILTERS });
 	let mounted = $state(false);
 
 	onMount(() => {
 		filters = filtersFromSearch(window.location.search);
 		mounted = true;
-		// La ricerca testuale è quella unica del sito, in cima alla lista: qui arriva
-		// come evento, così il registro e la lista si filtrano insieme.
+		// The text search is the site's only one, at the top of the list: it arrives here as an
+		// event, so the registry and the list filter together.
 		const onSearch = (event: Event) => {
 			filters.query = (event as CustomEvent<string>).detail;
 		};

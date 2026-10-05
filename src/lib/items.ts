@@ -2,6 +2,12 @@ import type { Article, Project, ProjectStatus } from './content';
 import type { ListItem } from './listing';
 import type { UiKey } from './site';
 
+/**
+ * How content becomes list rows: the status label keys, the date format and the row of a
+ * project or an article. Used by the list pages and the workspace.
+ */
+
+/** The UI string key of each project status. */
 export const STATUS_KEY: Record<ProjectStatus, UiKey> = {
 	'in-progress': 'statusInProgress',
 	maintained: 'statusMaintained',
@@ -10,7 +16,7 @@ export const STATUS_KEY: Record<ProjectStatus, UiKey> = {
 	archived: 'statusArchived'
 };
 
-/** Data nella lingua della pagina: completa (`27 gen 2025`) o solo mese (`gen 2025`). */
+/** A date in the page language: full (`27 Jan 2025`) or month only (`Jan 2025`). */
 export function formatDate(iso: string, lang: string, style: 'full' | 'month' = 'full'): string {
 	const options: Intl.DateTimeFormatOptions =
 		style === 'month'
@@ -21,6 +27,7 @@ export function formatDate(iso: string, lang: string, style: 'full' | 'month' = 
 		.replace('.', '');
 }
 
+/** The list row of a project. */
 export function projectItem(p: Project, route: string, t: (k: UiKey) => string): ListItem {
 	return {
 		id: p.id,
@@ -35,6 +42,7 @@ export function projectItem(p: Project, route: string, t: (k: UiKey) => string):
 	};
 }
 
+/** The list row of an article. */
 export function articleItem(a: Article, route: string): ListItem {
 	return {
 		id: a.id,

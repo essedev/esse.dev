@@ -1,17 +1,17 @@
-# Copia in .dev.vars (escluso da git) per lo sviluppo locale. In produzione:
+# Copy to .dev.vars (excluded from git) for local development. In production:
 # pnpm exec wrangler secret put TYPESAFE_API_KEY
-# Solo se JEV_TRANSPORT è 'typesafe'.
+# Only if JEV_TRANSPORT is 'typesafe'.
 TYPESAFE_API_KEY=
 
-# Modello dell'agente e Jev via OpenRouter (chiave dedicata al sito, con limite mensile).
+# The agent's model and Jev via OpenRouter (a key dedicated to the site, with a monthly limit).
 OPENROUTER_API_KEY=
 
-# Tool sui repo (facoltativo): token GitHub fine-grained, "Public repositories (read-only)",
-# senza permessi. Senza token: 60 richieste l'ora per IP e search_code solo sui nomi dei file.
+# Repo tools (optional): fine-grained GitHub token, "Public repositories (read-only)", no
+# permissions. Without a token: 60 requests per hour per IP and search_code on file names only.
 GITHUB_TOKEN=
 
-# draft_message: Turnstile (in locale la chiave di prova di Cloudflare, che passa sempre;
-# in produzione quella del widget, con PUBLIC_TURNSTILE_SITE_KEY alla build) e l'indirizzo
-# verificato su cui arrivano i messaggi.
+# draft_message: Turnstile (locally Cloudflare's test key, which always passes; in
+# production the widget's, with PUBLIC_TURNSTILE_SITE_KEY at build time) and the verified
+# address the messages arrive at.
 TURNSTILE_SECRET=1x0000000000000000000000000000000AA
 MAIL_TO=

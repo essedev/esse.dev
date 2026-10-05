@@ -1,22 +1,22 @@
 /**
- * Favicon dal cursore lampeggiante del logo (concept D, proposta 7): un rettangolo lavanda
- * con un alone su fondo scuro. Si lancia a mano con `pnpm favicons` quando cambia il segno
- * o la palette, e i file prodotti si committano in `public/`.
+ * Favicons from the logo's blinking caret (concept D, proposal 7): a lavender rectangle
+ * with a glow on a dark background. Run by hand with `pnpm favicons` when the mark or the
+ * palette changes; the generated files are committed in `public/`.
  *
- * Due versioni dello stesso disegno: la tessera arrotondata per le schede del browser, e
- * quella a tutto campo per iOS e per il manifest (iOS arrotonda da sé, e le icone
- * "maskable" vogliono il fondo fino al bordo, con il segno dentro l'80% centrale).
+ * Two versions of the same drawing: the rounded tile for browser tabs, and the full-bleed
+ * one for iOS and the manifest (iOS rounds the corners itself, and "maskable" icons want the
+ * background to the edge, with the mark inside the central 80%).
  */
 import { Resvg } from '@resvg/resvg-js';
 import { writeFileSync } from 'node:fs';
 
-// I colori di `@theme` in `src/styles/global.css`.
+// The colors of `@theme` in `src/styles/global.css`.
 const BG = '#0a0a0d';
 const ACCENT = '#b59cff';
 
-// Lo stesso blocco del cursore del logo (`.caret` in global.css): proporzioni 1 a 2, angoli
-// vivi come i pixel di Departure Mono, alone sfumato. 8x16 sulla griglia di 32 diventa
-// esattamente 4x8 pixel nella favicon da 16, senza bordi sfocati.
+// The same block as the logo's caret (`.caret` in global.css): 1 to 2 proportions, sharp
+// corners like the pixels of Departure Mono, soft glow. 8x16 on the 32 grid becomes exactly
+// 4x8 pixels in the 16 favicon, with no blurred edges.
 const glow = `<filter id="glow" x="-1" y="-1" width="3" height="3"><feGaussianBlur stdDeviation="1.6"/></filter>`;
 const caret = `<rect x="12" y="8" width="8" height="16" fill="${ACCENT}" fill-opacity=".7" filter="url(#glow)"/><rect x="12" y="8" width="8" height="16" fill="${ACCENT}"/>`;
 
@@ -26,7 +26,7 @@ const full = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><defs>
 const png = (svg: string, size: number): Buffer =>
 	Buffer.from(new Resvg(svg, { fitTo: { mode: 'width', value: size } }).render().asPng());
 
-/** Un ICO con dentro dei PNG (ammesso da Windows Vista in poi): header, indice, immagini. */
+/** An ICO holding PNGs (allowed from Windows Vista on): header, index, images. */
 function ico(images: { size: number; data: Buffer }[]): Buffer {
 	const header = Buffer.alloc(6);
 	header.writeUInt16LE(0, 0);

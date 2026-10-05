@@ -1,39 +1,44 @@
 import type { Language, NavigationConfig } from './config';
 
 /**
- * Logica di routing i18n, pura e senza I/O: la usano pagine, catch-all dei redirect,
- * SEO e selettore lingua. Terminologia: la "route" è il segmento localizzato nell'URL
- * (`progetti`), la "sezione" è la chiave logica (`projects` | `articles`).
+ * i18n routing logic, pure and free of I/O: used by pages, the redirect catch-all, SEO and
+ * the language switcher. Terminology: the "route" is the localized segment in the URL
+ * (`progetti`), the "section" is the logical key (`projects` | `articles`).
  */
 
+/** The logical sections of the site. */
 export const SECTIONS = ['projects', 'articles', 'method', 'now', 'about', 'agent'] as const;
+/** One of `SECTIONS`. */
 export type Section = (typeof SECTIONS)[number];
 
-/** Sezioni con pagine di dettaglio, cioè con uno slug per voce. */
+/** Sections with detail pages, that is with a slug per entry. */
 export const DETAIL_SECTIONS = ['projects', 'articles', 'method'] as const;
+/** One of `DETAIL_SECTIONS`. */
 export type DetailSection = (typeof DETAIL_SECTIONS)[number];
 
+/** Whether a section has detail pages. */
 export function isDetailSection(section: Section): section is DetailSection {
 	return (DETAIL_SECTIONS as readonly string[]).includes(section);
 }
 
 /**
- * Route di versioni precedenti del sito che vanno ancora reindirizzate: link già
- * condivisi o indicizzati non devono finire su un 404. Valgono in ogni lingua.
+ * Routes of earlier versions of the site that must still redirect: links already shared or
+ * indexed must not end in a 404. They apply in every language.
  */
 export const LEGACY_ROUTES: Record<string, Section> = {
 	blog: 'articles',
 	informazioni: 'about'
 };
 
-/** id contenuto -> lingua -> slug, per sezione con dettaglio. */
+/** Content id -> language -> slug, per section with detail pages. */
 export type SlugMap = Record<DetailSection, Record<string, Record<string, string>>>;
 
+/** Whether `lang` is one of the configured languages. */
 export function isValidLanguage(lang: string | undefined, languages: Language[]): boolean {
 	return !!lang && languages.some((l) => l.code === lang);
 }
 
-/** Prima lingua supportata nell'header Accept-Language per q-value, altrimenti fallback. */
+/** The first supported language in the Accept-Language header by q-value, else the fallback. */
 export function preferredLanguage(
 	acceptLanguage: string | null | undefined,
 	supported: string[],
@@ -53,7 +58,7 @@ export function preferredLanguage(
 	return ranked.find((l) => supported.includes(l.base))?.base ?? fallback;
 }
 
-/** Sezione di una route localizzata in una lingua (`progetti`, `it` -> `projects`), o null. */
+/** The section of a localized route in a language (`progetti`, `it` -> `projects`), or null. */
 export function sectionOf(
 	route: string | undefined,
 	lang: string,
@@ -65,8 +70,8 @@ export function sectionOf(
 }
 
 /**
- * Cerca la route in tutte le lingue: sezione e lingua in cui esiste, o null. Una route
- * legacy torna senza lingua, perché valeva per tutte.
+ * Looks the route up in every language: the section and the language it exists in, or null.
+ * A legacy route returns without a language, because it applied to all.
  */
 export function findSectionAnyLang(
 	route: string,
@@ -80,7 +85,7 @@ export function findSectionAnyLang(
 	return legacy ? { section: legacy, lang: null } : null;
 }
 
-/** Route localizzata di una sezione nella lingua target, o null. */
+/** The localized route of a section in the target language, or null. */
 export function routeOf(
 	section: Section,
 	lang: string,
@@ -89,7 +94,7 @@ export function routeOf(
 	return navigation[lang]?.[section] ?? null;
 }
 
-/** Slug di un contenuto nella lingua target, partendo da uno slug in qualunque lingua. */
+/** The slug of an item in the target language, starting from a slug in any language. */
 export function translateSlug(
 	slug: string,
 	section: DetailSection,
@@ -103,8 +108,9 @@ export function translateSlug(
 }
 
 /**
- * URL equivalente nella lingua target (selettore lingua e hreflang). Se il contenuto non
- * esiste nella lingua target ripiega sulla sezione, se la route è sconosciuta sulla home.
+ * The equivalent URL in the target language (language switcher and hreflang). If the item
+ * does not exist in the target language it falls back to the section, and to the home if the
+ * route is unknown.
  */
 export function getLanguageUrl(params: {
 	pathname: string;
@@ -130,10 +136,10 @@ export function getLanguageUrl(params: {
 }
 
 /**
- * Redirect verso l'URL canonico per un path che non corrisponde a nessuna pagina, o
- * null se non c'è un canonico (allora è un 404). Copre: lingua sconosciuta, route di
- * un'altra lingua, slug di un'altra lingua, route senza lingua. Il risultato non ha mai
- * lo slash finale, così basta un solo hop.
+ * The redirect to the canonical URL for a path that matches no page, or null if there is no
+ * canonical (then it is a 404). It covers: unknown language, route of another language,
+ * slug of another language, route without a language. The result never has a trailing
+ * slash, so a single hop is enough.
  */
 export function resolveRedirect(
 	pathname: string,
@@ -150,8 +156,8 @@ export function resolveRedirect(
 
 	const path = (...parts: string[]) => '/' + parts.join('/');
 
-	// Un solo segmento: una lingua è già una pagina; una route va sotto la sua lingua;
-	// tutto il resto finisce sulla home di default.
+	// A single segment: a language is already a page; a route goes under its language;
+	// everything else ends on the default home.
 	if (segments.length === 1) {
 		const [only] = segments;
 		if (isValidLanguage(only, languages)) return null;

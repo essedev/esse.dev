@@ -30,8 +30,8 @@ const lead = projects.find((p) => p.id === featured.projects[0]) ?? projects[0];
 const email = contact.data.links.find((l) => l.url.startsWith('mailto:'))?.url.slice(7);
 const social = contact.data.links.filter((l) => /^https?:\/\//.test(l.url));
 
-// Tre voci, una per domanda di chi arriva: chiedere (l'agente), cosa costruisco, come
-// lavoro. La domanda d'esempio apre l'agente con il campo già scritto, senza inviarla.
+// Three entries, one per question of whoever arrives: ask (the agent), what I build, how I
+// work. The example question opens the agent with the field already filled in, without sending it.
 const ask = t('agentAsk4');
 const starts = [
 	{

@@ -4,9 +4,9 @@ import { getArticles, getMethod, getNow, getPage, getProjects } from '../../lib/
 import { getSite } from '../../lib/site';
 import type { SiteDoc } from '../../agent/site-index';
 
-// Indice del sito per i tool dell'agente: ogni pagina con i suoi dati e il testo in
-// Markdown, in tutte le lingue. Si genera alla build dalle stesse collection delle pagine,
-// così l'agente legge esattamente quello che il sito pubblica, e niente altro.
+// The site index for the agent's tools: every page with its data and its Markdown text, in
+// all languages. It is generated at build time from the same collections as the pages, so
+// the agent reads exactly what the site publishes, and nothing else.
 export const GET: APIRoute = async () => {
 	const docs: SiteDoc[] = [];
 	for (const lang of languageCodes) {

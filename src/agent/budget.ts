@@ -1,24 +1,26 @@
 /**
- * Limite di spesa dell'agente, in costo reale: si scala quello che pi-ai calcola per ogni
- * risposta (token per prezzo del modello), non una stima e non il numero di messaggi.
- * Chi fa domande leggere ne fa tante, chi fa lavorare l'agente meno.
+ * Spending limits of the agent, in real cost: what pi-ai computes for each response (tokens
+ * times model price) is deducted, not an estimate and not a message count. Light questions
+ * are cheap, so a visitor can ask many; heavy work uses the budget faster.
  */
 
-/** Dollari al giorno per visitatore e per tutto il sito. */
+/** Daily dollars per visitor. */
 export const VISITOR_DAILY_USD = 0.1;
+
+/** Daily dollars for the whole site. */
 export const SITE_DAILY_USD = 2;
 
 /**
- * Dollari al giorno per IP. Il visitatore è un id scelto dal browser: cambiandolo si aggira
- * il suo tetto, l'IP no. Cinque visitatori, perché uffici e reti mobili mettono tante
- * persone dietro lo stesso indirizzo.
+ * Daily dollars per IP. The visitor is an id chosen by the browser, so changing it bypasses
+ * its cap; the IP cannot be changed that way. Set to five visitors, because offices and
+ * mobile networks put many people behind one address.
  */
 export const IP_DAILY_USD = 0.5;
 
 /**
- * L'impronta di un IP per il giorno: SHA-256 di giorno e indirizzo, 16 caratteri. L'IP non
- * si salva in chiaro, e il giorno nel calcolo rende le impronte di giorni diversi
- * scollegate tra loro.
+ * The fingerprint of an IP for the day: SHA-256 of day and address, 16 characters. The IP is
+ * never stored in the clear, and the day in the input makes fingerprints of different days
+ * unlinkable.
  */
 export async function ipFingerprint(ip: string, now: Date): Promise<string> {
 	const data = new TextEncoder().encode(`${dayKey(now)}:${ip}`);
@@ -27,47 +29,49 @@ export async function ipFingerprint(ip: string, now: Date): Promise<string> {
 }
 
 /**
- * In pagina il budget si conta in crediti, non in centesimi: chi visita ragiona in domande.
- * Un credito è un centesimo di centesimo, quindi 1.000 al giorno; una domanda leggera ne
- * usa una decina. I conti restano in dollari, i crediti sono solo il modo di mostrarli.
+ * The page shows the budget in credits, not cents: visitors think in questions. A credit is
+ * a hundredth of a cent, so 1,000 per day; a light question uses about ten. Accounting stays
+ * in dollars, credits are only how they are shown.
  */
 export const CREDIT_USD = 0.0001;
 
-/** Crediti interi; una spesa vera non vale mai zero crediti. */
+/** Whole credits; a real spend is never worth zero credits. */
 export function credits(usd: number): number {
 	if (usd <= 0) return 0;
 	return Math.max(1, Math.round(usd / CREDIT_USD));
 }
 
-/** Sotto questa quota del budget la pagina mostra quanti crediti restano. */
+/** Below this share of the budget the page shows how many credits are left. */
 export const SHOW_BUDGET_BELOW = 0.3;
 
-/** La mezzanotte UTC dopo `now`, quando il budget riparte. */
+/** The UTC midnight after `now`, when the budget resets. */
 export function nextReset(now: Date): Date {
 	return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1));
 }
 
-/** La giornata del limite, in UTC: `2026-10-03`. */
+/** The day of the limit, in UTC: `2026-10-03`. */
 export function dayKey(now: Date): string {
 	return now.toISOString().slice(0, 10);
 }
 
+/** The amount spent on one day. */
 export interface Spend {
 	day: string;
 	usd: number;
 }
 
-/** La spesa di oggi: quella salvata se è di oggi, altrimenti si riparte da zero. */
+/** Today's spend: the saved one if it is from today, otherwise zero. */
 export function today(saved: Spend | undefined, now: Date): Spend {
 	const day = dayKey(now);
 	return saved?.day === day ? saved : { day, usd: 0 };
 }
 
+/** What is left of `limit` after `spend`, never below zero. */
 export function remaining(spend: Spend, limit: number): number {
 	return Math.max(0, limit - spend.usd);
 }
 
-/** Il costo di una risposta: la somma dei messaggi del modello prodotti dalla richiesta. */
+/** The cost of a response: the sum over the model messages the request produced. */
 export function costOf(messages: readonly { usage?: { cost?: { total?: number } } }[]): number {
 	return messages.reduce((sum, m) => sum + (m.usage?.cost?.total ?? 0), 0);
 }

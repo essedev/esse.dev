@@ -14,24 +14,24 @@ interface Props {
 	og?: string;
 	jsonLd?: Record<string, unknown>[];
 	noindex?: boolean;
-	/** Voce aperta (`projects/relay`), sezione (`projects`) o `home`. */
+	/** The open row (`projects/relay`), section (`projects`) or `home`. */
 	current: string;
-	/** Percorso della pagina; la penultima voce con `href` è il livello sopra. */
+	/** Path of the page; the last-but-one entry with an `href` is the level up. */
 	crumbs: { label: string; href?: string }[];
-	/** `home` è la radice: nessun livello sopra, la toolbar mostra il logo al posto di "‹". */
+	/** `home` is the root: no level up, the toolbar shows the logo in place of "‹". */
 	view?: 'home' | 'detail';
 }
 
 const { lang, path, current, crumbs, view = 'detail', ...head } = Astro.props;
 const t = await translator(lang);
 const nav = await getNav(lang, t);
-// I profili esterni, gli stessi della pagina contatti, in fondo alla lista.
+// The external profiles, the same as the contact page, at the bottom of the list.
 const social = (await getPage('contact', lang)).data.links.filter((l) =>
 	/^https?:\/\//.test(l.url)
 );
 
-// Il livello sopra, unica fonte per Esc, il breadcrumb e il "‹" della toolbar su mobile:
-// la voce precedente del percorso, oppure la home per una sezione.
+// The level up, the single source for Esc, the breadcrumb and the toolbar's "‹" on mobile:
+// the previous entry of the path, or the home for a section.
 const home = { label: 'esse.dev', href: `/${lang}` };
 const parentCrumb = crumbs.at(-2);
 const up =
@@ -41,10 +41,10 @@ const up =
 			? { label: parentCrumb.label, href: parentCrumb.href }
 			: home;
 
-// Una finestra staccata dai bordi su ogni schermo, appoggiata su uno sfondo colorato che si
-// vede attraverso la cornice e la lista, di vetro. Su schermo largo dentro ci sono due
-// card, la lista (panel) e il riquadro del contenuto (bg); su mobile solo il riquadro, e la
-// lista entra da sinistra come una card sopra di esso (il cassetto, `data-drawer`).
+// A window detached from the edges on every screen, resting on a colored wallpaper that
+// shows through the glass frame and list. On a wide screen it holds two cards, the list
+// (panel) and the content pane (bg); on mobile only the pane, and the list slides in from
+// the left as a card over it (the drawer, `data-drawer`).
 ---
 
 <Layout lang={lang} path={path} {...head}>
@@ -63,8 +63,8 @@ const up =
 				data-content
 				class="glass relative isolate flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden rounded-[var(--radius-card)] lg:order-2"
 			>
-				{/* Il vetro del riquadro è uno strato dietro il contenuto, non il riquadro stesso:
-				    così il campo dell'agente e i menu, che stanno nel contenuto, sfocano ancora. */}
+				{/* The pane's glass is a layer behind the content, not the pane itself: so the agent
+				    field and the menus, which are in the content, still blur. */}
 				<div data-pane-glass class="bg-pane/75 pointer-events-none absolute inset-0 -z-10"></div>
 				<Toolbar lang={lang} path={path} crumbs={crumbs} up={up} t={t}>
 					<slot name="actions" slot="actions" />

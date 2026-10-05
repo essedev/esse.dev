@@ -2,7 +2,7 @@ import type { APIRoute } from 'astro';
 import { defaultLang, languageCodes } from '../lib/config';
 import { preferredLanguage } from '../lib/i18n';
 
-// La root sceglie la lingua dal browser (Accept-Language), con fallback inglese.
+// The root picks the language from the browser (Accept-Language), with an English fallback.
 export const prerender = false;
 
 export const GET: APIRoute = ({ request }) => {

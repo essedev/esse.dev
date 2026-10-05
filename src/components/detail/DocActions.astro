@@ -3,14 +3,14 @@ import { ArrowUpRight, Link2 } from '@lucide/astro';
 import type { Translate } from '../../lib/site';
 
 interface Props {
-	/** Link esterno principale (repo o sito). */
+	/** The main external link (repo or site). */
 	external?: { href: string; label: string };
 	t: Translate;
 }
 
 const { external, t } = Astro.props;
 
-// Azioni sul documento aperto, nella toolbar del riquadro: su mobile solo le icone.
+// Actions on the open document, in the pane's toolbar: on mobile only the icons.
 ---
 
 <button

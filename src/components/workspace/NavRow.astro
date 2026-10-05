@@ -5,15 +5,15 @@ import type { NavItem } from '../../lib/workspace';
 interface Props {
 	item: NavItem;
 	current: string;
-	/** Riga "tutti i N": porta alla raccolta intera, sparisce mentre si cerca. */
+	/** The "all N" row: leads to the whole collection, disappears while searching. */
 	more?: boolean;
 }
 
 const { item, current, more = false } = Astro.props;
 const isCurrent = item.key === current;
 
-// Una voce della lista. Il segno a sinistra sta in una colonna fissa, così i titoli si
-// allineano qualunque sia: LED (stato), indice (metodo), icona (pagine e scritti), freccia (tutti).
+// A list row. The mark on the left sits in a fixed column, so titles align whatever it is:
+// LED (status), index (method), icon (pages and writing), arrow (all).
 ---
 
 <li

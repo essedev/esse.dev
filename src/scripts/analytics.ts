@@ -1,9 +1,9 @@
 /**
- * Umami, caricato dopo la pagina e solo sul dominio di produzione. Uno script esterno
- * con `defer` nel head tratteneva l'evento di load finché il dominio delle statistiche
- * non rispondeva: con la rete lenta la pagina risultava "in caricamento" (e gli E2E
- * andavano in timeout). Così non pesa sul caricamento e non parte in sviluppo,
- * anteprima e test. Il dominio è ammesso dalla CSP in astro.config.mjs.
+ * Umami, loaded after the page and only on the production domain. An external script with
+ * `defer` in the head held back the load event until the analytics domain answered: on a
+ * slow network the page looked "loading" (and the E2E tests timed out). This way it does
+ * not weigh on loading and does not start in development, preview and tests. The domain is
+ * allowed by the CSP in `astro.config.mjs`.
  */
 const PRODUCTION_HOST = 'esse.dev';
 

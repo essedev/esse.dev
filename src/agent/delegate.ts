@@ -1,20 +1,23 @@
 import { costOf } from './budget';
 
 /**
- * `delegate`: 2 o 3 sotto-agenti in parallelo, ognuno una conversazione di pi posseduta
- * dalla chiamata al tool (lo schema dei sotto-agenti del README di pi-durable): fermare il
- * padre ferma i figli, e una ripresa dopo un crash ritrova i figli e le loro richieste.
- * I figli hanno solo i tool di sola lettura, niente `delegate` né `run_code`.
+ * `delegate`: two or three sub-agents in parallel, each a pi conversation owned by the tool
+ * call (the sub-agent pattern from the pi-durable README): stopping the parent stops the
+ * children, and a resume after a crash finds the children and their requests again.
+ * Children get read-only tools only, no `delegate` and no `run_code`.
  *
- * Qui la parte pura: dal transcript di un figlio, la risposta, le chiamate fatte, token e
- * costo, che il padre riceve e la pagina mostra.
+ * This is the pure part: from a child's transcript, the answer, the calls made, tokens and
+ * cost, which the parent receives and the page shows.
  */
 
+/** How many sub-agents one call may start, and the length limits of their titles and tasks. */
 export const DELEGATE_LIMITS = { min: 2, max: 3, titleChars: 60, taskChars: 1000 } as const;
 
+/** The system prompt of a child; an LLM reads it, so it stays as written. */
 export const CHILD_INSTRUCTIONS =
 	'You are a sub-agent working on one part of a larger question for the main agent, not for the visitor. You have a small token budget: go straight to what matters, prefer search_code and the README to reading whole files, and read at most three files. Then answer with the findings only: concrete, under 150 words, with the paths or GitHub links you used. No greetings, no questions back.';
 
+/** What a child hands back to the parent. */
 export interface ChildReport {
 	title: string;
 	answer: string;
@@ -31,7 +34,7 @@ type ModelMessage = {
 	usage?: { totalTokens?: number; cost?: { total?: number } };
 };
 
-/** Il resoconto di un figlio dalle sue voci, in ordine: l'ultima risposta di testo è quella. */
+/** A child's report from its transcript entries, in order: the last text answer is the answer. */
 export function childReport(
 	title: string,
 	entries: readonly { model?: readonly unknown[] }[]

@@ -54,7 +54,7 @@ describe('fileSlice', () => {
 	});
 });
 
-/** Un finto GitHub che conta le chiamate: basta per cache, errori e rami del codice. */
+/** A fake GitHub that counts calls: enough for cache, errors and the code branches. */
 function fakeGitHub(routes: Record<string, () => Response>) {
 	const calls: string[] = [];
 	const fetcher = (async (input: RequestInfo | URL) => {

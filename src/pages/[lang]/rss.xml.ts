@@ -7,7 +7,7 @@ import { getSite } from '../../lib/site';
 export const getStaticPaths: GetStaticPaths = () =>
 	languageCodes.map((lang) => ({ params: { lang } }));
 
-// Feed RSS degli articoli per lingua (/en/rss.xml, /it/rss.xml), dal più recente.
+// RSS feed of the articles per language (/en/rss.xml, /it/rss.xml), most recent first.
 export const GET: APIRoute = async ({ params, site }) => {
 	const lang = params.lang!;
 	const text = await getSite(lang);
