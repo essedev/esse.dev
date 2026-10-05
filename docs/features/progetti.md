@@ -50,7 +50,7 @@ Deciso con Simone il 2026-10-04 e applicato nel Ciclo 21: ogni voce ha la sua sc
 nuove in prima stesura.
 
 **Vetrina** (6): Relay, Nexus, pgbee, Zeno, mcpbelt, Portsage. Zeno è privato: scheda
-senza link al repo. Gli assistenti personali sono le iterazioni di Nexus (`previously`):
+senza link al repo. Le iterazioni di Nexus (`previously`) sono Plannerinator, poi gli assistenti personali:
 Verbosa, NanoClaw, Life Terminal, Almanac, Nexus in Elixir, Bob, che si è fermato il
 giorno in cui è ripartito Nexus.
 

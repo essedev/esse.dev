@@ -11,6 +11,9 @@ tags:
   - "MCP"
 why: "Ogni cosa è un'entità definita da uno schema, e un tipo nuovo non richiede codice. L'agente che opera ha privilegi minimi, quello che modifica il sistema lavora isolato e passa da un'approvazione umana."
 previously:
+  - name: "Plannerinator"
+    year: 2024
+    note: "Task, progetti, note, eventi e collezioni in un'app sola in SvelteKit, riscritta in Next.js un anno dopo: il primo tentativo di un posto unico per tutto, ancora senza assistente."
   - name: "Verbosa"
     year: 2025
     note: "Una chat multi-provider in Flutter e Go, con lo streaming e il modello scelto messaggio per messaggio: il mio primo client verso i modelli."

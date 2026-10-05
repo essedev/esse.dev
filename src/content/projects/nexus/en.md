@@ -11,6 +11,9 @@ tags:
   - "MCP"
 why: "Everything is an entity defined by a schema, and a new type needs no code. The agent that operates has minimal privileges, the one that changes the system works in isolation and goes through human approval."
 previously:
+  - name: "Plannerinator"
+    year: 2024
+    note: "Tasks, projects, notes, events and collections in one SvelteKit app, rewritten in Next.js a year later: the first attempt at a single place for everything, still without an assistant."
   - name: "Verbosa"
     year: 2025
     note: "A multi-provider chat in Flutter and Go, with streaming and the model picked message by message: my first client for talking to models."
