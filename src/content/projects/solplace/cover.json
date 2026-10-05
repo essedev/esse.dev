@@ -1,0 +1,11 @@
+{
+	"title": "SolPlace",
+	"tagline": "A world map on Solana where tokens fight over territory",
+	"accent": "#a78bfa",
+	"prompt": "anchor deploy --provider.cluster devnet",
+	"panel": {
+		"kind": "image",
+		"image": "cover-panel.png"
+	},
+	"out": "cover.webp"
+}
