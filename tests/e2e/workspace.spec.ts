@@ -92,11 +92,16 @@ test.describe('workspace keyboard', () => {
 		// With vertical overscroll-behavior on the block too, the wheel over it did not scroll.
 		await page.setViewportSize({ width: 1440, height: 760 });
 		await open(page, '/en/projects/relay');
-		const box = (await page.locator('[data-copy] .overflow-x-auto').first().boundingBox())!;
+		// The cover pushes the command below the fold: bring it into view, then measure from there.
+		const command = page.locator('[data-copy] .overflow-x-auto').first();
+		await command.scrollIntoViewIfNeeded();
+		const main = page.locator('[data-main-scroll]');
+		const start = await main.evaluate((el) => el.scrollTop);
+		const box = (await command.boundingBox())!;
 		await page.mouse.move(box.x + 20, box.y + box.height / 2);
 		for (let i = 0; i < 3; i++) await page.mouse.wheel(0, 100);
 		await expect
-			.poll(() => page.locator('[data-main-scroll]').evaluate((el) => el.scrollTop))
+			.poll(async () => (await main.evaluate((el) => el.scrollTop)) - start)
 			.toBeGreaterThan(100);
 	});
 

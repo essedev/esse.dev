@@ -228,3 +228,18 @@ deleted from the working tree; git history keeps it if it comes back. A project 
 only out of the portfolio still goes to `published: false`, as #6 said. Rejected:
 `published: false` for everything (the name stays readable), rewriting history (the repo
 is already public and cloned, a rewrite removes nothing).
+
+## #22 - Every project page opens with a cover, and every project has a logo
+
+**Status:** active (Cycle 22)
+
+The page opens with a 21:9 cover (16:9 on mobile) and the logo rises over its bottom edge,
+from concept F, variant B. The cover is a real screenshot from demo data, a designed mockup
+rendered by `scripts/render-cover.ts`, or a generated one (accent veil and Lucide icon), so
+no page opens on a hole. A project's own logo when it has one, otherwise a designed tile
+from `scripts/render-logo.ts`; in the list it takes the LED's place, with the LED on its
+corner so the status stays. Files sit in the project's folder and go through `image()`, so a
+wrong path fails the build. A logo is content, not a UI icon, so it does not break "icons
+only Lucide". Rejected: logos of the technologies (a wall of badges, colors against the
+lavender), the cover only where a screenshot exists (half the pages would open bare),
+screenshots in the side column (variant C, the page loses its opening).

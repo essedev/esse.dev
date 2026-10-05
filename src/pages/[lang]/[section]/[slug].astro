@@ -4,6 +4,7 @@ import { ArrowUpRight } from '@lucide/astro';
 import EntryRow from '../../../components/EntryRow.svelte';
 import CopyCommand from '../../../components/detail/CopyCommand.astro';
 import DetailHeader from '../../../components/detail/DetailHeader.astro';
+import ProjectCover from '../../../components/detail/ProjectCover.astro';
 import DocActions from '../../../components/detail/DocActions.astro';
 import Pager from '../../../components/detail/Pager.astro';
 import Page from '../../../components/Page.astro';
@@ -137,9 +138,15 @@ const host = (url: string) => url.replace(/^https?:\/\/(www\.)?/, '').replace(/\
 >
 	<DocActions slot="actions" external={external} t={t} />
 	<Page>
-		<div class="grid gap-x-[clamp(2rem,5vw,6rem)] gap-y-10 xl:grid-cols-[minmax(0,1fr)_minmax(14rem,19rem)]">
+		{project && <ProjectCover meta={project.meta} alt={title} />}
+		<div
+			class:list={[
+				'grid gap-x-[clamp(2rem,5vw,6rem)] gap-y-10 xl:grid-cols-[minmax(0,1fr)_minmax(14rem,19rem)]',
+				project && 'mt-8'
+			]}
+		>
 			<article class="min-w-0">
-				<DetailHeader title={title}>
+				<DetailHeader title={title} logo={project?.meta.logo} overlap={!!project}>
 					{project && (
 						<p class="text-muted flex items-center gap-2.5 font-mono text-[0.8125rem]">
 							<span class="led" data-status={project.meta.status} />

@@ -14,21 +14,44 @@ const textId = ({ entry }: { entry: string }) => entry.replace(/\.md$/, '');
 
 export const projectStatus = z.enum(['in-progress', 'maintained', 'completed', 'idea', 'archived']);
 
+/** The icons a generated cover can use: a closed set, so each one is a static import. */
+export const coverIcon = z.enum([
+	'box',
+	'plug',
+	'brain',
+	'server',
+	'radio',
+	'terminal',
+	'database'
+]);
+
 const projects = defineCollection({
 	loader: glob({ pattern: '*/meta.json', base: './src/content/projects', generateId: folderId }),
-	schema: z.object({
-		status: projectStatus,
-		published: z.boolean(),
-		created: isoDate,
-		updated: isoDate,
-		/** Public code: the repo. Without it the project is private. */
-		repo: z.url().optional(),
-		/** The project online, if it exists. */
-		site: z.url().optional(),
-		license: z.string().optional(),
-		/** Install command to copy, if the project is installable. */
-		install: z.string().optional()
-	})
+	schema: ({ image }) =>
+		z.object({
+			status: projectStatus,
+			published: z.boolean(),
+			created: isoDate,
+			updated: isoDate,
+			/** Public code: the repo. Without it the project is private. */
+			repo: z.url().optional(),
+			/** The project online, if it exists. */
+			site: z.url().optional(),
+			license: z.string().optional(),
+			/** Install command to copy, if the project is installable. */
+			install: z.string().optional(),
+			/** The project's own logo, a file in its folder: content, not a UI icon. */
+			logo: image().optional(),
+			/**
+			 * The image the page opens with, a screenshot or a designed mockup, cropped to 21:9
+			 * (16:9 on mobile) around `focus`. Without it the cover is generated from `icon`.
+			 */
+			cover: z
+				.object({ src: image(), focus: z.enum(['top', 'center', 'bottom']).default('center') })
+				.optional(),
+			/** The Lucide icon of the generated cover and of the list row, when there is no logo. */
+			icon: coverIcon.optional()
+		})
 });
 
 const projectTexts = defineCollection({

@@ -1,3 +1,4 @@
+import type { ImageMetadata } from 'astro';
 import { featured, navigation } from './config';
 import { getArticles, getMethod, getNow, getProjects, type ProjectStatus } from './content';
 import { orderFeaturedFirst } from './featured';
@@ -21,6 +22,8 @@ export interface NavItem {
 	/** Short text on the right: year, date. */
 	meta?: string;
 	status?: ProjectStatus;
+	/** The project's logo, shown in place of the LED with the LED on its corner. */
+	logo?: ImageMetadata;
 	/** Order number shown in place of the LED (method). */
 	index?: string;
 	/** Icon in place of the LED, for rows without a status: a page or a piece of writing. */
@@ -122,6 +125,7 @@ export async function getNav(lang: string, t: Translate): Promise<Nav> {
 					title: p.text.title,
 					meta: p.meta.created.slice(0, 4),
 					status: p.meta.status,
+					logo: p.meta.logo,
 					search: `${p.text.title} ${p.text.tags.join(' ')} ${statusLabel(p.meta.status)}`,
 					rest: !showcase.has(p.id)
 				})),

@@ -98,3 +98,25 @@ on disk (the library accepts them without going through search): the open films 
 Blender Foundation (Big Buck Bunny, Sintel, Tears of Steel, Spring) and the public-domain
 ones from the Internet Archive. No poster of commercial films in frame, not even from the
 metadata.
+
+## Images
+
+Every project page opens with a cover and has a logo beside the title and in the list row.
+Both are files in the project's folder, declared in `meta.json` (`logo`, `cover` with its
+`focus`) and validated by `image()`: a wrong path fails the build.
+
+- **Cover, three sources, in this order.** A real screenshot of the interface; a designed
+  mockup for projects with nothing to show (CLI, backend, firmware, idea), rendered with
+  `scripts/render-cover.ts` from a `cover.json` kept next to it; the generated cover
+  (accent veil and the Lucide `icon` from `meta.json`) when there is neither.
+- **Screenshots only from demo data.** No real personal data, no client or company names,
+  no copyrighted posters or third-party content, no paths of private repos. A screenshot is
+  looked at before it is saved. Dark interfaces where the project has a dark mode.
+- **Cover file**: WebP, at least 1600 px wide, at most 300 KB; it is cropped to 21:9 on
+  desktop and 16:9 on mobile around `focus` (`top`, `center`, `bottom`).
+- **Logo file**: square, without margin around the mark (an app icon with its built-in
+  padding becomes an empty tile at 20 px). SVG when it exists, otherwise PNG of at least
+  256 px. A project's own logo when it has one; otherwise a designed mark: a rounded tile
+  tinted with the project's accent and one Lucide glyph, never a template favicon (Vite,
+  Astro) and never the logo of a third party.
+- **Weight**: no source file over 300 KB. The pixel-art archive cost 80 MB of history.

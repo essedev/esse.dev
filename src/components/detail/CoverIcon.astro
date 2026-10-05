@@ -1,0 +1,23 @@
+---
+import { Box, Brain, Database, Plug, Radio, Server, SquareTerminal } from '@lucide/astro';
+import type { CoverIcon } from '../../lib/content';
+
+/** The Lucide icon of a generated cover, by name: a closed set of static imports. */
+interface Props {
+	name: CoverIcon;
+	class?: string;
+}
+
+const { name, class: className } = Astro.props;
+const Icon = {
+	box: Box,
+	plug: Plug,
+	brain: Brain,
+	server: Server,
+	radio: Radio,
+	terminal: SquareTerminal,
+	database: Database
+}[name];
+---
+
+<Icon class={className} />

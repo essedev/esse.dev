@@ -127,7 +127,9 @@ mobile drawer (`data-drawer`) in `src/scripts/workspace.ts`.
 - Departure Mono for all the interface mono (code in prose stays Geist Mono), CRT veil with
   the values in `--crt-*`.
 - No maximum width on the content: the column and the fluid size set the measure.
-- Never native controls (`ui/Select.svelte`). Icons only Lucide.
+- Never native controls (`ui/Select.svelte`). Icons only Lucide. A project's logo is content,
+  not a UI icon: it lives in the project's folder (DECISIONS #22, rules in
+  `docs/features/progetti.md`, Images).
 - Icons in motion: `data-motion="<name>"` on the Lucide icon, gesture on hover of the link,
   button or field that contains it (pointer only), CSS in `global.css`. The parts are taken
   by position in the path and the redrawn strokes have a measured length (`--len`): when

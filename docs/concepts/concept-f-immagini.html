@@ -1,0 +1,252 @@
+<!doctype html>
+<html lang="it">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Concept F - Immagini dei progetti</title>
+		<!--
+			Concept F: dove vanno logo e screenshot dei progetti, con segnaposto. Stesso vetro del
+			sito (lista e riquadro uguali, panel al 48%), token copiati da @theme.
+			A  sobria: logo piccolo nella riga e accanto al titolo, screenshot nel corpo come figure.
+			B  copertina: la scheda si apre con lo screenshot principale in una finestra, il logo
+			   sopra; nella lista il logo prende il posto del LED.
+			C  vetrina: nella lista i progetti in vetrina hanno una miniatura; nella scheda gli
+			   screenshot stanno in colonna a destra, sotto i metadati.
+			In tutte: chi non ha un logo ha la copertina generata (colore + icona Lucide), e l'OG
+			del progetto porta il logo. Il pannello in basso mostra le due cose.
+		-->
+		<style>
+			@font-face { font-family: 'Geist'; font-weight: 400; src: url(https://cdn.jsdelivr.net/fontsource/fonts/geist@latest/latin-400-normal.woff2) format('woff2'); }
+			@font-face { font-family: 'Geist'; font-weight: 500; src: url(https://cdn.jsdelivr.net/fontsource/fonts/geist@latest/latin-500-normal.woff2) format('woff2'); }
+			@font-face { font-family: 'Departure Mono'; src: url(https://cdn.jsdelivr.net/gh/rektdeckard/departure-mono@main/public/assets/DepartureMono-Regular.woff2) format('woff2'); }
+
+			:root {
+				--desk: #050507;
+				--panel: rgb(14 14 18 / 0.48);
+				--surface: rgb(255 255 255 / 0.05);
+				--surface-60: rgb(255 255 255 / 0.03);
+				--line: #23232b;
+				--fg: #efedf5;
+				--text: #cbc9d4;
+				--muted: #9c9aa8;
+				--subtle: #908e9b;
+				--accent: #b59cff;
+				--live: #7dff9b;
+				--radius-card: 11px;
+				--radius-panel: 10px;
+				--radius-control: 6px;
+				--sans: 'Geist', ui-sans-serif, system-ui, sans-serif;
+				--mono: 'Departure Mono', ui-monospace, monospace;
+				color-scheme: dark;
+			}
+			* { box-sizing: border-box; }
+			html, body { margin: 0; height: 100%; }
+			body {
+				background:
+					radial-gradient(22% 26% at 14% 6%, rgb(181 156 255 / 0.16), transparent),
+					linear-gradient(135deg, rgb(110 80 255 / 0.1), transparent 60%),
+					var(--desk);
+				color: var(--text);
+				font-family: var(--sans);
+				-webkit-font-smoothing: antialiased;
+				display: flex;
+				flex-direction: column;
+			}
+			button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
+
+			/* Barra del concept */
+			.bar { display: flex; align-items: center; gap: 12px; padding: 10px 20px; font-family: var(--mono); font-size: 12px; color: var(--muted); }
+			.bar button { padding: 5px 10px; border-radius: var(--radius-control); background: var(--surface-60); }
+			.bar button[aria-pressed='true'] { background: var(--surface); color: var(--fg); }
+			.bar .note { margin-left: auto; color: var(--subtle); }
+
+			/* Finestra: lista e riquadro, stesso vetro */
+			.win { flex: 1; min-height: 0; display: grid; grid-template-columns: 320px minmax(0, 1fr); gap: 8px; padding: 0 20px 20px; }
+			.glass {
+				background: var(--panel);
+				backdrop-filter: blur(32px) saturate(1.1);
+				border-radius: var(--radius-card);
+				box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.09), inset 0 -1px 0 rgb(255 255 255 / 0.024), 0 12px 32px rgb(0 0 0 / 0.35);
+				overflow: hidden;
+			}
+			.side { padding: 16px 12px; display: flex; flex-direction: column; gap: 4px; overflow: auto; }
+			.label { font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--subtle); padding: 14px 10px 8px; display: flex; justify-content: space-between; }
+			.row { display: flex; align-items: center; gap: 10px; padding: 7px 10px; border-radius: var(--radius-control); font-size: 15px; color: var(--text); }
+			.row:hover { background: var(--surface-60); }
+			.row.on { background: var(--surface); color: var(--fg); }
+			.row .year { margin-left: auto; font-family: var(--mono); font-size: 11px; color: var(--subtle); }
+			.led { width: 7px; height: 7px; border-radius: 50%; background: var(--live); flex: none; margin: 0 4px; }
+			.logo { flex: none; display: grid; place-items: center; border-radius: 5px; }
+			.logo svg { width: 100%; height: 100%; }
+			.row .logo { width: 18px; height: 18px; }
+			.row .thumb { display: none; }
+
+			.pane { display: flex; flex-direction: column; overflow: auto; }
+			.toolbar { display: flex; align-items: center; gap: 8px; padding: 14px 28px; font-family: var(--mono); font-size: 12px; color: var(--muted); }
+			.toolbar b { color: var(--fg); font-weight: 400; }
+			.doc { display: grid; grid-template-columns: minmax(0, 1fr) 280px; gap: 56px; padding: 28px 48px 64px; }
+			h1 { margin: 0; font-size: 52px; font-weight: 500; letter-spacing: -0.02em; color: var(--fg); display: flex; align-items: center; gap: 18px; }
+			h1 .logo { width: 48px; height: 48px; border-radius: 11px; }
+			.meta { margin: 14px 0 22px; font-family: var(--mono); font-size: 12px; color: var(--muted); display: flex; gap: 10px; align-items: center; }
+			.excerpt { font-size: 20px; line-height: 1.55; color: var(--fg); margin: 0 0 24px; max-width: 46ch; }
+			p { font-size: 17px; line-height: 1.75; margin: 0 0 18px; }
+			h2 { font-size: 24px; font-weight: 500; color: var(--fg); margin: 36px 0 14px; }
+			.facts dt { font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--subtle); margin-top: 18px; }
+			.facts dd { margin: 6px 0 0; font-family: var(--mono); font-size: 14px; color: var(--text); }
+
+			/* Screenshot segnaposto: una finestra con la sua barra */
+			.shot { margin: 0 0 22px; }
+			.shot .frame { border-radius: var(--radius-panel); background: var(--surface-60); box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.06); overflow: hidden; }
+			.shot .chrome { height: 26px; display: flex; align-items: center; gap: 6px; padding: 0 10px; background: rgb(255 255 255 / 0.03); }
+			.shot .chrome i { width: 8px; height: 8px; border-radius: 50%; background: rgb(255 255 255 / 0.12); }
+			.shot .scene { aspect-ratio: 16 / 10; display: grid; grid-template-columns: 22% 1fr; gap: 10px; padding: 12px; }
+			.shot .scene span { border-radius: 4px; background: rgb(255 255 255 / 0.04); }
+			.shot .scene .main { display: grid; grid-template-rows: auto 1fr 1fr; gap: 10px; }
+			.shot .scene .main span:first-child { height: 18px; width: 40%; background: rgb(181 156 255 / 0.18); }
+			.shot .tag { position: relative; }
+			.shot .tag::after { content: attr(data-size); position: absolute; right: 10px; bottom: 8px; font-family: var(--mono); font-size: 10px; color: var(--subtle); }
+			figcaption { margin-top: 8px; font-family: var(--mono); font-size: 12px; color: var(--muted); }
+			.thumbs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 22px; }
+			.thumbs .shot { margin: 0; }
+			.thumbs .shot .chrome { height: 14px; }
+			.thumbs .shot .chrome i { width: 5px; height: 5px; }
+
+			/* Variante A: default sopra. La copertina e la colonna screenshot non ci sono. */
+			.cover, .side-shots { display: none; }
+
+			/* Variante B: copertina in cima, logo che la sovrappone; nella lista logo al posto del LED */
+			body[data-v='B'] .row .led { display: none; }
+			body[data-v='B'] .cover { display: block; margin: 0 48px; position: relative; }
+			body[data-v='B'] .cover .shot { margin: 0; }
+			body[data-v='B'] .cover .shot .scene { aspect-ratio: 21 / 9; }
+			body[data-v='B'] .doc { padding-top: 0; }
+			body[data-v='B'] h1 { margin-top: -34px; position: relative; }
+			body[data-v='B'] h1 .logo { width: 72px; height: 72px; border-radius: 16px; box-shadow: 0 0 0 4px #121117, 0 10px 30px rgb(0 0 0 / 0.5); }
+			body[data-v='B'] .body-shot { display: none; }
+
+			/* Variante C: miniature nella lista della vetrina, screenshot nella colonna a destra */
+			body[data-v='C'] .row.feat { flex-wrap: wrap; }
+			body[data-v='C'] .row.feat .thumb { display: block; flex-basis: 100%; height: 52px; margin-top: 6px; border-radius: 5px; background: linear-gradient(135deg, rgb(181 156 255 / 0.14), rgb(255 255 255 / 0.03)); box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.05); }
+			body[data-v='C'] .body-shot, body[data-v='C'] .body-thumbs { display: none; }
+			body[data-v='C'] .side-shots { display: block; margin-top: 26px; }
+			body[data-v='C'] .side-shots .shot { margin-bottom: 10px; }
+
+			/* Pannello in basso: copertina generata e OG */
+			.extra { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; padding: 0 48px 48px; }
+			.extra h3 { font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--subtle); font-weight: 400; margin: 0 0 10px; }
+			.gen { display: flex; gap: 12px; }
+			.gen .tile { flex: 1; aspect-ratio: 16 / 10; border-radius: var(--radius-panel); display: grid; place-items: center; box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.06); }
+			.gen .tile svg { width: 34px; height: 34px; }
+			.og { aspect-ratio: 1200 / 630; border-radius: var(--radius-panel); background: #0a0a0d; box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.08); padding: 6% 7%; display: flex; flex-direction: column; justify-content: space-between; font-family: var(--mono); }
+			.og .top { color: var(--muted); font-size: 12px; }
+			.og .top b { color: var(--accent); font-weight: 400; }
+			.og .t { display: flex; align-items: center; gap: 14px; color: var(--fg); font-size: 34px; }
+			.og .t .logo { width: 44px; height: 44px; border-radius: 10px; }
+			.og .bot { color: var(--subtle); font-size: 11px; }
+		</style>
+	</head>
+	<body data-v="A">
+		<div class="bar">
+			<span>concept F, immagini</span>
+			<button aria-pressed="true" data-set="A">A sobria</button>
+			<button aria-pressed="false" data-set="B">B copertina</button>
+			<button aria-pressed="false" data-set="C">C vetrina</button>
+			<span class="note">segnaposto: logo e screenshot finti, misure vere</span>
+		</div>
+
+		<div class="win">
+			<nav class="glass side">
+				<div class="row">Benvenuto</div>
+				<div class="row">Chi sono</div>
+				<div class="label"><span>Progetti</span><span>24</span></div>
+				<div class="row feat on"><i class="led"></i><span class="logo" data-logo="relay"></span>Relay<span class="year">2026</span><span class="thumb"></span></div>
+				<div class="row feat"><i class="led"></i><span class="logo" data-logo="nexus"></span>Nexus<span class="year">2026</span><span class="thumb"></span></div>
+				<div class="row feat"><i class="led"></i><span class="logo" data-logo="pgbee"></span>pgbee<span class="year">2026</span><span class="thumb"></span></div>
+				<div class="row feat"><i class="led"></i><span class="logo" data-logo="gen-violet"></span>Zeno<span class="year">2026</span><span class="thumb"></span></div>
+				<div class="row feat"><i class="led"></i><span class="logo" data-logo="gen-green"></span>mcpbelt<span class="year">2026</span><span class="thumb"></span></div>
+				<div class="row feat"><i class="led"></i><span class="logo" data-logo="portsage"></span>Portsage<span class="year">2026</span><span class="thumb"></span></div>
+				<div class="label"><span>Metodo</span><span>4</span></div>
+				<div class="row">01 Architettura prima del codice</div>
+				<div class="row">02 Il contesto è il lavoro</div>
+			</nav>
+
+			<main class="glass pane">
+				<div class="toolbar">~ / progetti / <b>relay</b></div>
+				<div class="cover">
+					<figure class="shot"><div class="frame tag" data-size="hero 2100x900"><div class="chrome"><i></i><i></i><i></i></div><div class="scene"><span></span><div class="main"><span></span><span></span><span></span></div></div></div></figure>
+				</div>
+				<div class="doc">
+					<article>
+						<h1><span class="logo" data-logo="relay"></span>Relay</h1>
+						<div class="meta"><i class="led"></i>in corso · 2026 · in vetrina</div>
+						<p class="excerpt">Terminale nativo per macOS pensato per far girare molti coding agent in parallelo, con lo stato di ogni agente letto dagli hook.</p>
+						<figure class="shot body-shot"><div class="frame tag" data-size="1600x1000"><div class="chrome"><i></i><i></i><i></i></div><div class="scene"><span></span><div class="main"><span></span><span></span><span></span></div></div></div><figcaption>La dashboard: ogni agente con il suo stato, letto dagli hook.</figcaption></figure>
+						<p>Lavoro con cinque o sei sessioni di Claude Code e Codex aperte insieme, su progetti diversi. In un terminale normale, capire quale agente aspetta una risposta vuol dire passare scheda per scheda.</p>
+						<h2>Come funziona</h2>
+						<div class="thumbs body-thumbs">
+							<figure class="shot"><div class="frame"><div class="chrome"><i></i><i></i><i></i></div><div class="scene"><span></span><div class="main"><span></span><span></span><span></span></div></div></div></figure>
+							<figure class="shot"><div class="frame"><div class="chrome"><i></i><i></i><i></i></div><div class="scene"><span></span><div class="main"><span></span><span></span><span></span></div></div></div></figure>
+							<figure class="shot"><div class="frame"><div class="chrome"><i></i><i></i><i></i></div><div class="scene"><span></span><div class="main"><span></span><span></span><span></span></div></div></div></figure>
+						</div>
+						<p>Lo stato di ogni agente (in corso, in attesa, errore, finito) arriva dagli hook di Claude Code e Codex, non dal parsing dell'output.</p>
+					</article>
+					<aside>
+						<dl class="facts">
+							<dt>Stato</dt><dd>in corso</dd>
+							<dt>Codice</dt><dd>github.com/essedev/relay</dd>
+							<dt>Licenza</dt><dd>MIT</dd>
+							<dt>Stack</dt><dd>Swift · AppKit · macOS</dd>
+						</dl>
+						<div class="side-shots">
+							<figure class="shot"><div class="frame tag" data-size="1600x1000"><div class="chrome"><i></i><i></i><i></i></div><div class="scene"><span></span><div class="main"><span></span><span></span><span></span></div></div></div><figcaption>Dashboard</figcaption></figure>
+							<figure class="shot"><div class="frame"><div class="chrome"><i></i><i></i><i></i></div><div class="scene"><span></span><div class="main"><span></span><span></span><span></span></div></div></div><figcaption>Guida</figcaption></figure>
+						</div>
+					</aside>
+				</div>
+				<div class="extra">
+					<div>
+						<h3>Senza logo: copertina generata (colore + icona Lucide)</h3>
+						<div class="gen">
+							<div class="tile" style="background: linear-gradient(135deg, rgb(181 156 255 / 0.18), rgb(181 156 255 / 0.04))" data-icon="server"></div>
+							<div class="tile" style="background: linear-gradient(135deg, rgb(125 255 155 / 0.14), rgb(125 255 155 / 0.03))" data-icon="box"></div>
+							<div class="tile" style="background: linear-gradient(135deg, rgb(255 190 120 / 0.14), rgb(255 190 120 / 0.03))" data-icon="radio"></div>
+						</div>
+					</div>
+					<div>
+						<h3>OG del progetto con il logo</h3>
+						<div class="og">
+							<div class="top"><b>$</b> open esse.dev/en/projects/relay</div>
+							<div class="t"><span class="logo" data-logo="relay"></span>Relay_</div>
+							<div class="bot">Simone Salerno · Lead AI Engineer</div>
+						</div>
+					</div>
+				</div>
+			</main>
+		</div>
+
+		<script>
+			// Logo segnaposto: forme semplici, non i loghi veri.
+			const logos = {
+				relay: '<svg viewBox="0 0 24 24"><rect width="24" height="24" rx="6" fill="#1d1a2b"/><path d="M6 8l4 4-4 4M12 16h6" stroke="#b59cff" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+				nexus: '<svg viewBox="0 0 24 24"><rect width="24" height="24" rx="6" fill="#16202a"/><circle cx="12" cy="12" r="3" fill="#7fd1ff"/><circle cx="6" cy="7" r="1.6" fill="#7fd1ff"/><circle cx="18" cy="7" r="1.6" fill="#7fd1ff"/><circle cx="12" cy="19" r="1.6" fill="#7fd1ff"/></svg>',
+				pgbee: '<svg viewBox="0 0 24 24"><rect width="24" height="24" rx="6" fill="#2a2414"/><path d="M12 5l6 3.5v7L12 19l-6-3.5v-7z" fill="#ffd166"/></svg>',
+				portsage: '<svg viewBox="0 0 24 24"><rect width="24" height="24" rx="6" fill="#14261d"/><rect x="6" y="7" width="12" height="10" rx="2" fill="none" stroke="#7dff9b" stroke-width="2"/><path d="M9 11h6" stroke="#7dff9b" stroke-width="2"/></svg>',
+				'gen-violet': '<svg viewBox="0 0 24 24"><rect width="24" height="24" rx="6" fill="rgb(181 156 255 / 0.16)"/><path d="M7 9h10M7 13h10M7 17h6" stroke="#b59cff" stroke-width="1.6" stroke-linecap="round"/></svg>',
+				'gen-green': '<svg viewBox="0 0 24 24"><rect width="24" height="24" rx="6" fill="rgb(125 255 155 / 0.12)"/><path d="M8 8h8v8H8z" stroke="#7dff9b" stroke-width="1.6" fill="none"/></svg>'
+			};
+			const icons = {
+				server: '<svg viewBox="0 0 24 24" fill="none" stroke="#b59cff" stroke-width="1.6"><rect x="3" y="4" width="18" height="7" rx="2"/><rect x="3" y="13" width="18" height="7" rx="2"/><path d="M7 7.5h.01M7 16.5h.01"/></svg>',
+				box: '<svg viewBox="0 0 24 24" fill="none" stroke="#7dff9b" stroke-width="1.6"><path d="M21 8l-9-5-9 5 9 5 9-5zM3 8v8l9 5 9-5V8M12 13v8"/></svg>',
+				radio: '<svg viewBox="0 0 24 24" fill="none" stroke="#ffbe78" stroke-width="1.6"><circle cx="12" cy="12" r="2"/><path d="M16.2 7.8a6 6 0 010 8.4M7.8 16.2a6 6 0 010-8.4M19.1 4.9a10 10 0 010 14.2M4.9 19.1a10 10 0 010-14.2"/></svg>'
+			};
+			document.querySelectorAll('[data-logo]').forEach((el) => (el.innerHTML = logos[el.dataset.logo]));
+			document.querySelectorAll('[data-icon]').forEach((el) => (el.innerHTML = icons[el.dataset.icon]));
+			document.querySelectorAll('[data-set]').forEach((b) =>
+				b.addEventListener('click', () => {
+					document.body.dataset.v = b.dataset.set;
+					document.querySelectorAll('[data-set]').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+				})
+			);
+		</script>
+	</body>
+</html>

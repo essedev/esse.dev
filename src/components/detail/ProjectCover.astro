@@ -1,0 +1,50 @@
+---
+import { Image } from 'astro:assets';
+import type { ProjectMeta } from '../../lib/content';
+import CoverIcon from './CoverIcon.astro';
+
+/**
+ * The image a project page opens with: the cover file (screenshot or designed mockup) cropped
+ * to 21:9, 16:9 on mobile, or a generated one (veil, glow and the project's Lucide icon). It
+ * is the page's LCP element, so it loads eagerly and with high priority.
+ */
+interface Props {
+	meta: ProjectMeta;
+	alt: string;
+}
+
+const { meta, alt } = Astro.props;
+const cover = meta.cover;
+const focus = { top: 'object-top', center: 'object-center', bottom: 'object-bottom' }[
+	cover?.focus ?? 'center'
+];
+const frame = 'aspect-[16/9] w-full rounded-[var(--radius-panel)] sm:aspect-[21/9]';
+---
+
+{cover ? (
+	cover.src.format === 'svg' ? (
+		<img
+			src={cover.src.src}
+			width={cover.src.width}
+			height={cover.src.height}
+			alt={alt}
+			fetchpriority="high"
+			class:list={[frame, 'cover-frame object-cover', focus]}
+		/>
+	) : (
+		<Image
+			src={cover.src}
+			alt={alt}
+			layout="full-width"
+			widths={[800, 1200, 1600, 2400]}
+			sizes="(min-width: 1024px) 75vw, 100vw"
+			loading="eager"
+			fetchpriority="high"
+			class:list={[frame, 'cover-frame object-cover', focus]}
+		/>
+	)
+) : (
+	<div class:list={[frame, 'cover-generated grid place-items-center']} role="img" aria-label={alt}>
+		<CoverIcon name={meta.icon ?? 'box'} class="text-accent glow size-12 opacity-80" />
+	</div>
+)}

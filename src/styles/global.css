@@ -137,6 +137,13 @@
 		border-radius: 999px;
 		background: var(--color-status-archived);
 	}
+	/* The LED inside the corner of a project logo in the list: smaller, lifted from the logo
+	   by a shadow and not by a ring, which read as a border. */
+	.led-badge {
+		width: 6px;
+		height: 6px;
+		filter: drop-shadow(0 0 1.5px rgb(0 0 0 / 0.9));
+	}
 	.led::after {
 		content: '';
 		position: absolute;
@@ -716,4 +723,20 @@ body::after {
 		animation: none !important;
 		transition: none !important;
 	}
+}
+
+/* Project covers. A file (screenshot or mockup) gets a hairline so a dark image does not
+   melt into the glass; a generated one is a veil with the accent's glow from a corner. */
+.cover-frame {
+	box-shadow: 0 0 0 1px rgb(255 255 255 / 0.06);
+}
+.cover-generated {
+	background:
+		radial-gradient(
+			60% 90% at 85% 0%,
+			color-mix(in srgb, var(--color-accent) 16%, transparent),
+			transparent
+		),
+		linear-gradient(var(--color-surface), var(--color-surface));
+	box-shadow: 0 0 0 1px rgb(255 255 255 / 0.06);
 }

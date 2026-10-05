@@ -17,6 +17,8 @@ export type ProjectMeta = CollectionEntry<'projects'>['data'];
 export type ArticleMeta = CollectionEntry<'articles'>['data'];
 /** The status of a project. */
 export type ProjectStatus = ProjectMeta['status'];
+/** The Lucide icon of a generated cover. */
+export type CoverIcon = NonNullable<ProjectMeta['icon']>;
 
 /** A project in one language: meta, text and the raw entry. */
 export interface Project {

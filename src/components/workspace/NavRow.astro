@@ -1,6 +1,7 @@
 ---
 import { Activity, ArrowRight, FileText, House, BotMessageSquare, User } from '@lucide/astro';
 import type { NavItem } from '../../lib/workspace';
+import ProjectLogo from '../ProjectLogo.astro';
 
 interface Props {
 	item: NavItem;
@@ -13,7 +14,8 @@ const { item, current, more = false } = Astro.props;
 const isCurrent = item.key === current;
 
 // A list row. The mark on the left sits in a fixed column, so titles align whatever it is:
-// LED (status), index (method), icon (pages and writing), arrow (all).
+// LED (status) or the project's logo with the LED on its corner, index (method), icon (pages
+// and writing), arrow (all).
 ---
 
 <li
@@ -47,6 +49,8 @@ const isCurrent = item.key === current;
 				<BotMessageSquare data-motion="bot" class="text-accent glow size-3.5" />
 			) : item.icon === 'text' ? (
 				<FileText data-motion="file" class="text-subtle size-3.5" />
+			) : item.logo ? (
+				<ProjectLogo logo={item.logo} size="row" status={item.status} />
 			) : (
 				<span class="led" data-status={item.status} />
 			)}
