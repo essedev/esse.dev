@@ -315,10 +315,9 @@
 	transform-box: fill-box;
 	transform-origin: center;
 }
-/* Le frecce escono e rientrano, la linea di Adesso scorre: il riquadro dell'icona le taglia. */
+/* Le frecce escono e rientrano: il riquadro dell'icona le taglia. */
 [data-motion='arrow'],
-[data-motion='external'],
-[data-motion='activity'] {
+[data-motion='external'] {
 	overflow: hidden;
 }
 [data-motion='house'],
@@ -332,10 +331,8 @@
 [data-motion='bot'] > :first-child {
 	transform-origin: 100% 100%;
 }
-/* Adesso è scritta in NavRow con quattro copie del tracciato in fila: a riposo si vede solo
-   la seconda, quella al suo posto. */
-[data-motion='activity'] path:not(:nth-child(2)) {
-	opacity: 0;
+[data-motion='activity'] {
+	--len: 49.21px;
 }
 [data-motion='file'] > :nth-child(3) {
 	--len: 2px;
@@ -377,14 +374,9 @@
 	:is(a, button, label):hover [data-motion='user'] > :nth-child(2) {
 		animation: icon-nod 700ms var(--ease-out) 250ms;
 	}
-	:is(a, button, label):hover [data-motion='activity'] {
-		mask-image: linear-gradient(to right, transparent, black 30%, black 70%, transparent);
-	}
-	:is(a, button, label):hover [data-motion='activity'] path {
-		opacity: 1;
-	}
-	:is(a, button, label):hover [data-motion='activity'] > g {
-		animation: icon-scroll 0.9s linear infinite;
+	:is(a, button, label):hover [data-motion='activity'] > * {
+		stroke-dasharray: var(--len) calc(var(--len) + 4px);
+		animation: icon-redraw 1.1s infinite;
 	}
 	:is(a, button, label):hover [data-motion='bot'] {
 		animation: icon-tilt 800ms var(--ease-out);
@@ -471,11 +463,26 @@
 	}
 }
 
-/* La striscia di un monitor: il tracciato scorre a sinistra di un battito (20 unità, la
-   distanza fra le copie), così il loop si richiude su sé stesso. */
-@keyframes icon-scroll {
-	to {
-		transform: translateX(-20px);
+/* Adesso si ridisegna in loop: la linea si traccia da sinistra, resta, sfuma e riparte. Il
+   tracciato di Activity va da destra a sinistra, quindi si scopre dalla fine. Il varco del
+   tratteggio supera la linea di 4 unità e la partenza è 2 unità oltre la fine: così a linea
+   nascosta non resta il puntino della punta arrotondata. */
+@keyframes icon-redraw {
+	0% {
+		stroke-dashoffset: calc(var(--len) * -1 - 2px);
+		opacity: 1;
+		animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1);
+	}
+	50% {
+		stroke-dashoffset: 0;
+	}
+	75% {
+		opacity: 1;
+		animation-timing-function: ease-in;
+	}
+	100% {
+		stroke-dashoffset: 0;
+		opacity: 0;
 	}
 }
 
