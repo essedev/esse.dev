@@ -1,6 +1,6 @@
 ---
-slug: "printor"
-title: "printor"
+slug: "edge-lab"
+title: "Edge Lab"
 excerpt: "Un laboratorio di ricerca quant su una domanda sola: dove un LLM dà un vantaggio vero nel trading, se lo dà. Con un harness costruito per non ingannarmi."
 tags:
   - "Python"
@@ -11,7 +11,7 @@ tags:
 why: "Il test che conta è sul cutoff del modello: sugli eventi successivi al suo addestramento il vantaggio sparisce, quindi buona parte del risultato era leakage."
 ---
 
-Un LLM non sa prevedere i prezzi, e i dati che hanno tutti sono già prezzati. Quello che sa fare meglio della media è leggere: trasformare testo che quasi nessuno legge davvero (filing alla SEC, trascrizioni delle call sugli utili, notizie, analisi nei forum) in un segnale strutturato e datato. printor è il laboratorio per capire se lì c'è un vantaggio, e dove.
+Un LLM non sa prevedere i prezzi, e i dati che hanno tutti sono già prezzati. Quello che sa fare meglio della media è leggere: trasformare testo che quasi nessuno legge davvero (filing alla SEC, trascrizioni delle call sugli utili, notizie, analisi nei forum) in un segnale strutturato e datato. Edge Lab è il laboratorio per capire se lì c'è un vantaggio, e dove.
 
 Il modello ha due ruoli. Il primo è leggere ed estrarre il segnale. Il secondo è fare da critico: proporre ipotesi, scrivere i backtest, cercare i bias. Ma il rigore non lo dà la fiducia nel modello, lo impone l'harness: ogni dato porta la data in cui era davvero disponibile, i costi si stimano titolo per titolo dallo spread, ogni strategia si confronta con il buy and hold, con una baseline casuale e con uno Sharpe corretto per il numero di tentativi, e le ipotesi si scrivono prima di guardare i risultati.
 
