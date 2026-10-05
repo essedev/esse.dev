@@ -10,7 +10,7 @@ the repo.
 
 1. **Ideas have a history.** A project is told with the iterations that preceded it, even
    the abandoned ones, for transparency: the same the site declares about working with AI.
-   The iterations are data, not only prose (see The `previously` field).
+   The iterations are data, not only prose (see the `previously` field below).
 2. **Families, not isolated entries.** A recurring theme becomes a single item that tells
    the attempts in order, instead of many entries of a few commits.
 3. **The real need is stated.** The personal context a project comes from ("since I moved
@@ -60,8 +60,8 @@ which stopped the day Nexus restarted.
 - Copilota: a copilot for sales calls, macOS app in Swift with the backend inside the app,
   transcription of both channels, cards from the knowledge base, Nemotron locally. Private
   repo.
-- Edge Lab (repo `printor`): where an LLM gives a real edge in trading, a self-deception
-  proof harness.
+- Edge Lab (repo `printor`): where an LLM gives a real edge in trading, a harness built to
+  resist self-deception.
 - Wavelength: AI radio with a multi-agent newsroom.
 - Media Hub (repo `home-media`): the home server and the TV app (see below).
 - Watch OS: firmware for a smartwatch that is a voice client of an agent.

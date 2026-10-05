@@ -65,6 +65,7 @@ the table says so.
 | bozza                                   | draft        | `draft_message`                                         |
 | sotto-agente                            | sub-agent    | `delegate`                                              |
 | agente, Jev                             | agent, Jev   | Jev is the proper name of the triage, it stays          |
+| smistamento                             | sorting      | Where a project goes: showcase, registry, ideas, out    |
 | ricerca                                 | search       |                                                         |
 | sommario                                | excerpt      | The `excerpt` frontmatter field                         |
 | gate                                    | quality gate | `pnpm lint && pnpm check && pnpm build && pnpm test:ci` |
