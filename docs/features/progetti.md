@@ -59,7 +59,7 @@ giorno in cui è ripartito Nexus.
 - printor: LLM che legge gli 8-K, harness a prova di autoinganno.
 - Wavelength: radio AI con redazione multi-agente.
 - Media Hub (repo `home-media`): il server di casa e l'app per la TV (vedi sotto).
-- Watch-OS: firmware per uno smartwatch client vocale di un agente.
+- Watch OS: firmware per uno smartwatch client vocale di un agente.
 - IDKCraft: voxel game in Kotlin, con IDKCraft Studio che genera le texture in pixel art
   via modelli di immagini, con immagini di riferimento per tenere lo stile.
 - Local LLM Experiments, voce unica sugli LLM in locale: Local LLM Eval e LLM Dash.

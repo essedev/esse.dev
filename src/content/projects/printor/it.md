@@ -1,7 +1,7 @@
 ---
 slug: "printor"
 title: "printor"
-excerpt: "Un laboratorio per capire se un LLM che legge le comunicazioni delle società quotate trova un segnale che il mercato non ha già prezzato, con un harness costruito per non ingannarmi."
+excerpt: "Un laboratorio di ricerca quant su una domanda sola: dove un LLM dà un vantaggio vero nel trading, se lo dà. Con un harness costruito per non ingannarmi."
 tags:
   - "Python"
   - "LLM"
@@ -11,14 +11,13 @@ tags:
 why: "Il test che conta è sul cutoff del modello: sugli eventi successivi al suo addestramento il vantaggio sparisce, quindi buona parte del risultato era leakage."
 ---
 
-La domanda è precisa: un LLM che legge gli 8-K, le comunicazioni che le società americane depositano quando succede qualcosa, trova un segnale che il mercato non ha già prezzato? Il modello legge e classifica, non predice prezzi.
+Un LLM non sa prevedere i prezzi, e i dati che hanno tutti sono già prezzati. Quello che sa fare meglio della media è leggere: trasformare testo che quasi nessuno legge davvero (filing alla SEC, trascrizioni delle call sugli utili, notizie, analisi nei forum) in un segnale strutturato e datato. printor è il laboratorio per capire se lì c'è un vantaggio, e dove.
 
-La parte su cui ho messo più cura è l'harness. Ogni dato porta la data in cui era davvero disponibile, i costi si stimano titolo per titolo dallo spread invece che con una percentuale fissa, e ogni strategia si confronta con il buy and hold, con una baseline casuale e con uno Sharpe corretto per il numero di tentativi. Le ipotesi sono scritte prima di guardare i risultati.
+Il modello ha due ruoli. Il primo è leggere ed estrarre il segnale. Il secondo è fare da critico: proporre ipotesi, scrivere i backtest, cercare i bias. Ma il rigore non lo dà la fiducia nel modello, lo impone l'harness: ogni dato porta la data in cui era davvero disponibile, i costi si stimano titolo per titolo dallo spread, ogni strategia si confronta con il buy and hold, con una baseline casuale e con uno Sharpe corretto per il numero di tentativi, e le ipotesi si scrivono prima di guardare i risultati.
 
-## Cosa è uscito
+## I primi due segnali
 
-- Su 9.304 eventi e 604 titoli il segnale sembrava battere il buy and hold: Sharpe 1,35 contro 0,86.
-- Poi il test sul cutoff: sugli eventi sicuramente successivi all'addestramento del modello il vantaggio per evento scende a +15 punti base, con t=0,31. Non significativo. Buona parte del risultato era leakage: il modello conosceva già il seguito di quelle storie.
-- Un secondo esperimento, sui cambiamenti di linguaggio tra un filing e l'altro, è nullo una volta tolto l'effetto del mercato. È costato zero, perché il test gratuito è venuto prima di quello a pagamento.
+- Il tono degli 8-K, le comunicazioni che le società americane depositano quando succede qualcosa. Su 9.304 eventi e 604 titoli sembrava battere il buy and hold, Sharpe 1,35 contro 0,86. Sugli eventi sicuramente successivi all'addestramento del modello il vantaggio per evento scende a +15 punti base, con t=0,31: buona parte del risultato era leakage, il modello conosceva già il seguito di quelle storie.
+- Come cambia il linguaggio da un filing all'altro: nullo una volta tolto l'effetto del mercato. È costato zero, perché il test gratuito è venuto prima di quello a pagamento.
 
-La conclusione è un risultato negativo, ed è il motivo per cui lo mostro: l'harness ha fatto quello per cui l'avevo costruito.
+Due risultati negativi, ed è il motivo per cui lo mostro: l'harness smonta i falsi positivi quasi gratis. La rotta da qui è aperta: mettere insieme più fonti per titolo (filing, acquisti degli insider, contratti pubblici), che è il gioco dove un LLM ha davvero un vantaggio, oppure provare il segnale in avanti, in paper trading.

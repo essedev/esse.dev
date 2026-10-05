@@ -1,6 +1,6 @@
 ---
 slug: "watch-os"
-title: "Watch-OS"
+title: "Watch OS"
 excerpt: "My own firmware for an ESP32-S3 smartwatch: press a button, speak, and an agent living on a server answers."
 tags:
   - "C"

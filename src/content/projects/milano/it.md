@@ -1,6 +1,6 @@
 ---
 slug: "milano"
-title: "Milano"
+title: "Nuovo a Milano"
 excerpt: "Da quando mi sono trasferito a Milano: un trip planner che sceglie la stazione giusta tra tutte quelle che hai intorno, e una mappa dei quartieri con i numeri."
 tags:
   - "React"

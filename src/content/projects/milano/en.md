@@ -1,6 +1,6 @@
 ---
 slug: "milano"
-title: "Milan"
+title: "New in Milan"
 excerpt: "Since I moved to Milan: a trip planner that picks the right station among all the ones around you, and a map of the neighbourhoods with the numbers."
 tags:
   - "React"
