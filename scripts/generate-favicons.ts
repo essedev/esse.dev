@@ -14,10 +14,14 @@ import { writeFileSync } from 'node:fs';
 const BG = '#0a0a0d';
 const ACCENT = '#b59cff';
 
-const caret = `<rect x="12.5" y="7" width="7" height="18" rx="1.2" fill="${ACCENT}" fill-opacity=".22"/><rect x="13.5" y="8" width="5" height="16" rx="1" fill="${ACCENT}"/>`;
+// Lo stesso blocco del cursore del logo (`.caret` in global.css): proporzioni 1 a 2, angoli
+// vivi come i pixel di Departure Mono, alone sfumato. 8x16 sulla griglia di 32 diventa
+// esattamente 4x8 pixel nella favicon da 16, senza bordi sfocati.
+const glow = `<filter id="glow" x="-1" y="-1" width="3" height="3"><feGaussianBlur stdDeviation="1.6"/></filter>`;
+const caret = `<rect x="12" y="8" width="8" height="16" fill="${ACCENT}" fill-opacity=".7" filter="url(#glow)"/><rect x="12" y="8" width="8" height="16" fill="${ACCENT}"/>`;
 
-const tile = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" rx="7" fill="${BG}"/><rect x=".5" y=".5" width="31" height="31" rx="6.5" fill="none" stroke="#ffffff" stroke-opacity=".1"/>${caret}</svg>\n`;
-const full = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><rect width="32" height="32" fill="${BG}"/>${caret}</svg>\n`;
+const tile = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><defs>${glow}</defs><rect width="32" height="32" rx="7" fill="${BG}"/><rect x=".5" y=".5" width="31" height="31" rx="6.5" fill="none" stroke="#ffffff" stroke-opacity=".1"/>${caret}</svg>\n`;
+const full = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><defs>${glow}</defs><rect width="32" height="32" fill="${BG}"/>${caret}</svg>\n`;
 
 const png = (svg: string, size: number): Buffer =>
 	Buffer.from(new Resvg(svg, { fitTo: { mode: 'width', value: size } }).render().asPng());
