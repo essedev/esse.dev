@@ -194,7 +194,9 @@
 	<button
 		bind:this={trigger}
 		type="button"
-		class="inline-flex h-10 w-full items-center justify-between gap-2 rounded-md border border-line bg-surface px-3 text-sm transition-colors hover:border-subtle sm:w-auto"
+		class="inline-flex h-9 w-full items-center justify-between gap-2 rounded-[var(--radius-control)] px-3 font-mono text-[0.8125rem] transition-colors hover:bg-hover sm:w-auto {open
+			? 'bg-hover'
+			: 'bg-surface'}"
 		class:text-muted={!selectedOptions.length}
 		aria-haspopup="listbox"
 		aria-expanded={open}
@@ -215,7 +217,7 @@
 		<!-- svelte-ignore a11y_no_static_element_interactions -->
 		<div
 			bind:this={panel}
-			class="glass absolute top-full z-30 mt-1.5 flex w-max max-w-[calc(100vw-2rem)] min-w-full flex-col overflow-hidden rounded-md bg-panel/85 sm:max-w-72 sm:min-w-56 {side ===
+			class="glass absolute top-full z-30 mt-1.5 flex w-max max-w-[calc(100vw-2rem)] min-w-full flex-col overflow-hidden rounded-md bg-panel/85 font-mono text-[0.8125rem] sm:max-w-72 sm:min-w-56 {side ===
 			'end'
 				? 'right-0'
 				: 'left-0'}"
@@ -240,7 +242,7 @@
 						placeholder={searchPlaceholder}
 						autocomplete="off"
 						spellcheck="false"
-						class="h-10 w-full bg-transparent pr-3 pl-9 text-sm outline-none placeholder:text-subtle"
+						class="h-10 w-full bg-transparent pr-3 pl-9 outline-none placeholder:text-subtle"
 					/>
 				</label>
 			{/if}
@@ -261,7 +263,7 @@
 						id={optionId(i)}
 						role="option"
 						aria-selected={isSelected}
-						class="flex cursor-pointer items-center gap-2.5 px-3 py-2 text-sm {i === active
+						class="flex cursor-pointer items-center gap-2.5 px-3 py-2 {i === active
 							? 'bg-line/60'
 							: ''}"
 						onpointermove={() => (active = i)}
@@ -277,18 +279,18 @@
 						</span>
 						<span class="flex-1 truncate">{option.label}</span>
 						{#if option.count !== undefined}
-							<span class="font-mono text-xs text-subtle tabular-nums">{option.count}</span>
+							<span class="text-xs text-subtle tabular-nums">{option.count}</span>
 						{/if}
 					</li>
 				{:else}
-					<li class="px-3 py-2 text-sm text-muted" role="presentation">{noMatches}</li>
+					<li class="px-3 py-2 text-muted" role="presentation">{noMatches}</li>
 				{/each}
 			</ul>
 
 			{#if multiple && selected.length > 0 && clearLabel}
 				<button
 					type="button"
-					class="border-t border-line px-3 py-2 text-left text-sm text-muted transition-colors hover:text-fg"
+					class="border-t border-line px-3 py-2 text-left text-muted transition-colors hover:text-fg"
 					onclick={() => {
 						selected = [];
 						(searchable ? searchInput : listbox)?.focus();

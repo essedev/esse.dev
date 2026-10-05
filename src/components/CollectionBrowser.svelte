@@ -153,7 +153,7 @@
 						type="button"
 						onclick={chip.remove}
 						aria-label={`${labels.removeFilter}: ${chip.label}`}
-						class="inline-flex h-7 items-center gap-1.5 rounded-full border border-line bg-surface pr-2 pl-3 text-xs text-muted transition-colors hover:border-subtle hover:text-fg"
+						class="chip pr-1.5 transition-colors hover:bg-hover hover:text-fg"
 					>
 						{chip.label}
 						<X data-motion="x" class="size-3.5" />
@@ -165,7 +165,7 @@
 						filters = { ...DEFAULT_FILTERS };
 						dispatchEvent(new CustomEvent('workspace:set-search', { detail: '' }));
 					}}
-					class="h-7 px-1 text-xs text-muted underline-offset-4 transition-colors hover:text-fg hover:underline"
+					class="h-7 px-1 font-mono text-xs text-muted underline-offset-4 transition-colors hover:text-fg hover:underline"
 				>
 					{labels.clearFilters}
 				</button>
