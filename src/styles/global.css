@@ -376,7 +376,7 @@
 	}
 	:is(a, button, label):hover [data-motion='activity'] > * {
 		stroke-dasharray: var(--len) calc(var(--len) + 4px);
-		animation: icon-redraw 1.1s infinite;
+		animation: icon-snake 1.2s cubic-bezier(0.45, 0, 0.55, 1) infinite;
 	}
 	:is(a, button, label):hover [data-motion='bot'] {
 		animation: icon-tilt 800ms var(--ease-out);
@@ -463,26 +463,19 @@
 	}
 }
 
-/* Adesso si ridisegna in loop: la linea si traccia da sinistra, resta, sfuma e riparte. Il
-   tracciato di Activity va da destra a sinistra, quindi si scopre dalla fine. Il varco del
-   tratteggio supera la linea di 4 unità e la partenza è 2 unità oltre la fine: così a linea
-   nascosta non resta il puntino della punta arrotondata. */
-@keyframes icon-redraw {
+/* Adesso a serpente: la linea si traccia da sinistra e si ritira nello stesso verso, poi
+   riparte. Il tracciato di Activity va da destra a sinistra, quindi si scopre dalla fine. Il
+   varco del tratteggio supera la linea di 4 unità e gli estremi stanno 2 unità oltre: così a
+   linea nascosta non resta il puntino della punta arrotondata. */
+@keyframes icon-snake {
 	0% {
 		stroke-dashoffset: calc(var(--len) * -1 - 2px);
-		opacity: 1;
-		animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1);
 	}
 	50% {
 		stroke-dashoffset: 0;
 	}
-	75% {
-		opacity: 1;
-		animation-timing-function: ease-in;
-	}
 	100% {
-		stroke-dashoffset: 0;
-		opacity: 0;
+		stroke-dashoffset: calc(var(--len) + 2px);
 	}
 }
 
