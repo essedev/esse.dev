@@ -131,7 +131,10 @@ Mono per il monospace dell'interfaccia, e un velo da monitor CRT (alone da fosfo
 titoli ed etichette, frangia rosso-ciano, righe e vignetta) regolato dalle variabili
 `--crt-*` di `global.css`. Scelte in `docs/DECISIONS.md` #15. Le etichette con
 `data-scramble` si decodificano una volta quando il puntatore entra nel link o nel bottone
-che le contiene e una quando esce.
+che le contiene e una quando esce. Le icone con `data-motion` fanno un gesto loro
+all'hover del link che le contiene (concept E, `docs/concepts/concept-e-icone.html`): la
+casa salta, l'agente inclina la testa, Adesso ritraccia la linea, le frecce escono e
+rientrano, i LED mandano un anello; con la tastiera e sul touch restano ferme.
 
 - **Lista** (`src/lib/workspace.ts`): in ordine di importanza e alta al massimo 900 px.
   Prima Benvenuto (la home) e le pagine singole (chi sono, adesso, agente), poi la

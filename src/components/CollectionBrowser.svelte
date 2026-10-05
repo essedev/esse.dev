@@ -156,7 +156,7 @@
 						class="inline-flex h-7 items-center gap-1.5 rounded-full border border-line bg-surface pr-2 pl-3 text-xs text-muted transition-colors hover:border-subtle hover:text-fg"
 					>
 						{chip.label}
-						<X class="size-3.5" />
+						<X data-motion="x" class="size-3.5" />
 					</button>
 				{/each}
 				<button

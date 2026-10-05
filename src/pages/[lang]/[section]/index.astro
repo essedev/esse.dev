@@ -151,7 +151,10 @@ const ogSection = section === 'projects' ? 'projects' : section === 'articles' ?
 									</span>
 									<span class="text-muted text-[0.9375rem] text-pretty">{m.text.summary}</span>
 								</span>
-								<ArrowRight class="text-subtle size-4 self-center transition-transform group-hover:translate-x-1 group-hover:text-accent" />
+								<ArrowRight
+									data-motion="arrow"
+									class="text-subtle group-hover:text-accent size-4 self-center transition-colors"
+								/>
 							</a>
 						</li>
 					))}
@@ -178,7 +181,7 @@ const ogSection = section === 'projects' ? 'projects' : section === 'articles' ?
 									>
 										<span class="led" data-status={n.project.meta.status} />
 										{n.project.text.title}
-										<ArrowRight class="size-3.5" />
+										<ArrowRight data-motion="arrow" class="size-3.5" />
 									</a>
 								</div>
 							</li>
@@ -299,8 +302,14 @@ const ogSection = section === 'projects' ? 'projects' : section === 'articles' ?
 												class="group bg-surface hover:bg-hover flex w-full items-center justify-between gap-3 rounded-[var(--radius-control)] px-3.5 py-3 font-mono text-sm transition-colors"
 											>
 												{l.name}
-												<Copy class="text-subtle size-4 group-data-[copied]:hidden" />
-												<Check class="text-live hidden size-4 group-data-[copied]:block" />
+												<Copy
+													data-motion="copy"
+													class="text-subtle size-4 group-data-[copied]:hidden"
+												/>
+												<Check
+													data-motion="check"
+													class="text-live hidden size-4 group-data-[copied]:block"
+												/>
 											</button>
 										) : (
 											<a
@@ -310,7 +319,7 @@ const ogSection = section === 'projects' ? 'projects' : section === 'articles' ?
 												class="group text-text hover:bg-surface/60 hover:text-fg flex items-center justify-between gap-3 rounded-[var(--radius-control)] px-3.5 py-3 transition-colors"
 											>
 												{l.name}
-												<ArrowUpRight class="text-subtle size-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
+												<ArrowUpRight data-motion="external" class="text-subtle size-4" />
 											</a>
 										)}
 									</li>

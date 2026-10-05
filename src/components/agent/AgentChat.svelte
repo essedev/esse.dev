@@ -594,7 +594,7 @@
 								<span
 									class="flex shrink-0 items-center gap-1 font-mono text-xs text-subtle transition-colors group-hover:text-fg"
 								>
-									{labels.open}<ArrowUpRight class="size-3.5" />
+									{labels.open}<ArrowUpRight data-motion="external" class="size-3.5" />
 								</span>
 							</a>
 						{:else if part.type === 'tool-call'}

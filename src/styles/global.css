@@ -129,8 +129,10 @@
 
 @layer components {
 	/* Stato di un progetto come LED: pieno e acceso se è vivo (respira se in corso, fisso se
-	   mantenuto), vuoto se è un'idea. */
+	   mantenuto), vuoto se è un'idea. L'anello del suo colore si allarga all'hover della riga. */
 	.led {
+		--led-ring: var(--color-status-archived);
+		position: relative;
 		display: inline-block;
 		flex: none;
 		width: 7px;
@@ -138,20 +140,33 @@
 		border-radius: 999px;
 		background: var(--color-status-archived);
 	}
+	.led::after {
+		content: '';
+		position: absolute;
+		inset: 0;
+		border-radius: inherit;
+		box-shadow: 0 0 0 0.8px var(--led-ring);
+		opacity: 0;
+		pointer-events: none;
+	}
 	.led[data-status='in-progress'] {
+		--led-ring: var(--color-status-progress);
 		background: var(--color-status-progress);
 		box-shadow: 0 0 var(--crt-accent-glow) color-mix(in srgb, var(--color-live) 75%, transparent);
 		animation: led-breathe 2.8s var(--ease-out) infinite;
 	}
 	.led[data-status='maintained'] {
+		--led-ring: var(--color-status-maintained);
 		background: var(--color-status-maintained);
 		box-shadow: 0 0 calc(var(--crt-accent-glow) / 2)
 			color-mix(in srgb, var(--color-live) 50%, transparent);
 	}
 	.led[data-status='completed'] {
+		--led-ring: var(--color-status-completed);
 		background: var(--color-status-completed);
 	}
 	.led[data-status='idea'] {
+		--led-ring: var(--color-status-idea);
 		background: transparent;
 		box-shadow: inset 0 0 0 1.5px var(--color-status-idea);
 	}
@@ -284,6 +299,311 @@
 	50% {
 		opacity: 0.55;
 		box-shadow: 0 0 2px color-mix(in srgb, var(--color-live) 70%, transparent);
+	}
+}
+
+/* Le icone in movimento (concept E): un'icona con `data-motion` fa il suo gesto, una volta,
+   quando il puntatore entra nel link, nel bottone o nel campo che la contiene; Adesso
+   ritraccia la linea finché resti sopra. Solo col puntatore: con la tastiera (j/k) e sul
+   touch non si muove nulla. Le parti si prendono per posizione nel tracciato di Lucide e i
+   tratti che si ridisegnano usano la loro lunghezza misurata (`--len`): aggiornando Lucide
+   vanno ricontrollate entrambe. */
+[data-motion] {
+	overflow: visible;
+}
+[data-motion] > * {
+	transform-box: fill-box;
+	transform-origin: center;
+}
+/* Le frecce escono e rientrano: il riquadro dell'icona le taglia. */
+[data-motion='arrow'],
+[data-motion='external'] {
+	overflow: hidden;
+}
+[data-motion='house'],
+[data-motion='user'],
+[data-motion='file'] {
+	transform-origin: 50% 100%;
+}
+[data-motion='bot'] {
+	transform-origin: 50% 90%;
+}
+[data-motion='bot'] > :first-child {
+	transform-origin: 100% 100%;
+}
+[data-motion='activity'] {
+	--len: 49.21;
+}
+[data-motion='file'] > :nth-child(3) {
+	--len: 2;
+	--delay: 200ms;
+}
+[data-motion='file'] > :nth-child(4) {
+	--len: 8;
+	--delay: 290ms;
+}
+[data-motion='file'] > :nth-child(5) {
+	--len: 8;
+	--delay: 380ms;
+}
+[data-motion='x'] {
+	--len: 16.97;
+	transition: rotate 350ms var(--ease-out);
+}
+[data-motion='x'] > :nth-child(2) {
+	--delay: 120ms;
+}
+[data-motion='copy'] > :first-child {
+	transition: translate 300ms var(--ease-out);
+}
+
+/* La spunta di una copia riuscita si disegna quando compare. */
+[data-motion='check'] > * {
+	--len: 22.63;
+	stroke-dasharray: var(--len) var(--len);
+	animation: icon-write 380ms var(--ease-out) backwards;
+}
+
+@media (hover: hover) {
+	:is(a, button, label):hover [data-motion='house'] {
+		animation: icon-hop 700ms ease-out;
+	}
+	:is(a, button, label):hover [data-motion='user'] {
+		animation: icon-sway 800ms var(--ease-out);
+	}
+	:is(a, button, label):hover [data-motion='user'] > :nth-child(2) {
+		animation: icon-nod 700ms var(--ease-out) 250ms;
+	}
+	:is(a, button, label):hover [data-motion='activity'] > * {
+		stroke-dasharray: var(--len) var(--len);
+		animation: icon-trace 1s linear infinite;
+	}
+	:is(a, button, label):hover [data-motion='bot'] {
+		animation: icon-tilt 800ms var(--ease-out);
+	}
+	:is(a, button, label):hover [data-motion='bot'] > :first-child {
+		animation: icon-wiggle 800ms ease-out;
+	}
+	:is(a, button, label):hover [data-motion='bot'] > :is(:nth-child(2), :nth-child(6)) {
+		animation: icon-blink 900ms ease-in-out 250ms;
+	}
+	:is(a, button, label):hover [data-motion='file'] {
+		animation: icon-lift 1s var(--ease-out);
+	}
+	:is(a, button, label):hover [data-motion='file'] > :nth-child(n + 3) {
+		stroke-dasharray: var(--len) var(--len);
+		animation: icon-write 320ms var(--ease-out) var(--delay) backwards;
+	}
+	:is(a, button, label):hover .led::after {
+		animation: icon-ping 700ms var(--ease-out);
+	}
+	:is(a, button, label):hover [data-motion='arrow'] > * {
+		animation: icon-out-x 560ms;
+	}
+	:is(a, button, label):hover [data-motion='external'] > * {
+		animation: icon-out-diagonal 560ms;
+	}
+	:is(a, button, label):hover [data-motion='copy'] > :first-child {
+		translate: 1.5px 1.5px;
+	}
+	:is(a, button, label):hover [data-motion='panel'] > :nth-child(2) {
+		animation: icon-slide 650ms var(--ease-out);
+	}
+	:is(a, button, label):hover [data-motion='x'] {
+		rotate: 90deg;
+	}
+	:is(a, button, label):hover [data-motion='x'] > * {
+		stroke-dasharray: var(--len) var(--len);
+		animation: icon-draw 300ms var(--ease-out) var(--delay, 0ms) backwards;
+	}
+	:is(a, button, label):hover [data-motion='filter'] > :first-child {
+		animation: icon-narrow 850ms var(--ease-out);
+	}
+	:is(a, button, label):hover [data-motion='filter'] > :nth-child(3) {
+		animation: icon-widen 850ms var(--ease-out);
+	}
+}
+
+@keyframes icon-hop {
+	25% {
+		transform: translateY(-22%) scale(0.94, 1.06);
+	}
+	48% {
+		transform: translateY(0) scale(1.1, 0.88);
+	}
+	66% {
+		transform: scale(0.97, 1.03);
+	}
+	82% {
+		transform: none;
+	}
+}
+
+@keyframes icon-sway {
+	22% {
+		transform: rotate(-12deg);
+	}
+	50% {
+		transform: rotate(9deg);
+	}
+	76% {
+		transform: rotate(-4deg);
+	}
+}
+
+@keyframes icon-nod {
+	28% {
+		transform: translateY(2px);
+	}
+	55% {
+		transform: none;
+	}
+	78% {
+		transform: translateY(1px);
+	}
+}
+
+/* Il tracciato di Activity va da destra a sinistra: la linea si scopre dalla fine, così si
+   traccia da sinistra, e si cancella nello stesso verso. */
+@keyframes icon-trace {
+	0% {
+		stroke-dashoffset: calc(var(--len) * -1);
+		animation-timing-function: cubic-bezier(0.35, 0, 0.65, 1);
+	}
+	55%,
+	68% {
+		stroke-dashoffset: 0;
+		animation-timing-function: cubic-bezier(0.55, 0, 1, 0.45);
+	}
+	100% {
+		stroke-dashoffset: var(--len);
+	}
+}
+
+@keyframes icon-tilt {
+	25% {
+		transform: rotate(-12deg);
+	}
+	55% {
+		transform: rotate(7deg);
+	}
+	80% {
+		transform: rotate(-3deg);
+	}
+}
+
+@keyframes icon-wiggle {
+	20% {
+		transform: rotate(-25deg);
+	}
+	45% {
+		transform: rotate(18deg);
+	}
+	70% {
+		transform: rotate(-8deg);
+	}
+}
+
+@keyframes icon-blink {
+	11%,
+	33% {
+		transform: scaleY(0.1);
+	}
+	22%,
+	44% {
+		transform: none;
+	}
+}
+
+@keyframes icon-lift {
+	25%,
+	70% {
+		transform: translateY(-12%) rotate(-7deg);
+	}
+}
+
+/* Il tratto si scopre dalla fine: le righe di FileText e la spunta vanno da destra a sinistra. */
+@keyframes icon-write {
+	from {
+		stroke-dashoffset: calc(var(--len) * -1);
+	}
+	to {
+		stroke-dashoffset: 0;
+	}
+}
+
+@keyframes icon-draw {
+	from {
+		stroke-dashoffset: var(--len);
+	}
+	to {
+		stroke-dashoffset: 0;
+	}
+}
+
+@keyframes icon-ping {
+	0% {
+		opacity: 0.55;
+		transform: scale(1);
+	}
+	100% {
+		opacity: 0;
+		transform: scale(2.3);
+	}
+}
+
+@keyframes icon-out-x {
+	0% {
+		transform: none;
+		animation-timing-function: cubic-bezier(0.5, 0, 0.75, 0);
+	}
+	42% {
+		transform: translateX(20px);
+	}
+	42.01% {
+		transform: translateX(-20px);
+		animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+	}
+	100% {
+		transform: none;
+	}
+}
+
+@keyframes icon-out-diagonal {
+	0% {
+		transform: none;
+		animation-timing-function: cubic-bezier(0.5, 0, 0.75, 0);
+	}
+	42% {
+		transform: translate(16px, -16px);
+	}
+	42.01% {
+		transform: translate(-16px, 16px);
+		animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+	}
+	100% {
+		transform: none;
+	}
+}
+
+@keyframes icon-slide {
+	35%,
+	55% {
+		transform: translateX(4px);
+	}
+}
+
+@keyframes icon-narrow {
+	35%,
+	60% {
+		transform: scaleX(0.6);
+	}
+}
+
+@keyframes icon-widen {
+	35%,
+	60% {
+		transform: scaleX(2);
 	}
 }
 

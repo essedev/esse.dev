@@ -101,8 +101,14 @@ const jsonLd = [
 									class="group bg-surface hover:bg-hover inline-flex items-center gap-3 rounded-[var(--radius-control)] py-1.5 pr-2.5 pl-3 font-mono text-[0.8125rem] transition-colors"
 								>
 									{email}
-									<Copy class="text-subtle size-3.5 group-data-[copied]:hidden" />
-									<Check class="text-live hidden size-3.5 group-data-[copied]:block" />
+									<Copy
+										data-motion="copy"
+										class="text-subtle size-3.5 group-data-[copied]:hidden"
+									/>
+									<Check
+										data-motion="check"
+										class="text-live hidden size-3.5 group-data-[copied]:block"
+									/>
 								</button>
 								<SocialLinks links={social} class="text-[0.8125rem]" />
 							</dd>
@@ -126,7 +132,10 @@ const jsonLd = [
 									{s.index ? (
 										<span class="text-subtle font-mono text-[0.7rem]">{s.index}</span>
 									) : s.icon === 'agent' ? (
-										<BotMessageSquare class="text-accent glow size-3.5 translate-y-0.5" />
+										<BotMessageSquare
+											data-motion="bot"
+											class="text-accent glow size-3.5 translate-y-0.5"
+										/>
 									) : (
 										<span class="led -translate-y-px" data-status={s.status} />
 									)}
@@ -142,7 +151,10 @@ const jsonLd = [
 										{s.note}
 									</span>
 								</span>
-								<ArrowRight class="text-subtle size-4 self-center transition-transform group-hover:translate-x-1 group-hover:text-accent" />
+								<ArrowRight
+									data-motion="arrow"
+									class="text-subtle group-hover:text-accent size-4 self-center transition-colors"
+								/>
 							</a>
 						</li>
 					))}

@@ -244,7 +244,7 @@ const host = (url: string) => url.replace(/^https?:\/\/(www\.)?/, '').replace(/\
 										class="ulink inline-flex max-w-full items-center gap-1.5 font-mono text-sm break-all"
 									>
 										{host(project.meta.repo)}
-										<ArrowUpRight class="text-subtle size-3.5" />
+										<ArrowUpRight data-motion="external" class="text-subtle size-3.5" />
 									</a>
 								) : (
 									<span class="text-muted font-mono text-sm">{t('private')}</span>
@@ -263,7 +263,7 @@ const host = (url: string) => url.replace(/^https?:\/\/(www\.)?/, '').replace(/\
 									>
 										{/* Il repository è nella riga sopra: qui basta il percorso. */}
 										/releases
-										<ArrowUpRight class="text-subtle size-3.5" />
+										<ArrowUpRight data-motion="external" class="text-subtle size-3.5" />
 									</a>
 								</dd>
 							</div>
@@ -279,7 +279,7 @@ const host = (url: string) => url.replace(/^https?:\/\/(www\.)?/, '').replace(/\
 										class="ulink text-text inline-flex max-w-full items-center gap-1.5 font-mono text-sm break-all"
 									>
 										{host(project.meta.site)}
-										<ArrowUpRight class="text-subtle size-3.5" />
+										<ArrowUpRight data-motion="external" class="text-subtle size-3.5" />
 									</a>
 								</dd>
 							</div>

@@ -33,12 +33,12 @@ const keys: [string[], string][] = [
 			aria-label={t('close')}
 			class="text-subtle hover:text-fg hover:bg-surface/60 flex size-8 items-center justify-center rounded-[var(--radius-control)] transition-colors lg:hidden"
 		>
-			<X class="size-4" />
+			<X data-motion="x" class="size-4" />
 		</button>
 	</div>
 	<div class="px-3 pt-3 pb-2 lg:px-4 lg:pt-1">
 		<label class="bg-surface focus-within:bg-hover flex h-9 items-center gap-2 rounded-[var(--radius-control)] pr-1.5 pl-2.5 transition-colors">
-			<ListFilter class="text-subtle size-4 shrink-0" />
+			<ListFilter data-motion="filter" class="text-subtle size-4 shrink-0" />
 			<span class="sr-only">{t('search')}</span>
 			<input
 				id="search"

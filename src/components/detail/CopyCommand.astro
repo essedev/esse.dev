@@ -20,9 +20,9 @@ const { command, message, copiedLabel } = Astro.props;
 		$
 	</span>
 	<span class="min-w-0 overflow-x-auto overscroll-x-none whitespace-nowrap text-fg">{command}</span>
-	<Copy class="text-subtle size-3.5 shrink-0 group-data-[copied]:hidden" />
+	<Copy data-motion="copy" class="text-subtle size-3.5 shrink-0 group-data-[copied]:hidden" />
 	<span class="text-live hidden shrink-0 items-center gap-1 text-xs group-data-[copied]:flex">
-		<Check class="size-3.5" />
+		<Check data-motion="check" class="size-3.5" />
 		{copiedLabel}
 	</span>
 </button>

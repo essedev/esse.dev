@@ -23,7 +23,7 @@ const { links, class: className } = Astro.props;
 				class="group text-muted hover:text-fg inline-flex items-center gap-1 transition-colors"
 			>
 				{l.name.toLowerCase()}
-				<ArrowUpRight class="size-3 transition-transform group-hover:translate-x-px group-hover:-translate-y-px" />
+				<ArrowUpRight data-motion="external" class="size-3" />
 			</a>
 		</li>
 	))}

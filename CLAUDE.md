@@ -113,6 +113,10 @@ ordine della lista e del pager in `src/lib/workspace.ts`, tastiera e cassetto mo
   Mono), velo CRT con i valori in `--crt-*`.
 - Nessuna larghezza massima sul contenuto: la misura la danno la colonna e la taglia fluida.
 - Controlli mai nativi (`ui/Select.svelte`). Icone solo Lucide.
+- Icone in movimento: `data-motion="<nome>"` sull'icona Lucide, gesto all'hover del link,
+  bottone o campo che la contiene (solo puntatore), CSS in `global.css`. Le parti si prendono
+  per posizione nel tracciato e i tratti ridisegnati hanno la lunghezza misurata (`--len`):
+  aggiornando Lucide vanno ricontrollati. Scelte nel concept E.
 - Una sola ricerca nel sito e un solo cursore lampeggiante. Mai linee o barre d'accento a
   sinistra o sopra un elemento per indicare selezione o stato: la selezione si vede dal fondo.
 - Niente stili inline negli attributi: la CSP li blocca. Il cambio pagina è istantaneo:
