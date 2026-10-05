@@ -3,7 +3,7 @@ import { clamp, ogLayout, titleSize } from '../../src/lib/og';
 import { escapeXml } from '../../src/lib/xml';
 
 describe('clamp', () => {
-	it('lascia i testi corti e taglia i lunghi a parola intera', () => {
+	it('leaves short texts and cuts long ones at a whole word', () => {
 		expect(clamp('breve', 10)).toBe('breve');
 		expect(clamp('una frase un po lunga', 12)).toBe('una frase…');
 	});
@@ -17,7 +17,7 @@ describe('ogLayout', () => {
 		meta: ['in corso', '2026'],
 		status: 'in-progress' as const
 	};
-	it('contiene comando, titolo, sommario, metadati e dominio', () => {
+	it('contains command, title, excerpt, metadata and domain', () => {
 		const tree = JSON.stringify(ogLayout(relay));
 		for (const text of [
 			'cat progetti/relay.md',
@@ -30,20 +30,20 @@ describe('ogLayout', () => {
 			expect(tree).toContain(text);
 		}
 	});
-	it('il sommario solo se c’è, il LED solo con uno stato', () => {
+	it('shows the excerpt only if there is one, the LED only with a status', () => {
 		const bare = JSON.stringify(ogLayout({ command: 'ls progetti', title: 'Progetti', meta: [] }));
 		expect(bare).not.toContain('Terminale');
 		expect(bare).not.toContain('#7dff9b');
 		expect(JSON.stringify(ogLayout(relay))).toContain('#7dff9b');
 	});
-	it('rimpicciolisce i titoli lunghi', () => {
+	it('shrinks long titles', () => {
 		expect(titleSize('Relay')).toBeGreaterThan(titleSize('Architettura prima del codice'));
 		expect(titleSize('Architettura prima del codice')).toBeGreaterThan(titleSize('x'.repeat(60)));
 	});
 });
 
 describe('escapeXml', () => {
-	it('esegue l’escape dei caratteri speciali', () => {
+	it('escapes special characters', () => {
 		expect(escapeXml(`<a href="x">Tom & 'Jerry'</a>`)).toBe(
 			'&lt;a href=&quot;x&quot;&gt;Tom &amp; &#39;Jerry&#39;&lt;/a&gt;'
 		);

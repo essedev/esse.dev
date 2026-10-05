@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 import { featured, languageCodes, navigation } from '../../src/lib/config';
 
-describe('configurazione', () => {
-	it('ogni lingua ha la route di tutte le sezioni, diverse fra loro', () => {
+describe('configuration', () => {
+	it('gives every language a route for every section, distinct from each other', () => {
 		for (const lang of languageCodes) {
 			const { projects, articles } = navigation[lang];
 			expect(projects).toBeTruthy();
@@ -11,7 +11,7 @@ describe('configurazione', () => {
 		}
 	});
 
-	it('la vetrina non ripete progetti', () => {
+	it('does not repeat a project in the showcase', () => {
 		expect(new Set(featured.projects).size).toBe(featured.projects.length);
 	});
 });

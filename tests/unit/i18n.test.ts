@@ -43,7 +43,7 @@ const slugMap: SlugMap = {
 };
 
 describe('isValidLanguage', () => {
-	it('accetta i codici supportati, rifiuta gli altri e undefined', () => {
+	it('accepts the supported codes, rejects the others and undefined', () => {
 		expect(isValidLanguage('en', languages)).toBe(true);
 		expect(isValidLanguage('xx', languages)).toBe(false);
 		expect(isValidLanguage(undefined, languages)).toBe(false);
@@ -51,27 +51,27 @@ describe('isValidLanguage', () => {
 });
 
 describe('sectionOf / routeOf / findSectionAnyLang', () => {
-	it('mappa la route localizzata alla sezione e ritorno', () => {
+	it('maps a localized route to its section and back', () => {
 		expect(sectionOf('progetti', 'it', navigation)).toBe('projects');
 		expect(sectionOf('writing', 'en', navigation)).toBe('articles');
 		expect(sectionOf('adesso', 'it', navigation)).toBe('now');
 		expect(routeOf('projects', 'it', navigation)).toBe('progetti');
 	});
 
-	it('una route di un’altra lingua non vale nella lingua corrente', () => {
+	it('does not accept a route of another language in the current one', () => {
 		expect(sectionOf('projects', 'it', navigation)).toBeNull();
 		expect(sectionOf('nope', 'en', navigation)).toBeNull();
 		expect(routeOf('projects', 'xx', navigation)).toBeNull();
 	});
 
-	it('trova sezione e lingua di una route in qualunque lingua', () => {
+	it('finds the section and language of a route in any language', () => {
 		expect(findSectionAnyLang('progetti', navigation)).toEqual({ section: 'projects', lang: 'it' });
 		expect(findSectionAnyLang('nope', navigation)).toBeNull();
 	});
 });
 
 describe('translateSlug', () => {
-	it('traduce partendo dallo slug di qualunque lingua', () => {
+	it('translates starting from a slug in any language', () => {
 		expect(translateSlug('il-mio-nuovo-laboratorio', 'articles', 'en', slugMap)).toBe(
 			'my-new-laboratory'
 		);
@@ -80,7 +80,7 @@ describe('translateSlug', () => {
 		);
 	});
 
-	it('null per slug sconosciuti o nella sezione sbagliata', () => {
+	it('returns null for unknown slugs or the wrong section', () => {
 		expect(translateSlug('nope', 'projects', 'en', slugMap)).toBeNull();
 		expect(translateSlug('budokan', 'articles', 'en', slugMap)).toBeNull();
 	});
@@ -89,13 +89,13 @@ describe('translateSlug', () => {
 describe('preferredLanguage', () => {
 	const supported = ['en', 'it'];
 
-	it('sceglie la prima lingua supportata per q-value, anche fuori ordine', () => {
+	it('picks the first supported language by q-value, even out of order', () => {
 		expect(preferredLanguage('it-IT,it;q=0.9,en;q=0.8', supported, 'en')).toBe('it');
 		expect(preferredLanguage('en;q=0.3, it;q=0.9', supported, 'en')).toBe('it');
 		expect(preferredLanguage('it-CH', supported, 'en')).toBe('it');
 	});
 
-	it('usa il fallback se nessuna lingua è supportata o manca l’header', () => {
+	it('uses the fallback if no language is supported or the header is missing', () => {
 		expect(preferredLanguage('fr-FR,de;q=0.8', supported, 'en')).toBe('en');
 		expect(preferredLanguage(null, supported, 'en')).toBe('en');
 	});
@@ -105,7 +105,7 @@ describe('getLanguageUrl', () => {
 	const url = (pathname: string, targetLang: string, search = '') =>
 		getLanguageUrl({ pathname, search, navigation, slugMap, targetLang });
 
-	it('home, sezione e dettaglio con slug tradotto', () => {
+	it('maps home, section and detail with a translated slug', () => {
 		expect(url('/en', 'it')).toBe('/it');
 		expect(url('/en/projects', 'it')).toBe('/it/progetti');
 		expect(url('/en/projects/budokan', 'it')).toBe('/it/progetti/budokan');
@@ -114,11 +114,11 @@ describe('getLanguageUrl', () => {
 		expect(url('/it/chi-sono', 'en')).toBe('/en/about');
 	});
 
-	it('conserva la query string', () => {
+	it('keeps the query string', () => {
 		expect(url('/en/projects/budokan', 'it', '?x=1')).toBe('/it/progetti/budokan?x=1');
 	});
 
-	it('ripiega su sezione o home se manca la traduzione', () => {
+	it('falls back to the section or home when the translation is missing', () => {
 		expect(url('/en/projects/unknown', 'it')).toBe('/it/progetti');
 		expect(url('/en/random', 'it')).toBe('/it');
 	});
@@ -128,39 +128,39 @@ describe('resolveRedirect', () => {
 	const go = (path: string) =>
 		resolveRedirect(path, { languages, navigation, slugMap, defaultLang: 'en' });
 
-	it('route di un’altra lingua sotto una lingua valida', () => {
+	it('redirects a route of another language under a valid language', () => {
 		expect(go('/en/progetti')).toBe('/en/projects');
 		expect(go('/en/progetti/budokan')).toBe('/en/projects/budokan');
 	});
 
-	it('slug di un’altra lingua', () => {
+	it('redirects a slug of another language', () => {
 		expect(go('/en/writing/il-mio-nuovo-laboratorio')).toBe('/en/writing/my-new-laboratory');
 		expect(go('/it/scritti/my-new-laboratory')).toBe('/it/scritti/il-mio-nuovo-laboratorio');
 		expect(go('/en/method/contesto')).toBe('/en/method/context');
 	});
 
-	it('route di versioni precedenti del sito (blog, informazioni)', () => {
+	it('redirects routes of earlier versions of the site (blog, informazioni)', () => {
 		expect(go('/en/blog')).toBe('/en/writing');
 		expect(go('/it/blog/my-new-laboratory')).toBe('/it/scritti/il-mio-nuovo-laboratorio');
 		expect(go('/it/informazioni')).toBe('/it/chi-sono');
 		expect(go('/blog')).toBe('/en/writing');
 	});
 
-	it('una sezione senza dettaglio non accetta uno slug', () => {
+	it('does not accept a slug on a section without details', () => {
 		expect(go('/it/adesso/qualcosa')).toBeNull();
 	});
 
-	it('lingua sconosciuta: va nella lingua della route, slug compreso', () => {
+	it('sends an unknown language to the route language, slug included', () => {
 		expect(go('/xx/projects')).toBe('/en/projects');
 		expect(go('/xx/progetti/budokan')).toBe('/it/progetti/budokan');
 	});
 
-	it('un segmento solo: route senza lingua o indirizzo a caso', () => {
+	it('handles a single segment: a route without a language or a random address', () => {
 		expect(go('/progetti')).toBe('/it/progetti');
 		expect(go('/totally-unknown')).toBe('/en');
 	});
 
-	it('nessun redirect per un URL già canonico o senza canonico (404)', () => {
+	it('does not redirect a canonical URL or one with no canonical (404)', () => {
 		expect(go('/en')).toBeNull();
 		expect(go('/en/projects')).toBeNull();
 		expect(go('/en/projects/budokan')).toBeNull();

@@ -11,11 +11,11 @@ const all = [
 ];
 
 describe('relatedByTags', () => {
-	it('più tag in comune prima, a parità conta l’ordine dato, escluso se stesso', () => {
+	it('puts more shared tags first, keeps the given order on ties, excludes itself', () => {
 		expect(relatedByTags(all[0], all).map((x) => x.id)).toEqual(['two', 'one', 'three']);
 	});
 
-	it('rispetta il limite e scarta chi non ha tag in comune', () => {
+	it('respects the limit and drops items with no shared tag', () => {
 		expect(relatedByTags(all[0], all, 1).map((x) => x.id)).toEqual(['two']);
 		expect(relatedByTags(a('solo', ['q']), all)).toEqual([]);
 	});

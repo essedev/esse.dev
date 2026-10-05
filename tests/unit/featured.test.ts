@@ -6,19 +6,19 @@ const items = ['d', 'c', 'b', 'a'].map((id) => ({ id }));
 const ids = (list: { id: string }[]) => list.map((i) => i.id);
 
 describe('orderFeaturedFirst', () => {
-	it("mette i featured davanti nell'ordine dato, poi il resto invariato", () => {
+	it('puts the featured first in the given order, then the rest unchanged', () => {
 		expect(ids(orderFeaturedFirst(items, ['a', 'c']))).toEqual(['a', 'c', 'd', 'b']);
 	});
 
-	it("senza featured lascia l'ordine originale", () => {
+	it('keeps the original order without featured ids', () => {
 		expect(ids(orderFeaturedFirst(items, []))).toEqual(['d', 'c', 'b', 'a']);
 	});
 
-	it('ignora gli id inesistenti', () => {
+	it('ignores unknown ids', () => {
 		expect(ids(orderFeaturedFirst(items, ['x', 'b']))).toEqual(['b', 'd', 'c', 'a']);
 	});
 
-	it('non duplica se un id compare due volte', () => {
+	it('does not duplicate an id that appears twice', () => {
 		expect(ids(orderFeaturedFirst(items, ['a', 'a']))).toEqual(['a', 'd', 'c', 'b']);
 	});
 });

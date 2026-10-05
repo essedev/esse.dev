@@ -27,11 +27,11 @@ const items = [
 const ids = (list: ListItem[]) => list.map((i) => i.id);
 
 describe('applyFilters', () => {
-	it('di default ordina dal più recente', () => {
+	it('sorts by most recent by default', () => {
 		expect(ids(applyFilters(items, DEFAULT_FILTERS, 'en'))).toEqual(['beta', 'gamma', 'alpha']);
 	});
 
-	it('filtra per testo, tag e stato insieme', () => {
+	it('filters by text, tag and status together', () => {
 		expect(ids(applyFilters(items, { ...DEFAULT_FILTERS, query: 'ALP' }, 'en'))).toEqual(['alpha']);
 		expect(ids(applyFilters(items, { ...DEFAULT_FILTERS, tags: ['AI'] }, 'en'))).toEqual([
 			'beta',
@@ -42,7 +42,7 @@ describe('applyFilters', () => {
 		).toEqual(['alpha']);
 	});
 
-	it('più valori nello stesso filtro valgono in OR', () => {
+	it('combines several values of one filter with OR', () => {
 		const tags = applyFilters(items, { ...DEFAULT_FILTERS, tags: ['Rust', 'Svelte'] }, 'en');
 		expect(ids(tags)).toEqual(['gamma', 'alpha']);
 		const statuses = applyFilters(
@@ -53,13 +53,13 @@ describe('applyFilters', () => {
 		expect(ids(statuses)).toEqual(['beta', 'gamma']);
 	});
 
-	it('la ricerca testuale guarda anche i tag, come la lista', () => {
+	it('searches the tags too, like the list', () => {
 		expect(ids(applyFilters(items, { ...DEFAULT_FILTERS, query: 'rust' }, 'en'))).toEqual([
 			'gamma'
 		]);
 	});
 
-	it('ordina per data crescente o per titolo', () => {
+	it('sorts by ascending date or by title', () => {
 		expect(ids(applyFilters(items, { ...DEFAULT_FILTERS, sort: 'oldest' }, 'en'))).toEqual([
 			'alpha',
 			'gamma',
@@ -72,20 +72,20 @@ describe('applyFilters', () => {
 		]);
 	});
 
-	it('non modifica la lista in ingresso', () => {
+	it('does not mutate the input list', () => {
 		applyFilters(items, { ...DEFAULT_FILTERS, sort: 'title' }, 'en');
 		expect(ids(items)).toEqual(['alpha', 'beta', 'gamma']);
 	});
 });
 
 describe('tagsByFrequency', () => {
-	it('per frequenza, poi alfabetico', () => {
+	it('orders by frequency, then alphabetically', () => {
 		expect(tagsByFrequency(items, 'en')).toEqual(['AI', 'Rust', 'Svelte']);
 	});
 });
 
-describe('filtri nella query string', () => {
-	it('andata e ritorno senza perdite', () => {
+describe('filters in the query string', () => {
+	it('round-trips without loss', () => {
 		const f = {
 			query: 'agent',
 			tags: ['AI', 'Rust'],
@@ -95,11 +95,11 @@ describe('filtri nella query string', () => {
 		expect(filtersFromSearch(searchFromFilters(f))).toEqual(f);
 	});
 
-	it('i default non finiscono nella query string', () => {
+	it('keeps defaults out of the query string', () => {
 		expect(searchFromFilters(DEFAULT_FILTERS)).toBe('');
 	});
 
-	it('valori sconosciuti, vuoti o ripetuti vengono scartati', () => {
+	it('drops unknown, empty or repeated values', () => {
 		expect(filtersFromSearch('?status=nope&sort=random&tag=')).toEqual(DEFAULT_FILTERS);
 		expect(filtersFromSearch('?tag=AI&tag=AI').tags).toEqual(['AI']);
 	});
