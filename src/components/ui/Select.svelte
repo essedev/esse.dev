@@ -217,17 +217,17 @@
 		<!-- svelte-ignore a11y_no_static_element_interactions -->
 		<div
 			bind:this={panel}
-			class="glass absolute top-full z-30 mt-1.5 flex w-max max-w-[calc(100vw-2rem)] min-w-full flex-col overflow-hidden rounded-md bg-panel/85 font-mono text-[0.8125rem] sm:max-w-72 sm:min-w-56 {side ===
+			class="glass absolute top-full z-30 mt-1.5 flex w-max max-w-[calc(100vw-2rem)] min-w-full flex-col overflow-hidden rounded-[var(--radius-panel)] bg-panel/85 font-mono text-[0.8125rem] sm:max-w-72 sm:min-w-56 {side ===
 			'end'
 				? 'right-0'
 				: 'left-0'}"
 			onkeydown={onPanelKey}
 		>
 			{#if searchable}
-				<label class="relative block border-b border-line">
+				<label class="relative block px-1 pt-1">
 					<span class="sr-only">{searchPlaceholder || label}</span>
 					<Search
-						class="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-subtle"
+						class="pointer-events-none absolute top-1/2 left-3.5 mt-0.5 size-4 -translate-y-1/2 text-subtle"
 					/>
 					<input
 						bind:this={searchInput}
@@ -242,7 +242,7 @@
 						placeholder={searchPlaceholder}
 						autocomplete="off"
 						spellcheck="false"
-						class="h-10 w-full bg-transparent pr-3 pl-9 outline-none placeholder:text-subtle"
+						class="h-9 w-full rounded-[var(--radius-control)] bg-surface pr-3 pl-9 outline-none placeholder:text-subtle"
 					/>
 				</label>
 			{/if}
@@ -255,7 +255,7 @@
 				aria-multiselectable={multiple || undefined}
 				aria-activedescendant={!searchable && visible[active] ? optionId(active) : undefined}
 				tabindex={searchable ? -1 : 0}
-				class="max-h-64 overflow-y-auto overscroll-none py-1 outline-none"
+				class="flex max-h-64 scroll-py-1 flex-col gap-px overflow-y-auto overscroll-none p-1 outline-none"
 			>
 				{#each visible as option, i (option.value)}
 					{@const isSelected = selected.includes(option.value)}
@@ -263,8 +263,9 @@
 						id={optionId(i)}
 						role="option"
 						aria-selected={isSelected}
-						class="flex cursor-pointer items-center gap-2.5 px-3 py-2 {i === active
-							? 'bg-line/60'
+						class="flex cursor-pointer items-center gap-2.5 rounded-[var(--radius-control)] px-2.5 py-2 {i ===
+						active
+							? 'bg-hover'
 							: ''}"
 						onpointermove={() => (active = i)}
 						onclick={() => choose(option)}
@@ -283,21 +284,23 @@
 						{/if}
 					</li>
 				{:else}
-					<li class="px-3 py-2 text-muted" role="presentation">{noMatches}</li>
+					<li class="px-2.5 py-2 text-muted" role="presentation">{noMatches}</li>
 				{/each}
 			</ul>
 
 			{#if multiple && selected.length > 0 && clearLabel}
-				<button
-					type="button"
-					class="border-t border-line px-3 py-2 text-left text-muted transition-colors hover:text-fg"
-					onclick={() => {
-						selected = [];
-						(searchable ? searchInput : listbox)?.focus();
-					}}
-				>
-					{clearLabel}
-				</button>
+				<div class="border-t border-line p-1">
+					<button
+						type="button"
+						class="w-full rounded-[var(--radius-control)] px-2.5 py-2 text-left text-muted transition-colors hover:bg-hover hover:text-fg"
+						onclick={() => {
+							selected = [];
+							(searchable ? searchInput : listbox)?.focus();
+						}}
+					>
+						{clearLabel}
+					</button>
+				</div>
 			{/if}
 		</div>
 	{/if}
