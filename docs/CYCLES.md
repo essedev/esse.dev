@@ -572,7 +572,7 @@ Giro su M15 (rifiniture) e primo taglio di M16 (`dbe3efb` .. `eebdd3f`).
 
 ## Ciclo 22 - Icone in movimento, contenuti, agente in dev (2026-10-05)
 
-Rifiniture su M15 e contenuti (`1e7a962` .. `73a29a4`).
+Rifiniture su M15 e contenuti (`1e7a962` .. `7771990`).
 
 - **Icone in movimento** (`243d7ab`, concept E in `docs/concepts/concept-e-icone.html`):
   all'hover del link che le contiene la casa salta, l'agente inclina la testa, le frecce
@@ -590,6 +590,11 @@ Rifiniture su M15 e contenuti (`1e7a962` .. `73a29a4`).
 - **Agente in `pnpm dev`** (`73a29a4`): `env.ASSETS.fetch` su `assets.local` passa da
   Vite, che rispondeva 403 all'host sconosciuto, e la chat restava offline. Ora
   `allowedHosts` in `astro.config.mjs`; il deploy e `wrangler dev` non ne sono toccati.
+- **Filtri delle collezioni** (`3ea0779`, `7771990`): `Select`, chip attivi e "azzera" in
+  Departure Mono sullo stesso velo della ricerca nella lista, al posto dei controlli sans
+  con il bordo. Nel menu opzioni, ricerca dei tag e "azzera" stanno dentro il pannello con
+  raggi concentrici (`--radius-panel` 10px, margine 4px, `--radius-control` 6px); la riga
+  attiva usa il velo `hover`.
 - **CLAUDE.md**: il redirect da `simonesalerno.it` è ancora da fare; design system più
   stretto (il perché resta in ARCHITECTURE e #15-#16); gotcha di `pnpm check` sotto un
   `pnpm dev` acceso.
