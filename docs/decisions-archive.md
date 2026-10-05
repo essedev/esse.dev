@@ -2,8 +2,9 @@
 
 Entries of `docs/DECISIONS.md` that are no longer active. The numbering is the global one:
 the `#N` references stay valid. #5, #7, #8 and #9 were suspended with the return to the
-base style (Cycle 10) and their subject no longer exists in the Astro site; they remain
-intact on the `restyle/laboratory` branch.
+base style (Cycle 10) and their subject no longer exists in the Astro site; their code is
+in the history of the retired `restyle/laboratory` branch, kept in a git bundle outside the
+repo.
 
 ## #4 - A single navigation surface, `fixed` bar
 

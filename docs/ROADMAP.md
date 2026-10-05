@@ -6,17 +6,16 @@ Last update: 2026-10-05 (Cycle 22: icons in motion, content, agent in dev)
 
 ## Context
 
-In production on `main` is the SvelteKit site (M1-M10, history in `docs/CYCLES.md`).
-The "Laboratorio" restyle (M11) is paused and stays intact on the `restyle/laboratory`
-branch: the pieces worth keeping are picked from there (motifs in
-`docs/archive/RESTYLE.md`). Work restarts on the `astro` branch, created from
-`restyle/base` (the look of `main` plus the new content), with four milestones in
-sequence: first the platform, then the style, then the projects, finally the agent. Going
-online waits until the site is complete (Simone's choice): everything goes in first.
+The Astro site (M14 onwards) is on `main`, which replaced the SvelteKit site (M1-M10,
+history in `docs/CYCLES.md`). The "Laboratorio" restyle (M11) is paused: its motifs are in
+`docs/archive/RESTYLE.md`, and its branches (`restyle/laboratory`, `restyle/base`) and the
+`astro` working branch were retired when `astro` reached `main`. Their full history is kept
+in a git bundle outside the repo; the discarded pixel-art PNGs were dropped from the history
+that reached `main`.
 
 ## Milestones
 
-### M14 - Migration to Astro - Done on the `astro` branch, to be put online
+### M14 - Migration to Astro - Done
 
 Site rebuilt in Astro with a neutral starting look (Simone's choice: a canvas to start
 from instead of parity with the base look). Log in `docs/CYCLES.md` (Cycle 11), choices
@@ -113,9 +112,8 @@ of the earlier idea (the site redesigned live by a model). Choices in
   renewed. Move Umami to a subdomain of `esse.dev` before it expires, or the statistics
   stop without errors.
 - Email `hello@esse.dev`: check that the mailbox receives before going online.
-- Merge to `main` with **squash**: the restyle branches carry in their history about 70 MB
-  of PNGs of the discarded pixel art, which must not enter `main`.
 
 ## Deploy state
 
-In production: `main` (SvelteKit). The Astro site is on the `astro` branch, not merged.
+`main` holds the Astro site. Production still serves the last SvelteKit deploy
+(2026-06-04) until Workers Builds deploys `main`, which needs the production secrets first.

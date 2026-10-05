@@ -155,31 +155,31 @@ ideas considered and the discarded ones live in `docs/archive/RESTYLE.md`.
 
 ### Block 4 - content, typographic indexes, CRT, favicon (done)
 
-- **Project recuration (`8d57f89`):** 19 projects published instead of 25 (4 in progress,
+- **Project recuration (`f5d3c89`):** 19 projects published instead of 25 (4 in progress,
   5 completed, 6 archived, 4 ideas); the 15 excluded are `published: false`, not deleted,
   so recoverable. Copy rewritten in first person from the repos' READMEs, without the
   inflated metrics of the old stubs. Home showcase led by Relay, Nexus and Flux
   (`config/featured.json`).
-- **Two densities in the project listing (`2b1949f`):** in progress and completed stay as
+- **Two densities in the project listing (`d0c55b3`):** in progress and completed stay as
   cards with an image (showcase); archived and ideas become a one-line typographic index
   (year, title, excerpt) on two columns below. Split in `utils/shelf.ts` (tested). The
   home shows only the showcase, in the order of the featured. The project listing is no
   longer paginated: pagination would cut the two densities in half and the collection is
   small on purpose. The label of the `idea` status goes back to "Idea" (it was
   "Esplorazione").
-- **Articles as an index (`976088b`):** the only article sat alone in a three-column grid
+- **Articles as an index (`ed7f8dd`):** the only article sat alone in a three-column grid
   behind a placeholder. Now it uses the same typographic index, with the full date on the
   left; the component is generalized from `ProjectIndex` to `EntryIndex`. Articles stay
   paginated (6 per page).
-- **Section index fix in IT (`9017347`):** header and rail of the chassis compared the
+- **Section index fix in IT (`1d6ae6d`):** header and rail of the chassis compared the
   logical key (`projects`) with the translated name (`progetti`) and in Italian lost the
   index. Now it resolves by anchor (`#projects`), the same in every language.
-- **Contacts (`b3dd2da`):** large email, profiles on one mono line with an outgoing arrow;
+- **Contacts (`f04dd22`):** large email, profiles on one mono line with an outgoing arrow;
   the `mailto` no longer opens an empty tab.
-- **First dose of CRT (`52b4540`):** three static marks, none animated: inner vignette on
+- **First dose of CRT (`eb5ca29`):** three static marks, none animated: inner vignette on
   the chassis (only from `lg`), phosphor glow on accent text (derived from the token) and
   scanlines only on the project thumbnails.
-- **Favicon and manifest (`796e15e`):** a single drawing (dark screen with chassis, "e" in
+- **Favicon and manifest (`ea8d904`):** a single drawing (dark screen with chassis, "e" in
   Martian Mono, accent block cursor) from which `scripts/generate-favicons.ts` generates
   all the sizes. The outputs are committed and the script is not in the build: rerun with
   `pnpm generate-favicons` when the drawing or the default accent changes.
@@ -191,21 +191,21 @@ DOM. No bugs: the problem was grammar. Eleven radii, eight border opacities, fiv
 container backgrounds, eight mono sizes, four chip styles, three different objects for
 the three floating mobile controls, text at 1300px on desktop.
 
-- **Tokens and materials (`a5f19a2`):** in the `@theme` two radii, three lines, three
+- **Tokens and materials (`c3defa0`):** in the `@theme` two radii, three lines, three
   surfaces, four mono sizes; in `@layer components` `.panel`, `.chip`, `.field`, `.label`,
   `.section` and the sizes of `.key` (`--sm`, `--icon`, `--float`). Every component
   consumes them, no hand-written value. The `.archive-card` and `.entry-panel` classes
   disappear into `.panel`.
-- **Card and index (`d2550e7`):** 21:9 thumbnail below `sm`, three-line excerpt, a single
+- **Card and index (`9edf31d`):** 21:9 thumbnail below `sm`, three-line excerpt, a single
   row of three chips that shrink with an ellipsis plus a count: stable height in the
   grid. Below `md` the index no longer has the empty 3rem column: year inline to the
   right of the title, long date above, two-line excerpt (row of ~90px instead of
   150-175).
-- **Mobile dock (`7604f03`):** menu, back-to-top and accent are the same 44px
+- **Mobile dock (`c605466`):** menu, back-to-top and accent are the same 44px
   `key--icon key--float` key; the picker becomes a key with the lit LED that cycles the
   themes, the header burger and the floating one share the cell, the footer keeps 6rem of
   clearance below `lg`.
-- **Reading column (`74343bf`):** About and Contacts at `max-w-prose`, project and article
+- **Reading column (`7a377fb`):** About and Contacts at `max-w-prose`, project and article
   in a `max-w-3xl` column on the left (which also resizes the hero image); excerpt in
   roman, article meta as a label, 404 link as a key.
 - **Frame:** the rails move to the single `text-tele` size and to the panels' `line-2`
@@ -330,7 +330,7 @@ project's `CLAUDE.md`.
 
 ## Cycle 14 - The site agent, first version (2026-10-03)
 
-First cut of M17 (`83ddb42` .. `10ef143`): `/it/agente` (and `/en/agent`) is a row of the
+First cut of M17 (`f3b1955` .. `ed09dab`): `/it/agente` (and `/en/agent`) is a row of the
 list and a static page with a Svelte island that opens a WebSocket to a Durable Object per
 visitor.
 
@@ -391,7 +391,7 @@ code".
 
 ## Cycle 16 - The agent's demo tools (2026-10-03)
 
-Third cut of M17 (`3bdf3ee` .. `85a8ccd`): from 9 to 13 tools, with a "Capabilities" group
+Third cut of M17 (`14bc4be` .. `871d7eb`): from 9 to 13 tools, with a "Capabilities" group
 in the page.
 
 - **`render`:** bars, tables and timelines from data, never HTML; same validation on the
@@ -418,17 +418,17 @@ in the page.
 
 ## Cycle 17 - Concept B's style and the slimmer home (2026-10-04)
 
-Round on M15 (`7e13715` .. `c066659`): the style chosen in a separate concept, then home
+Round on M15 (`0c7cf2c` .. `709e47c`): the style chosen in a separate concept, then home
 and list refined in short rounds.
 
 - **Style (#15):** `docs/concepts/concept-b-stile.html`, three rounds with palette, mono
-  font, CRT effect and frame tunable live, then applied (`aa48bfa`, `204524f`): lavender
+  font, CRT effect and frame tunable live, then applied (`ccfa654`, `2d270b1`): lavender
   accent (palette G), Departure Mono for the interface mono (code in prose stays Geist
   Mono), CRT veil set by the `--crt-*` variables, on a wide screen a rounded window with
   list and content as two cards; mobile stays flush. A phosphor green with a single job:
   LED in progress, agent at work, successful copy or send.
-- **Motion:** instant page change, no view transition (`660991c`); labels decode once when
-  the pointer enters and once when it leaves, not on every `pointerover` (`10c0593`).
+- **Motion:** instant page change, no view transition (`58cd7e7`); labels decode once when
+  the pointer enters and once when it leaves, not on every `pointerover` (`8eed59c`).
 - **Home:** gone the whoami line above the name; fewer duplicates (the line about the
   build goes into the intro, the project count stays in the list); "Where to start" with
   three items: the agent with an example question that ends up in its input without
@@ -436,10 +436,10 @@ and list refined in short rounds.
   the text the coding agents are separated from the agents in products, which run on
   custom harnesses.
 - **Fix:** the example question used `?q=`, which is the site's search, and also filled the
-  list's box: now it is `?ask=`, with an E2E that checks it (`0bfa55d`).
+  list's box: now it is `?ask=`, with an E2E that checks it (`dcbe36c`).
 - **Agent page:** first the suggestions, then the 13 tools as names on three lines, with a
-  line describing the one under the pointer, focus or touch (`b007b52`).
-- **List and toolbar** (`476c97c`, `c066659`): Welcome row at the top of the list, Activity
+  line describing the one under the pointer, focus or touch (`d27aa6e`).
+- **List and toolbar** (`07752bd`, `709e47c`): Welcome row at the top of the list, Activity
   icon in green for Now, `~` as the first step of every path, external profiles as mono
   names with the arrow (Lucide has no logos) next to the email on the home and at the
   bottom of the list.
@@ -464,8 +464,8 @@ Round on M15: mobile takes the same shape as the wide screen.
   immediately on opening and at the end of the stroke on closing, otherwise focus does
   not enter in the same gesture.
 - **Fix:** the agent page no longer scrolls to the bottom with an empty conversation
-  (`643b424`); `theme-color` aligned with the new background.
-- **CRT veil** (`3bfc60e`): about a quarter lighter (glow, fringe, lines and vignette),
+  (`0c2518f`); `theme-color` aligned with the new background.
+- **CRT veil** (`5454486`): about a quarter lighter (glow, fringe, lines and vignette),
   always and only from the `--crt-*` variables.
 - **Tests:** 104 unit and 57 E2E (drawer: Esc, X, tap outside, search from the magnifier).
 - **Next step:** the full round on a real iPhone, the agent placeholder on two lines, the
@@ -473,7 +473,7 @@ Round on M15: mobile takes the same shape as the wide screen.
 
 ## Cycle 19 - Glass, the chatting agent, per-IP limits (2026-10-04)
 
-Round on M15 and M17 (`2a3862a` .. `38ece10`).
+Round on M15 and M17 (`9a1005e` .. `e85f4c7`).
 
 - **Glass (#16):** `docs/concepts/concept-c-vetro.html` with variants tunable live, B
   chosen with the flat top bar. The window rests on a colored background (`wallpaper`);
@@ -483,7 +483,7 @@ Round on M15 and M17 (`2a3862a` .. `38ece10`).
   glass turned it grey, and is at zero. `subtle` raised to `#908e9b`, measured on the glass
   where the veil behind is lighter; `surface` and `hover` become light veils instead of
   solid greys.
-- **Nested blur** (`b744c0b`): in Chromium a blurring glass inside another blurring one
+- **Nested blur** (`a68c6c7`): in Chromium a blurring glass inside another blurring one
   stops blurring, and the agent field showed the transcript behind it sharp. Frame and
   pane keep only the glass border; list, agent field and menus blur.
 - **Overscroll:** no bounce and no scroll passing underneath. `overscroll-none` on every
@@ -491,18 +491,18 @@ Round on M15 and M17 (`2a3862a` .. `38ece10`).
   ancestor that does not scroll): now it sits on the page and the main containers, and
   the nested blocks (code, tables, tool output) have only `overscroll-x-none`, otherwise
   the wheel over a command did not scroll the page. Never a rule on `*`.
-- **Drawer** (`ab747a2`): `touch-action` does not pass inside a scrolling container, so
+- **Drawer** (`5384214`): `touch-action` does not pass inside a scrolling container, so
   inside the list the browser took the gesture and dragging to the left no longer closed
   it. The list has `touch-pan-y` too; an E2E sends real touches via CDP.
 - **Agent page:** title and introduction disappear once the conversation starts (they stay
   for screen readers), "new conversation" moves to the toolbar and appears only then; the
   notices follow the language of the message detected by Jev, not the page's.
-- **Chat** (`bdff5f1`): Jev has a `chat` intent (greetings, jokes, thanks, questions about
+- **Chat** (`adb4ef5`): Jev has a `chat` intent (greetings, jokes, thanks, questions about
   the agent) that goes to the model; the chat mode (two or three sentences, no tools)
   triggers only with `chat` at least 0.7, so a real question read half as chat still
   searches the site. Off-topic now means a real task unrelated to Simone. The prompt has a
   voice (sharp, warm, a bit playful, never human, no emoji).
-- **Per-IP limits (#17,** `38ece10`): the visitor id is chosen by the browser and its cap
+- **Per-IP limits (#17,** `e85f4c7`): the visitor id is chosen by the browser and its cap
   was bypassed. Burst of 10 messages a minute per IP with Workers Rate Limiting, before
   Jev; 50 cents a day per IP in the `Ledger`, with a SHA-256 fingerprint of day and
   address, never the IP in clear. The burst has its own notice.
@@ -511,7 +511,7 @@ Round on M15 and M17 (`2a3862a` .. `38ece10`).
   pass were refused by the model in a live trial.
 - **Links in answers (#18):** no allowlist of external domains, for now.
 - **Mobile:** agent placeholder on one line, link to the releases written as a path
-  (`be09326`); Instagram and X handles fixed to `essedotdev`.
+  (`f8dc543`); Instagram and X handles fixed to `essedotdev`.
 - **Concept D** (`docs/concepts/concept-d-og.html`): proposals for the OG images and the
   favicon, awaiting Simone's choice.
 - **Tests:** 106 unit and 61 E2E.
@@ -533,13 +533,13 @@ Round on M15 and M17 (`2a3862a` .. `38ece10`).
 
 ## Cycle 21 - The glass pane, M16 started (2026-10-04 / 2026-10-05)
 
-Round on M15 (finishing touches) and first cut of M16 (`dbe3efb` .. `eebdd3f`).
+Round on M15 (finishing touches) and first cut of M16 (`5617709` .. `e85ea97`).
 
 - **Glass pane:** the content goes from black to a lighter tone (`pane` token), then back
   to glass blurring from a sibling layer behind toolbar and content (`data-pane-glass`,
-  `e286378`): so the agent field and the menus, which are in the content, still blur
+  `43abe85`): so the agent field and the menus, which are in the content, still blur
   (#16). A single soft point of light in the background, seen through the list.
-- **Veils on the glass** (`b3c46fa`, `a95c2b7`): solid `bg-panel` on the glass did not
+- **Veils on the glass** (`012b028`, `9a9dd1c`): solid `bg-panel` on the glass did not
   show, and row hover, the "Why" box and the agent's blocks looked empty. Now the blocks
   sit on `surface/60` and there is a single scale: hover `surface/60`, selection
   `surface`, `hover` only for controls that already start from a veil.
@@ -547,9 +547,9 @@ Round on M15 (finishing touches) and first cut of M16 (`dbe3efb` .. `eebdd3f`).
   tried and undone with two reverts); agent icon chosen from concept F
   (`BotMessageSquare`, the chat says you can talk to it). Both concepts in
   `docs/archive/concepts/`.
-- **Fix** (`ae0caef`): the j/k highlight stays only with focus in the list, before it
+- **Fix** (`5003fdf`): the j/k highlight stays only with focus in the list, before it
   looked like a second selection.
-- **Favicon** (`eebdd3f`): the same block as the logo cursor (1:2, sharp corners, glow).
+- **Favicon** (`e85ea97`): the same block as the logo cursor (1:2, sharp corners, glow).
 - **M16, principles and sorting:** `docs/features/progetti.md` with principles, voice and
   sorting decided with Simone (showcase, registry, ideas, out). The repo is public and the
   agent reads its docs: no reserved name in the files.
@@ -567,25 +567,25 @@ Round on M15 (finishing touches) and first cut of M16 (`dbe3efb` .. `eebdd3f`).
 
 ## Cycle 22 - Icons in motion, content, agent in dev (2026-10-05)
 
-Finishing touches on M15 and content (`1e7a962` .. `7771990`).
+Finishing touches on M15 and content (`645053f` .. `cfdbd49`).
 
-- **Icons in motion** (`243d7ab`, concept E in `docs/concepts/concept-e-icone.html`): on
+- **Icons in motion** (`76329ed`, concept E in `docs/concepts/concept-e-icone.html`): on
   hover of the link that contains them the house jumps, the agent tilts its head, the
   arrows go out and come back, the projects' LEDs send out a ring, the copy tick draws
   itself. Pointer only: keyboard and touch stay still.
 - **Now**, four rounds on Lucide's `Activity` line: it flickered because unitless lengths
-  inside `calc()` made `stroke-dashoffset` jump (now in px, `010e704`); then a heart
-  monitor scroll (`caf225f`), redraw in a loop with a fade (`5c8676b`), finally the choice
+  inside `calc()` made `stroke-dashoffset` jump (now in px, `069cc25`); then a heart
+  monitor scroll (`73cb3c0`), redraw in a loop with a fade (`a574b79`), finally the choice
   of round 3 of concept E: the line traces itself from the left and retracts the same
-  way, like a snake (`a14d318`).
-- **Content** (`f5bec03`): path in the about page put back in order (a year of AI in
+  way, like a snake (`4e5c39a`).
+- **Content** (`feed229`): path in the about page put back in order (a year of AI in
   Pavia, not concluded; coding courses for kids; Let's Code Italia then Ethicode; the
   software house with freelancing alongside); Ethicode starts at the end of 2022, not
   2023; the Relay item in Now without libghostty in the title.
-- **Agent in `pnpm dev`** (`73a29a4`): `env.ASSETS.fetch` on `assets.local` goes through
+- **Agent in `pnpm dev`** (`c1a1b94`): `env.ASSETS.fetch` on `assets.local` goes through
   Vite, which answered 403 to the unknown host, and the chat stayed offline. Now
   `allowedHosts` in `astro.config.mjs`; the deploy and `wrangler dev` are not touched.
-- **Collection filters** (`3ea0779`, `7771990`): `Select`, active chips and "reset" in
+- **Collection filters** (`63c8670`, `cfdbd49`): `Select`, active chips and "reset" in
   Departure Mono on the same veil as the list's search, in place of the sans controls with
   the border. In the options menu, tag search and "reset" sit inside the panel with
   concentric radii (`--radius-panel` 10px, margin 4px, `--radius-control` 6px); the active
