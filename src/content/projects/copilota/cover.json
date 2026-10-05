@@ -1,6 +1,4 @@
 {
-	"title": "Copilota",
-	"tagline": "A copilot for sales calls",
 	"accent": "#fde68a",
 	"prompt": "what did they say about budget?",
 	"panel": {

@@ -1,6 +1,4 @@
 {
-	"title": "Personal servers",
-	"tagline": "Two VPS, nightly restored backups, a monitor watching from outside",
 	"accent": "#93c5fd",
 	"prompt": "monitor status",
 	"panel": {

@@ -1,6 +1,4 @@
 {
-	"title": "Media Hub",
-	"tagline": "The platform of my home server: several apps on one backend",
 	"accent": "#fde047",
 	"prompt": "play the next episode",
 	"panel": {

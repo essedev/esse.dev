@@ -1,6 +1,4 @@
 {
-	"title": "Watch OS",
-	"tagline": "Press a button, speak, and an agent on a server answers",
 	"accent": "#e879f9",
 	"prompt": "hold button, speak",
 	"panel": {

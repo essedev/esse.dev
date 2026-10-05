@@ -1,8 +1,5 @@
 {
-	"title": "IDKCraft",
-	"tagline": "A voxel game in Kotlin and OpenGL",
 	"accent": "#86efac",
-	"prompt": "./gradlew run",
 	"panel": {
 		"kind": "image",
 		"image": "cover-panel.png"

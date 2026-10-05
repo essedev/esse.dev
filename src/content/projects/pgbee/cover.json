@@ -1,8 +1,5 @@
 {
-	"title": "pgbee",
-	"tagline": "AI-derived columns for PostgreSQL",
 	"accent": "#ffd166",
-	"prompt": "select bee.add_column('ticket', 'category', ...)",
 	"panel": {
 		"kind": "code",
 		"lines": [

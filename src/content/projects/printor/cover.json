@@ -1,6 +1,4 @@
 {
-	"title": "Edge Lab",
-	"tagline": "Where does an LLM give a real edge in trading, if it does?",
 	"accent": "#60a5fa",
 	"prompt": "harness run --hypothesis h01",
 	"panel": {

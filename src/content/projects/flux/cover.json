@@ -1,6 +1,4 @@
 {
-	"title": "Flux",
-	"tagline": "Newsletter and RSS reader",
 	"accent": "#6bb88d",
 	"prompt": "extract: find the content, copy it as is",
 	"panel": {
