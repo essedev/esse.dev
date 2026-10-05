@@ -1,254 +1,253 @@
 # Architecture
 
-Il perché delle scelte di questo progetto. Per lo stato corrente vedi
-`docs/ROADMAP.md`, per il log dei cicli `docs/CYCLES.md`.
+The why behind this project's choices. For the current state see `docs/ROADMAP.md`, for
+the cycle log `docs/CYCLES.md`.
 
-## Cos'è
+## What it is
 
-Portfolio personale su `esse.dev`, in Astro (TS strict, Tailwind 4, isole Svelte 5) su Cloudflare
-Workers. Contenuti file-based nel repo, i18n EN/IT con route e slug tradotti,
-immagini Open Graph generate a build. Fino al Ciclo 10 era SvelteKit: la riscrittura è
-in `docs/CYCLES.md` (Ciclo 11) e la scelta in `docs/DECISIONS.md` #10.
+A personal portfolio at `esse.dev`, in Astro (strict TS, Tailwind 4, Svelte 5 islands) on
+Cloudflare Workers. File-based content in the repo, EN/IT i18n with translated routes and
+slugs, Open Graph images generated at build. Until Cycle 10 it was SvelteKit: the rewrite
+is in `docs/CYCLES.md` (Cycle 11) and the choice in `docs/DECISIONS.md` #10.
 
-## Rendering: statico, con tre eccezioni sul Worker
+## Rendering: static, with three exceptions on the Worker
 
-Tutte le pagine sono prerenderizzate a build e servite da Cloudflare come asset
-statici. Il Worker riceve solo ciò che non è un file:
+Every page is prerendered at build and served by Cloudflare as a static asset. The Worker
+only receives what is not a file:
 
-- la root `/` (`src/pages/index.ts`), che sceglie la lingua da `Accept-Language`;
-- il catch-all `src/pages/[...path].astro`, che per un URL con lingua, route o slug
-  sbagliati fa un solo redirect al canonico (`resolveRedirect` in `src/lib/i18n.ts`)
-  e altrimenti risponde 404 con la pagina localizzata;
-- `/agents/site-agent/*`, il WebSocket dell'agente (sotto).
+- the root `/` (`src/pages/index.ts`), which picks the language from `Accept-Language`;
+- the catch-all `src/pages/[...path].astro`, which for a URL with the wrong language,
+  route or slug makes a single redirect to the canonical one (`resolveRedirect` in
+  `src/lib/i18n.ts`) and otherwise answers 404 with the localized page;
+- `/agents/site-agent/*`, the agent's WebSocket (below).
 
-L'entry del Worker è `src/worker.ts`: manda solo `/agents/site-agent/*` a
-`routeAgentRequest` e tutto il resto all'handler di Astro, ed esporta i due Durable Object
-(`SiteAgent` e `Ledger`). Il filtro sul path serve perché `routeAgentRequest` instraderebbe
-qualunque classe esportata, e `Ledger` deve restare raggiungibile solo via RPC.
+The Worker entry is `src/worker.ts`: it sends only `/agents/site-agent/*` to
+`routeAgentRequest` and everything else to the Astro handler, and it exports the two
+Durable Objects (`SiteAgent` and `Ledger`). The path filter is there because
+`routeAgentRequest` would route any exported class, and `Ledger` must stay reachable only
+through RPC.
 
-Il prerender gira in Node (`prerenderEnvironment: 'node'`) perché le OG usano resvg,
-che è nativo. Gli E2E girano contro la build servita da `wrangler dev`, non contro il
-dev server, così redirect, header e 404 sono quelli di produzione.
+The prerender runs in Node (`prerenderEnvironment: 'node'`) because the OG images use
+resvg, which is native. The E2E tests run against the build served by `wrangler dev`, not
+the dev server, so redirects, headers and 404s are the production ones.
 
-## Contenuti: file nel repo, niente DB né CMS
+## Content: files in the repo, no DB or CMS
 
-Ogni progetto e articolo è una cartella in `src/content/`: `meta.json` con i campi
-condivisi tra le lingue (stato, date, link, pubblicato) e un `<lang>.md` per lingua
-(frontmatter con slug, titolo, sommario, tag e, per i progetti, le iterazioni precedenti
-in `previously`, #20; corpo in Markdown). Le due metà sono
-content collection separate (`src/content.config.ts`, schemi Zod) e si uniscono in
-`src/lib/content.ts`, unico accesso ai contenuti per pagine ed endpoint. Lì si fanno
-rispettare a build le regole che lo schema non vede: un contenuto pubblicato ha il
-testo in ogni lingua, ogni testo ha il suo meta, gli slug sono unici per lingua, la
-vetrina (`src/config/featured.json`) punta a progetti pubblicati. Una violazione fa
-fallire la build.
+Each project and article is a folder in `src/content/`: a `meta.json` with the fields
+shared across languages (status, dates, links, published) and one `<lang>.md` per
+language (frontmatter with slug, title, excerpt, tags and, for projects, the earlier
+iterations in `previously`, #20; body in Markdown). The two halves are separate content
+collections (`src/content.config.ts`, Zod schemas) and are joined in `src/lib/content.ts`,
+the single access point to content for pages and endpoints. That is where the build
+enforces the rules the schema cannot see: a published item has its text in every
+language, every text has its meta, slugs are unique per language, the showcase
+(`src/config/featured.json`) points to published projects. A violation fails the build.
 
-Perché due file per contenuto: `meta.json` tiene i fatti, `<lang>.md` la prosa. I
-fatti sono condivisi tra le lingue (copiarli in ogni Markdown li farebbe divergere) e
-sono quelli che uno script può aggiornare dalle fonti (repo, date, stato) senza toccare
-un testo scritto a mano. Lo standard di Astro sarebbe un Markdown per lingua con tutto
-il frontmatter: si paga in duplicazione, e cresce con i campi delle cover in arrivo.
+Why two files per item: `meta.json` holds the facts, `<lang>.md` the prose. The facts are
+shared across languages (copying them into every Markdown would make them diverge) and
+are the ones a script can update from the sources (repo, dates, status) without touching
+hand-written text. Astro's standard would be one Markdown per language with all the
+frontmatter: it costs duplication, and grows with the fields of the covers to come.
 
-Le pagine della home (welcome, chi sono, contatti) sono Markdown per lingua in
-`src/content/pages/`. Titolo del sito, nomi delle sezioni e stringhe della UI sono la
-collection `site`, con schema rigido: ogni lingua ha tutte le chiavi e nessuna in più,
-e le chiavi sono un tipo. Config (lingue, route, vetrina) resta JSON importato e
-validato da `src/lib/config.ts`, perché è configurazione e non contenuto.
+The home pages (welcome, about, contacts) are Markdown per language in
+`src/content/pages/`. The site title, section names and UI strings are the `site`
+collection, with a strict schema: every language has all the keys and none extra, and the
+keys are a type. Config (languages, routes, showcase) stays JSON, imported and validated
+by `src/lib/config.ts`, because it is configuration and not content.
 
-Dove Astro ha uno standard si usa quello: content collections, `@astrojs/rss`, Fonts
-API per i font self-hosted con preload e fallback tarati. La sitemap no:
-`@astrojs/sitemap` ricava le alternate sostituendo il prefisso di lingua e con gli slug
-tradotti sbaglierebbe gli hreflang.
+Where Astro has a standard, that is used: content collections, `@astrojs/rss`, the Fonts
+API for self-hosted fonts with preload and tuned fallbacks. The sitemap is not:
+`@astrojs/sitemap` derives the alternates by replacing the language prefix and with
+translated slugs it would get the hreflang wrong.
 
-## i18n: route e slug tradotti, logica pura
+## i18n: translated routes and slugs, pure logic
 
-Due lingue e il controllo completo degli URL (`/en/projects/x` contro
-`/it/progetti/y`) rendono una libreria sovradimensionata, e l'i18n di Astro non
-traduce i segmenti né gli slug. Le route per lingua sono in `src/config/navigation.json`;
-la slug map (id -> lingua -> slug) è derivata dai contenuti. Tutta la logica (sezione
-di una route, traduzione di route e slug, URL equivalente in un'altra lingua,
-redirect al canonico, lingua preferita) è in funzioni pure in `src/lib/i18n.ts`,
-testate a unità e usate da pagine, header, SEO, sitemap e catch-all.
+Two languages and full control of the URLs (`/en/projects/x` against `/it/progetti/y`)
+make a library oversized, and Astro's i18n does not translate segments or slugs. The
+routes per language are in `src/config/navigation.json`; the slug map (id -> language ->
+slug) is derived from the content. All the logic (section of a route, translation of
+route and slug, equivalent URL in another language, redirect to the canonical one,
+preferred language) is in pure functions in `src/lib/i18n.ts`, unit-tested and used by
+pages, headers, SEO, sitemap and the catch-all.
 
-## Open Graph: generate a build
+## Open Graph: generated at build
 
-Un endpoint prerenderizzato (`src/pages/og/[name].png.ts`) produce un PNG per pagina
-con satori e resvg: `home`, `listing-<sezione>-<lingua>`,
-`detail-<sezione>-<id>-<lingua>`. Il layout è un albero puro in `src/lib/og.ts`, nello
-stile terminale del concept D (`docs/DECISIONS.md` #19). Zero compute a runtime, niente
-superficie di injection, immagini deterministiche. Gotcha di satori: font `woff`/`ttf`,
-mai `woff2` (Geist Sans da `@fontsource/geist-sans`, Departure Mono dal `woff` in
+A prerendered endpoint (`src/pages/og/[name].png.ts`) produces one PNG per page with
+satori and resvg: `home`, `listing-<section>-<language>`,
+`detail-<section>-<id>-<language>`. The layout is a pure tree in `src/lib/og.ts`, in the
+terminal style of concept D (`docs/DECISIONS.md` #19). Zero compute at runtime, no
+injection surface, deterministic images. Satori gotcha: `woff`/`ttf` fonts, never `woff2`
+(Geist Sans from `@fontsource/geist-sans`, Departure Mono from the `woff` in
 `src/assets/fonts/`).
 
-## Sicurezza e header
+## Security and headers
 
-CSP generata da Astro (`security.csp`) come meta tag nelle pagine, con gli hash degli
-script inline; i soli domini esterni ammessi sono Umami e Turnstile
-(`challenges.cloudflare.com`, per `draft_message`). `frame-ancestors` nel meta
-tag è ignorato, quindi va come header in `public/_headers` insieme a
-`X-Content-Type-Options`, `Referrer-Policy`, `X-Frame-Options` e `Permissions-Policy`.
-Le risposte del Worker (root, redirect, 404) non passano da `_headers`: gli stessi
-header li aggiunge `src/middleware.ts`. Gli asset con hash in `/_astro/` sono cacheati
-come immutabili. Niente endpoint che riflettono input utente.
+CSP generated by Astro (`security.csp`) as a meta tag in the pages, with the hashes of
+the inline scripts; the only external domains allowed are Umami and Turnstile
+(`challenges.cloudflare.com`, for `draft_message`). `frame-ancestors` in the meta tag is
+ignored, so it goes as a header in `public/_headers` together with
+`X-Content-Type-Options`, `Referrer-Policy`, `X-Frame-Options` and `Permissions-Policy`.
+The Worker's responses (root, redirects, 404) do not go through `_headers`: the same
+headers are added by `src/middleware.ts`. Hashed assets in `/_astro/` are cached as
+immutable. No endpoint reflects user input.
 
-## Interfaccia: il sito come spazio di lavoro
+## Interface: the site as a workspace
 
-Il sito si usa come un'app (concept A, `docs/concepts/concept-a-spazio.html`, Ciclo 12):
-due colonne alte tutta la finestra, ognuna col suo tono. A sinistra la lista (logo,
-ricerca, voci, riga di stato con legenda e tasti), a destra il riquadro del contenuto con
-una toolbar (percorso, azioni sul documento, lingua). Nessuna barra a tutta larghezza:
-con due toni su righe orizzontali la pagina formava una T che non corrispondeva a nessuna
-zona (Ciclo 13). Ogni voce resta una pagina statica col suo URL, senza router. Il cambio pagina è
-istantaneo, come cambiare documento in un'app: la dissolvenza con salita di prima (view
-transition) sembrava un sito che carica una pagina nuova e rallentava j k e h/l.
+The site is used like an app (concept A, `docs/concepts/concept-a-spazio.html`, Cycle 12):
+two columns as tall as the window, each with its own tone. On the left the list (logo,
+search, items, a status line with legend and keys), on the right the content pane with a
+toolbar (path, document actions, language). No full-width bar: with two tones on
+horizontal rows the page formed a T that matched no zone (Cycle 13). Each item stays a
+static page with its own URL, with no router. The page change is instant, like changing
+document in an app: the earlier fade with a rise (view transition) looked like a site
+loading a new page and slowed down j k and h/l.
 
-Su schermo largo le due colonne sono due card dentro una finestra arrotondata, staccata
-dai bordi. Su mobile la finestra resta, con il solo riquadro del contenuto. La finestra
-poggia su uno sfondo (`wallpaper`): un velo continuo in diagonale da lavanda a viola
-profondo che sfuma nel nero, su una griglia fine, con un solo punto di luce tenue in alto
-a sinistra (`--wall-light`) che si vede attraverso la lista. Niente bagliori sparsi, che
-attraverso il vetro diventavano macchie di colore, e niente verde, che resta agli stati
-vivi. Cornice,
-lista, riquadro, campo dell'agente e menu sono di vetro (utility `glass`: sfocatura forte,
-saturazione moderata, nessun velo bianco, che ingrigisce, e un bordo che prende luce
-appena; valori in `--glass-*` e `--wall`). Sfocano solo i vetri che non ne contengono
-altri (lista, campo dell'agente, menu): in Chromium un vetro che sfoca dentro un altro
-smette di sfocare, quindi la cornice ha solo il bordo e il riquadro sfoca da uno strato
-dietro il contenuto (`data-pane-glass`, `pane` #0f0e15 al 75%), fratello e non antenato
-del campo dell'agente e dei menu, che così sfocano ancora. La toolbar resta piatta. `surface` e `hover` sono veli chiari e non grigi pieni,
-così i controlli sul vetro schiariscono invece di fare da buco: una scala sola, hover
-`surface/60` e selezione `surface` (il "sei qui" resta sopra l'hover), blocchi del
-riquadro su `surface/60`, perché `panel` pieno sul vetro non si distingue. `subtle` è tarato sul
-vetro dove il velo dietro è più chiaro. Viene dal concept C
-(`docs/concepts/concept-c-vetro.html`, variante B), scelte in `docs/DECISIONS.md` #16.
-Niente rimbalzo né scroll che passa sotto: `overscroll-none` sulla pagina e sui
-contenitori principali, `overscroll-x-none` sui blocchi annidati che scorrono di lato;
-una regola su ogni elemento faceva agganciare a Chromium la rotella a un antenato che
-non scorre, e la lista si fermava. Lo stile viene
-dal concept B (`docs/concepts/concept-b-stile.html`): accento lavanda su nero appena
-freddo, un verde fosforo solo per gli stati vivi o riusciti (LED in corso e mantenuto, copie e invii), Departure
-Mono per il monospace dell'interfaccia, e un velo da monitor CRT (alone da fosforo su
-titoli ed etichette, frangia rosso-ciano, righe e vignetta) regolato dalle variabili
-`--crt-*` di `global.css`. Scelte in `docs/DECISIONS.md` #15. Le etichette con
-`data-scramble` si decodificano una volta quando il puntatore entra nel link o nel bottone
-che le contiene e una quando esce. Le icone con `data-motion` fanno un gesto loro
-all'hover del link che le contiene (concept E, `docs/concepts/concept-e-icone.html`): la
-casa salta, l'agente inclina la testa, la linea di Adesso si traccia e si ritira in loop, le
-frecce escono e rientrano, i LED mandano un anello; con la tastiera e sul touch restano
-ferme.
+On a wide screen the two columns are two cards inside a rounded window, detached from the
+edges. On mobile the window stays, with the content pane only. The window rests on a
+background (`wallpaper`): a continuous diagonal veil from lavender to deep purple fading
+into black, over a fine grid, with a single soft point of light at the top left
+(`--wall-light`) that shows through the list. No scattered glows, which through the glass
+turned into color blotches, and no green, which is reserved for live states. Frame, list,
+pane, agent field and menus are glass (`glass` utility: strong blur, moderate saturation,
+no white veil, which turns grey, and a border that catches a little light; values in
+`--glass-*` and `--wall`). Only the glasses that contain no other glass blur (list, agent
+field, menus): in Chromium a blurring glass inside another stops blurring, so the frame
+has only the border and the pane blurs from a layer behind the content
+(`data-pane-glass`, `pane` #0f0e15 at 75%), a sibling and not an ancestor of the agent
+field and the menus, which therefore still blur. The toolbar stays flat. `surface` and
+`hover` are light veils and not solid greys, so controls on the glass lighten instead of
+acting as a hole: a single scale, hover `surface/60` and selection `surface` (the "you
+are here" stays above the hover), pane blocks on `surface/60`, because a solid `panel` on
+the glass does not stand out. `subtle` is tuned on the glass, where the veil behind is
+lighter. It comes from concept C (`docs/concepts/concept-c-vetro.html`, variant B),
+choices in `docs/DECISIONS.md` #16. No bounce and no scroll passing underneath:
+`overscroll-none` on the page and on the main containers, `overscroll-x-none` on nested
+blocks that scroll sideways; a rule on every element made Chromium hook the wheel to an
+ancestor that does not scroll, and the list stopped. The style comes from concept B
+(`docs/concepts/concept-b-stile.html`): lavender accent on a slightly cold black, a
+phosphor green only for live or successful states (LED in progress and maintained,
+copies and sends), Departure Mono for the interface monospace, and a CRT monitor veil
+(phosphor glow on titles and labels, red-cyan fringe, lines and vignette) set by the
+`--crt-*` variables in `global.css`. Choices in `docs/DECISIONS.md` #15. Labels with
+`data-scramble` decode once when the pointer enters the link or button that contains
+them and once when it leaves. Icons with `data-motion` make a gesture of their own on
+hover of the link that contains them (concept E, `docs/concepts/concept-e-icone.html`):
+the house jumps, the agent tilts its head, the line of Now traces itself and retracts in
+a loop, the arrows go out and come back, the LEDs send out a ring; with the keyboard and
+on touch they stay still.
 
-- **Lista** (`src/lib/workspace.ts`): in ordine di importanza e alta al massimo 900 px.
-  Prima Benvenuto (la home) e le pagine singole (chi sono, adesso, agente), poi la
-  vetrina dei progetti con "tutti i N" verso il registro, metodo, scritti. I progetti
-  fuori vetrina restano nella pagina: la ricerca li trova e compare quello aperto. È
-  anche la fonte dell'ordine del pager. In fondo, sopra la riga di stato, i profili
-  esterni (`SocialLinks.astro`, gli stessi link dei contatti) come nomi mono con la
-  freccia.
-- **Navigazione** (`src/scripts/workspace.ts`): j/k e frecce nella lista, Invio, Esc al
-  livello sopra, h/l (o le frecce laterali) per precedente e successivo, `/` e Cmd/Ctrl+K
-  per la ricerca. Non `[`/`]`: sulla tastiera italiana del Mac richiedono Option. Il
-  percorso nella toolbar comincia sempre con `~`, che porta alla home. Il livello sopra
-  (Esc, breadcrumb, "‹ sezione" su mobile) si calcola dai `crumbs` e torna
-  con la history se si arriva da lì, così il registro ritrova i filtri. Il documento ha
-  solo titolo, meta e testo: niente "Indietro" nel contenuto.
-- **Mobile**: ogni pagina mostra solo il riquadro, che scorre dentro la finestra con la
-  toolbar ferma in cima e "‹ sezione" come in iOS. La lista è un cassetto (`data-drawer`
-  su `[data-workspace]`): entra da sinistra come una card sopra il riquadro, che diventa
-  inerte, e si apre dal bottone a sinistra nella toolbar o dalla lente, che porta dritta
-  alla ricerca. Si chiude con Esc, la X, un tocco fuori o trascinandola verso sinistra:
-  cassetto e lista hanno `touch-pan-y`, perché `touch-action` non passa dentro un
-  contenitore che scorre e senza il browser si prende il gesto. Contiene anche i profili e
-  la legenda; i tasti no.
-- **Token** (`@theme` in `src/styles/global.css`): `desk` e `frame` dietro e attorno alla
-  finestra; superfici `bg`, `panel`, `pane` (il riquadro del contenuto), `surface`, `hover`; `line`; testo `fg`, `text`,
-  `muted`, `subtle` (il minimo per il testo, 4,5:1 misurato sul vetro); `accent` e `on-accent`; `live` per
-  gli stati vivi; `glow`, il viola profondo del velo dietro la finestra; `danger`; `status-*` per lo stato dei progetti; raggi `--radius-control`,
-  `--radius-panel`, `--radius-card`, `--radius-window`. Classi condivise: `.led`, `.kbd`,
-  `.label`, `.chip`, `.ulink`, `.caret`.
-- **Misura**: nessuna larghezza massima sul contenuto, la danno la colonna e la taglia
-  fluida (`Page.astro`, `Prose.astro`). Nei dettagli, da `xl`, i fatti stanno in una
-  colonna a destra; la pagina riempie almeno il riquadro e il pager sta in fondo.
+- **List** (`src/lib/workspace.ts`): in order of importance and at most 900 px tall.
+  First Welcome (the home) and the single pages (about, now, agent), then the project
+  showcase with "all N" leading to the registry, method, writing. Projects outside the
+  showcase stay in the page: search finds them and the open one appears. It is also the
+  source of the pager order. At the bottom, above the status line, the external profiles
+  (`SocialLinks.astro`, the same links as the contacts) as mono names with the arrow.
+- **Navigation** (`src/scripts/workspace.ts`): j/k and arrows in the list, Enter, Esc to
+  the level above, h/l (or the side arrows) for previous and next, `/` and Cmd/Ctrl+K for
+  search. Not `[`/`]`: on the Italian Mac keyboard they need Option. The path in the
+  toolbar always starts with `~`, which leads to the home. The level above (Esc,
+  breadcrumb, "‹ section" on mobile) is computed from the `crumbs` and goes back through
+  history when you arrive from there, so the registry finds its filters again. The
+  document has only title, meta and text: no "Back" in the content.
+- **Mobile**: every page shows only the pane, which scrolls inside the window with the
+  toolbar fixed at the top and "‹ section" as in iOS. The list is a drawer (`data-drawer`
+  on `[data-workspace]`): it comes in from the left like a card above the pane, which
+  becomes inert, and opens from the button on the left of the toolbar or from the
+  magnifier, which leads straight to search. It closes with Esc, the X, a tap outside or
+  by dragging it to the left: drawer and list have `touch-pan-y`, because `touch-action`
+  does not pass inside a scrolling container and without it the browser takes the
+  gesture. It also contains the profiles and the legend; the keys it does not.
+- **Tokens** (`@theme` in `src/styles/global.css`): `desk` and `frame` behind and around
+  the window; surfaces `bg`, `panel`, `pane` (the content pane), `surface`, `hover`;
+  `line`; text `fg`, `text`, `muted`, `subtle` (the minimum for text, 4.5:1 measured on
+  the glass); `accent` and `on-accent`; `live` for live states; `glow`, the deep purple
+  of the veil behind the window; `danger`; `status-*` for the status of projects; radii
+  `--radius-control`, `--radius-panel`, `--radius-card`, `--radius-window`. Shared
+  classes: `.led`, `.kbd`, `.label`, `.chip`, `.ulink`, `.caret`.
+- **Measure**: no maximum width on the content, the column and the fluid size set it
+  (`Page.astro`, `Prose.astro`). In detail pages, from `xl`, the facts sit in a column on
+  the right; the page fills at least the pane and the pager sits at the bottom.
 
-## Agente
+## Agent
 
-`/it/agente` è una pagina statica con un'isola Svelte (`AgentChat.svelte`) che apre un
-WebSocket verso un Durable Object per visitatore (`SiteAgent`, `src/agent/`). Dentro gira
-pi-durable tramite `PiHarness` dell'Agents SDK: conversazione nel SQLite dell'oggetto,
-ripresa dopo una sospensione, tool come estensioni di pi. Il protocollo del socket e il
-riduttore degli eventi (`sockets.ts`, `view.ts`) vengono dall'esempio ufficiale e sono gli
-stessi sui due lati.
+`/it/agente` is a static page with a Svelte island (`AgentChat.svelte`) that opens a
+WebSocket to a Durable Object per visitor (`SiteAgent`, `src/agent/`). Inside runs
+pi-durable through the Agents SDK's `PiHarness`: conversation in the object's SQLite,
+resumption after a suspension, tools as pi extensions. The socket protocol and the event
+reducer (`sockets.ts`, `view.ts`) come from the official example and are the same on both
+sides.
 
-- **Modelli:** da OpenRouter (`src/agent/models.ts`), `glm-5.3-flash` su una lista
-  ordinata di provider veloci con passaggio automatico al successivo, timeout sullo stream
-  senza token e nuovi tentativi di pi. Chiave `OPENROUTER_API_KEY` come secret del Worker. Il
-  binding `AI` resta solo come trasporto alternativo di Jev. Scelte in
-  `docs/DECISIONS.md` #11.
-- **Tool sul sito:** `search_site`, `read_page`, `list_projects` e `show_page` leggono
-  `/agent/index.json`, un indice del sito generato alla build dalle stesse collection
-  delle pagine e letto dagli asset: l'agente vede solo ciò che il sito pubblica.
-  `show_page` diventa una scheda nella trascrizione, che il visitatore apre quando vuole.
-- **Tool sul codice:** `repo_overview`, `list_files`, `read_file`, `search_code` e
-  `recent_commits` leggono i repo pubblici dall'API REST di GitHub (`github.ts`). Il repo
-  è un parametro a valori chiusi: i `repo` dei progetti pubblicati più quello del sito.
-  `read_file` numera le righe, dà il link a GitHub e legge i file lunghi a pezzi. Con
-  `GITHUB_TOKEN` (facoltativo) il limite sale a 5.000 richieste l'ora e `search_code`
-  cerca nel codice; senza, cerca solo nei nomi dei file. Scelte in #13.
-- **Capacità:** `render` disegna barre, tabelle e linee del tempo. Il modello manda dati,
-  mai HTML; la stessa validazione (`render.ts`) gira nel Durable Object, che rimanda
-  l'errore al modello, e nel browser, che disegna coi token del sito (le barre sono SVG:
-  la CSP blocca gli stili inline).
-- **`run_code`:** il Code Mode di Cloudflare (`@cloudflare/codemode`, `run-code.ts`). Il
-  modello scrive una funzione JavaScript che chiama i tool di sola lettura come
-  `codemode.nome()`, con le dichiarazioni TypeScript generate dagli schemi nella
-  descrizione del tool. Gira in un Dynamic Worker (binding `LOADER`, piano a pagamento)
-  senza rete né ambiente, con tetti su tempo, chiamate e dimensione del risultato; ogni
-  chiamata passa dalla stessa validazione e dallo stesso `execute` dei tool normali.
-- **`delegate`:** 2 o 3 sotto-agenti in parallelo, con lo schema dei sotto-agenti di
-  pi-durable: ogni figlio è una conversazione posseduta dalla chiamata (fermare il padre
-  ferma i figli, una ripresa li ritrova), con i soli tool di sola lettura e istruzioni da
-  sotto-agente. Ogni figlio ha un tetto di token (`child-budget.ts`): un'estensione
-  selezionata solo sui figli che, arrivati al tetto, chiede la risposta finale prima della
-  richiesta e blocca altri tool. Senza crediti per tutti i figli nel caso peggiore, il tool
-  non li crea e risponde il padre. Il costo dei figli non è nella conversazione
-  principale: lo scala il tool, una volta sola (`memo`). La pagina mostra per ogni figlio
-  chiamate, token, costo e risposta (`delegate.ts`, `DelegateView.svelte`); gli eventi dei
-  figli non arrivano dal vivo.
-- **`draft_message`:** il modello scrive solo una bozza; la pagina la mostra in una
-  scheda modificabile con Turnstile e il visitatore la manda. Il server (`sendDraft`)
-  controlla che la bozza sia una chiamata dell'agente in questa conversazione e non sia
-  già partita, verifica Turnstile, applica i tetti giornalieri (per visitatore nel
-  `SiteAgent`, per il sito nel `Ledger`) e spedisce con il binding `send_email` verso
-  l'indirizzo verificato in `MAIL_TO` (`draft.ts`, `DraftView.svelte`).
-- **Link all'agente:** `?ask=` scrive una domanda nell'input senza mandarla (la usa la
-  home). Non `?q=`, che è la ricerca della lista.
-- **Pagina a conversazione avviata:** `data-agent-started` su `[data-workspace]` nasconde
-  titolo e introduzione (restano per i lettori di schermo) e mostra "nuova conversazione"
-  nella toolbar. Le risposte possono linkare qualunque dominio (#18).
-- **Il catalogo** che la pagina mostra a conversazione vuota è quello che il server
-  annuncia nel `hello`: un tool nuovo compare da solo, i gruppi in pagina lo ordinano.
-- **Triage e limiti:** prima di tutto la raffica per IP (binding `AGENT_RATE`, Workers
-  Rate Limiting), poi il budget, poi Jev (`triage.ts`), che ferma fuori tema e abuso e
-  decide la lingua della risposta e degli avvisi. Una chiacchiera (intento `chat`) passa,
-  e se Jev ne è sicuro il prompt riceve la modalità breve senza tool. La spesa si scala in
-  costo reale per visitatore (nel `SiteAgent`), per impronta giornaliera di IP e per tutto
-  il sito (entrambe nel Durable Object `Ledger`), con le soglie in `budget.ts`; l'IP non si
-  salva, solo l'impronta SHA-256 di giorno e indirizzo. In pagina il budget si mostra in
-  crediti, solo quando sta per finire. Se Jev non risponde il messaggio passa e vale il
-  tetto. Le soglie si verificano con `pnpm eval:jev` su un set etichettato
-  (`tests/eval/jev-triage.json`), che contiene anche attacchi. Scelte in
-  `docs/DECISIONS.md` #12 e #17.
-- **Trascrizione:** Markdown passato da un renderer che sanifica (`markdown.ts`),
-  ragionamento chiuso, verdetto di Jev, token, costo e budget residuo per ogni risposta.
+- **Models:** from OpenRouter (`src/agent/models.ts`), `glm-5.3-flash` on an ordered list
+  of fast providers with automatic fallback to the next, a timeout on a stream without
+  tokens and pi's retries. Key `OPENROUTER_API_KEY` as a Worker secret. The `AI` binding
+  remains only as an alternative transport for Jev. Choices in `docs/DECISIONS.md` #11.
+- **Site tools:** `search_site`, `read_page`, `list_projects` and `show_page` read
+  `/agent/index.json`, a site index generated at build from the same collections as the
+  pages and read from the assets: the agent sees only what the site publishes.
+  `show_page` becomes a card in the transcript, which the visitor opens when they want.
+- **Code tools:** `repo_overview`, `list_files`, `read_file`, `search_code` and
+  `recent_commits` read the public repos from GitHub's REST API (`github.ts`). The repo is
+  a closed-value parameter: the `repo` of the published projects plus the site's own.
+  `read_file` numbers the lines, gives the GitHub link and reads long files in pieces.
+  With `GITHUB_TOKEN` (optional) the limit rises to 5,000 requests an hour and
+  `search_code` searches the code; without it, it searches only file names. Choices in
+  #13.
+- **Capabilities:** `render` draws bars, tables and timelines. The model sends data,
+  never HTML; the same validation (`render.ts`) runs in the Durable Object, which sends
+  the error back to the model, and in the browser, which draws with the site's tokens
+  (the bars are SVG: the CSP blocks inline styles).
+- **`run_code`:** Cloudflare's Code Mode (`@cloudflare/codemode`, `run-code.ts`). The
+  model writes a JavaScript function that calls the read-only tools as
+  `codemode.name()`, with the TypeScript declarations generated from the schemas in the
+  tool description. It runs in a Dynamic Worker (binding `LOADER`, paid plan) with no
+  network or environment, with caps on time, calls and result size; every call goes
+  through the same validation and the same `execute` as the normal tools.
+- **`delegate`:** 2 or 3 sub-agents in parallel, with the sub-agent scheme of
+  pi-durable: each child is a conversation owned by the call (stopping the parent stops
+  the children, a resume finds them again), with only the read-only tools and sub-agent
+  instructions. Each child has a token cap (`child-budget.ts`): an extension selected
+  only on the children that, once at the cap, asks for the final answer before the request
+  and blocks further tools. Without credits for all the children in the worst case, the
+  tool does not create them and the parent answers. The children's cost is not in the
+  main conversation: the tool deducts it, once only (`memo`). The page shows for each
+  child calls, tokens, cost and answer (`delegate.ts`, `DelegateView.svelte`); the
+  children's events do not arrive live.
+- **`draft_message`:** the model writes only a draft; the page shows it in an editable
+  card with Turnstile and the visitor sends it. The server (`sendDraft`) checks that the
+  draft is a call of the agent in this conversation and has not already gone out,
+  verifies Turnstile, applies the daily caps (per visitor in the `SiteAgent`, for the
+  site in the `Ledger`) and sends with the `send_email` binding to the address verified
+  in `MAIL_TO` (`draft.ts`, `DraftView.svelte`).
+- **Link to the agent:** `?ask=` writes a question into the input without sending it
+  (the home uses it). Not `?q=`, which is the list's search.
+- **Page with a conversation started:** `data-agent-started` on `[data-workspace]` hides
+  title and introduction (they stay for screen readers) and shows "new conversation" in
+  the toolbar. Answers can link to any domain (#18).
+- **The catalog** the page shows with an empty conversation is the one the server
+  announces in `hello`: a new tool appears by itself, the groups in the page order it.
+- **Triage and limits:** first the per-IP burst (binding `AGENT_RATE`, Workers Rate
+  Limiting), then the budget, then Jev (`triage.ts`), which stops off-topic and abuse and
+  decides the language of the answer and of the notices. A chat message (intent `chat`)
+  goes through, and if Jev is sure about it the prompt gets the short mode with no tools.
+  Spending is deducted in real cost per visitor (in the `SiteAgent`), per daily IP
+  fingerprint and for the whole site (both in the `Ledger` Durable Object), with the
+  thresholds in `budget.ts`; the IP is not stored, only the SHA-256 fingerprint of day and
+  address. In the page the budget is shown in credits, only when it is about to run out.
+  If Jev does not answer the message goes through and the cap applies. The thresholds are
+  verified with `pnpm eval:jev` on a labeled set (`tests/eval/jev-triage.json`), which
+  also contains attacks. Choices in `docs/DECISIONS.md` #12 and #17.
+- **Transcript:** Markdown passed through a sanitizing renderer (`markdown.ts`), reasoning
+  collapsed, Jev's verdict, tokens, cost and remaining budget for every answer.
 
-Il codice del Worker ha un suo `tsconfig.worker.json`: i tipi del runtime Cloudflare
-(`worker-configuration.d.ts`, generati da `wrangler types`) si scontrano con quelli del DOM.
+The Worker code has its own `tsconfig.worker.json`: the Cloudflare runtime types
+(`worker-configuration.d.ts`, generated by `wrangler types`) clash with the DOM ones.
 
 ## Boundary
 
-Pagine sottili -> `src/lib/content.ts` (dati) -> schemi delle collection
-(validazione) -> componenti (UI). La logica pura (i18n, SEO, filtri delle liste,
-metriche di lettura, vetrina, correlati, layout OG) è in moduli di `src/lib/` senza
-dipendenze da Astro, testabili con vitest in Node. Lo stesso per l'agente: la logica pura
-(budget, triage, indice del sito, trascrizione) sta in moduli di `src/agent/` separati dal
-Durable Object. Le isole Svelte ricevono dati già
-serializzati (`ListItem` in `src/lib/listing.ts`) e non leggono contenuti.
+Thin pages -> `src/lib/content.ts` (data) -> collection schemas (validation) ->
+components (UI). The pure logic (i18n, SEO, list filters, reading metrics, showcase,
+related items, OG layout) is in `src/lib/` modules with no Astro dependency, testable
+with vitest in Node. The same for the agent: the pure logic (budget, triage, site index,
+transcript) lives in `src/agent/` modules separate from the Durable Object. The Svelte
+islands receive already serialized data (`ListItem` in `src/lib/listing.ts`) and do not
+read content.

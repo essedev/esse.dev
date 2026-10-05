@@ -1,225 +1,226 @@
 # Decisions
 
-Decisioni che vincolano il futuro e avevano un'alternativa reale scartata. Voci
-numerate e citabili come `#N`; status: `proposta`, `attiva`, `superata da #M`,
-`assorbita in <doc>`. Il "cosa è stato fatto" sta in `docs/CYCLES.md`.
+Decisions that bind the future and had a real alternative that was rejected. Numbered
+entries, citable as `#N`; status: `proposed`, `active`, `superseded by #M`,
+`absorbed into <doc>`. What was done lives in `docs/CYCLES.md`.
 
-Le scelte strutturali di fondo (contenuti JSON senza DB, i18n hand-rolled, slug map
-derivata, OG a build time) sono spiegate in `docs/ARCHITECTURE.md`; quelle di identità
-visiva del restyle fermo (palette, font, hero, pixel art scartata) in
-`docs/archive/RESTYLE.md`; lo stile attuale è #15.
+The basic structural choices (JSON content with no DB, hand-rolled i18n, derived slug
+map, OG at build time) are explained in `docs/ARCHITECTURE.md`; those on the visual
+identity of the paused restyle (palette, font, hero, discarded pixel art) in
+`docs/archive/RESTYLE.md`; the current style is #15.
 
-Le voci non più attive (superate o sospese con il ritorno allo stile base e la
-riscrittura in Astro) stanno in `docs/decisions-archive.md`, con la stessa numerazione.
+The entries no longer active (superseded or suspended with the return to the base style
+and the rewrite in Astro) are in `docs/decisions-archive.md`, with the same numbering.
 
-## #1 - Niente CI remota, gate di qualità locale
+## #1 - No remote CI, local quality gate
 
-**Status:** attiva (Ciclo 2, M6)
+**Status:** active (Cycle 2, M6)
 
-Il deploy parte da Cloudflare Workers Builds al push. Una GitHub Actions era stata
-aggiunta e poi rimossa: sarebbe stata solo informativa e scollegata dal deploy. Il gate
-è `pnpm lint && pnpm check && pnpm build && pnpm test:ci` in locale, sempre prima di
-un push. Scartata: CI GitHub come gate (non blocca il deploy, doppia fonte di verità).
+Deploy starts from Cloudflare Workers Builds on push. A GitHub Action had been added and
+then removed: it would only have been informative and disconnected from the deploy. The
+gate is `pnpm lint && pnpm check && pnpm build && pnpm test:ci` locally, always before a
+push. Rejected: GitHub CI as the gate (it does not block the deploy, double source of
+truth).
 
-## #2 - Stima token euristica, senza tokenizer reale
+## #2 - Heuristic token estimate, no real tokenizer
 
-**Status:** attiva (Cicli 5-6)
+**Status:** active (Cycles 5-6)
 
-Token stimati da caratteri/divisore per lingua (~4 EN, ~3.5 IT), etichettati "~",
-code block contati solo nei token. Scartato un tokenizer reale: esatto per un solo
-modello (per Claude non ne esiste uno offline pubblico) e peso sul bundle del Worker
-o spostamento a build time, sproporzionati per un'etichetta decorativa.
+Tokens estimated from characters/divisor per language (~4 EN, ~3.5 IT), labeled "~",
+code blocks counted only in tokens. A real tokenizer rejected: exact for a single model
+(for Claude there is no public offline one) and the weight on the Worker bundle or the
+move to build time, disproportionate for a decorative label.
 
-## #3 - Vetrina home da un file config, non da flag nei meta
+## #3 - Home showcase from a config file, not from flags in the meta
 
-**Status:** attiva (Ciclo 7)
+**Status:** active (Cycle 7)
 
-Selezione e ordine dei progetti in home stanno in `config/featured.json`, validato a
-build (id esistenti, max 6). Scartati il boolean `featured` nei `meta.json` (non dà
-l'ordine) e un `featured_rank` sparso (fragile). Featured vale solo per la home: il
-listing resta neutro, ordinato per data e filtrabile.
+Selection and order of the projects on the home live in `config/featured.json`,
+validated at build (existing ids, max 6). Rejected: a `featured` boolean in the
+`meta.json` files (it gives no order) and a scattered `featured_rank` (fragile). Featured
+applies only to the home: the listing stays neutral, ordered by date and filterable.
 
-## #6 - Progetti esclusi si depubblicano, non si cancellano
+## #6 - Excluded projects are unpublished, not deleted
 
-**Status:** attiva (Ciclo 9, blocco 4)
+**Status:** active (Cycle 9, block 4)
 
-Un progetto che esce dal portfolio passa a `published: false` in `meta.json` e resta
-nel repo, recuperabile senza scavare nella storia git. Scartata: cancellare la
-cartella del progetto.
+A project leaving the portfolio goes to `published: false` in `meta.json` and stays in
+the repo, recoverable without digging through git history. Rejected: deleting the
+project folder.
 
-## #10 - Astro statico, Worker solo per lingua e redirect
+## #10 - Static Astro, Worker only for language and redirects
 
-**Status:** attiva (Ciclo 11)
+**Status:** active (Cycle 11)
 
-Il sito è contenuto, non un'applicazione: tutte le pagine sono prerenderizzate e il
-Worker gira solo per la root (lingua da `Accept-Language`) e per un catch-all che fa
-un solo redirect al canonico o risponde 404. Ogni contenuto è `meta.json` condiviso
-più un Markdown per lingua, in due content collection unite da `src/lib/content.ts`.
-Scartati: SSR di tutte le pagine come in SvelteKit (compute e latenza per pagine che
-non cambiano), l'i18n di Astro (non traduce segmenti né slug), un JSON per lingua con
-i campi condivisi duplicati (deriva tra lingue), il corpo a blocchi JSON (illeggibile
-da scrivere e nei diff). Dal Ciclo 14 il Worker instrada anche `/agents/site-agent/*`
-verso il Durable Object dell'agente (#11); le pagine restano tutte statiche.
+The site is content, not an application: every page is prerendered and the Worker runs
+only for the root (language from `Accept-Language`) and for a catch-all that makes a
+single redirect to the canonical URL or answers 404. Each item is a shared `meta.json`
+plus one Markdown per language, in two content collections joined by
+`src/lib/content.ts`. Rejected: SSR of every page as in SvelteKit (compute and latency
+for pages that do not change), Astro's i18n (it does not translate segments or slugs),
+one JSON per language with the shared fields duplicated (drift between languages), the
+body as JSON blocks (unreadable to write and in diffs). Since Cycle 14 the Worker also
+routes `/agents/site-agent/*` to the agent's Durable Object (#11); the pages all stay
+static.
 
-## #11 - Agente del sito: PiHarness dell'Agents SDK, modelli da OpenRouter
+## #11 - Site agent: the Agents SDK's PiHarness, models from OpenRouter
 
-**Status:** attiva (decisa nel Ciclo 13, confermata dalla prova nel Ciclo 14)
+**Status:** active (decided in Cycle 13, confirmed by the trial in Cycle 14)
 
-L'agente gira sul server, mai nel browser, in un Durable Object per visitatore che ospita
-pi-durable con `PiHarness` (`agents/harness/pi`, beta): conversazione e ripresa dopo una
-sospensione sono di pi, il Durable Object dà storage e risveglio. I modelli passano da
-OpenRouter (`src/agent/models.ts`): `glm-5.3-flash` sui provider più veloci in ordine
-(BaseTen, Fireworks, Parasail), con passaggio automatico al successivo. Con Workers AI
-la stessa domanda impiegava circa 40 s, con OpenRouter circa 7. L'interfaccia è un'isola
-Svelte con `AgentClient`. Scartati: Workers AI e AI Gateway (catalogo ridotto e a volte
-in ritardo, nessuna scelta del provider, crediti comunque necessari per i modelli di terze
-parti), Cerebras diretto (oggi serve solo due modelli), pi-agent-core collegato a mano
-(riscriveva la durabilità di `PiHarness`), pi-server e pi-client (sperimentali), React con
-assistant-ui (aspetto generico, formato dell'AI SDK).
+The agent runs on the server, never in the browser, in a Durable Object per visitor that
+hosts pi-durable with `PiHarness` (`agents/harness/pi`, beta): conversation and resume
+after a suspension are pi's, the Durable Object gives storage and wake-up. Models go
+through OpenRouter (`src/agent/models.ts`): `glm-5.3-flash` on the fastest providers in
+order (BaseTen, Fireworks, Parasail), with automatic fallback to the next. With Workers
+AI the same question took about 40 s, with OpenRouter about 7. The interface is a Svelte
+island with `AgentClient`. Rejected: Workers AI and AI Gateway (reduced catalog,
+sometimes late, no choice of provider, credits needed anyway for third-party models),
+Cerebras direct (today it serves only two models), pi-agent-core wired by hand (it
+rewrote the durability of `PiHarness`), pi-server and pi-client (experimental), React
+with assistant-ui (generic look, AI SDK format).
 
-## #12 - Limiti dell'agente in costo reale, con un triage davanti
+## #12 - Agent limits in real cost, with a triage in front
 
-**Status:** attiva (Ciclo 14)
+**Status:** active (Cycle 14)
 
-Ogni visitatore ha un budget giornaliero in dollari e il sito un tetto globale
-(`src/agent/budget.ts`, Durable Object `Ledger`): si scala il costo reale di ogni
-risposta, calcolato da pi-ai, non il numero di messaggi. Prima del modello Jev (di
-TypeSafe) classifica intento, peso e lingua in meno di un secondo: fuori tema e abuso si
-fermano lì. Si ferma quando la probabilità di essere fuori tema (fuori tema più abuso) arriva a
-0,65, o quella di abuso a 0,5: soglie fissate sui messaggi etichettati (`pnpm eval:jev`).
-Dal Ciclo 19 l'intento `chat` (saluti, battute, domande sull'agente) passa al modello e
-non è fuori tema; la risposta breve senza tool scatta solo con `chat` almeno 0,7, perché
-una domanda vera letta per metà come chiacchiera deve cercare nel sito. Il set è di 76
-messaggi con 10 attacchi: 72 decisioni giuste. Se Jev non risponde la
-richiesta passa: il tetto in costo reale resta la garanzia.
-Jev passa da OpenRouter con la stessa chiave del modello; TypeSafe diretto e Workers AI
-restano come trasporti alternativi (`JEV_TRANSPORT` in `src/agent/site-agent.ts`).
-Scartati: un numero fisso di messaggi per visitatore (rigido, ignora quanto costa una
-domanda), il solo triage senza tetto (una classificazione si può ingannare), le
-chiacchiere fermate come fuori tema (un saluto riceveva un avviso secco).
-Il budget per visitatore è di 10 centesimi al giorno (era 5: bastavano 3 domande con
-`delegate`). In pagina si conta in crediti (1 credito = 0,01 centesimi, 1.000 al giorno)
-e il contatore compare solo sotto il 30%: chi visita non deve sentirsi misurato. Token e
-crediti di ogni risposta restano visibili, il costo in dollari nel tooltip.
+Each visitor has a daily budget in dollars and the site a global cap
+(`src/agent/budget.ts`, `Ledger` Durable Object): the real cost of each answer,
+computed by pi-ai, is deducted, not the number of messages. Before the model, Jev (by
+TypeSafe) classifies intent, weight and language in under a second: off-topic and abuse
+stop there. It stops when the probability of being off-topic (off-topic plus abuse)
+reaches 0.65, or that of abuse 0.5: thresholds fixed on the labeled messages
+(`pnpm eval:jev`). Since Cycle 19 the `chat` intent (greetings, jokes, questions about
+the agent) goes to the model and is not off-topic; the short answer with no tools
+triggers only with `chat` at least 0.7, because a real question read half as chat must
+search the site. The set is 76 messages with 10 attacks: 72 right decisions. If Jev does
+not answer the request goes through: the cap in real cost remains the guarantee. Jev
+goes through OpenRouter with the same key as the model; TypeSafe direct and Workers AI
+remain as alternative transports (`JEV_TRANSPORT` in `src/agent/site-agent.ts`).
+Rejected: a fixed number of messages per visitor (rigid, ignores how much a question
+costs), triage alone without a cap (a classification can be fooled), chat stopped as
+off-topic (a greeting received a curt notice). The budget per visitor is 10 cents a day
+(it was 5: 3 questions with `delegate` were enough). In the page it is counted in
+credits (1 credit = 0.01 cents, 1,000 a day) and the counter appears only below 30%:
+visitors must not feel measured. Tokens and credits of each answer stay visible, the
+cost in dollars in the tooltip.
 
-## #13 - Tool sul codice dall'API di GitHub, pagine come schede
+## #13 - Code tools from the GitHub API, pages as cards
 
-**Status:** attiva (Ciclo 15)
+**Status:** active (Cycle 15)
 
-I tool sui repo leggono l'API REST di GitHub (`src/agent/github.ts`): nessun workspace da
-tenere, chiamate da decine di millisecondi, solo lettura. Il repo è un parametro a valori
-chiusi (i `repo` dei progetti pubblicati più quello del sito), e il codice lo ricontrolla
-prima di chiamare GitHub. Il testo dei repo è dato, non istruzione: lo dice il prompt, e
-i tool non hanno effetti da sfruttare. `GITHUB_TOKEN` è facoltativo: senza, 60 richieste
-l'ora per IP e ricerca solo nei nomi dei file.
-`show_page` mostra una scheda invece di aprire la pagina: il sito non ha un router lato
-client, e navigare chiuderebbe la conversazione mentre l'agente risponde.
-Scartati per ora: `@cloudflare/computer` (clona i repo, serve davvero solo per eseguire
-codice: si rivaluta con `run_code`), `open_page` che naviga da solo.
+The repo tools read GitHub's REST API (`src/agent/github.ts`): no workspace to keep,
+calls of tens of milliseconds, read-only. The repo is a closed-value parameter (the
+`repo` of the published projects plus the site's), and the code checks it again before
+calling GitHub. The text of the repos is data, not instruction: the prompt says so, and
+the tools have no effects to exploit. `GITHUB_TOKEN` is optional: without it, 60
+requests an hour per IP and search only in file names. `show_page` shows a card instead
+of opening the page: the site has no client-side router, and navigating would close the
+conversation while the agent is answering. Rejected for now: `@cloudflare/computer` (it
+clones the repos, really needed only to run code: to be reconsidered with `run_code`),
+an `open_page` that navigates by itself.
 
-## #14 - Tool dimostrativi: Code Mode in JavaScript, sotto-agenti di pi, invio solo umano
+## #14 - Demo tools: Code Mode in JavaScript, pi sub-agents, human-only sending
 
-**Status:** attiva (Ciclo 16)
+**Status:** active (Cycle 16)
 
-`render` riceve dati e mai HTML: la CSP blocca stili e script inline, e un HTML del
-modello andrebbe sanificato. `run_code` usa il Code Mode di Cloudflare in JavaScript:
-i Dynamic Workers accettano anche Python, ma Cloudflare stessa lo sconsiglia per codice
-generato al volo (avvio nell'ordine dei secondi contro millisecondi), e il Code Mode
-espone gli altri tool come API tipizzate solo in TypeScript. `delegate` segue lo schema
-dei sotto-agenti del README di pi-durable (conversazioni possedute dalla chiamata), con
-i soli tool di sola lettura. `draft_message` non spedisce: il modello scrive la bozza,
-il visitatore la corregge e la manda dopo Turnstile, e il server accetta solo bozze nate
-da una chiamata dell'agente nella stessa conversazione. Destinatario in un secret, perché
-il repo è pubblico.
-Ogni figlio di `delegate` ha un tetto di 12.000 token, con un'estensione di pi
-selezionata solo sui figli: arrivati al tetto rispondono con quello che hanno. Sul
-confronto di tre repo il costo è sceso da circa 140 a 93 crediti e il tempo da 50 a 29 s.
-Scartati: Python per `run_code`, un invio deciso dal modello, un indirizzo di arrivo
-scritto in `wrangler.jsonc`. Scartato anche togliere tool in base al peso stimato da Jev:
-il peso non è mai stato misurato contro il costo reale, e un errore toglierebbe
-`delegate` alle domande che lo meritano.
+`render` receives data and never HTML: the CSP blocks inline styles and scripts, and
+model HTML would have to be sanitized. `run_code` uses Cloudflare's Code Mode in
+JavaScript: Dynamic Workers accept Python too, but Cloudflare itself advises against it
+for code generated on the fly (startup in the order of seconds against milliseconds),
+and Code Mode exposes the other tools as typed APIs only in TypeScript. `delegate`
+follows the sub-agent scheme of the pi-durable README (conversations owned by the call),
+with only the read-only tools. `draft_message` does not send: the model writes the draft,
+the visitor corrects it and sends it after Turnstile, and the server accepts only drafts
+born from an agent call in the same conversation. Recipient in a secret, because the repo
+is public. Each child of `delegate` has a cap of 12,000 tokens, with a pi extension
+selected only on the children: once at the cap they answer with what they have. On the
+comparison of three repos the cost dropped from about 140 to 93 credits and the time from
+50 to 29 s. Rejected: Python for `run_code`, a send decided by the model, a destination
+address written in `wrangler.jsonc`. Also rejected: removing tools based on the weight
+estimated by Jev: the weight has never been measured against the real cost, and a
+mistake would take `delegate` away from the questions that deserve it.
 
-## #15 - Stile dal concept B: lavanda, verde solo per gli stati vivi, velo CRT
+## #15 - Style from concept B: lavender, green only for live states, CRT veil
 
-**Status:** attiva (Ciclo 17)
+**Status:** active (Cycle 17)
 
-Scelto con Simone su `docs/concepts/concept-b-stile.html`, che regolava dal vivo palette,
-mono, effetto CRT e cornice. Accento lavanda su nero appena freddo (palette G); un verde
-fosforo come secondo colore con un solo compito, gli stati vivi o riusciti, mai sul testo
-corrente. Departure Mono per tutto il mono dell'interfaccia, Geist Mono per il codice.
-Velo CRT (alone, frangia, righe, vignetta) regolato solo dalle variabili `--crt-*`. Su
-schermo largo lista e contenuto sono due card in una finestra; dal Ciclo 18 la finestra c'è
-anche su mobile, col solo riquadro e la lista in un cassetto (prima era a filo). Il cambio
-pagina è istantaneo: la view transition sembrava un sito che carica e rallentava la
-tastiera. Scartati: le altre palette del concept (menta, viola, ultravioletto, ambra,
-cyberpunk), gli altri mono pixel (Geist Pixel, VT323, Doto e gli altri), la cornice piatta
-o la sola finestra, la dissolvenza tra le pagine.
+Chosen with Simone on `docs/concepts/concept-b-stile.html`, which tuned palette, mono,
+CRT effect and frame live. Lavender accent on a slightly cold black (palette G); a
+phosphor green as second color with a single job, live or successful states, never on
+running text. Departure Mono for all the interface mono, Geist Mono for code. CRT veil
+(glow, fringe, lines, vignette) set only by the `--crt-*` variables. On a wide screen
+list and content are two cards in a window; since Cycle 18 the window is there on mobile
+too, with the pane only and the list in a drawer (before it was flush). The page change
+is instant: the view transition looked like a site loading and slowed down the keyboard.
+Rejected: the concept's other palettes (mint, purple, ultraviolet, amber, cyberpunk),
+the other pixel monos (Geist Pixel, VT323, Doto and the others), the flat frame or the
+window alone, the fade between pages.
 
-## #16 - Vetro dal concept C: velo continuo, sfoca solo il vetro più interno
+## #16 - Glass from concept C: continuous veil, only the innermost glass blurs
 
-**Status:** attiva (Ciclo 19)
+**Status:** active (Cycle 19)
 
-Scelta con Simone la variante B di `docs/concepts/concept-c-vetro.html`: la finestra su uno
-sfondo colorato, cornice, lista, riquadro, campo dell'agente e menu di vetro (`glass`,
-valori in `--glass-*`), la barra in alto piatta. Lo sfondo è un velo diagonale continuo
-(`--wall`): bagliori separati diventavano macchie attraverso il vetro. Nessun velo bianco
-sul vetro, che ingrigisce; `surface` e `hover` sono veli chiari, non grigi pieni; un colore
-di testo si misura sul vetro, non sul nero. In Chromium un vetro che sfoca dentro un altro
-smette di sfocare: la cornice ha solo il bordo, il riquadro sfoca da uno strato
-(`data-pane-glass`) dietro il contenuto invece che dal riquadro stesso. Scartati: velo bianco, bagliori
-separati, barra in alto di vetro (Simone non la voleva), la rifrazione della variante C
-(solo Chromium), la sfocatura su ogni livello.
+Chosen with Simone, variant B of `docs/concepts/concept-c-vetro.html`: the window on a
+colored background, frame, list, pane, agent field and menus of glass (`glass`, values in
+`--glass-*`), the top bar flat. The background is a continuous diagonal veil (`--wall`):
+separate glows became blotches through the glass. No white veil on the glass, which turns
+grey; `surface` and `hover` are light veils, not solid greys; a text color is measured on
+the glass, not on black. In Chromium a blurring glass inside another stops blurring: the
+frame has only the border, the pane blurs from a layer (`data-pane-glass`) behind the
+content instead of from the pane itself. Rejected: white veil, separate glows, glass top
+bar (Simone did not want it), the refraction of variant C (Chromium only), blur on every
+level.
 
-## #17 - Limiti dell'agente anche per IP, con un'impronta giornaliera
+## #17 - Agent limits per IP too, with a daily fingerprint
 
-**Status:** attiva (Ciclo 19)
+**Status:** active (Cycle 19)
 
-L'id del visitatore lo sceglie il browser, quindi il suo tetto (#12) si aggira cambiandolo.
-Ogni IP ha una raffica di 10 messaggi al minuto (Workers Rate Limiting, binding
-`AGENT_RATE`), controllata prima di Jev, che si paga anche sui messaggi poi fermati, e un
-budget di 50 centesimi al giorno nel `Ledger` (`IP_DAILY_USD`): cinque visitatori, perché
-uffici e reti mobili mettono tante persone dietro un indirizzo. La chiave è un'impronta
-SHA-256 di giorno e IP: l'indirizzo non si salva, e impronte di giorni diversi non si
-collegano. Scartati: il solo tetto per visitatore (aggirabile), l'IP in chiaro, un tetto
-per IP pari a quello di un visitatore (taglierebbe le reti condivise).
+The visitor id is chosen by the browser, so its cap (#12) is bypassed by changing it.
+Each IP has a burst of 10 messages a minute (Workers Rate Limiting, binding
+`AGENT_RATE`), checked before Jev, which is paid for even on the messages then stopped,
+and a budget of 50 cents a day in the `Ledger` (`IP_DAILY_USD`): five visitors, because
+offices and mobile networks put many people behind one address. The key is a SHA-256
+fingerprint of day and IP: the address is not stored, and fingerprints of different days
+are not linked. Rejected: the per-visitor cap alone (bypassable), the IP in clear, a
+per-IP cap equal to a visitor's (it would cut shared networks).
 
-## #18 - Niente allowlist dei link esterni nelle risposte, per ora
+## #18 - No allowlist of external links in the answers, for now
 
-**Status:** attiva (Ciclo 19)
+**Status:** active (Cycle 19)
 
-Le risposte dell'agente possono contenere link a qualunque dominio, senza filtro. Un link
-malevolo nella risposta serve a chi può far leggere all'agente un testo suo e poi
-mostrare la risposta a qualcun altro: oggi l'agente legge solo il sito e i repo di Simone,
-e la conversazione la vede solo chi l'ha scritta. Scartata per ora: un'allowlist dei domini
-nel renderer della trascrizione (complessità e link utili tagliati, senza un rischio da
-coprire). Si rivede quando le conversazioni diventano condivisibili o l'agente legge
-contenuti di terzi (fetch di URL, repo non di Simone).
+The agent's answers can contain links to any domain, unfiltered. A malicious link in the
+answer is useful to someone who can have the agent read a text of their own and then show
+the answer to someone else: today the agent reads only the site and Simone's repos, and
+the conversation is seen only by whoever wrote it. Rejected for now: a domain allowlist
+in the transcript renderer (complexity and useful links cut, with no risk to cover). To
+be reviewed when conversations become shareable or the agent reads third-party content
+(URL fetch, repos not Simone's).
 
-## #19 - OG nello stile terminale, favicon con il solo cursore
+## #19 - OG in the terminal style, favicon with the cursor alone
 
-**Status:** attiva (Ciclo 20)
+**Status:** active (Cycle 20)
 
-Dal concept D (`docs/concepts/concept-d-og.html`). Le immagini di condivisione sono la
-direzione B: il comando che apre la pagina (`whoami`, `ls progetti`, `cat
-progetti/relay.md`), il titolo grande con il cursore lavanda, il sommario, metadati e
-dominio in Departure Mono, righe CRT leggere. Generate alla build come PNG statici
-(satori e resvg nel prerender in Node): sul Worker non gira niente. Scartate: A, la
-finestra in miniatura (troppi dettagli che a dimensione di anteprima si perdono), e C,
-la tipografica (pulita ma slegata dal sito). La favicon è il cursore del logo con un
-alone: scartate la "e" (l'iniziale del dominio, senza un motivo), la "s" (il nome della
-lettera, ma una lettera resta una scelta comune), la tilde del percorso e il cappello del
-laboratorio. I file si generano con `pnpm favicons`.
+From concept D (`docs/concepts/concept-d-og.html`). The sharing images are direction B:
+the command that opens the page (`whoami`, `ls progetti`, `cat progetti/relay.md`), the
+big title with the lavender cursor, the excerpt, metadata and domain in Departure Mono,
+light CRT lines. Generated at build as static PNGs (satori and resvg in the Node
+prerender): nothing runs on the Worker. Rejected: A, the miniature window (too many
+details that get lost at preview size), and C, the typographic one (clean but detached
+from the site). The favicon is the logo cursor with a glow: rejected the "e" (the initial
+of the domain, with no reason), the "s" (the name of the letter, but a letter remains a
+common choice), the tilde of the path and the laboratory hat. The files are generated
+with `pnpm favicons`.
 
-## #20 - Le iterazioni precedenti di un progetto come dati, nel testo per lingua
+## #20 - A project's earlier iterations as data, in the text per language
 
-**Status:** attiva (Ciclo 21)
+**Status:** active (Cycle 21)
 
-Una scheda racconta anche i tentativi che l'hanno preceduta (`docs/features/progetti.md`),
-e li tiene come dati: `previously: [{ name, year, note }]` nel frontmatter di `<lang>.md`,
-mostrato come "Prima di questo", passato all'indice dell'agente e cercabile per nome. Sta
-nel testo e non in `meta.json`, contro il piano iniziale e la regola "fatti nel meta",
-perché la nota è prosa da tradurre; nome e anno sono fatti, e `src/lib/content.ts` fa
-fallire la build se divergono tra le lingue. Scartati: `meta.json` con la nota in ogni
-lingua (prosa fuori dal suo file), le iterazioni solo nel corpo (né cercabili né
-visibili all'agente come elenco), una scheda per ogni tentativo (tante voci da pochi
-commit invece di una famiglia).
+An entry also tells the attempts that preceded it (`docs/features/progetti.md`), and
+keeps them as data: `previously: [{ name, year, note }]` in the frontmatter of
+`<lang>.md`, shown as "Before this", passed to the agent's index and searchable by name.
+It lives in the text and not in `meta.json`, against the initial plan and the "facts in
+the meta" rule, because the note is prose to translate; name and year are facts, and
+`src/lib/content.ts` fails the build if they diverge between languages. Rejected:
+`meta.json` with the note in every language (prose outside its file), the iterations only
+in the body (neither searchable nor visible to the agent as a list), an entry for each
+attempt (many items of a few commits instead of a family).
