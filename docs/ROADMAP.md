@@ -1,121 +1,121 @@
 # Roadmap
 
-Stato corrente del progetto. Milestone reali, non wishlist. Aggiornata insieme al codice.
+Current state of the project. Real milestones, not a wishlist. Updated together with the code.
 
-Ultimo aggiornamento: 2026-10-05 (Ciclo 22: icone in movimento, contenuti, agente in dev)
+Last update: 2026-10-05 (Cycle 22: icons in motion, content, agent in dev)
 
-## Contesto
+## Context
 
-In produzione su `main` c'è il sito SvelteKit (M1-M10, storia in `docs/CYCLES.md`).
-Il restyle "Laboratorio" (M11) è fermo e resta intero sul branch `restyle/laboratory`:
-da lì si ripescano i pezzi che valgono (motivi in `docs/archive/RESTYLE.md`). Il lavoro
-riparte sul branch `astro`, creato da `restyle/base` (look di `main` più i contenuti
-nuovi), con quattro milestone in sequenza: prima la piattaforma, poi lo stile, poi i
-progetti, infine l'agente. La messa online aspetta che il sito sia completo (scelta di
-Simone): prima ci si mette tutto.
+In production on `main` is the SvelteKit site (M1-M10, history in `docs/CYCLES.md`).
+The "Laboratorio" restyle (M11) is paused and stays intact on the `restyle/laboratory`
+branch: the pieces worth keeping are picked from there (motifs in
+`docs/archive/RESTYLE.md`). Work restarts on the `astro` branch, created from
+`restyle/base` (the look of `main` plus the new content), with four milestones in
+sequence: first the platform, then the style, then the projects, finally the agent. Going
+online waits until the site is complete (Simone's choice): everything goes in first.
 
-## Milestone
+## Milestones
 
-### M14 - Migrazione ad Astro - Fatta sul branch `astro`, da mettere online
+### M14 - Migration to Astro - Done on the `astro` branch, to be put online
 
-Sito rifatto in Astro con look neutro di partenza (scelta di Simone: un canvas da cui
-partire invece della parità col look base). Log in `docs/CYCLES.md` (Ciclo 11),
-scelte in `docs/DECISIONS.md` #10. Gate verde: lint, check, build, unit, E2E.
+Site rebuilt in Astro with a neutral starting look (Simone's choice: a canvas to start
+from instead of parity with the base look). Log in `docs/CYCLES.md` (Cycle 11), choices
+in `docs/DECISIONS.md` #10. Gate green: lint, check, build, unit, E2E.
 
-- Per andare online: controllare nelle impostazioni di Cloudflare Workers Builds che
-  il comando di build sia `pnpm build`, il deploy `npx wrangler deploy` e Node almeno
-  22.12; caricare il secret `OPENROUTER_API_KEY` (`wrangler secret put`), senza il
-  quale l'agente non risponde, e `GITHUB_TOKEN` (fine-grained, sola lettura dei repo
-  pubblici), senza il quale i tool sul codice hanno 60 richieste l'ora per IP condiviso;
-  per `draft_message`: Email Routing attivo su `esse.dev` con l'indirizzo di arrivo
-  verificato, i secret `MAIL_TO` e `TURNSTILE_SECRET` e la variabile di build
-  `PUBLIC_TURNSTILE_SITE_KEY` di un widget Turnstile vero (senza, vale la chiave di prova
-  che passa sempre); poi merge su `main` con squash (vedi Aperte) e push.
+- To go online: check in the Cloudflare Workers Builds settings that the build command
+  is `pnpm build`, the deploy `npx wrangler deploy` and Node at least 22.12; upload the
+  secret `OPENROUTER_API_KEY` (`wrangler secret put`), without which the agent does not
+  answer, and `GITHUB_TOKEN` (fine-grained, read-only on public repos), without which the
+  code tools get 60 requests an hour per shared IP; for `draft_message`: Email Routing
+  active on `esse.dev` with the destination address verified, the secrets `MAIL_TO` and
+  `TURNSTILE_SECRET` and the build variable `PUBLIC_TURNSTILE_SITE_KEY` of a real
+  Turnstile widget (without it, the test key that always passes applies); then merge to
+  `main` with squash (see Open) and push.
 
-### M15 - Struttura e stile - Fatta
+### M15 - Structure and style - Done
 
-Struttura scelta: il sito come spazio di lavoro (concept A, Ciclo 12), portato in
-Astro. Fatti: due colonne alte tutta la finestra (lista e riquadro con toolbar), il
-livello sopra nella toolbar e non nel contenuto, il pager in fondo al riquadro con h/l,
-la lista in ordine di importanza con la sola vetrina dei progetti. Stile dal concept B
-(Ciclo 17, per DECISIONS #15): lavanda e verde per gli stati vivi, Departure Mono, velo
-CRT, finestra con due card su schermo largo; home snellita con l'agente in testa. Su
-mobile la finestra con il riquadro e la lista in un cassetto (Ciclo 18), rifiniture
-chiuse nel Ciclo 19. La finestra di vetro su uno sfondo colorato (Ciclo 19, per
-DECISIONS #16). OG nello stile terminale e favicon con il cursore del logo, dal concept D
-(Ciclo 20, per DECISIONS #19). Chiusa da Simone nel Ciclo 20; l'altezza della lista è
-tra le Aperte.
+Chosen structure: the site as a workspace (concept A, Cycle 12), ported to Astro. Done:
+two columns as tall as the window (list and pane with toolbar), the level above in the
+toolbar and not in the content, the pager at the bottom of the pane with h/l, the list in
+order of importance with only the project showcase. Style from concept B (Cycle 17, per
+DECISIONS #15): lavender and green for live states, Departure Mono, CRT veil, window with
+two cards on a wide screen; slimmer home with the agent first. On mobile the window with
+the pane and the list in a drawer (Cycle 18), finishing touches closed in Cycle 19. The
+glass window on a colored background (Cycle 19, per DECISIONS #16). OG in the terminal
+style and favicon with the logo cursor, from concept D (Cycle 20, per DECISIONS #19).
+Closed by Simone in Cycle 20; the height of the list is among the Open items.
 
-### M16 - Progetti - In corso
+### M16 - Projects - In progress
 
-Principi, voce e smistamento in `docs/features/progetti.md`.
+Principles, voice and sorting in `docs/features/progetti.md`.
 
-- Fatto (Ciclo 21): censimento dei repo e smistamento con Simone (vetrina, registro,
-  famiglie, idee, fuori), applicato alle schede. I lavori per clienti restano fuori di
-  default; un repo privato si pubblica solo voce per voce.
-- Fatto (Ciclo 21): campo `previously`, le iterazioni precedenti di un'idea come dati
-  (per DECISIONS #20); stato `maintained` per gli strumenti finiti e ancora in uso.
-- Fatto (Ciclo 21): prime stesure delle schede nuove dall'analisi dei repo.
-- Da fare: rilettura delle schede con Simone. I fatti (date, attività, stack) si ricavano
-  dalle fonti, il testo si scrive a mano, compreso il riquadro "Il perché".
-- Da fare: cover per ogni progetto da un componente (colore, icona Lucide o SVG, scena di
-  UI), screenshot veri dove esistono. Tag ripuliti.
-- Da fare: skill che propone le voci nuove o aggiornate dai repo; propone, non pubblica.
+- Done (Cycle 21): census of the repos and sorting with Simone (showcase, registry,
+  families, ideas, out), applied to the entries. Client work stays out by default; a
+  private repo is published only item by item.
+- Done (Cycle 21): `previously` field, the earlier iterations of an idea as data (per
+  DECISIONS #20); `maintained` status for finished tools still in use.
+- Done (Cycle 21): first drafts of the new entries from the repo analysis.
+- To do: rereading the entries with Simone. Facts (dates, activity, stack) come from the
+  sources, the text is written by hand, including the "Why" box.
+- To do: a cover for every project from a component (color, Lucide icon or SVG, UI scene),
+  real screenshots where they exist. Tags cleaned up.
+- To do: a skill that proposes the new or updated items from the repos; it proposes, it
+  does not publish.
 
-### M17 - Agente - In corso
+### M17 - Agent - In progress
 
-Una pagina del sito (`/it/agente`, una riga nella lista) è un agente vero, con tool,
-che mostra come lavora: ogni chiamata ai tool, modello, token e costo per risposta.
-Prende il posto dell'idea precedente (il sito ridisegnato dal vivo da un modello).
-Scelte in `docs/DECISIONS.md` #11-#14.
+A page of the site (`/it/agente`, one row in the list) is a real agent, with tools, that
+shows how it works: every tool call, model, tokens and cost per answer. It takes the place
+of the earlier idea (the site redesigned live by a model). Choices in
+`docs/DECISIONS.md` #11-#14.
 
-- Fatto (Ciclo 14): Durable Object per visitatore con pi-durable, `glm-5.3-flash` da
-  OpenRouter, `search_site` e `read_page`, triage con Jev valutato su un set etichettato,
-  limite in costo reale per visitatore e per il sito, trascrizione con token e costo.
-- Fatto (Ciclo 15): `list_projects`, `show_page` (scheda da aprire) e i tool sui repo
-  pubblici via API di GitHub (#13). Il repo del sito si legge dal ramo `main`: fino al
-  merge l'agente vede il sito vecchio.
-- Fatto (Ciclo 16): i tool dimostrativi, uno per capacità, coi limiti nel codice:
-  `render` (barre, tabelle, linee del tempo), `run_code` (Code Mode in un Dynamic
-  Worker), `delegate` (2-3 sotto-agenti di pi-durable), `draft_message` (bozza che il
-  visitatore manda, dopo Turnstile). Scelte in #14.
-- Fatto (Ciclo 19): le chiacchiere passano al modello, che risponde breve e senza tool
-  (#12); limiti per IP, raffica di 10 messaggi al minuto e 50 centesimi al giorno (#17);
-  red team: 10 attacchi nel set di Jev, superato anche dal vivo. Niente allowlist dei
-  link esterni finché le conversazioni non sono condivisibili (#18).
-- Tool di sola lettura su dati già pubblici. Niente scritture, fetch di URL liberi,
-  repo privati, memoria tra visite. L'unico effetto fuori dal sito è l'email di
-  `draft_message`, e parte solo da un clic del visitatore.
-- Da fare: gli eventi dei sotto-agenti dal vivo nella pagina (oggi si vedono a lavoro
-  finito); `@cloudflare/computer` solo se servisse eseguire il codice dei repo.
-- Da misurare con traffico vero: se il peso stimato da Jev prevede il costo reale delle
-  risposte (ci sono entrambi per ogni messaggio). Solo se lo prevede bene, usarlo per
-  scegliere quali tool offrire; oggi il peso si mostra e basta.
-- Prima di attivarlo in produzione: costo misurato su un campione e approvato da Simone.
-  Misure in anteprima: una domanda semplice 0,05-0,1 centesimi, una con `run_code` circa
-  0,15, una con `delegate` circa 0,9 col tetto per figlio (era 1,4; budget di 10 centesimi
-  al giorno per visitatore, mostrato in crediti).
-  Scartati: un secondo modello da consultare, fetch libero, voce e immagini.
-- Deciso: l'agente lavora sui repo e risponde anche su Simone; modelli da OpenRouter
-  (#11).
+- Done (Cycle 14): a Durable Object per visitor with pi-durable, `glm-5.3-flash` from
+  OpenRouter, `search_site` and `read_page`, triage with Jev evaluated on a labeled set,
+  limit in real cost per visitor and for the site, transcript with tokens and cost.
+- Done (Cycle 15): `list_projects`, `show_page` (card to open) and the tools on public
+  repos via the GitHub API (#13). The site repo is read from the `main` branch: until the
+  merge the agent sees the old site.
+- Done (Cycle 16): the demo tools, one per capability, with the limits in code: `render`
+  (bars, tables, timelines), `run_code` (Code Mode in a Dynamic Worker), `delegate` (2-3
+  pi-durable sub-agents), `draft_message` (a draft the visitor sends, after Turnstile).
+  Choices in #14.
+- Done (Cycle 19): chat goes to the model, which answers briefly and without tools (#12);
+  per-IP limits, burst of 10 messages a minute and 50 cents a day (#17); red team: 10
+  attacks in Jev's set, passed live too. No allowlist of external links until
+  conversations are shareable (#18).
+- Read-only tools on already public data. No writes, no fetch of arbitrary URLs, no
+  private repos, no memory between visits. The only effect outside the site is the
+  `draft_message` email, and it goes out only from a visitor's click.
+- To do: the sub-agents' events live in the page (today they show once the work is
+  done); `@cloudflare/computer` only if running the repos' code became necessary.
+- To measure with real traffic: whether the weight estimated by Jev predicts the real
+  cost of the answers (both exist for every message). Only if it predicts it well, use it
+  to choose which tools to offer; today the weight is shown and that is all.
+- Before enabling it in production: cost measured on a sample and approved by Simone.
+  Measures in preview: a simple question 0.05-0.1 cents, one with `run_code` about 0.15,
+  one with `delegate` about 0.9 with the per-child cap (it was 1.4; budget of 10 cents a
+  day per visitor, shown in credits). Rejected: a second model to consult, free fetch,
+  voice and images.
+- Decided: the agent works on the repos and also answers about Simone; models from
+  OpenRouter (#11).
 
-## Aperte
+## Open
 
-- Altezza della lista: dovrebbe stare in 900 px (CLAUDE.md), oggi ne servono circa 1.000
-  e su schermi bassi si scorre. Lasciata così da Simone alla chiusura di M15; da
-  riprendere se la vetrina o le pagine singole crescono.
+- List height: it should fit in 900 px (CLAUDE.md), today it needs about 1,000 and on
+  short screens it scrolls. Left like this by Simone at the close of M15; to be picked up
+  again if the showcase or the single pages grow.
 
-- Dominio: `esse.dev` è il principale. Da fare nel pannello Cloudflare: Redirect Rule
-  301 da `simonesalerno.it` e `www.simonesalerno.it` a `https://esse.dev` con il path
-  conservato. `essedev.it` non si rinnova: nessun redirect da mantenere.
+- Domain: `esse.dev` is the main one. To do in the Cloudflare panel: 301 Redirect Rule
+  from `simonesalerno.it` and `www.simonesalerno.it` to `https://esse.dev` with the path
+  preserved. `essedev.it` is not renewed: no redirect to maintain.
 
-- Analytics: lo script di Umami punta a `umami.essedev.it`, ma `essedev.it` non si
-  rinnova. Spostare Umami su un sottodominio di `esse.dev` prima della scadenza, o le
-  statistiche si fermano senza errori.
-- Email `hello@esse.dev`: verificare che la casella riceva prima della messa online.
-- Merge su `main` con **squash**: i branch del restyle portano in
-  storia circa 70 MB di PNG della pixel art scartata, che non devono entrare in `main`.
+- Analytics: the Umami script points to `umami.essedev.it`, but `essedev.it` is not
+  renewed. Move Umami to a subdomain of `esse.dev` before it expires, or the statistics
+  stop without errors.
+- Email `hello@esse.dev`: check that the mailbox receives before going online.
+- Merge to `main` with **squash**: the restyle branches carry in their history about 70 MB
+  of PNGs of the discarded pixel art, which must not enter `main`.
 
-## Stato deploy
+## Deploy state
 
-In produzione: `main` (SvelteKit). Il sito Astro è sul branch `astro`, non mergiato.
+In production: `main` (SvelteKit). The Astro site is on the `astro` branch, not merged.

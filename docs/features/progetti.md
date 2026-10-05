@@ -1,97 +1,100 @@
-# Progetti
+# Projects
 
-Come si scelgono e si raccontano i progetti del sito (M16 in `docs/ROADMAP.md`). Le schede
-stanno in `src/content/projects/`, la vetrina in `src/config/featured.json`. Il repo è
-pubblico e l'agente ne legge i doc: qui va solo quello che si può pubblicare. Le voci
-riservate (clienti, lavori di altri, progetti da non nominare) non si scrivono in nessun
-file del repo.
+How the site's projects are chosen and told (M16 in `docs/ROADMAP.md`). The entries are in
+`src/content/projects/`, the showcase in `src/config/featured.json`. The repo is public
+and the agent reads its docs: only what can be published goes here. Reserved items
+(clients, other people's work, projects not to be named) are not written in any file of
+the repo.
 
-## Principi
+## Principles
 
-1. **Le idee hanno una storia.** Un progetto si racconta con le iterazioni che l'hanno
-   preceduto, anche quelle abbandonate, per trasparenza: la stessa che il sito dichiara
-   sul lavoro con l'AI. Le iterazioni sono dati, non solo prosa (vedi Campo `previously`).
-2. **Famiglie, non schede isolate.** Un tema che torna diventa una voce sola che racconta
-   i tentativi in ordine, invece di tante schede da pochi commit.
-3. **Il bisogno vero si dice.** Il contesto personale da cui nasce un progetto ("da quando
-   mi sono trasferito a Milano") vale più di un elenco di funzioni.
-4. **Lo stato è onesto.** Un'idea è un'idea, un sito per un cliente è un sito; quello che
-   è invecchiato si aggiorna prima di mostrarlo, o resta nascosto.
-5. **Discrezione dove serve.** Una competenza si può raccontare senza nominare i
-   prodotti: il capitolo crypto parla di SolPlace e descrive il resto senza nomi.
-6. **In alto le idee ambiziose e la misura.** Sistemi di agenti, harness che non si
-   ingannano, ricerca con i numeri: è il profilo. I siti per clienti stanno in fondo.
+1. **Ideas have a history.** A project is told with the iterations that preceded it, even
+   the abandoned ones, for transparency: the same the site declares about working with AI.
+   The iterations are data, not only prose (see The `previously` field).
+2. **Families, not isolated entries.** A recurring theme becomes a single item that tells
+   the attempts in order, instead of many entries of a few commits.
+3. **The real need is stated.** The personal context a project comes from ("since I moved
+   to Milan") is worth more than a list of features.
+4. **The status is honest.** An idea is an idea, a client site is a site; what has aged is
+   updated before showing it, or stays hidden.
+5. **Discretion where needed.** A skill can be told without naming the products: the
+   crypto chapter talks about SolPlace and describes the rest without names.
+6. **Ambitious ideas and measurement first.** Agent systems, harnesses that do not fool
+   themselves, research with numbers: that is the profile. Client sites go at the bottom.
 
-## Voce
+## Voice
 
-Vale per tutto il sito: schede, pagine, articoli.
+Applies to the whole site: entries, pages, articles.
 
-- Prima persona, pulita ma giovane, frasi corte e dirette; termini tecnici dove servono
-  ("review", "prod"), senza esagerare col gergo.
-- AI-first ed entusiasta, mai difensiva: l'umano non è il freno che valida l'AI, progetta
-  il sistema (architettura, contesto, controlli) e per questo può andare veloce. La
-  solidità da ingegnere è ciò che permette di delegare di più, non ciò che lo limita.
-- Banditi: massime da artigiano navigato ("il mestiere", "il valore non è X, è Y"), tono
-  filosofico, buzzword da LLM (actionable, leverage), metriche gonfiate.
-- Registro per stato: un progetto vero è una storia tecnica; un'idea o uno spike è una
-  scheda corta (cosa, cosa ho imparato, perché si è fermato).
+- First person, clean but young, short and direct sentences; technical terms where
+  needed ("review", "prod"), without overdoing the jargon.
+- AI-first and enthusiastic, never defensive: the human is not the brake that validates
+  the AI, they design the system (architecture, context, checks) and that is why they can
+  go fast. Engineering solidity is what allows delegating more, not what limits it.
+- Banned: maxims of a seasoned craftsman ("the craft", "the value is not X, it is Y"),
+  philosophical tone, LLM buzzwords (actionable, leverage), inflated metrics.
+- Register by status: a real project is a technical story; an idea or a spike is a short
+  entry (what, what I learned, why it stopped).
 
-## Campo `previously`
+## The `previously` field
 
-Le iterazioni precedenti di un'idea, dalla più vecchia: `previously: [{ name, year, note }]`
-nel frontmatter di ogni `<lang>.md`, con nome e anno uguali in ogni lingua (la build lo
-controlla) e la nota tradotta. La scheda le mostra come "Prima di questo", l'agente le
-trova nell'indice. Facoltativo; la scheda della famiglia lo usa per i tentativi che non
-hanno una voce propria. Perché nel testo e non in `meta.json`: DECISIONS #20.
+The earlier iterations of an idea, oldest first: `previously: [{ name, year, note }]` in
+the frontmatter of each `<lang>.md`, with the same name and year in every language (the
+build checks it) and the translated note. The entry shows them as "Before this", the
+agent finds them in the index. Optional; the family's entry uses it for the attempts
+that do not have an entry of their own. Why in the text and not in `meta.json`:
+DECISIONS #20.
 
-## Smistamento
+## Sorting
 
-Deciso con Simone il 2026-10-04 e applicato nel Ciclo 21: ogni voce ha la sua scheda, le
-nuove in prima stesura.
+Decided with Simone on 2026-10-04 and applied in Cycle 21: every item has its entry, the
+new ones in first draft.
 
-**Vetrina** (6): Relay, Nexus, pgbee, Zeno, mcpbelt, Portsage. Zeno è privato: scheda
-senza link al repo. Le iterazioni di Nexus (`previously`) sono Plannerinator, poi gli assistenti personali:
-Verbosa, NanoClaw, Life Terminal, Almanac, Nexus in Elixir, Bob, che si è fermato il
-giorno in cui è ripartito Nexus.
+**Showcase** (6): Relay, Nexus, pgbee, Zeno, mcpbelt, Portsage. Zeno is private: entry
+without a link to the repo. The iterations of Nexus (`previously`) are Plannerinator, then
+the personal assistants: Verbosa, NanoClaw, Life Terminal, Almanac, Nexus in Elixir, Bob,
+which stopped the day Nexus restarted.
 
-**Registro**:
+**Registry**:
 
-- Copilota: copilota per le call di vendita, app macOS in Swift con il backend dentro l'app,
-  trascrizione dei due canali, card dalla knowledge base, Nemotron in locale. Repo privato.
-- Edge Lab (repo `printor`): dove un LLM dà un vantaggio vero nel trading, harness a prova
-  di autoinganno.
-- Wavelength: radio AI con redazione multi-agente.
-- Media Hub (repo `home-media`): il server di casa e l'app per la TV (vedi sotto).
-- Watch OS: firmware per uno smartwatch client vocale di un agente.
-- IDKCraft: voxel game in Kotlin, con IDKCraft Studio che genera le texture in pixel art
-  via modelli di immagini, con immagini di riferimento per tenere lo stile.
-- Local LLM Experiments, voce unica sugli LLM in locale: Local LLM Eval e LLM Dash.
-- Milano, voce unica: based-routing (trip planner multi-origine sulla rete lombarda) e
-  Milanoz, col contesto del trasferimento a Milano nel 2026.
-- Server personali, voce unica: monitor (`status.esse.dev`) e server-ops.
-- Esperimenti su Solana, voce unica (cartella `solplace`): SolPlace con nome, il resto senza.
-- doppia.os: uno dei primi progetti con l'AI, mentre arrivavano i coding agent. L'effetto
-  molla sul trascinamento delle finestre, prima scritto a mano in Svelte e poi con l'AI;
-  oggi una cosa così è un benchmark per i modelli locali. La storia è la scheda.
+- Copilota: a copilot for sales calls, macOS app in Swift with the backend inside the app,
+  transcription of both channels, cards from the knowledge base, Nemotron locally. Private
+  repo.
+- Edge Lab (repo `printor`): where an LLM gives a real edge in trading, a self-deception
+  proof harness.
+- Wavelength: AI radio with a multi-agent newsroom.
+- Media Hub (repo `home-media`): the home server and the TV app (see below).
+- Watch OS: firmware for a smartwatch that is a voice client of an agent.
+- IDKCraft: a voxel game in Kotlin, with IDKCraft Studio generating pixel-art textures
+  via image models, with reference images to keep the style.
+- Local LLM Experiments, a single item on local LLMs: Local LLM Eval and LLM Dash.
+- Milan, a single item: based-routing (multi-origin trip planner on the Lombardy network)
+  and Milanoz, with the context of the move to Milan in 2026.
+- Personal servers, a single item: monitor (`status.esse.dev`) and server-ops.
+- Experiments on Solana, a single item (folder `solplace`): SolPlace by name, the rest
+  without.
+- doppia.os: one of the first projects with AI, while the coding agents were arriving. The
+  spring effect on window dragging, first written by hand in Svelte and then with AI;
+  today something like this is a benchmark for local models. The story is the entry.
 - Ethicode.
-- Pigeon, Flux (esce dalla vetrina), Bu Do Kan (sito su `budokan-v2`), L.R.L. Elettrica.
+- Pigeon, Flux (leaves the showcase), Bu Do Kan (site on `budokan-v2`), L.R.L. Elettrica.
 
-**Idee**: Maia, con Cosmoscope e Upstream come iterazioni precedenti; Minerd, l'idle game
-come base di un gioco che si aggiorna da solo con l'AI.
+**Ideas**: Maia, with Cosmoscope and Upstream as earlier iterations; Minerd, the idle game
+as the base of a game that updates itself with AI.
 
-**Fuori**: Horizon e Casussy (quasi nessun lavoro), Templator (nascosto finché non si
-aggiorna), Haystack, CORE, Didattica Integrata, Kebabbivori, CamperPlan.
+**Out**: Horizon and Casussy (almost no work), Templator (hidden until updated), Haystack,
+CORE, Didattica Integrata, Kebabbivori, CamperPlan.
 
 ## Media Hub
 
-Si racconta come il server di casa e le app che lo usano, non come un client torrent:
-launcher multi-app su un backend unico, media server che fa partire il video mentre
-scarica (remux in fMP4 per il browser), app per la TV Samsung (Tizen, in sideload) che
-sostituisce lo stack CasaOS + Jellyfin. Il protocollo si nomina una volta, senza
-indexer né fonti.
+It is told as the home server and the apps that use it, not as a torrent client: a
+multi-app launcher on a single backend, a media server that starts the video while it
+downloads (remux to fMP4 for the browser), an app for the Samsung TV (Tizen, sideloaded)
+that replaces the CasaOS + Jellyfin stack. The protocol is named once, with no indexers or
+sources.
 
-Screenshot solo da un'istanza dimostrativa con film a licenza libera, caricati come file
-già sul disco (la libreria li accetta senza passare dalla ricerca): i film aperti della
-Blender Foundation (Big Buck Bunny, Sintel, Tears of Steel, Spring) e i pubblico dominio
-dell'Internet Archive. Nessuna locandina di film commerciali in quadro, neanche dai
-metadati.
+Screenshots only from a demo instance with freely licensed films, loaded as files already
+on disk (the library accepts them without going through search): the open films of the
+Blender Foundation (Big Buck Bunny, Sintel, Tears of Steel, Spring) and the public-domain
+ones from the Internet Archive. No poster of commercial films in frame, not even from the
+metadata.

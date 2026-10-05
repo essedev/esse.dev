@@ -1,602 +1,597 @@
 # Cycles
 
-Log cronologico dei cicli di lavoro sul progetto. Ogni ciclo registra obiettivo,
-lavoro svolto (con riferimenti ai commit), verifiche e cosa resta. Serve a riprendere
-il filo tra una sessione e l'altra. La pianificazione ad alto livello vive in
-`docs/ROADMAP.md`.
+Chronological log of the project's work cycles. Each cycle records goal, work done (with
+commit references), checks and what remains. It serves to pick up the thread between one
+session and the next. High-level planning lives in `docs/ROADMAP.md`.
 
-I cicli più vecchi sono in `docs/archive/` (Cicli 1-6 in `CYCLES-1-6.md`, 7-8 in
+Older cycles are in `docs/archive/` (Cycles 1-6 in `CYCLES-1-6.md`, 7-8 in
 `CYCLES-7-8.md`).
 
 ---
 
-## Ciclo 9 - Restyle "Laboratorio" (2026-06-04)
+## Cycle 9 - "Laboratorio" restyle (2026-06-04)
 
-### Obiettivo
+### Goal
 
-Rebrand visivo: da "dev portfolio dark generico" a un'identità "Laboratorio"
-coerente. Prima il messaggio (voce e posizionamento), poi il design system. La
-vision completa, le idee considerate e quelle scartate vivono in `docs/archive/RESTYLE.md`.
+Visual rebrand: from a "generic dark dev portfolio" to a coherent "Laboratorio" identity.
+First the message (voice and positioning), then the design system. The full vision, the
+ideas considered and the discarded ones live in `docs/archive/RESTYLE.md`.
 
-### Su `main` (pushato)
+### On `main` (pushed)
 
-- `feat(content)`: welcome riposizionato AI-first. Via il framing difensivo
-  ("l'architettura la decide l'umano, l'AI velocizza, l'umano valida") per uno
-  AI-first: l'umano progetta il sistema, l'AI scrive, l'output è production-ready.
-- `feat(content)`: label dello status `idea` -> "Esplorazione" / "Exploration"
-  (la chiave interna resta `idea`).
+- `feat(content)`: welcome repositioned AI-first. Out the defensive framing ("the human
+  decides the architecture, AI speeds up, the human validates") for an AI-first one: the
+  human designs the system, the AI writes, the output is production-ready.
+- `feat(content)`: label of the `idea` status -> "Esplorazione" / "Exploration" (the
+  internal key stays `idea`).
 
-### Su branch `restyle/laboratory` (NON mergiato)
+### On branch `restyle/laboratory` (NOT merged)
 
-- **Palette:** nero piatto + accento **azzurro elettrico** `#2cc3f7` + pavimento in
-  prospettiva (griglia) + glow CRT dal basso. Via gradient blu e noise.
-- **Tipografia:** **Martian Mono** (titoli, etichette tech) + **IBM Plex Sans**
-  (body). Token radius (`--radius-md/lg/xl`) per arrotondamento moderato da un punto.
-- **Hero:** "I cast code." (mono, doppio senso cast), allineato a sinistra, firma in
-  calce "Simone Salerno · half engineer, half wizard".
-- **Navbar:** logo testuale `essedev_` (cursore blink), voci a indice numerato
-  (01-04), status bar sotto, toggle lingua `IT / EN` inline (al posto del dropdown).
-- **Card + StatusBadge:** scheda d'archivio (header stato + anno, tag mono, hover
-  bordo azzurro + lift); badge "riga di sistema" (dot + label mono); applicata anche
-  alla ArticleCard (header data).
-- **Filtri:** toolbar mono squadrata (SearchFilter + tutti i dropdown).
-- **Footer:** brand + tagline + nav numerata + riga di sistema. **FloatingNav**
-  squadrata coi numeri. **Back-to-top** squadrato.
-- **Shortcut tastiera:** `1-4` -> sezioni, `0`/`Home` -> top, `End` -> fondo
-  (reduced-motion aware). I numeri della navbar sono il promemoria degli shortcut.
-- **Coerenza:** `//` rimosso dal content delle voci (era decorazione fuori posto);
-  numeri solo dove servono.
+- **Palette:** flat black + **electric blue** accent `#2cc3f7` + perspective floor (grid)
+  - CRT glow from below. Gone the blue gradients and noise.
+- **Typography:** **Martian Mono** (titles, tech labels) + **IBM Plex Sans** (body).
+  Radius tokens (`--radius-md/lg/xl`) for moderate rounding from a single point.
+- **Hero:** "I cast code." (mono, double meaning of cast), left-aligned, signature at the
+  bottom "Simone Salerno · half engineer, half wizard".
+- **Navbar:** text logo `essedev_` (blinking cursor), items with a numbered index
+  (01-04), status bar below, inline `IT / EN` language toggle (in place of the dropdown).
+- **Card + StatusBadge:** archive card (status + year header, mono tags, blue border hover
+  - lift); "system line" badge (dot + mono label); applied to the ArticleCard too (date
+    header).
+- **Filters:** squared mono toolbar (SearchFilter + all the dropdowns).
+- **Footer:** brand + tagline + numbered nav + system line. Squared **FloatingNav** with
+  numbers. Squared **back-to-top**.
+- **Keyboard shortcuts:** `1-4` -> sections, `0`/`Home` -> top, `End` -> bottom
+  (reduced-motion aware). The navbar numbers are the reminder of the shortcuts.
+- **Coherence:** `//` removed from the content of the items (it was misplaced
+  decoration); numbers only where needed.
 
-### Decisioni chiave (scartate, vedi docs/archive/RESTYLE.md)
+### Key decisions (rejected, see docs/archive/RESTYLE.md)
 
-- Motif "doppia S" (richiama altro -> handle "essedev").
-- Font: Jacquard 12/24 (fantasy, non fitta); Fraunces italic (il serif-su-dark
-  grande è l'estetica dei template generati da AI).
-- Colore: arancione (complementare al logo blu, ci litiga), viola (cliché-AI),
-  blu-logo (generico) -> azzurro elettrico.
-- Animazioni custom dell'hero **congelate**: tararle alla cieca (senza vedere il
-  movimento negli screenshot) non converge; da rifare come sistema coerente.
+- "Double S" motif (recalls something else -> handle "essedev").
+- Fonts: Jacquard 12/24 (fantasy, does not fit); Fraunces italic (big serif on dark is the
+  aesthetic of AI-generated templates).
+- Color: orange (complementary to the blue logo, fights it), purple (AI cliche), logo blue
+  (generic) -> electric blue.
+- Custom hero animations **frozen**: tuning them blind (without seeing the motion in
+  screenshots) does not converge; to be redone as a coherent system.
 
-### Verifiche
+### Checks
 
-- `pnpm lint`: pulito; `pnpm check`: 0 errori (lungo tutti i commit del branch).
-- Shortcut testati via browser (`0`->top, `End`->fondo, `2`->sezione about).
-- **NON ancora fatto:** `pnpm build` + `pnpm test:ci` completo. Alcuni E2E vanno
-  aggiornati (cambiate voci nav, welcome, badge di stato).
+- `pnpm lint`: clean; `pnpm check`: 0 errors (along all the branch's commits).
+- Shortcuts tested via browser (`0`->top, `End`->bottom, `2`->about section).
+- **NOT yet done:** full `pnpm build` + `pnpm test:ci`. Some E2E tests need updating
+  (changed nav items, welcome, status badges).
 
-### Blocco 1 - pagine restanti (fatto)
+### Block 1 - remaining pages (done)
 
-- **Pagine dettaglio:** tag progetto/articolo da pill (`rounded-full bg-gray-800`)
-  a tag mono squadrati coerenti con le card (border, hover accento); immagine
-  featured da `rounded-3xl` (fuori token) a `rounded-xl`. Layout dettaglio progetto
-  uniformato all'articolo: header a piena larghezza, immagine full-width sotto,
-  contenuto sotto (prima l'immagine era affiancata al 50% e il body schiacciato in
-  mezza colonna).
-- **Paginazione:** da `rounded-lg` + testo inglese hardcoded ("Prev/Next/Page X of
-  Y") a indice numerato mono `01 / 04` (corrente in accento), language-agnostic.
-- **404:** numero in mono accento + back link mono con hover accento.
-- **Contatti / chip filtri:** underline contatti che cresce in accento (era grigio);
-  bottoni X di rimozione filtro `rounded-sm` (erano `rounded-full`) e accento (era
+- **Detail pages:** project/article tags from pills (`rounded-full bg-gray-800`) to
+  squared mono tags coherent with the cards (border, accent hover); featured image from
+  `rounded-3xl` (outside the tokens) to `rounded-xl`. Project detail layout aligned with
+  the article: full-width header, full-width image below, content below (before the image
+  sat beside it at 50% and the body was squeezed into half a column).
+- **Pagination:** from `rounded-lg` + hardcoded English text ("Prev/Next/Page X of Y") to
+  a mono numbered index `01 / 04` (current in accent), language-agnostic.
+- **404:** number in mono accent + mono back link with accent hover.
+- **Contacts / filter chips:** contacts underline that grows in accent (it was grey);
+  filter-removal X buttons `rounded-sm` (they were `rounded-full`) and accent (it was
   `blue-400`).
 
-### Blocco 2 - polish: footer, controlli, tema accento (fatto)
+### Block 2 - polish: footer, controls, accent theme (done)
 
-- **Footer "dashboard":** RSS/Sitemap/Source come moduli squadrati con icona (mono,
-  hover accento), aprono in nuova tab (risorse XML, niente redirect). MotionToggle =
-  bottone con switch meccanico squadrato (thumb pieno + glow CRT quando on).
-- **Bottoni uniformati:** un solo standard ovunque (`bg-white/[0.02]`, bordo
-  `white/10`, `hover:border-accent/50`, `rounded-md`; hover-fill `text-accent` per i
-  link, `bg-white/10` per i controlli). Rientrati gli outlier di opacità/superficie.
-- **Sitemap:** CSS rifatto sul tema (nero + glow, Martian Mono, loc/label accento,
-  card squadrate con hover).
-- **Status bar:** claim `Human vision · AI execution` + location; via il dot
-  decorativo e il `IT / EN` morto (duplicava il selettore lingua vero sopra).
-- **StatusBadge:** dot tondo -> quadratino (coerente col linguaggio squadrato).
-- **Tema accento centralizzato:** glow e ombre derivano da `var(--color-accent)` via
-  `color-mix`; la sitemap (CSS separato) da un `--accent` locale. L'accento vive in
-  un solo punto.
-- **Accent picker (feature):** selettore flottante in basso a sinistra, azzurro
-  default + arancione/viola. Sovrascrive `--color-accent` a runtime (tutto il sito
-  cambia live); il cambio è una "ricalibrazione dell'hue" (sweep HSL, percorso più
-  breve, snap esatto) e l'anello di selezione scivola. Persistente in localStorage,
-  rispetta il motion toggle. OG/identità restano sull'azzurro default.
-- **Fix switch animazioni:** il thumb scivola in accensione E spegnimento (prima
-  spegnere applicava `data-motion=reduced` che ne congelava l'animazione; eccezione
-  mirata sul thumb, sulla proprietà `translate` - Tailwind v4 non usa `transform`).
-- **Menu mobile:** overlay rifatto - X allineata all'hamburger (prima `fixed` altrove,
-  "saltava"), voci a indice numerato mono come la navbar, riga di sistema in fondo;
-  l'accent picker si nasconde a menu aperto. Via il prop `isFloatingNavVisible`.
-- **Selettore lingua:** da `IT / EN` testo con slash (sembrava due link sciolti) a
-  segmented control mono bordato, cella attiva in accento - coerente con gli altri
-  controlli (navbar, floating nav, overlay mobile).
+- **"Dashboard" footer:** RSS/Sitemap/Source as squared modules with an icon (mono, accent
+  hover), opening in a new tab (XML resources, no redirect). MotionToggle = button with a
+  squared mechanical switch (solid thumb + CRT glow when on).
+- **Uniform buttons:** a single standard everywhere (`bg-white/[0.02]`, border `white/10`,
+  `hover:border-accent/50`, `rounded-md`; hover-fill `text-accent` for links,
+  `bg-white/10` for controls). Opacity/surface outliers brought back in.
+- **Sitemap:** CSS redone on the theme (black + glow, Martian Mono, accent loc/label,
+  squared cards with hover).
+- **Status bar:** claim `Human vision · AI execution` + location; gone the decorative dot
+  and the dead `IT / EN` (it duplicated the real language selector above).
+- **StatusBadge:** round dot -> small square (coherent with the squared language).
+- **Centralized accent theme:** glow and shadows derive from `var(--color-accent)` via
+  `color-mix`; the sitemap (separate CSS) from a local `--accent`. The accent lives in a
+  single place.
+- **Accent picker (feature):** floating selector at the bottom left, default blue +
+  orange/purple. It overrides `--color-accent` at runtime (the whole site changes live);
+  the change is a "hue recalibration" (HSL sweep, shortest path, exact snap) and the
+  selection ring slides. Persistent in localStorage, respects the motion toggle.
+  OG/identity stay on the default blue.
+- **Animation switch fix:** the thumb slides when turning on AND off (before, turning off
+  applied `data-motion=reduced`, which froze its animation; targeted exception on the
+  thumb, on the `translate` property - Tailwind v4 does not use `transform`).
+- **Mobile menu:** overlay redone - X aligned with the hamburger (before `fixed`
+  elsewhere, it "jumped"), mono numbered-index items like the navbar, system line at the
+  bottom; the accent picker hides when the menu is open. Gone the `isFloatingNavVisible`
+  prop.
+- **Language selector:** from `IT / EN` text with a slash (it looked like two loose
+  links) to a bordered mono segmented control, active cell in accent - coherent with the
+  other controls (navbar, floating nav, mobile overlay).
 
-### Blocco 3 - telaio strumentale e nav unificata (fatto)
+### Block 3 - instrumental chassis and unified nav (done)
 
-- **Telaio (`Chassis.svelte`):** cornice fissa attorno al contenuto che porta stato
-  vivo invece di decorazione - sezione corrente con l'indice della navbar (rail
-  sinistro), avanzamento scroll come scala (destro), claim (alto), ora di Milano e
-  promemoria degli shortcut (basso). È un overlay `fixed`, non uno scroll container:
-  scroll nativo, ancore e shortcut continuano a funzionare. `aria-hidden` apposta: è
-  telemetria, non contenuto, e la percentuale si aggiorna a ogni scroll.
-- **La gutter è un token:** i rail vivono in `--chassis-gutter` (`0px` sotto `lg`,
-  `34px` sopra). Sotto `lg` il telaio non si monta e il claim torna nella status bar
-  della navbar. Ogni elemento `fixed` va staccato dal bordo con lo stesso token,
-  altrimenti finisce sopra un rail.
-- **Matte:** uno strato sopra il contenuto ritaglia sfondo (griglia larga 300vw) e
-  contenuto scorrevole all'area dello schermo. Il suo raggio è gutter + `--radius-md`,
-  perché il raggio interno di un bordo è quello esterno meno lo spessore: senza, il
-  contenuto usciva nei quattro angoli. La barra dei link sta a filo del telaio, che le
-  dipinge sopra: prima era staccata di 1px e sotto passava una fessura.
-- **Controlli promossi a strumenti:** accent picker nel rail sinistro come LED spenti
-  con tick in accento sulla cella attiva; lingua come coppia verticale EN/IT sullo
-  stesso fianco, con lo stesso tick da indice (l'inattiva resta a piena opacità: il 32%
-  regge su un pallino di colore, su una parola da 9.5px compone quasi nero);
-  back-to-top da riquadro a chevron sopra `TOP` al piede della scala, con la freccia che
-  sale in hover. Niente drag o scrub sulla scala: quella gutter si sovrappone alla
-  scrollbar di sistema e uno slider litigherebbe con gli shortcut `0`/`Home`/`End`/`1-4`.
-- **Una sola superficie di navigazione:** rimossa la `FloatingNav`, che duplicava
-  wordmark, link e selettore lingua della navbar; col telaio era l'unico oggetto a non
-  appartenere né alla cornice né allo schermo. Resta una barra da 64px con le quattro
-  voci come celle uguali divise da hairline e il wordmark in testa, allineata alla
-  colonna del contenuto. È `fixed`, non `sticky`: `overflow-x: hidden` su body e
-  container (serve alla griglia da 300vw) rende l'antenato lo scrollport, quindi lo
-  sticky non si aggancerebbe mai. Sotto `lg` la navbar scorre via e un burger flottante
-  tiene il menu raggiungibile.
-- **Header di sezione (`SectionHeader.svelte`):** ogni sezione apre con l'indice
-  numerato della navbar, un filo e un readout calcolato dal contenuto stesso (progetti:
-  conteggio e range di anni dal `meta.json`), così cornice e contenuto dicono la stessa
-  cosa. Il readout compare solo dove un dato reale lo sostiene: gli articoli restano
-  nudi sotto i due post (un conteggio da 1 punta un faro sul blog vuoto), about e
-  contatti non hanno niente di strutturato da riportare. Conteggio e anni arrivano da
-  un'unica fonte: passando solo il totale, il listing mostrava il conteggio reale
-  accanto al range della pagina corrente.
-- **Righe full-bleed tra le sezioni rimosse:** l'hero chiudeva con `border-b` e la
-  sezione seguente apriva con `border-t`, due linee sovrapposte a ogni giunzione. Con
-  l'header di sezione erano comunque ridondanti: il confine lo segna già lui, portando
-  indice e readout invece di niente.
+- **Chassis (`Chassis.svelte`):** fixed frame around the content that carries live state
+  instead of decoration - current section with the navbar index (left rail), scroll
+  progress as a scale (right), claim (top), Milan time and shortcut reminder (bottom). It
+  is a `fixed` overlay, not a scroll container: native scroll, anchors and shortcuts keep
+  working. `aria-hidden` on purpose: it is telemetry, not content, and the percentage
+  updates on every scroll.
+- **The gutter is a token:** the rails live in `--chassis-gutter` (`0px` below `lg`,
+  `34px` above). Below `lg` the chassis does not mount and the claim goes back to the
+  navbar's status bar. Every `fixed` element must be detached from the edge with the same
+  token, otherwise it ends up above a rail.
+- **Matte:** a layer above the content clips background (300vw-wide grid) and scrolling
+  content to the screen area. Its radius is gutter + `--radius-md`, because the inner
+  radius of a border is the outer one minus the thickness: without it, the content
+  stuck out at the four corners. The link bar sits flush with the chassis, which paints
+  over it: before it was 1px detached and a gap showed through.
+- **Controls promoted to instruments:** accent picker in the left rail as unlit LEDs with
+  an accent tick on the active cell; language as a vertical EN/IT pair on the same side,
+  with the same index tick (the inactive one stays at full opacity: 32% holds on a color
+  dot, on a 9.5px word it composes almost black); back-to-top from a box to a chevron
+  above `TOP` at the foot of the scale, with the arrow rising on hover. No drag or scrub
+  on the scale: that gutter overlaps the system scrollbar and a slider would fight the
+  `0`/`Home`/`End`/`1-4` shortcuts.
+- **A single navigation surface:** removed the `FloatingNav`, which duplicated the
+  navbar's wordmark, links and language selector; with the chassis it was the only object
+  belonging neither to the frame nor to the screen. What remains is a 64px bar with the
+  four items as equal cells divided by hairlines and the wordmark at the head, aligned to
+  the content column. It is `fixed`, not `sticky`: `overflow-x: hidden` on body and
+  container (needed by the 300vw grid) makes the ancestor the scrollport, so sticky would
+  never attach. Below `lg` the navbar scrolls away and a floating burger keeps the menu
+  reachable.
+- **Section header (`SectionHeader.svelte`):** every section opens with the navbar's
+  numbered index, a line and a readout computed from the content itself (projects: count
+  and range of years from `meta.json`), so frame and content say the same thing. The
+  readout appears only where real data supports it: articles stay bare under the two
+  posts (a count of 1 points a spotlight at the empty blog), about and contacts have
+  nothing structured to report. Count and years come from a single source: passing only
+  the total, the listing showed the real count next to the range of the current page.
+- **Full-bleed lines between sections removed:** the hero ended with `border-b` and the
+  next section opened with `border-t`, two overlapping lines at every joint. With the
+  section header they were redundant anyway: the boundary is already marked by it,
+  carrying index and readout instead of nothing.
 
-### Blocco 4 - contenuti, indici tipografici, CRT, favicon (fatto)
+### Block 4 - content, typographic indexes, CRT, favicon (done)
 
-- **Ricurazione progetti (`8d57f89`):** 19 progetti pubblicati invece di 25 (4 in
-  corso, 5 completati, 6 archiviati, 4 idee); i 15 esclusi sono `published: false`,
-  non cancellati, quindi recuperabili. Copy riscritto in prima persona dai README dei
-  repo, senza le metriche gonfiate dei vecchi stub. Vetrina home guidata da Relay,
-  Nexus e Flux (`config/featured.json`).
-- **Due densità nel listing progetti (`2b1949f`):** in corso e completati restano
-  card con immagine (vetrina); archiviati e idee diventano un indice tipografico a
-  una riga (anno, titolo, excerpt) su due colonne sotto. Split in `utils/shelf.ts`
-  (testato). La home mostra solo la vetrina, nell'ordine dei featured. Il listing
-  progetti non è più paginato: la paginazione taglierebbe a metà le due densità e la
-  collezione è piccola apposta. La label dello status `idea` torna "Idea" (era
+- **Project recuration (`8d57f89`):** 19 projects published instead of 25 (4 in progress,
+  5 completed, 6 archived, 4 ideas); the 15 excluded are `published: false`, not deleted,
+  so recoverable. Copy rewritten in first person from the repos' READMEs, without the
+  inflated metrics of the old stubs. Home showcase led by Relay, Nexus and Flux
+  (`config/featured.json`).
+- **Two densities in the project listing (`2b1949f`):** in progress and completed stay as
+  cards with an image (showcase); archived and ideas become a one-line typographic index
+  (year, title, excerpt) on two columns below. Split in `utils/shelf.ts` (tested). The
+  home shows only the showcase, in the order of the featured. The project listing is no
+  longer paginated: pagination would cut the two densities in half and the collection is
+  small on purpose. The label of the `idea` status goes back to "Idea" (it was
   "Esplorazione").
-- **Articoli come indice (`976088b`):** l'unico articolo stava da solo in una griglia
-  a tre colonne dietro un placeholder. Ora usa lo stesso indice tipografico, con la
-  data completa a sinistra; il componente è generalizzato da `ProjectIndex` a
-  `EntryIndex`. Gli articoli restano paginati (6 per pagina).
-- **Fix indice di sezione in IT (`9017347`):** header e rail del telaio
-  confrontavano la chiave logica (`projects`) col nome tradotto (`progetti`) e in
-  italiano perdevano l'indice. Ora si risolve per ancora (`#projects`), uguale in
-  ogni lingua.
-- **Contatti (`b3dd2da`):** email grande, profili su una riga mono con freccia
-  uscente; il `mailto` non apre più una tab vuota.
-- **Prima dose di CRT (`52b4540`):** tre segni statici, nessuno animato: vignetta
-  interna sul telaio (solo da `lg`), glow al fosforo sul testo in accento (derivato
-  dal token) e scanline solo sulle miniature dei progetti.
-- **Favicon e manifest (`796e15e`):** un solo disegno (schermo scuro con telaio, "e"
-  in Martian Mono, cursore a blocco in accento) da cui `scripts/generate-favicons.ts`
-  genera tutte le taglie. Gli output sono committati e lo script non sta nella build:
-  si rilancia con `pnpm generate-favicons` quando cambiano disegno o accento default.
+- **Articles as an index (`976088b`):** the only article sat alone in a three-column grid
+  behind a placeholder. Now it uses the same typographic index, with the full date on the
+  left; the component is generalized from `ProjectIndex` to `EntryIndex`. Articles stay
+  paginated (6 per page).
+- **Section index fix in IT (`9017347`):** header and rail of the chassis compared the
+  logical key (`projects`) with the translated name (`progetti`) and in Italian lost the
+  index. Now it resolves by anchor (`#projects`), the same in every language.
+- **Contacts (`b3dd2da`):** large email, profiles on one mono line with an outgoing arrow;
+  the `mailto` no longer opens an empty tab.
+- **First dose of CRT (`52b4540`):** three static marks, none animated: inner vignette on
+  the chassis (only from `lg`), phosphor glow on accent text (derived from the token) and
+  scanlines only on the project thumbnails.
+- **Favicon and manifest (`796e15e`):** a single drawing (dark screen with chassis, "e" in
+  Martian Mono, accent block cursor) from which `scripts/generate-favicons.ts` generates
+  all the sizes. The outputs are committed and the script is not in the build: rerun with
+  `pnpm generate-favicons` when the drawing or the default accent changes.
 
-### Blocco 5 - revisione UI: token, materiali, dock mobile, colonna di lettura (fatto)
+### Block 5 - UI review: tokens, materials, mobile dock, reading column (done)
 
-Audit con Playwright su 5 pagine per 3 viewport (390, 768, 1440) più metriche dal
-DOM. Nessun bug: il problema era la grammatica. Undici raggi, otto opacità di bordo,
-cinque fondi di contenitore, otto taglie di mono, quattro stili di chip, tre oggetti
-diversi per i tre controlli flottanti di mobile, testo a 1300px su desktop.
+Audit with Playwright on 5 pages at 3 viewports (390, 768, 1440) plus metrics from the
+DOM. No bugs: the problem was grammar. Eleven radii, eight border opacities, five
+container backgrounds, eight mono sizes, four chip styles, three different objects for
+the three floating mobile controls, text at 1300px on desktop.
 
-- **Token e materiali (`a5f19a2`):** nel `@theme` due raggi, tre linee, tre superfici,
-  quattro taglie di mono; in `@layer components` `.panel`, `.chip`, `.field`,
-  `.label`, `.section` e le taglie di `.key` (`--sm`, `--icon`, `--float`). Ogni
-  componente li consuma, nessun valore a mano. Le classi `.archive-card` e
-  `.entry-panel` spariscono dentro `.panel`.
-- **Card e indice (`d2550e7`):** miniatura 21:9 sotto `sm`, excerpt a tre righe, una
-  riga sola di tre chip che si stringono con l'ellissi più un conteggio: altezza
-  stabile in griglia. L'indice sotto `md` non ha più la colonna vuota da 3rem: anno
-  inline a destra del titolo, data lunga sopra, excerpt a due righe (riga da ~90px
-  invece di 150-175).
-- **Dock mobile (`7604f03`):** menu, torna su e accento sono lo stesso tasto
-  `key--icon key--float` da 44px; il picker diventa un tasto con il LED acceso che
-  cicla i temi, il burger dell'header e quello flottante condividono la cella, il
-  footer tiene 6rem di clearance sotto `lg`.
-- **Colonna di lettura (`74343bf`):** About e Contatti a `max-w-prose`, progetto e
-  articolo in una colonna `max-w-3xl` a sinistra (che ridimensiona anche l'immagine
-  hero); excerpt in tondo, meta dell'articolo come etichetta, link del 404 a tasto.
-- **Cornice:** i rail passano alla taglia `text-tele` unica e al bordo `line-2` dei
-  pannelli, senza cambiare disegno.
-- **Desktop, seconda passata:** il "mix" restante era di ruoli, non di misure. Titoli
-  di sezione in Martian Mono medium come hero e nav (lo strumento), sans solo per il
-  contenuto; grigi rimappati su neutral nel `@theme` (la scala gray di Tailwind è
-  bluastra e stonava con accento arancione o viola) e via ogni `text-white/NN`;
-  titoli di card e indice allo stesso peso (500); tag come chip anche nell'indice;
-  stato come LED colorato con etichetta neutra; frecce Lucide al posto di quelle
-  Unicode. Il placeholder delle immagini è uno schermo spento (griglia, bagliore
-  d'accento, etichetta) e le pagine di dettaglio non mostrano più l'immagine hero:
-  `src/lib/assets/images` è vuota, il blocco torna quando ci saranno immagini vere.
-- **Keycap (`docs/archive/concepts/system-variants.html`, scelta B):** dopo due passate il
-  tasto illuminato non convinceva ancora: il fondo tinto all'8% stava a metà e leggeva
-  come disabilitato. Tre sistemi completi a confronto (Modulo, Keycap, Terminale) con
-  card, tasti e TOP insieme; scelto Keycap ed esteso a tutte le superfici: keycap per
-  ciò che si tocca (tasti, chip, TOP nel rail), incassato per ciò in cui si scrive
-  (campi, pista dello switch), scocca per ciò che contiene (card, indice, filtri,
-  dropdown opachi), schermo incassato nella card.
-- **Telaio nello stesso materiale:** la gutter diventa la scocca (faccia delle card) e
-  lo schermo è incassato con seam nero e ombra verso dentro; lingua e LED dell'accento
-  nel rail sono keycap da 26px come il torna-su; la navbar da `lg` è una fascia con la
-  faccia della scocca, celle piatte (un menu non è una tastiera).
-- **Due mondi:** keycap con ombra a terra dentro uno schermo erano oggetti fisici
-  disegnati su un monitor. Modello scelto: dispositivo con schermo. Fuori (telaio, rail,
-  navbar) hardware, con `.key--hw` come unico keycap; dentro tutto software, piatto:
-  pannelli a bordo sottile, pulsanti a fondo pieno senza spessore, chip e campi piatti,
-  hover come luce e non come spostamento. Scartato il "pannello di controllo" (tutto
-  fisico): non regge la prosa lunga né mobile, dove il telaio non c'è.
-- **Hero e dettaglio:** il titolo dell'hero aveva margini negativi dentro un
-  `overflow-hidden` che a Martian Mono tagliavano le ascendenti; tolti entrambi. Le
-  pagine di progetto e articolo lasciano la colonna stretta da 48rem per un impianto a
-  due colonne da `lg`: scheda tecnica sticky a sinistra, corpo a destra su 68ch.
-- Gate a fine giro: lint, check 0 errori, build, 196 unit, 32 e2e.
+- **Tokens and materials (`a5f19a2`):** in the `@theme` two radii, three lines, three
+  surfaces, four mono sizes; in `@layer components` `.panel`, `.chip`, `.field`, `.label`,
+  `.section` and the sizes of `.key` (`--sm`, `--icon`, `--float`). Every component
+  consumes them, no hand-written value. The `.archive-card` and `.entry-panel` classes
+  disappear into `.panel`.
+- **Card and index (`d2550e7`):** 21:9 thumbnail below `sm`, three-line excerpt, a single
+  row of three chips that shrink with an ellipsis plus a count: stable height in the
+  grid. Below `md` the index no longer has the empty 3rem column: year inline to the
+  right of the title, long date above, two-line excerpt (row of ~90px instead of
+  150-175).
+- **Mobile dock (`7604f03`):** menu, back-to-top and accent are the same 44px
+  `key--icon key--float` key; the picker becomes a key with the lit LED that cycles the
+  themes, the header burger and the floating one share the cell, the footer keeps 6rem of
+  clearance below `lg`.
+- **Reading column (`74343bf`):** About and Contacts at `max-w-prose`, project and article
+  in a `max-w-3xl` column on the left (which also resizes the hero image); excerpt in
+  roman, article meta as a label, 404 link as a key.
+- **Frame:** the rails move to the single `text-tele` size and to the panels' `line-2`
+  border, without changing the design.
+- **Desktop, second pass:** the remaining "mix" was one of roles, not of measures. Section
+  titles in Martian Mono medium like hero and nav (the instrument), sans only for content;
+  greys remapped to neutral in the `@theme` (Tailwind's gray scale is bluish and clashed
+  with an orange or purple accent) and gone every `text-white/NN`; card and index titles
+  at the same weight (500); tags as chips in the index too; status as a colored LED with a
+  neutral label; Lucide arrows in place of the Unicode ones. The image placeholder is a
+  switched-off screen (grid, accent glow, label) and detail pages no longer show the hero
+  image: `src/lib/assets/images` is empty, the block returns when there are real images.
+- **Keycap (`docs/archive/concepts/system-variants.html`, choice B):** after two passes
+  the lit key still did not convince: the background tinted at 8% sat halfway and read as
+  disabled. Three complete systems compared (Modulo, Keycap, Terminale) with cards, keys
+  and TOP together; Keycap chosen and extended to all surfaces: keycap for what is
+  touched (keys, chips, TOP in the rail), inset for what is written in (fields, switch
+  track), shell for what contains (cards, index, filters, opaque dropdowns), screen inset
+  in the card.
+- **Chassis in the same material:** the gutter becomes the shell (face of the cards) and
+  the screen is inset with a black seam and an inward shadow; language and accent LED in
+  the rail are 26px keycaps like back-to-top; the navbar from `lg` is a band with the
+  shell's face, flat cells (a menu is not a keyboard).
+- **Two worlds:** keycaps with a ground shadow inside a screen were physical objects drawn
+  on a monitor. Model chosen: device with a screen. Outside (chassis, rail, navbar)
+  hardware, with `.key--hw` as the only keycap; inside all software, flat: thin-border
+  panels, solid-background buttons with no thickness, flat chips and fields, hover as
+  light and not as displacement. The "control panel" (all physical) was rejected: it does
+  not hold long prose or mobile, where the chassis is absent.
+- **Hero and detail:** the hero title had negative margins inside an `overflow-hidden`
+  that with Martian Mono clipped the ascenders; both removed. Project and article pages
+  leave the narrow 48rem column for a two-column layout from `lg`: sticky spec sheet on
+  the left, body on the right at 68ch.
+- Gate at the end of the round: lint, check 0 errors, build, 196 unit, 32 e2e.
 
-### Cosa resta
+### What remains
 
-- Cantieri grossi: animazioni come sistema. La pixel art autoprodotta è scartata
-  (vedi `docs/archive/RESTYLE.md`); contenuti progetti (Blocco 4) e sistema UI (Blocco 5) fatti.
-- Prima del merge/live: `build` + `test:ci` + aggiornare gli E2E + merge su `main`.
+- Big worksites: animations as a system. Self-produced pixel art is rejected (see
+  `docs/archive/RESTYLE.md`); project content (Block 4) and UI system (Block 5) done.
+- Before merge/live: `build` + `test:ci` + update the E2E tests + merge to `main`.
 
-## Ciclo 10 - Ripartenza dallo stile base (2026-09-26)
+## Cycle 10 - Restart from the base style (2026-09-26)
 
-Branch `restyle/base` da `restyle/laboratory`. Il livello di presentazione torna a
-quello di `main` (`app.html`, `globals.css`, componenti, sezioni, route, OG, favicon,
-`svelte-inview` e `FloatingNav` ripristinati); restano contenuti, schema (`eyebrow`),
-loader, `translations.ts` e test unit. Tolti `Chassis`, `EntryIndex`, `SectionHeader`,
-`AccentPicker`, `themes.ts`, `reveal.ts`, `shelf.ts` e lo script favicon. Motivo in
-`docs/archive/RESTYLE.md` ("Stop e ripartenza"). Gate: lint, check 0 errori, build, 193 unit,
-32 e2e. `restyle/laboratory` resta intero per ripescare i pezzi che valgono.
+Branch `restyle/base` from `restyle/laboratory`. The presentation layer goes back to that
+of `main` (`app.html`, `globals.css`, components, sections, routes, OG, favicon,
+`svelte-inview` and `FloatingNav` restored); content, schema (`eyebrow`), loader,
+`translations.ts` and unit tests remain. Removed `Chassis`, `EntryIndex`, `SectionHeader`,
+`AccentPicker`, `themes.ts`, `reveal.ts`, `shelf.ts` and the favicon script. Reason in
+`docs/archive/RESTYLE.md` ("Stop and restart"). Gate: lint, check 0 errors, build, 193
+unit, 32 e2e. `restyle/laboratory` stays intact to pick the pieces worth keeping.
 
-## Ciclo 11 - Riscrittura in Astro con look neutro (2026-10-03)
+## Cycle 11 - Rewrite in Astro with a neutral look (2026-10-03)
 
-Branch `astro` da `restyle/base`. Simone ha chiesto di rifare il sito in Astro prima di
-lavorare a stile, progetti e tocco AI (`ROADMAP.md`), con un look neutro da usare come
-canvas e libertà di non portare tutto 1:1.
+Branch `astro` from `restyle/base`. Simone asked to rebuild the site in Astro before
+working on style, projects and the AI touch (`ROADMAP.md`), with a neutral look to use as
+a canvas and freedom not to port everything 1:1.
 
-- **Contenuti:** script una tantum dai JSON a blocchi a `meta.json` + `<lang>.md` per
-  progetti, articoli e pagine; nessun warning di sintassi. Campi delle immagini
-  segnaposto tolti, `about` tolto dalla navigazione (non era una pagina), stringhe
-  della UI ridotte a quelle usate. L'immagine dell'articolo torna dal backup.
-- **Piattaforma:** pagine statiche, Worker solo per root e catch-all (DECISIONS #10).
-  La logica dei redirect, prima dentro `hooks.server.ts`, è la funzione pura
-  `resolveRedirect`, testata; ora gestisce anche una route senza lingua (`/progetti`).
-- **Tolti:** FloatingNav, BackToTop, MotionToggle e animazioni, PixelBlast con
-  `three`/`postprocessing`, noise, filtro per intervallo di date, paginazione degli
-  articoli (uno solo), sitemap stilizzata, script di validazione e di immagini (lo fa
-  la build). Restano nella storia di `main`.
-- **Nuovo:** filtri delle liste nella query string, 404 localizzata e `noindex`,
-  font self-hosted (niente Google Fonts nella CSP), Umami limitato ai domini di
-  produzione, OG neutre generate da un endpoint prerenderizzato.
-- **Test:** 55 unit (i18n e redirect, SEO, filtri, metriche dal Markdown, OG, testi)
-  e 36 E2E contro `wrangler dev`, compresi filtri, CSP e 404.
-- **Card unica e controlli custom (stesso ciclo, su richiesta):** articoli e progetti
-  hanno la stessa card. Le select native sono sostituite da `ui/Select.svelte`
-  (singola, multipla, con ricerca), con chip dei filtri attivi e filtri multipli in
-  OR nella query string. Gli E2E ora girano su :8788 con server sempre nuovo: un
-  `workerd` orfano su :8787 serviva una build vecchia e aveva fatto fallire 25 test.
+- **Content:** one-off script from the block JSON to `meta.json` + `<lang>.md` for
+  projects, articles and pages; no syntax warnings. Placeholder image fields removed,
+  `about` removed from navigation (it was not a page), UI strings reduced to those used.
+  The article image comes back from the backup.
+- **Platform:** static pages, Worker only for root and catch-all (DECISIONS #10). The
+  redirect logic, before inside `hooks.server.ts`, is the pure function `resolveRedirect`,
+  tested; it now also handles a route with no language (`/progetti`).
+- **Removed:** FloatingNav, BackToTop, MotionToggle and animations, PixelBlast with
+  `three`/`postprocessing`, noise, date-range filter, article pagination (only one),
+  styled sitemap, validation and image scripts (the build does it). They stay in the
+  history of `main`.
+- **New:** list filters in the query string, localized and `noindex` 404, self-hosted
+  fonts (no Google Fonts in the CSP), Umami limited to the production domains, neutral OG
+  images generated by a prerendered endpoint.
+- **Tests:** 55 unit (i18n and redirects, SEO, filters, metrics from Markdown, OG, texts)
+  and 36 E2E against `wrangler dev`, including filters, CSP and 404.
+- **Single card and custom controls (same cycle, on request):** articles and projects
+  have the same card. The native selects are replaced by `ui/Select.svelte` (single,
+  multiple, with search), with chips of the active filters and multiple filters in OR in
+  the query string. The E2E tests now run on :8788 with an always fresh server: an
+  orphan `workerd` on :8787 served an old build and had made 25 tests fail.
 
-## Ciclo 12 - Struttura: il sito come spazio di lavoro (2026-10-03)
+## Cycle 12 - Structure: the site as a workspace (2026-10-03)
 
-Dopo un ragionamento su testi e struttura (voce e temi da job-seorch e doppia-linkedin,
-siti di ingegneri e tendenze attuali), tre mockup di struttura (`struttura.html`) sono
-sembrati "il solito portfolio di un developer". Due concept con interazione vera,
-fatti da due subagent in parallelo: A spazio di lavoro, B documento. Scelto A.
+After reasoning on texts and structure (voice and themes from job-seorch and
+doppia-linkedin, engineers' sites and current trends), three structure mockups
+(`struttura.html`) looked like "the usual developer portfolio". Two concepts with real
+interaction, made by two subagents in parallel: A workspace, B document. A chosen.
 
-- **Port in Astro:** shell `Workspace.astro` con lista, dettaglio, barra di stato e
-  palette; ogni voce è una pagina statica. Interazione da tastiera in uno script solo,
-  transizioni native del browser (compatibili con la CSP).
-- **Contenuti:** nuove collection metodo e adesso; i progetti separano `repo` e `site`
-  e hanno `install`, `license` e la riga `why` per quelli in vetrina. I numeri di
-  release non si salvano più (Relay era già a 54 contro i 51 del mockup): si linka la
-  pagina delle release. Articoli da `blog` a `scritti`/`writing`, con redirect delle
-  route vecchie. "Chi sono" senza la lista che duplicava il metodo.
-- **Test:** 57 unit (route legacy, sezioni senza dettaglio) e 45 E2E (tastiera, filtro,
-  palette, Esc, sezioni nelle due lingue).
-- **Da fare (detto da Simone):** molti dettagli di spazi, dimensioni e linee.
+- **Port to Astro:** `Workspace.astro` shell with list, detail, status bar and palette;
+  every item is a static page. Keyboard interaction in a single script, native browser
+  transitions (compatible with the CSP).
+- **Content:** new collections method and now; projects separate `repo` and `site` and
+  have `install`, `license` and the `why` line for those in the showcase. Release numbers
+  are no longer saved (Relay was already at 54 against the mockup's 51): the releases page
+  is linked. Articles from `blog` to `scritti`/`writing`, with redirects of the old
+  routes. "About" without the list that duplicated the method.
+- **Tests:** 57 unit (legacy routes, sections without detail) and 45 E2E (keyboard,
+  filter, palette, Esc, sections in both languages).
+- **To do (said by Simone):** many details of spacing, sizes and lines.
 
-## Ciclo 13 - Lo spazio di lavoro, rifinito a giri brevi (2026-10-03)
+## Cycle 13 - The workspace, refined in short rounds (2026-10-03)
 
-Giri brevi guardando il sito, ogni correzione di Simone trasformata in regola nel
-`CLAUDE.md` del progetto.
+Short rounds looking at the site, each correction of Simone turned into a rule in the
+project's `CLAUDE.md`.
 
-- **Un controllo per tipo:** una sola ricerca (filtra anche il registro, cerca anche
-  nei tag), un solo cursore, nessuna linea d'accento sulla selezione. Palette e campo
-  di ricerca del registro rimossi. Lo script di Umami nell'head tratteneva l'evento
-  load sulla rete lenta ed era la causa vera degli E2E instabili: ora parte dopo il
-  load e solo su esse.dev.
-- **Due colonne:** barra in alto e barra di stato davano una T di due toni che non
-  corrispondeva a nessuna zona. Ora lista e riquadro sono alti tutta la finestra, il
-  riquadro ha una toolbar (percorso, azioni sul documento, lingua) e il "torna su"
-  non sta più nel contenuto: breadcrumb, Esc e "‹ sezione" su mobile, con la history
-  se si arriva dal genitore (i filtri del registro restano).
-- **Pager e lista:** il pager sta in fondo al riquadro anche sulle pagine corte, h/l per
-  sfogliare (non `[`/`]`: sulla tastiera italiana del Mac vogliono Option). La lista va
-  in ordine di importanza e sta in 900 px: chi sono e adesso, poi la vetrina di 6
-  progetti con "tutti i N", metodo, scritti.
-- **Piano dell'agente (M17):** una pagina è un agente vero su Cloudflare (Agents SDK,
-  pi-agent-core 1.x, isola Svelte), al posto dell'idea del sito ridisegnato dal vivo.
-  Scelte in `docs/DECISIONS.md` #11.
-- **Test:** 58 unit e 50 E2E.
+- **One control per type:** a single search (it also filters the registry, it also
+  searches in tags), a single cursor, no accent line on the selection. Palette and
+  registry search field removed. The Umami script in the head held back the load event on
+  a slow network and was the real cause of the unstable E2E tests: it now starts after
+  load and only on esse.dev.
+- **Two columns:** top bar and status bar made a two-tone T that matched no zone. Now list
+  and pane are as tall as the window, the pane has a toolbar (path, document actions,
+  language) and the "back to top" is no longer in the content: breadcrumb, Esc and
+  "‹ section" on mobile, with history when arriving from the parent (the registry's
+  filters stay).
+- **Pager and list:** the pager sits at the bottom of the pane even on short pages, h/l
+  to browse (not `[`/`]`: on the Italian Mac keyboard they need Option). The list goes in
+  order of importance and fits in 900 px: about and now, then the showcase of 6 projects
+  with "all N", method, writing.
+- **Agent plan (M17):** a page is a real agent on Cloudflare (Agents SDK, pi-agent-core
+  1.x, Svelte island), in place of the idea of the site redesigned live. Choices in
+  `docs/DECISIONS.md` #11.
+- **Tests:** 58 unit and 50 E2E.
 
-## Ciclo 14 - L'agente del sito, prima versione (2026-10-03)
+## Cycle 14 - The site agent, first version (2026-10-03)
 
-Primo taglio di M17 (`83ddb42` .. `10ef143`): `/it/agente` (e `/en/agent`) è una riga
-della lista e una pagina statica con un'isola Svelte che apre un WebSocket verso un
-Durable Object per visitatore.
+First cut of M17 (`83ddb42` .. `10ef143`): `/it/agente` (and `/en/agent`) is a row of the
+list and a static page with a Svelte island that opens a WebSocket to a Durable Object per
+visitor.
 
-- **Base:** `SiteAgent` ospita pi-durable con `PiHarness` dell'Agents SDK; conversazione
-  nel SQLite dell'oggetto, ripresa dopo una sospensione. Tool `search_site` e
-  `read_page` sull'indice `/agent/index.json` generato alla build. Protocollo del socket e
-  riduttore degli eventi adattati dall'esempio ufficiale (MIT). Il codice del Worker ha
-  un suo tsconfig: i tipi del runtime Cloudflare si scontrano con quelli del DOM.
-- **Modelli:** partito sul binding `AI` (Workers AI), passato a `glm-5.3-flash` da
-  OpenRouter coi provider più veloci in ordine: la stessa domanda con tre tool da circa
-  40 s a circa 7. Timeout di 30 s sullo stream, nuovi tentativi di pi, avviso e "riprova"
-  dopo un errore finale (DECISIONS #11).
-- **Triage e spesa:** ogni messaggio passa prima da Jev, che ferma fuori tema e abuso e
-  sceglie la lingua; limite in costo reale per visitatore e per il sito (`Ledger`).
-  Jev è passato da Workers AI (servivano crediti AI Gateway) a TypeSafe diretto e infine a
-  OpenRouter con la stessa chiave del modello; riceve i titoli del sito come
-  `site_topics`, senza i quali leggeva "Relay e Portsage" come fuori tema (DECISIONS #12).
-- **Valutazione di Jev:** 54 messaggi etichettati e `pnpm eval:jev` (chiamate vere, fuori
-  da `test:ci`). La prima prova lasciava passare 4 messaggi su 19 da fermare; con le
-  soglie sulla massa fuori tema più abuso il risultato è 53 su 54, 0 domande legittime
-  fermate.
-- **Trascrizione:** Markdown sanificato, ragionamento chiuso, verdetto di Jev, token, costo
-  e budget residuo per risposta.
-- **Test:** 73 unit e 52 E2E (gli E2E dell'agente aprono la sessione ma non mandano
-  messaggi, che chiamerebbero un modello vero).
-- **Prossimo passo:** i tool che restano in M17 (`list_projects`, repo pubblici,
-  `open_page`, poi i dimostrativi) e Turnstile.
+- **Base:** `SiteAgent` hosts pi-durable with the Agents SDK's `PiHarness`; conversation in
+  the object's SQLite, resume after a suspension. Tools `search_site` and `read_page` on
+  the `/agent/index.json` index generated at build. Socket protocol and event reducer
+  adapted from the official example (MIT). The Worker code has its own tsconfig: the
+  Cloudflare runtime types clash with the DOM ones.
+- **Models:** started on the `AI` binding (Workers AI), moved to `glm-5.3-flash` from
+  OpenRouter with the fastest providers in order: the same question with three tools from
+  about 40 s to about 7. 30 s timeout on the stream, pi's retries, notice and "retry" after
+  a final error (DECISIONS #11).
+- **Triage and spend:** every message goes first through Jev, which stops off-topic and
+  abuse and picks the language; limit in real cost per visitor and for the site
+  (`Ledger`). Jev moved from Workers AI (it needed AI Gateway credits) to TypeSafe direct
+  and finally to OpenRouter with the same key as the model; it receives the site's titles
+  as `site_topics`, without which it read "Relay and Portsage" as off-topic (DECISIONS
+  #12).
+- **Jev evaluation:** 54 labeled messages and `pnpm eval:jev` (real calls, outside
+  `test:ci`). The first trial let through 4 of the 19 messages that should be stopped; with the
+  thresholds on the off-topic plus abuse mass the result is 53 out of 54, 0 legitimate
+  questions stopped.
+- **Transcript:** sanitized Markdown, collapsed reasoning, Jev's verdict, tokens, cost and
+  remaining budget per answer.
+- **Tests:** 73 unit and 52 E2E (the agent's E2E tests open the session but do not send
+  messages, which would call a real model).
+- **Next step:** the tools that remain in M17 (`list_projects`, public repos, `open_page`,
+  then the demo ones) and Turnstile.
 
-## Ciclo 15 - L'agente legge i progetti e il loro codice (2026-10-03)
+## Cycle 15 - The agent reads the projects and their code (2026-10-03)
 
-Secondo taglio di M17: da 2 a 9 tool, divisi in pagina tra "sul sito" e "sul codice".
+Second cut of M17: from 2 to 9 tools, split in the page between "on the site" and "on the
+code".
 
-- **Sito:** `list_projects` (filtri per stato e tag, vetrina prima; l'indice ora segna i
-  progetti in vetrina) e `show_page`, che diventa una scheda da aprire nella
-  trascrizione invece di navigare (DECISIONS #13).
-- **Codice:** `repo_overview`, `list_files`, `read_file`, `search_code`, `recent_commits`
-  sull'API REST di GitHub, solo sui repo dei progetti pubblicati più quello del sito.
-  `read_file` numera le righe, dà il link a GitHub e legge a pezzi i file lunghi;
-  risposte in memoria per 5 minuti; `GITHUB_TOKEN` facoltativo.
-- **Prove vere:** la prima chiamata sul Worker falliva con "Illegal invocation" (`fetch`
-  salvato in un campo perde il suo `this`; in Node e nei test non succede). Sulla domanda
-  "come fa Portsage a sapere quali porte sono occupate" l'agente trova `scanner.rs` in 7
-  chiamate, per circa 0,2 centesimi; il prompt ora chiede di copiare il codice senza
-  commenti inventati e di citare le righe col link.
-- **Pagina dell'agente** (afa1abe): si leggeva come un documento, con l'input dove finiva
-  un minimo di 55vh e una conversazione vuota senza niente. Ora l'input sta fermo in fondo
-  al riquadro e la pagina lo riempie (su mobile cresce anche la colonna del contenuto).
-  A conversazione vuota: i tool annunciati dal server, come funzionano triage e costi, tre
-  domande suggerite che partono subito. La trascrizione segue la risposta solo se chi legge
-  è già in fondo.
-- **Trascrizione:** le risposte usano gli stessi stili di prosa del sito (elenchi, blocchi
-  di codice, link).
-- **Test:** 87 unit e 54 E2E.
-- **Prossimo passo:** `GITHUB_TOKEN` da creare; poi `render` e `run_code`, insieme alla
-  valutazione di `@cloudflare/computer`.
+- **Site:** `list_projects` (filters by status and tag, showcase first; the index now marks
+  the projects in the showcase) and `show_page`, which becomes a card to open in the
+  transcript instead of navigating (DECISIONS #13).
+- **Code:** `repo_overview`, `list_files`, `read_file`, `search_code`, `recent_commits` on
+  the GitHub REST API, only on the repos of the published projects plus the site's.
+  `read_file` numbers the lines, gives the GitHub link and reads long files in pieces;
+  answers cached for 5 minutes; `GITHUB_TOKEN` optional.
+- **Real trials:** the first call on the Worker failed with "Illegal invocation" (`fetch`
+  saved in a field loses its `this`; in Node and in tests it does not happen). On the
+  question "how does Portsage know which ports are busy" the agent finds `scanner.rs` in 7
+  calls, for about 0.2 cents; the prompt now asks to copy the code without invented
+  comments and to cite the lines with the link.
+- **Agent page** (afa1abe): it read like a document, with the input where a 55vh minimum
+  ended and an empty conversation with nothing. Now the input stays fixed at the bottom of
+  the pane and the page fills it (on mobile the content column grows too). With an empty
+  conversation: the tools announced by the server, how triage and costs work, three
+  suggested questions that start immediately. The transcript follows the answer only if
+  the reader is already at the bottom.
+- **Transcript:** answers use the same prose styles as the site (lists, code blocks,
+  links).
+- **Tests:** 87 unit and 54 E2E.
+- **Next step:** `GITHUB_TOKEN` to create; then `render` and `run_code`, together with the
+  evaluation of `@cloudflare/computer`.
 
-## Ciclo 16 - I tool dimostrativi dell'agente (2026-10-03)
+## Cycle 16 - The agent's demo tools (2026-10-03)
 
-Terzo taglio di M17 (`3bdf3ee` .. `85a8ccd`): da 9 a 13 tool, con un
-gruppo "Capacità" in pagina.
+Third cut of M17 (`3bdf3ee` .. `85a8ccd`): from 9 to 13 tools, with a "Capabilities" group
+in the page.
 
-- **`render`:** barre, tabelle e linee del tempo dai dati, mai HTML; stessa validazione
-  sul server e nel browser, barre in SVG per la CSP.
-- **`run_code`:** Code Mode di Cloudflare (`@cloudflare/codemode`) in un Dynamic Worker
-  senza rete; i tool di sola lettura dentro il sandbox, coi tipi generati dagli schemi.
-  JavaScript e non Python, scelto con Simone (#14). Prova: 12 chiamate in parallelo sui 6
-  repo in un'esecuzione, poi una tabella con `render`, circa 0,14 centesimi.
-- **`delegate`:** 2-3 sotto-agenti come conversazioni di pi-durable possedute dalla
-  chiamata, coi soli tool di sola lettura; il loro costo lo scala il tool. Prova sul
-  confronto Relay, Portsage, Templator: 3 figli da 6-7 chiamate, circa 1,4 centesimi e
-  50 s.
-- **`draft_message`:** bozza modificabile, invio dal visitatore dopo Turnstile, tetti di
-  3 al giorno per visitatore e 30 per il sito, email via `send_email` verso `MAIL_TO`.
-  Una bozza inventata sul socket viene rifiutata.
-- **Bug trovati alle prove:** una prop Svelte chiamata `state` rompeva `$state` a runtime
-  senza errori di check; i titoli Markdown nelle risposte uscivano enormi.
-- **Test:** 99 unit e 54 E2E.
-- **Prossimo passo:** messa a punto dei secret e di Email Routing per la produzione (in
-  ROADMAP), eventi dei sotto-agenti dal vivo.
-- **Crediti e tetti (dopo):** budget per visitatore a 10 centesimi, mostrato in crediti
-  (1.000 al giorno) e solo sotto il 30%; tetto di 12.000 token per figlio di `delegate` e
-  niente figli senza crediti per il caso peggiore. Stessa domanda su tre repo: da circa
-  140 a 93 crediti, da 50 a 29 s.
+- **`render`:** bars, tables and timelines from data, never HTML; same validation on the
+  server and in the browser, bars in SVG for the CSP.
+- **`run_code`:** Cloudflare's Code Mode (`@cloudflare/codemode`) in a Dynamic Worker with
+  no network; the read-only tools inside the sandbox, with types generated from the
+  schemas. JavaScript and not Python, chosen with Simone (#14). Trial: 12 parallel calls on
+  the 6 repos in one execution, then a table with `render`, about 0.14 cents.
+- **`delegate`:** 2-3 sub-agents as pi-durable conversations owned by the call, with only
+  the read-only tools; their cost is deducted by the tool. Trial on the Relay, Portsage,
+  Templator comparison: 3 children of 6-7 calls, about 1.4 cents and 50 s.
+- **`draft_message`:** editable draft, sending by the visitor after Turnstile, caps of 3 a
+  day per visitor and 30 for the site, email via `send_email` to `MAIL_TO`. A draft
+  invented on the socket is rejected.
+- **Bugs found in the trials:** a Svelte prop called `state` broke `$state` at runtime
+  with no check error; Markdown headings in the answers came out huge.
+- **Tests:** 99 unit and 54 E2E.
+- **Next step:** tuning of secrets and Email Routing for production (in ROADMAP),
+  sub-agent events live.
+- **Credits and caps (after):** budget per visitor at 10 cents, shown in credits (1,000 a
+  day) and only below 30%; cap of 12,000 tokens per `delegate` child and no children
+  without credits for the worst case. Same question on three repos: from about 140 to 93
+  credits, from 50 to 29 s.
 
-## Ciclo 17 - Lo stile del concept B e la home snellita (2026-10-04)
+## Cycle 17 - Concept B's style and the slimmer home (2026-10-04)
 
-Giro su M15 (`7e13715` .. `c066659`): lo stile scelto in un concept a parte, poi la home e
-la lista rifinite a giri brevi.
+Round on M15 (`7e13715` .. `c066659`): the style chosen in a separate concept, then home
+and list refined in short rounds.
 
-- **Stile (#15):** `docs/concepts/concept-b-stile.html`, tre giri con palette, font mono,
-  effetto CRT e cornice regolabili dal vivo, poi applicato (`aa48bfa`, `204524f`): accento
-  lavanda (palette G), Departure Mono per il mono dell'interfaccia (il codice nella prosa
-  resta Geist Mono), velo CRT regolato dalle variabili `--crt-*`, su schermo largo una
-  finestra arrotondata con lista e contenuto come due card; mobile resta a filo. Un verde
-  fosforo con un solo compito: LED in corso, agente al lavoro, copia o invio riusciti.
-- **Movimento:** cambio pagina istantaneo, senza view transition (`660991c`); le etichette
-  si decodificano una volta all'ingresso del puntatore e una all'uscita, non a ogni
-  `pointerover` (`10c0593`).
-- **Home:** via la riga whoami sopra il nome; meno doppioni (la riga sul build entra
-  nell'intro, il conteggio dei progetti resta nella lista); "Da dove iniziare" con tre
-  voci: l'agente con una domanda d'esempio che finisce nel suo input senza partire, Relay,
-  il metodo. Scelta confrontando una `/v2` temporanea, poi tolta. Nel testo i coding agent
-  sono separati dagli agenti nei prodotti, che girano su harness su misura.
-- **Fix:** la domanda d'esempio usava `?q=`, che è la ricerca del sito, e riempiva anche
-  la casella della lista: ora è `?ask=`, con un E2E che lo controlla (`0bfa55d`).
-- **Pagina dell'agente:** prima i suggerimenti, poi i 13 tool come nomi su tre righe, con
-  una riga che descrive quello sotto il puntatore, il focus o il tocco (`b007b52`).
-- **Lista e toolbar** (`476c97c`, `c066659`): riga Benvenuto in cima alla lista, icona
-  Activity in verde per Adesso, `~` come primo passo di ogni percorso, profili esterni
-  come nomi mono con la freccia (Lucide non ha i loghi) accanto all'email in home e in
-  fondo alla lista.
-- **Test:** 99 unit e 55 E2E.
-- **Prossimo passo:** mobile (la finestra anche su mobile, bottone e drawer per la lista),
-  l'altezza della lista oltre i 900 px, la pagina dell'agente che su mobile si
-  apre scrollata in fondo.
+- **Style (#15):** `docs/concepts/concept-b-stile.html`, three rounds with palette, mono
+  font, CRT effect and frame tunable live, then applied (`aa48bfa`, `204524f`): lavender
+  accent (palette G), Departure Mono for the interface mono (code in prose stays Geist
+  Mono), CRT veil set by the `--crt-*` variables, on a wide screen a rounded window with
+  list and content as two cards; mobile stays flush. A phosphor green with a single job:
+  LED in progress, agent at work, successful copy or send.
+- **Motion:** instant page change, no view transition (`660991c`); labels decode once when
+  the pointer enters and once when it leaves, not on every `pointerover` (`10c0593`).
+- **Home:** gone the whoami line above the name; fewer duplicates (the line about the
+  build goes into the intro, the project count stays in the list); "Where to start" with
+  three items: the agent with an example question that ends up in its input without
+  starting, Relay, the method. Chosen by comparing a temporary `/v2`, then removed. In
+  the text the coding agents are separated from the agents in products, which run on
+  custom harnesses.
+- **Fix:** the example question used `?q=`, which is the site's search, and also filled the
+  list's box: now it is `?ask=`, with an E2E that checks it (`0bfa55d`).
+- **Agent page:** first the suggestions, then the 13 tools as names on three lines, with a
+  line describing the one under the pointer, focus or touch (`b007b52`).
+- **List and toolbar** (`476c97c`, `c066659`): Welcome row at the top of the list, Activity
+  icon in green for Now, `~` as the first step of every path, external profiles as mono
+  names with the arrow (Lucide has no logos) next to the email on the home and at the
+  bottom of the list.
+- **Tests:** 99 unit and 55 E2E.
+- **Next step:** mobile (the window on mobile too, button and drawer for the list), the
+  height of the list beyond 900 px, the agent page that on mobile opens scrolled to the
+  bottom.
 
-## Ciclo 18 - Il mobile come finestra con un cassetto (2026-10-04)
+## Cycle 18 - Mobile as a window with a drawer (2026-10-04)
 
-Giro su M15: il mobile prende la stessa forma dello schermo largo.
+Round on M15: mobile takes the same shape as the wide screen.
 
-- **Finestra:** anche su mobile la shell è staccata dai bordi (6 px, fondo `desk`) e il
-  riquadro è una card arrotondata che scorre dentro di sé, con la toolbar ferma in cima.
-  Prima la pagina scorreva tutta e la home mostrava la lista sotto la presentazione.
-- **Cassetto:** la lista entra da sinistra come una card sopra il riquadro, con logo, X,
-  ricerca, voci, profili e legenda (i tasti restano solo su desktop). Si apre dal
-  bottone `PanelLeft` nella toolbar o dalla lente, che va dritta alla ricerca; si chiude
-  con Esc, la X, un tocco fuori o trascinandola verso sinistra. Il riquadro sotto diventa
-  `inert`, il focus entra nel cassetto e torna al bottone. La visibilità cambia subito in
-  apertura e a fine corsa in chiusura, altrimenti il focus non entra nello stesso gesto.
-- **Fix:** la pagina dell'agente non scorre più in fondo a conversazione vuota
-  (`643b424`); `theme-color` allineato al fondo nuovo.
-- **Velo CRT** (`3bfc60e`): circa un quarto più leggero (alone, frangia, righe e
-  vignetta), sempre e solo dalle variabili `--crt-*`.
-- **Test:** 104 unit e 57 E2E (cassetto: Esc, X, tocco fuori, ricerca dalla lente).
-- **Prossimo passo:** il giro completo su un iPhone vero, il segnaposto dell'agente su due
-  righe, l'altezza della lista oltre i 900 px.
+- **Window:** on mobile too the shell is detached from the edges (6 px, `desk` background)
+  and the pane is a rounded card that scrolls inside itself, with the toolbar fixed at the
+  top. Before, the whole page scrolled and the home showed the list below the
+  presentation.
+- **Drawer:** the list comes in from the left like a card above the pane, with logo, X,
+  search, items, profiles and legend (the keys stay only on desktop). It opens from the
+  `PanelLeft` button in the toolbar or from the magnifier, which goes straight to search;
+  it closes with Esc, the X, a tap outside or by dragging it to the left. The pane below
+  becomes `inert`, focus enters the drawer and returns to the button. Visibility changes
+  immediately on opening and at the end of the stroke on closing, otherwise focus does
+  not enter in the same gesture.
+- **Fix:** the agent page no longer scrolls to the bottom with an empty conversation
+  (`643b424`); `theme-color` aligned with the new background.
+- **CRT veil** (`3bfc60e`): about a quarter lighter (glow, fringe, lines and vignette),
+  always and only from the `--crt-*` variables.
+- **Tests:** 104 unit and 57 E2E (drawer: Esc, X, tap outside, search from the magnifier).
+- **Next step:** the full round on a real iPhone, the agent placeholder on two lines, the
+  height of the list beyond 900 px.
 
-## Ciclo 19 - Il vetro, l'agente che chiacchiera, i limiti per IP (2026-10-04)
+## Cycle 19 - Glass, the chatting agent, per-IP limits (2026-10-04)
 
-Giro su M15 e M17 (`2a3862a` .. `38ece10`).
+Round on M15 and M17 (`2a3862a` .. `38ece10`).
 
-- **Vetro (#16):** `docs/concepts/concept-c-vetro.html` con le varianti regolabili dal
-  vivo, scelta la B con la barra in alto piatta. La finestra poggia su uno sfondo colorato
-  (`wallpaper`); cornice, lista, riquadro, campo dell'agente e menu sono vetro (utility
-  `glass`, valori in `--glass-*`). Giri brevi sullo sfondo: i bagliori separati
-  diventavano macchie attraverso il vetro, ora è un velo diagonale continuo con `--wall`
-  a 0,2. Un velo bianco sul vetro ingrigiva, ed è a zero. `subtle` alzato a `#908e9b`,
-  misurato sul vetro dove il velo dietro è più chiaro; `surface` e `hover` diventano veli
-  chiari invece di grigi pieni.
-- **Sfocatura annidata** (`b744c0b`): in Chromium un vetro che sfoca dentro un altro che
-  sfoca smette di sfocare, e il campo dell'agente mostrava nitida la trascrizione dietro.
-  Cornice e riquadro tengono solo il bordo del vetro; sfocano lista, campo dell'agente e
-  menu.
-- **Overscroll:** niente rimbalzo né scroll che passa sotto. `overscroll-none` su ogni
-  elemento fermava la rotella sulla lista dopo il primo colpo (Chromium la agganciava a
-  un antenato che non scorre): ora sta sulla pagina e sui contenitori principali, e i
-  blocchi annidati (codice, tabelle, output dei tool) hanno solo `overscroll-x-none`,
-  sennò la rotella sopra un comando non scorreva la pagina. Mai una regola su `*`.
-- **Cassetto** (`ab747a2`): `touch-action` non passa dentro un contenitore che scorre,
-  quindi dentro la lista il browser si prendeva il gesto e il trascinamento verso
-  sinistra non chiudeva più. Anche la lista ha `touch-pan-y`; un E2E manda tocchi veri
-  via CDP.
-- **Pagina dell'agente:** titolo e introduzione spariscono a conversazione avviata
-  (restano per i lettori di schermo), "nuova conversazione" passa nella toolbar e compare
-  solo allora; gli avvisi seguono la lingua del messaggio rilevata da Jev, non quella
-  della pagina.
-- **Chiacchiera** (`bdff5f1`): Jev ha un intento `chat` (saluti, battute, grazie, domande
-  sull'agente) che va al modello; la modalità chiacchiera (due o tre frasi, niente tool)
-  scatta solo con `chat` almeno 0,7, così una domanda vera letta per metà come chiacchiera
-  cerca comunque nel sito. Fuori tema ora vuol dire un compito vero estraneo a Simone. Il
-  prompt ha una voce (sveglio, caldo, un po' giocoso, mai umano, niente emoji).
-- **Limiti per IP (#17,** `38ece10`): l'id del visitatore lo sceglie il browser e il suo
-  tetto si aggirava. Raffica di 10 messaggi al minuto per IP con Workers Rate Limiting,
-  prima di Jev; 50 centesimi al giorno per IP nel `Ledger`, con un'impronta SHA-256 di
-  giorno e indirizzo, mai l'IP in chiaro. La raffica ha il suo avviso.
-- **Red team:** il set di Jev passa a 76 casi con 10 attacchi, alcuni travestiti da gioco o
-  battuta: 72 decisioni giuste su 76. Dei 10 attacchi 7 si fermano al triage, i 3 che
-  passano li ha rifiutati il modello in una prova dal vivo.
-- **Link nelle risposte (#18):** niente allowlist dei domini esterni, per ora.
-- **Mobile:** segnaposto dell'agente su una riga, link alle release scritto come percorso
-  (`be09326`); handle di Instagram e X corretti in `essedotdev`.
-- **Concept D** (`docs/concepts/concept-d-og.html`): proposte per le OG e la favicon, in
-  attesa della scelta di Simone.
-- **Test:** 106 unit e 61 E2E.
-- **Prossimo passo:** OG e favicon dal concept D, l'altezza della lista oltre i 900 px.
+- **Glass (#16):** `docs/concepts/concept-c-vetro.html` with variants tunable live, B
+  chosen with the flat top bar. The window rests on a colored background (`wallpaper`);
+  frame, list, pane, agent field and menus are glass (`glass` utility, values in
+  `--glass-*`). Short rounds on the background: separate glows became blotches through the
+  glass, now it is a continuous diagonal veil with `--wall` at 0.2. A white veil on the
+  glass turned it grey, and is at zero. `subtle` raised to `#908e9b`, measured on the glass
+  where the veil behind is lighter; `surface` and `hover` become light veils instead of
+  solid greys.
+- **Nested blur** (`b744c0b`): in Chromium a blurring glass inside another blurring one
+  stops blurring, and the agent field showed the transcript behind it sharp. Frame and
+  pane keep only the glass border; list, agent field and menus blur.
+- **Overscroll:** no bounce and no scroll passing underneath. `overscroll-none` on every
+  element stopped the wheel on the list after the first hit (Chromium hooked it to an
+  ancestor that does not scroll): now it sits on the page and the main containers, and
+  the nested blocks (code, tables, tool output) have only `overscroll-x-none`, otherwise
+  the wheel over a command did not scroll the page. Never a rule on `*`.
+- **Drawer** (`ab747a2`): `touch-action` does not pass inside a scrolling container, so
+  inside the list the browser took the gesture and dragging to the left no longer closed
+  it. The list has `touch-pan-y` too; an E2E sends real touches via CDP.
+- **Agent page:** title and introduction disappear once the conversation starts (they stay
+  for screen readers), "new conversation" moves to the toolbar and appears only then; the
+  notices follow the language of the message detected by Jev, not the page's.
+- **Chat** (`bdff5f1`): Jev has a `chat` intent (greetings, jokes, thanks, questions about
+  the agent) that goes to the model; the chat mode (two or three sentences, no tools)
+  triggers only with `chat` at least 0.7, so a real question read half as chat still
+  searches the site. Off-topic now means a real task unrelated to Simone. The prompt has a
+  voice (sharp, warm, a bit playful, never human, no emoji).
+- **Per-IP limits (#17,** `38ece10`): the visitor id is chosen by the browser and its cap
+  was bypassed. Burst of 10 messages a minute per IP with Workers Rate Limiting, before
+  Jev; 50 cents a day per IP in the `Ledger`, with a SHA-256 fingerprint of day and
+  address, never the IP in clear. The burst has its own notice.
+- **Red team:** Jev's set goes to 76 cases with 10 attacks, some disguised as a game or a
+  joke: 72 right decisions out of 76. Of the 10 attacks 7 stop at the triage, the 3 that
+  pass were refused by the model in a live trial.
+- **Links in answers (#18):** no allowlist of external domains, for now.
+- **Mobile:** agent placeholder on one line, link to the releases written as a path
+  (`be09326`); Instagram and X handles fixed to `essedotdev`.
+- **Concept D** (`docs/concepts/concept-d-og.html`): proposals for the OG images and the
+  favicon, awaiting Simone's choice.
+- **Tests:** 106 unit and 61 E2E.
+- **Next step:** OG and favicon from concept D, the height of the list beyond 900 px.
 
-## Ciclo 20 - OG e favicon dal concept D (2026-10-04)
+## Cycle 20 - OG and favicon from concept D (2026-10-04)
 
-- **OG (#19):** direzione B, il terminale: comando che apre la pagina, titolo con il
-  cursore lavanda (parola per parola, così su due righe segue l'ultima parola), sommario,
-  metadati in mono con il LED dello stato, righe CRT. 45 PNG generati alla build. Departure
-  Mono convertito in `woff` per satori.
-- **Favicon (#19):** il solo cursore del logo, proposta 7 del concept D, dopo un giro con
-  tre varianti a cursore verticale (s, e, solo cursore). `scripts/generate-favicons.ts`
-  (`pnpm favicons`) produce SVG, ICO con PNG dentro, PNG per iOS e manifest; manifest con
-  i colori nuovi.
-- **Test:** unit su comando, metadati, LED e taglia del titolo delle OG.
-- **M15 chiusa** da Simone: struttura e stile fatti; l'altezza della lista resta tra le
-  Aperte della ROADMAP.
+- **OG (#19):** direction B, the terminal: command that opens the page, title with the
+  lavender cursor (word by word, so on two lines it follows the last word), excerpt, mono
+  metadata with the status LED, CRT lines. 45 PNGs generated at build. Departure Mono
+  converted to `woff` for satori.
+- **Favicon (#19):** the logo cursor alone, proposal 7 of concept D, after a round with
+  three variants of a vertical cursor (s, e, cursor alone). `scripts/generate-favicons.ts`
+  (`pnpm favicons`) produces SVG, ICO with PNG inside, PNG for iOS and manifest; manifest
+  with the new colors.
+- **Tests:** unit on command, metadata, LED and title size of the OG images.
+- **M15 closed** by Simone: structure and style done; the height of the list stays among
+  the Open items of the ROADMAP.
 
-## Ciclo 21 - Il riquadro di vetro, M16 avviata (2026-10-04 / 2026-10-05)
+## Cycle 21 - The glass pane, M16 started (2026-10-04 / 2026-10-05)
 
-Giro su M15 (rifiniture) e primo taglio di M16 (`dbe3efb` .. `eebdd3f`).
+Round on M15 (finishing touches) and first cut of M16 (`dbe3efb` .. `eebdd3f`).
 
-- **Riquadro di vetro:** il contenuto passa dal nero a un tono più chiaro (token `pane`),
-  poi torna vetro sfocando da uno strato fratello dietro toolbar e contenuto
-  (`data-pane-glass`, `e286378`): così il campo dell'agente e i menu, che stanno nel
-  contenuto, sfocano ancora (#16). Un solo punto di luce tenue nello sfondo, visto
-  attraverso la lista.
-- **Veli sul vetro** (`b3c46fa`, `a95c2b7`): `bg-panel` pieno sul vetro non si vedeva, e
-  hover delle righe, riquadro "Il perché" e blocchi dell'agente sembravano vuoti. Ora i
-  blocchi stanno su `surface/60` e c'è una scala sola: hover `surface/60`, selezione
-  `surface`, `hover` solo per i controlli che partono già da un velo.
-- **Scartati da Simone:** cursori in pixel art con una luce che segue il puntatore
-  (concept E, provati e annullati con due revert); icona dell'agente scelta dal concept F
-  (`BotMessageSquare`, la chat dice che ci si può parlare). Entrambi i concept in
+- **Glass pane:** the content goes from black to a lighter tone (`pane` token), then back
+  to glass blurring from a sibling layer behind toolbar and content (`data-pane-glass`,
+  `e286378`): so the agent field and the menus, which are in the content, still blur
+  (#16). A single soft point of light in the background, seen through the list.
+- **Veils on the glass** (`b3c46fa`, `a95c2b7`): solid `bg-panel` on the glass did not
+  show, and row hover, the "Why" box and the agent's blocks looked empty. Now the blocks
+  sit on `surface/60` and there is a single scale: hover `surface/60`, selection
+  `surface`, `hover` only for controls that already start from a veil.
+- **Rejected by Simone:** pixel-art cursors with a light following the pointer (concept E,
+  tried and undone with two reverts); agent icon chosen from concept F
+  (`BotMessageSquare`, the chat says you can talk to it). Both concepts in
   `docs/archive/concepts/`.
-- **Fix** (`ae0caef`): l'evidenza di j/k resta solo col focus nella lista, prima sembrava
-  una seconda selezione.
-- **Favicon** (`eebdd3f`): lo stesso blocco del cursore del logo (1:2, angoli vivi, alone).
-- **M16, principi e smistamento:** `docs/features/progetti.md` con principi, voce e
-  smistamento deciso con Simone (vetrina, registro, idee, fuori). Il repo è pubblico e
-  l'agente ne legge i doc: nessun nome riservato nei file.
-- **M16, dati:** campo `previously` per le iterazioni precedenti di un'idea (#20), mostrato
-  come "Prima di questo", nell'indice dell'agente e cercabile; stato `maintained` per gli
-  strumenti finiti e ancora in uso (Portsage, Pigeon), con il LED verde fermo.
-- **M16, schede:** smistamento applicato (fuori vetrina Flux, a `published: false` idee e
-  voci escluse); prime stesure dall'analisi dei repo per le voci nuove e le famiglie
-  (pgbee e Zeno in vetrina, Copilota, Edge Lab, Wavelength, Media Hub, Watch OS, IDKCraft,
-  Milano, i server, Maia, Minerd); gli assistenti personali diventano le iterazioni di
-  Nexus. "La scelta interessante" diventa "Il perché". Gli E2E non dipendono più dal
-  numero di progetti o di tag.
-- **Prossimo passo:** rilettura delle schede con Simone (testo a mano, "Il perché"),
-  cover dei progetti, skill che propone le voci dai repo.
+- **Fix** (`ae0caef`): the j/k highlight stays only with focus in the list, before it
+  looked like a second selection.
+- **Favicon** (`eebdd3f`): the same block as the logo cursor (1:2, sharp corners, glow).
+- **M16, principles and sorting:** `docs/features/progetti.md` with principles, voice and
+  sorting decided with Simone (showcase, registry, ideas, out). The repo is public and the
+  agent reads its docs: no reserved name in the files.
+- **M16, data:** `previously` field for the earlier iterations of an idea (#20), shown as
+  "Before this", in the agent's index and searchable; `maintained` status for finished
+  tools still in use (Portsage, Pigeon), with a steady green LED.
+- **M16, entries:** sorting applied (Flux out of the showcase, ideas and excluded items to
+  `published: false`); first drafts from the repo analysis for the new items and families
+  (pgbee and Zeno in the showcase, Copilota, Edge Lab, Wavelength, Media Hub, Watch OS,
+  IDKCraft, Milan, the servers, Maia, Minerd); the personal assistants become the
+  iterations of Nexus. "The interesting choice" becomes "Why". The E2E tests no longer
+  depend on the number of projects or tags.
+- **Next step:** rereading the entries with Simone (hand-written text, "Why"), project
+  covers, a skill that proposes the items from the repos.
 
-## Ciclo 22 - Icone in movimento, contenuti, agente in dev (2026-10-05)
+## Cycle 22 - Icons in motion, content, agent in dev (2026-10-05)
 
-Rifiniture su M15 e contenuti (`1e7a962` .. `7771990`).
+Finishing touches on M15 and content (`1e7a962` .. `7771990`).
 
-- **Icone in movimento** (`243d7ab`, concept E in `docs/concepts/concept-e-icone.html`):
-  all'hover del link che le contiene la casa salta, l'agente inclina la testa, le frecce
-  escono e rientrano, i LED dei progetti mandano un anello, la spunta della copia si
-  disegna. Solo puntatore: tastiera e touch restano fermi.
-- **Adesso**, quattro giri sulla linea di Lucide `Activity`: lampeggiava perché le
-  lunghezze senza unità dentro `calc()` facevano saltare `stroke-dashoffset` (ora in px,
-  `010e704`); poi scorrimento da monitor cardiaco (`caf225f`), ridisegno in loop con
-  dissolvenza (`5c8676b`), infine scelta del giro 3 del concept E: la linea si traccia da
-  sinistra e si ritira allo stesso modo, come un serpente (`a14d318`).
-- **Contenuti** (`f5bec03`): percorso nella pagina chi sono rimesso in ordine (un anno di
-  AI a Pavia, non concluso; corsi di coding per ragazzi; Let's Code Italia poi Ethicode;
-  la software house con il freelance accanto); Ethicode parte a fine 2022, non 2023; la
-  voce Relay in Adesso senza libghostty nel titolo.
-- **Agente in `pnpm dev`** (`73a29a4`): `env.ASSETS.fetch` su `assets.local` passa da
-  Vite, che rispondeva 403 all'host sconosciuto, e la chat restava offline. Ora
-  `allowedHosts` in `astro.config.mjs`; il deploy e `wrangler dev` non ne sono toccati.
-- **Filtri delle collezioni** (`3ea0779`, `7771990`): `Select`, chip attivi e "azzera" in
-  Departure Mono sullo stesso velo della ricerca nella lista, al posto dei controlli sans
-  con il bordo. Nel menu opzioni, ricerca dei tag e "azzera" stanno dentro il pannello con
-  raggi concentrici (`--radius-panel` 10px, margine 4px, `--radius-control` 6px); la riga
-  attiva usa il velo `hover`.
-- **CLAUDE.md**: il redirect da `simonesalerno.it` è ancora da fare; design system più
-  stretto (il perché resta in ARCHITECTURE e #15-#16); gotcha di `pnpm check` sotto un
-  `pnpm dev` acceso.
-- **Prossimo passo:** invariato, rilettura delle schede di M16 con Simone, cover, skill
-  che propone le voci.
+- **Icons in motion** (`243d7ab`, concept E in `docs/concepts/concept-e-icone.html`): on
+  hover of the link that contains them the house jumps, the agent tilts its head, the
+  arrows go out and come back, the projects' LEDs send out a ring, the copy tick draws
+  itself. Pointer only: keyboard and touch stay still.
+- **Now**, four rounds on Lucide's `Activity` line: it flickered because unitless lengths
+  inside `calc()` made `stroke-dashoffset` jump (now in px, `010e704`); then a heart
+  monitor scroll (`caf225f`), redraw in a loop with a fade (`5c8676b`), finally the choice
+  of round 3 of concept E: the line traces itself from the left and retracts the same
+  way, like a snake (`a14d318`).
+- **Content** (`f5bec03`): path in the about page put back in order (a year of AI in
+  Pavia, not concluded; coding courses for kids; Let's Code Italia then Ethicode; the
+  software house with freelancing alongside); Ethicode starts at the end of 2022, not
+  2023; the Relay item in Now without libghostty in the title.
+- **Agent in `pnpm dev`** (`73a29a4`): `env.ASSETS.fetch` on `assets.local` goes through
+  Vite, which answered 403 to the unknown host, and the chat stayed offline. Now
+  `allowedHosts` in `astro.config.mjs`; the deploy and `wrangler dev` are not touched.
+- **Collection filters** (`3ea0779`, `7771990`): `Select`, active chips and "reset" in
+  Departure Mono on the same veil as the list's search, in place of the sans controls with
+  the border. In the options menu, tag search and "reset" sit inside the panel with
+  concentric radii (`--radius-panel` 10px, margin 4px, `--radius-control` 6px); the active
+  row uses the `hover` veil.
+- **CLAUDE.md**: the redirect from `simonesalerno.it` is still to do; tighter design
+  system (the why stays in ARCHITECTURE and #15-#16); gotcha of `pnpm check` under a
+  running `pnpm dev`.
+- **Next step:** unchanged, rereading the M16 entries with Simone, covers, a skill that
+  proposes the items.

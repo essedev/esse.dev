@@ -1,179 +1,184 @@
 # CLAUDE.md - esse.dev
 
-Portfolio personale, dominio principale `esse.dev` (`site` in `astro.config.mjs`), repo
-`essedev/esse.dev` (era `simonesalerno.it`). Worker e package restano `simonesalerno`:
-rinominare il Worker ne crea uno nuovo, senza Durable Object, segreti e dominio.
-`simonesalerno.it` andrà su `esse.dev` con una Redirect Rule di Cloudflare, mai nel codice
-(ancora da fare: Aperte della ROADMAP). Astro 7 + TS strict + Tailwind 4, isole Svelte 5,
-deploy su Cloudflare Workers; una pagina è un agente (Durable Object con pi-durable, modelli
-da OpenRouter). Il perché delle scelte sta in `docs/ARCHITECTURE.md` e `docs/DECISIONS.md`;
-stato e log in `docs/ROADMAP.md` e `docs/CYCLES.md`.
+Personal portfolio, main domain `esse.dev` (`site` in `astro.config.mjs`), repo
+`essedev/esse.dev` (it was `simonesalerno.it`). Worker and package stay `simonesalerno`:
+renaming the Worker creates a new one, without Durable Object, secrets and domain.
+`simonesalerno.it` will point to `esse.dev` with a Cloudflare Redirect Rule, never in the
+code (still to do: Open in the ROADMAP). Astro 7 + strict TS + Tailwind 4, Svelte 5
+islands, deployed on Cloudflare Workers; a page is an agent (Durable Object with
+pi-durable, models from OpenRouter). The why of the choices is in `docs/ARCHITECTURE.md`
+and `docs/DECISIONS.md`; state and log in `docs/ROADMAP.md` and `docs/CYCLES.md`.
 
 Public repository: code, comments, docs and commits in English; README.md is mirrored in
-README.it.md in the same commit.
+README.it.md in the same commit. Language rules and glossary in `docs/CONVENTIONS.md`.
 
-## Comandi
+## Commands
 
-- `pnpm dev` - dev server Astro su :4321.
-- `pnpm build` - build statica + Worker in `dist/`.
-- `pnpm preview` - build e `wrangler dev` su :8787 (comportamento di produzione).
-- `pnpm check` - astro check più `tsc -p tsconfig.worker.json` (il codice del Worker ha i
-  tipi del runtime Cloudflare, che si scontrano con quelli del DOM).
-- `pnpm lint` - prettier --check + eslint. `pnpm format` per scrivere.
-- `pnpm test:unit` - Vitest. `pnpm test:e2e` - Playwright. `pnpm test:ci` - tutti.
-- `pnpm eval:jev` - valuta il triage dell'agente su `tests/eval/jev-triage.json`
-  (chiamate vere via OpenRouter, dopo una build; fuori da `test:ci`). Da rilanciare se
-  cambiano domande, soglie o versione di Jev.
-- `pnpm favicons` - rigenera le favicon in `public/` da `scripts/generate-favicons.ts`.
-- `pnpm generate-types` - rigenera `worker-configuration.d.ts` dopo ogni modifica a
+- `pnpm dev` - Astro dev server on :4321.
+- `pnpm build` - static build + Worker in `dist/`.
+- `pnpm preview` - build and `wrangler dev` on :8787 (production behavior).
+- `pnpm check` - astro check plus `tsc -p tsconfig.worker.json` (the Worker code has the
+  Cloudflare runtime types, which clash with the DOM ones).
+- `pnpm lint` - prettier --check + eslint. `pnpm format` to write.
+- `pnpm test:unit` - Vitest. `pnpm test:e2e` - Playwright. `pnpm test:ci` - both.
+- `pnpm eval:jev` - evaluates the agent's triage on `tests/eval/jev-triage.json` (real
+  calls via OpenRouter, after a build; outside `test:ci`). Rerun if questions, thresholds
+  or the Jev version change.
+- `pnpm favicons` - regenerates the favicons in `public/` from
+  `scripts/generate-favicons.ts`.
+- `pnpm generate-types` - regenerates `worker-configuration.d.ts` after every change to
   `wrangler.jsonc`.
 - `pnpm deploy` - build + wrangler deploy.
 
-Giro di qualità prima di un commit non banale e SEMPRE prima di un push:
-`pnpm lint && pnpm check && pnpm build && pnpm test:ci`. Non c'è CI remota: il deploy
-avviene via Cloudflare Workers Builds al push, il gate è locale.
+Quality gate before a non-trivial commit and ALWAYS before a push:
+`pnpm lint && pnpm check && pnpm build && pnpm test:ci`. There is no remote CI: the deploy
+happens via Cloudflare Workers Builds on push, the gate is local.
 
-Gli E2E girano contro la build servita da `wrangler dev` su :8788, non contro il dev
-server: redirect, header, CSP, 404 e Durable Object esistono solo lì. Playwright rifà la
-build e avvia un server suo ogni volta. Ogni build riscrive `dist/` sotto i piedi di un
-`wrangler dev` acceso: l'anteprima su :8787 risponde 404 finché non la riavvii (anche dopo
-gli E2E). Un `workerd` orfano su una di queste porte serve asset vecchi: va chiuso.
-Allo stesso modo `pnpm check` ricostruisce la cache di Vite (`node_modules/.vite`) sotto un
-`pnpm dev` acceso: le isole Svelte non si idratano più (404 sulle dipendenze, poi "reading
-'call'") finché non lo fermi, cancelli la cache e lo riavvii.
+The E2E tests run against the build served by `wrangler dev` on :8788, not against the dev
+server: redirects, headers, CSP, 404 and the Durable Object exist only there. Playwright
+rebuilds and starts its own server every time. Every build rewrites `dist/` under a running
+`wrangler dev`: the preview on :8787 answers 404 until you restart it (also after the E2E
+tests). An orphan `workerd` on one of these ports serves old assets: close it. Likewise
+`pnpm check` rebuilds the Vite cache (`node_modules/.vite`) under a running `pnpm dev`: the
+Svelte islands stop hydrating (404 on dependencies, then "reading 'call'") until you stop
+it, delete the cache and restart it.
 
-Segreti in `.dev.vars` (escluso da git, modello in `.dev.vars.example`), letti da
-`wrangler dev` e copiati in `dist/server/` dalla build; in produzione
+Secrets in `.dev.vars` (excluded from git, template in `.dev.vars.example`), read by
+`wrangler dev` and copied into `dist/server/` by the build; in production
 `wrangler secret put`.
 
-## Contenuti
+## Content
 
-- Una cartella per contenuto in `src/content/{projects,articles,method,now}/`, con
-  `meta.json` (campi condivisi) e `<lang>.md` (frontmatter tradotto e corpo). Pagine
-  singole (welcome, about, contact) in `src/content/pages/<pagina>/<lang>.md`.
-- Schemi in `src/content.config.ts`: un campo nuovo si aggiunge solo lì, i tipi arrivano
-  da `CollectionEntry`.
-- `src/lib/content.ts` è l'unico accesso ai contenuti. Unisce meta e testo e fa fallire
-  la build se manca una lingua, un testo non ha il meta, uno slug si ripete o la vetrina
-  punta a un progetto non pubblicato. Un progetto da nascondere va a `published: false`,
-  non si cancella. Quali progetti, come raccontarli e la voce del sito:
-  `docs/features/progetti.md`. Il repo è pubblico e l'agente ne legge i doc: niente nomi
-  di clienti o di progetti riservati in nessun file.
-- Testi del sito e stringhe della UI: collection `site` (`src/content/site/<lang>.json`),
-  lette con `getSite(lang)` e `translator(lang)` di `src/lib/site.ts`. Schema rigido: una
-  chiave nuova va nello schema e in ogni lingua, e diventa un tipo (`UiKey`).
-- Configurazione in `src/config/` (lingue, route per lingua, vetrina), validata
-  all'import da `src/lib/config.ts`.
-- Standard di Astro dove esistono (collection, `@astrojs/rss`, Fonts API). La sitemap è
-  scritta a mano: `@astrojs/sitemap` non sa gli slug tradotti.
-- Nel Markdown i comandi vanno in backtick: la tipografia di Astro trasforma `--` in un
-  trattino lungo fuori dal codice.
+- One folder per item in `src/content/{projects,articles,method,now}/`, with `meta.json`
+  (shared fields) and `<lang>.md` (translated frontmatter and body). Single pages
+  (welcome, about, contact) in `src/content/pages/<page>/<lang>.md`.
+- Schemas in `src/content.config.ts`: a new field is added only there, the types come from
+  `CollectionEntry`.
+- `src/lib/content.ts` is the only access to content. It joins meta and text and fails the
+  build if a language is missing, a text has no meta, a slug repeats or the showcase points
+  to an unpublished project. A project to hide goes to `published: false`, it is not
+  deleted. Which projects, how to tell them and the site's voice:
+  `docs/features/progetti.md`. The repo is public and the agent reads its docs: no client
+  or reserved project names in any file.
+- Site texts and UI strings: `site` collection (`src/content/site/<lang>.json`), read with
+  `getSite(lang)` and `translator(lang)` from `src/lib/site.ts`. Strict schema: a new key
+  goes in the schema and in every language, and becomes a type (`UiKey`).
+- Configuration in `src/config/` (languages, routes per language, showcase), validated on
+  import by `src/lib/config.ts`.
+- Astro's standard where it exists (collections, `@astrojs/rss`, Fonts API). The sitemap is
+  hand-written: `@astrojs/sitemap` does not know the translated slugs.
+- In Markdown commands go in backticks: Astro's typography turns `--` into a long dash
+  outside code.
 
-## i18n e routing
+## i18n and routing
 
-- Pagine: `src/pages/[lang]/index.astro`, `[lang]/[section]/index.astro` (sezioni),
-  `[lang]/[section]/[slug].astro` (dettagli). `section` è la route localizzata
-  (`progetti`, `writing`...); le sezioni logiche sono in `SECTIONS` di `src/lib/i18n.ts`.
-- La logica è in funzioni pure in `src/lib/i18n.ts` (`sectionOf`, `routeOf`,
-  `translateSlug`, `getLanguageUrl`, `resolveRedirect`): non reimplementarla inline. Le
-  route di versioni precedenti (`blog`, `informazioni`) passano da `LEGACY_ROUTES`.
-- Sul Worker girano solo `src/pages/index.ts` (lingua da `Accept-Language`),
-  `src/pages/[...path].astro` (redirect al canonico o 404) e `/agents/site-agent/*`
-  (l'agente, smistato da `src/worker.ts`). Tutto il resto è statico.
+- Pages: `src/pages/[lang]/index.astro`, `[lang]/[section]/index.astro` (sections),
+  `[lang]/[section]/[slug].astro` (details). `section` is the localized route (`progetti`,
+  `writing`...); the logical sections are in `SECTIONS` of `src/lib/i18n.ts`.
+- The logic is in pure functions in `src/lib/i18n.ts` (`sectionOf`, `routeOf`,
+  `translateSlug`, `getLanguageUrl`, `resolveRedirect`): do not reimplement it inline. The
+  routes of earlier versions (`blog`, `informazioni`) go through `LEGACY_ROUTES`.
+- Only `src/pages/index.ts` (language from `Accept-Language`), `src/pages/[...path].astro`
+  (redirect to the canonical URL or 404) and `/agents/site-agent/*` (the agent, dispatched
+  by `src/worker.ts`) run on the Worker. Everything else is static.
 
-## Open Graph e SEO
+## Open Graph and SEO
 
-- OG: endpoint prerenderizzato `src/pages/og/[name].png.ts` (satori + resvg), layout
-  puro in `src/lib/og.ts` (stile terminale, DECISIONS #19); il prerender gira in Node per
-  resvg. Gotcha satori: font `woff`/`ttf`, mai `woff2` (Departure Mono ha anche il `woff`
-  in `src/assets/fonts/`); dimensioni nello `style`; colori ricopiati da `@theme`, perché
-  satori non legge le variabili CSS; un file si legge da `process.cwd()`, non da
-  `import.meta.url`, che alla build punta a `dist/`.
-- Canonical, hreflang e JSON-LD: helper puri in `src/lib/seo.ts`.
+- OG: prerendered endpoint `src/pages/og/[name].png.ts` (satori + resvg), pure layout in
+  `src/lib/og.ts` (terminal style, DECISIONS #19); the prerender runs in Node for resvg.
+  Satori gotchas: `woff`/`ttf` fonts, never `woff2` (Departure Mono also has the `woff` in
+  `src/assets/fonts/`); sizes in `style`; colors copied from `@theme`, because satori does
+  not read CSS variables; a file is read from `process.cwd()`, not from `import.meta.url`,
+  which at build points to `dist/`.
+- Canonical, hreflang and JSON-LD: pure helpers in `src/lib/seo.ts`.
 
-## Design system: lo spazio di lavoro
+## Design system: the workspace
 
-Il sito si usa come un'app: lista a sinistra, riquadro con la sua toolbar a destra (scelte
-in ARCHITECTURE, stile e vetro in DECISIONS #15-#16). Shell in `src/layouts/Workspace.astro`,
-ordine della lista e del pager in `src/lib/workspace.ts`, tastiera e cassetto mobile
-(`data-drawer`) in `src/scripts/workspace.ts`.
+The site is used like an app: list on the left, pane with its toolbar on the right (choices
+in ARCHITECTURE, style and glass in DECISIONS #15-#16). Shell in
+`src/layouts/Workspace.astro`, list and pager order in `src/lib/workspace.ts`, keyboard and
+mobile drawer (`data-drawer`) in `src/scripts/workspace.ts`.
 
-- La lista va in ordine di importanza: pagine singole, vetrina (`featured.json`, 6) con
-  "tutti i N", metodo, scritti, profili esterni. Gli altri progetti li trova la ricerca.
-  Deve stare in 900 px di altezza.
-- Un parametro nuovo nell'URL si controlla contro quelli in uso: `?q=` ricerca della lista,
-  `?ask=` domanda precompilata dell'agente.
-- La navigazione sta nella toolbar (breadcrumb, Esc, "‹ sezione" su mobile), mai un
-  "Indietro" nel contenuto. Il livello sopra si calcola dai `crumbs` in `Workspace.astro`.
-- Token in `@theme` (`src/styles/global.css`): un valore scritto a mano in un componente è
-  un errore.
-- Lavanda (`accent`) per identità e interazione; verde (`live`) solo per "vivo, riuscito"
-  (LED in corso e mantenuto, copie e invii riusciti), mai sul testo corrente.
-- Vetro: utility `glass` con i valori in `--glass-*`, la toolbar resta piatta. Un vetro che
-  sfoca non va dentro un altro (Chromium smette di sfocare): la cornice ha solo il bordo, il
-  riquadro sfoca dallo strato `data-pane-glass`, che non contiene altri vetri. Lo sfondo è un
-  velo continuo con un solo punto di luce: bagliori sparsi diventano macchie.
-- Sul vetro solo veli chiari: `bg-panel` pieno non si vede. Blocchi `bg-surface/60`; una
-  scala sola per gli stati: hover `surface/60`, selezione `surface` (sopra l'hover, così il
-  "sei qui" resta), `hover` solo per i controlli che partono già dal velo. Un colore di testo
-  nuovo si misura sul vetro, dove il fondo è più chiaro, non sul nero.
-- Departure Mono per tutto il mono dell'interfaccia (il codice nella prosa resta Geist
-  Mono), velo CRT con i valori in `--crt-*`.
-- Nessuna larghezza massima sul contenuto: la misura la danno la colonna e la taglia fluida.
-- Controlli mai nativi (`ui/Select.svelte`). Icone solo Lucide.
-- Icone in movimento: `data-motion="<nome>"` sull'icona Lucide, gesto all'hover del link,
-  bottone o campo che la contiene (solo puntatore), CSS in `global.css`. Le parti si prendono
-  per posizione nel tracciato e i tratti ridisegnati hanno la lunghezza misurata (`--len`):
-  aggiornando Lucide vanno ricontrollati. Scelte nel concept E.
-- Una sola ricerca nel sito e un solo cursore lampeggiante. Mai linee o barre d'accento a
-  sinistra o sopra un elemento per indicare selezione o stato: la selezione si vede dal fondo.
-- Niente stili inline negli attributi: la CSP li blocca. Il cambio pagina è istantaneo:
-  niente view transition.
-- Niente rimbalzo né scroll che passa sotto: `overscroll-none` sui contenitori principali,
-  `overscroll-x-none` sui blocchi annidati che scorrono di lato (sennò la rotella sopra il
-  codice non scorre la pagina); mai una regola su `*`. `touch-action` non passa dentro un
-  contenitore che scorre: va messo anche lì.
+- The list goes in order of importance: single pages, showcase (`featured.json`, 6) with
+  "tutti i N", method, writing, external profiles. The other projects are found by search.
+  It must fit in 900 px of height.
+- A new URL parameter is checked against those in use: `?q=` list search, `?ask=`
+  pre-filled agent question.
+- Navigation lives in the toolbar (breadcrumb, Esc, "‹ section" on mobile), never a "Back"
+  in the content. The level above is computed from the `crumbs` in `Workspace.astro`.
+- Tokens in `@theme` (`src/styles/global.css`): a hand-written value in a component is a
+  mistake.
+- Lavender (`accent`) for identity and interaction; green (`live`) only for "alive,
+  succeeded" (LED in progress and maintained, successful copies and sends), never on
+  running text.
+- Glass: `glass` utility with the values in `--glass-*`, the toolbar stays flat. A blurring
+  glass does not go inside another (Chromium stops blurring): the frame has only the
+  border, the pane blurs from the `data-pane-glass` layer, which contains no other glass.
+  The background is a continuous veil with a single point of light: scattered glows turn
+  into blotches.
+- On the glass only light veils: solid `bg-panel` does not show. Blocks `bg-surface/60`; a
+  single scale for states: hover `surface/60`, selection `surface` (above the hover, so the
+  "you are here" stays), `hover` only for controls that already start from the veil. A new
+  text color is measured on the glass, where the background is lighter, not on black.
+- Departure Mono for all the interface mono (code in prose stays Geist Mono), CRT veil with
+  the values in `--crt-*`.
+- No maximum width on the content: the column and the fluid size set the measure.
+- Never native controls (`ui/Select.svelte`). Icons only Lucide.
+- Icons in motion: `data-motion="<name>"` on the Lucide icon, gesture on hover of the link,
+  button or field that contains it (pointer only), CSS in `global.css`. The parts are taken
+  by position in the path and the redrawn strokes have a measured length (`--len`): when
+  updating Lucide they must be rechecked. Choices in concept E.
+- A single search in the site and a single blinking cursor. Never accent lines or bars to
+  the left of or above an element to indicate selection or state: selection shows from the
+  background.
+- No inline styles in attributes: the CSP blocks them. The page change is instant: no view
+  transition.
+- No bounce and no scroll passing underneath: `overscroll-none` on the main containers,
+  `overscroll-x-none` on nested blocks that scroll sideways (otherwise the wheel over the
+  code does not scroll the page); never a rule on `*`. `touch-action` does not pass inside
+  a scrolling container: put it there too.
 
-## Agente
+## Agent
 
-- Codice in `src/agent/` e `src/components/agent/`; perché e come in ARCHITECTURE
-  (Agente), DECISIONS #11-#14, #17-#18.
-- Ogni messaggio all'agente in anteprima chiama modelli veri su OpenRouter
-  (`OPENROUTER_API_KEY`) e i tool sul codice l'API di GitHub (`GITHUB_TOKEN` facoltativo).
-  Gli E2E non mandano messaggi. In locale `draft_message` spedisce nel simulatore di
-  wrangler (il testo finisce in `.wrangler/tmp/email/`): per provarlo serve `MAIL_TO`,
-  anche finto (`wrangler dev --var MAIL_TO:prova@example.com`).
-- Modello, ordine dei provider e timeout in `src/agent/models.ts`; le conversazioni
-  esistenti passano al modello nuovo all'avvio dell'oggetto. Limiti di spesa in
-  `src/agent/budget.ts` (visitatore, IP, sito), raffica per IP con il binding `AGENT_RATE`. Triage in `src/agent/triage.ts`, trasporto di Jev in
-  `JEV_TRANSPORT` di `src/agent/site-agent.ts`.
-- Un tool nuovo è una `ToolRegistration` di pi-durable, con `replay: 'safe'` solo se
-  rieseguirlo non ha effetti. I dati del sito si leggono dall'indice `/agent/index.json`
-  (generato alla build), mai da fuori.
-- Il codice che gira solo sul Worker va escluso da `tsconfig.json` e incluso in
+- Code in `src/agent/` and `src/components/agent/`; why and how in ARCHITECTURE (Agent),
+  DECISIONS #11-#14, #17-#18.
+- Every message to the agent in preview calls real models on OpenRouter
+  (`OPENROUTER_API_KEY`) and the code tools the GitHub API (`GITHUB_TOKEN` optional). The
+  E2E tests send no messages. Locally `draft_message` sends into wrangler's simulator (the
+  text ends up in `.wrangler/tmp/email/`): to try it you need `MAIL_TO`, even a fake one
+  (`wrangler dev --var MAIL_TO:prova@example.com`).
+- Model, provider order and timeouts in `src/agent/models.ts`; existing conversations move
+  to the new model when the object starts. Spending limits in `src/agent/budget.ts`
+  (visitor, IP, site), per-IP burst with the `AGENT_RATE` binding. Triage in
+  `src/agent/triage.ts`, Jev's transport in `JEV_TRANSPORT` of `src/agent/site-agent.ts`.
+- A new tool is a pi-durable `ToolRegistration`, with `replay: 'safe'` only if rerunning it
+  has no effects. Site data is read from the `/agent/index.json` index (generated at
+  build), never from outside.
+- Code that runs only on the Worker must be excluded from `tsconfig.json` and included in
   `tsconfig.worker.json`.
-- Sul Worker `fetch` staccato dal suo oggetto (salvato in un campo) lancia "Illegal
-  invocation"; in Node e nei test no. Si avvolge: `(input, init) => fetch(input, init)`.
-- In Svelte una prop o una variabile non si chiama come una rune (`state`, `derived`,
-  `effect`, `props`): `$state(...)` diventa la sottoscrizione a uno store e la pagina si
-  rompe a runtime, senza errori da `pnpm check`.
+- On the Worker a `fetch` detached from its object (saved in a field) throws "Illegal
+  invocation"; in Node and in tests it does not. Wrap it:
+  `(input, init) => fetch(input, init)`.
+- In Svelte a prop or a variable is not named like a rune (`state`, `derived`, `effect`,
+  `props`): `$state(...)` becomes the subscription to a store and the page breaks at
+  runtime, with no errors from `pnpm check`.
 
-## Convenzioni
+## Conventions
 
-- `pnpm` sempre. Tab, 100 colonne, single quote, no trailing comma (`.prettierrc`). Il
-  Markdown dei contenuti è escluso da prettier.
-- Tailwind 4 CSS-first, niente `tailwind.config`.
-- Codice in inglese, UI in italiano con accenti veri. Niente em dash né section sign,
-  neanche nei contenuti.
-- Commit: Conventional Commits in inglese, atomici. Push solo su comando esplicito.
-- Mockup e varianti visive: file HTML in `docs/concepts/`, etichettati A, B, C; quelli
-  superati vanno in `docs/archive/concepts/`.
+- `pnpm` always. Tabs, 100 columns, single quotes, no trailing comma (`.prettierrc`). The
+  content Markdown is excluded from prettier.
+- Tailwind 4 CSS-first, no `tailwind.config`.
+- Code in English, UI in Italian with real accents. No em dash or section sign, not even
+  in the content.
+- Commits: Conventional Commits in English, atomic. Push only on explicit command.
+- Mockups and visual variants: HTML files in `docs/concepts/`, labeled A, B, C; superseded
+  ones go to `docs/archive/concepts/`.
 
-## Non toccare senza motivo
+## Do not touch without reason
 
-- Header di sicurezza in due posti da tenere allineati: `public/_headers` per gli asset
-  statici, `src/middleware.ts` per le risposte del Worker.
-- CSP in `astro.config.mjs` (`security.csp`): un dominio esterno nuovo va aggiunto lì.
-  `frame-ancestors` deve restare nell'header: nel meta tag è ignorato.
-- Shiki è spento (`markdown.syntaxHighlight: false`): usa stili inline che la CSP blocca.
-  Se serve evidenziare il codice, Prism con un foglio di stile.
+- Security headers in two places to keep aligned: `public/_headers` for static assets,
+  `src/middleware.ts` for the Worker's responses.
+- CSP in `astro.config.mjs` (`security.csp`): a new external domain must be added there.
+  `frame-ancestors` must stay in the header: in the meta tag it is ignored.
+- Shiki is off (`markdown.syntaxHighlight: false`): it uses inline styles that the CSP
+  blocks. If code highlighting is needed, Prism with a stylesheet.
