@@ -332,22 +332,23 @@
 	transform-origin: 100% 100%;
 }
 [data-motion='activity'] {
-	--len: 49.21;
+	--len: 49.21px;
+	--gap: 7px;
 }
 [data-motion='file'] > :nth-child(3) {
-	--len: 2;
+	--len: 2px;
 	--delay: 200ms;
 }
 [data-motion='file'] > :nth-child(4) {
-	--len: 8;
+	--len: 8px;
 	--delay: 290ms;
 }
 [data-motion='file'] > :nth-child(5) {
-	--len: 8;
+	--len: 8px;
 	--delay: 380ms;
 }
 [data-motion='x'] {
-	--len: 16.97;
+	--len: 16.97px;
 	transition: rotate 350ms var(--ease-out);
 }
 [data-motion='x'] > :nth-child(2) {
@@ -359,7 +360,7 @@
 
 /* La spunta di una copia riuscita si disegna quando compare. */
 [data-motion='check'] > * {
-	--len: 22.63;
+	--len: 22.63px;
 	stroke-dasharray: var(--len) var(--len);
 	animation: icon-write 380ms var(--ease-out) backwards;
 }
@@ -375,8 +376,8 @@
 		animation: icon-nod 700ms var(--ease-out) 250ms;
 	}
 	:is(a, button, label):hover [data-motion='activity'] > * {
-		stroke-dasharray: var(--len) var(--len);
-		animation: icon-trace 1s linear infinite;
+		stroke-dasharray: var(--len) var(--gap);
+		animation: icon-sweep 1.1s linear infinite;
 	}
 	:is(a, button, label):hover [data-motion='bot'] {
 		animation: icon-tilt 800ms var(--ease-out);
@@ -463,20 +464,15 @@
 	}
 }
 
-/* Il tracciato di Activity va da destra a sinistra: la linea si scopre dalla fine, così si
-   traccia da sinistra, e si cancella nello stesso verso. */
-@keyframes icon-trace {
-	0% {
-		stroke-dashoffset: calc(var(--len) * -1);
-		animation-timing-function: cubic-bezier(0.35, 0, 0.65, 1);
-	}
-	55%,
-	68% {
+/* La scansione di un monitor: la linea resta, un varco la percorre da sinistra a destra. Il
+   tracciato di Activity va da destra a sinistra, e un giro è un periodo intero del tratteggio
+   (linea più varco), così il loop si richiude senza un frame vuoto. */
+@keyframes icon-sweep {
+	from {
 		stroke-dashoffset: 0;
-		animation-timing-function: cubic-bezier(0.55, 0, 1, 0.45);
 	}
-	100% {
-		stroke-dashoffset: var(--len);
+	to {
+		stroke-dashoffset: calc(var(--len) + var(--gap));
 	}
 }
 
