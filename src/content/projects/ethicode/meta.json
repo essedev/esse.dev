@@ -6,6 +6,6 @@
 	"logo": "./logo.svg",
 	"cover": {
 		"src": "./cover.webp",
-		"focus": "center"
+		"focus": "top"
 	}
 }
