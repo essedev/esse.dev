@@ -44,6 +44,10 @@ tests). An orphan `workerd` on one of these ports serves old assets: close it. L
 `pnpm check` rebuilds the Vite cache (`node_modules/.vite`) under a running `pnpm dev`: the
 Svelte islands stop hydrating (404 on dependencies, then "reading 'call'") until you stop
 it, delete the cache and restart it.
+Replacing an image file keeps the old one on screen in dev: the image endpoint answers
+`immutable` and wrangler's emulated cache (`.wrangler/state/v3/cache`) keys it by URL, not by
+content. Stop the dev server, delete that folder, restart, and hard-reload the browser.
+Production is not affected: built images carry a content hash.
 
 Secrets in `.dev.vars` (excluded from git, template in `.dev.vars.example`), read by
 `wrangler dev` and copied into `dist/server/` by the build; in production
