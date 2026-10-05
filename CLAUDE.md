@@ -69,6 +69,8 @@ Secrets in `.dev.vars` (excluded from git, template in `.dev.vars.example`), rea
   import by `src/lib/config.ts`.
 - Astro's standard where it exists (collections, `@astrojs/rss`, Fonts API). The sitemap is
   hand-written: `@astrojs/sitemap` does not know the translated slugs.
+- `/llms.txt` (`src/pages/llms.txt.ts`) is built from the same collections as the sitemap, in
+  the default language: a new section or collection goes in both.
 - In Markdown commands go in backticks: Astro's typography turns `--` into a long dash
   outside code.
 

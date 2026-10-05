@@ -20,7 +20,7 @@ Personal portfolio of Simone Salerno, online at [esse.dev](https://esse.dev). Bu
 - Home with a short intro, contacts and where to start: the agent, a lead project, the method
 - Project and article listings with search, tag, status and sort filters kept in the URL
 - Article reading time and token estimate, related articles
-- Per-language RSS feed, sitemap with alternates, JSON-LD
+- Per-language RSS feed, sitemap with alternates, JSON-LD, `llms.txt`
 - Open Graph images generated at build time, one per page
 - A site agent that answers from the site's own pages and the public code of the projects, and shows its tool calls, tokens and cost, behind a triage step and a real-cost daily budget
 

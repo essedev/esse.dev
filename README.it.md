@@ -20,7 +20,7 @@ Portfolio personale di Simone Salerno, online su [esse.dev](https://esse.dev). F
 - Home con una breve presentazione, i contatti e da dove iniziare: l'agente, un progetto di punta, il metodo
 - Elenchi di progetti e articoli con ricerca e filtri per tag, stato e ordine, tenuti nell'URL
 - Tempo di lettura e stima dei token degli articoli, articoli correlati
-- Feed RSS per lingua, sitemap con alternate, JSON-LD
+- Feed RSS per lingua, sitemap con alternate, JSON-LD, `llms.txt`
 - Immagini Open Graph generate alla build, una per pagina
 - Un agente che risponde dalle pagine del sito e dal codice pubblico dei progetti e mostra chiamate ai tool, token e costo, dietro un triage e un budget giornaliero in costo reale
 
