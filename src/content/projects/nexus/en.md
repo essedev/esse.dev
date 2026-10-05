@@ -13,7 +13,7 @@ why: "Everything is an entity defined by a schema, and a new type needs no code.
 previously:
   - name: "Plannerinator"
     year: 2024
-    note: "Tasks, projects, notes, events and collections in one SvelteKit app, rewritten in Next.js a year later: the first attempt at a single place for everything, still without an assistant."
+    note: "Tasks, projects, notes and collections in SvelteKit, rewritten in Next.js a year later with health and finance taken from Life Terminal: the domain Nexus inherited."
   - name: "Verbosa"
     year: 2025
     note: "A multi-provider chat in Flutter and Go, with streaming and the model picked message by message: my first client for talking to models."
@@ -22,13 +22,13 @@ previously:
     note: "An assistant on Telegram built on the Claude Agent SDK, each group isolated in its own container."
   - name: "Life Terminal"
     year: 2026
-    note: "Finance and health in one app, with an agent that reads and writes the data and changes role by section."
+    note: "Finance and health in one app, with an agent that reads and writes the data and changes role by section. Its finance and health moved into Plannerinator."
   - name: "Almanac"
     year: 2026
     note: "My own ChatGPT in Elixir and Phoenix, with tools, folders and hybrid RAG on pgvector."
   - name: "Nexus in Elixir"
     year: 2026
-    note: "The first version of Nexus, in Elixir and Phoenix with LiveView."
+    note: "The first version of Nexus, in Elixir and Phoenix with LiveView: Almanac's runtime with Plannerinator's domain."
   - name: "Bob"
     year: 2026
     note: "A voice assistant on Hermes Agent, with a PWA and a Discord bot: push-to-talk and streamed voice. Stopped the day Nexus restarted."
