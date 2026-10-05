@@ -5,58 +5,8 @@ lavoro svolto (con riferimenti ai commit), verifiche e cosa resta. Serve a ripre
 il filo tra una sessione e l'altra. La pianificazione ad alto livello vive in
 `docs/ROADMAP.md`.
 
-I cicli più vecchi sono in `docs/archive/` (Cicli 1-6 in `CYCLES-1-6.md`).
-
----
-
-## Ciclo 7 - Vetrina home: progetti featured (2026-06-02)
-
-### Obiettivo
-
-La home mostrava i 6 progetti piu recenti. Renderla una vetrina curata: scegliere
-quali progetti mettere in evidenza, e in che ordine.
-
-### Lavoro
-
-- `3e930ad` feat(home): vetrina di progetti featured. `config/featured.json`
-  elenca fino a 6 id progetto in ordine; la home li mette davanti e riempie gli
-  slot restanti con i piu recenti non-featured (cap 6 responsivo applicato da
-  `ProjectsSection`). Pezzi: schema Zod + tipo `FeaturedConfig`, branch nel
-  `loadConfig`, validazione a build (id esistenti, max 6) in `validate-content`,
-  util puro `orderFeaturedFirst` (testato), `+page.server` della home che applica
-  l'ordinamento. La listing `/[lang]/[route]` non passa di qui.
-
-### Decisioni / note
-
-- Selezione + ordine in un file config (non un flag `featured` nei meta ne un
-  `featured_rank`): l'ordine della vetrina e esplicito e in un solo posto,
-  disaccoppiato dal contenuto, riordinabile spostando una riga, validabile a
-  build. Il boolean non da l'ordine; il rank sparso sui meta e piu fragile.
-- Featured solo in home: la listing resta neutra (per data, con filtri/sort), per
-  non creare conflitti tra "featured in cima" e l'ordinamento/i filtri scelti
-  dall'utente. "Featured" = vetrina della home, non del catalogo.
-- `config/featured.json` parte con `["budokan", "core", "horizon"]` come esempio:
-  va curato (sono solo un placeholder funzionante).
-
-### Verifiche
-
-- `pnpm check`: 0 errori; `pnpm lint`: pulito
-- `pnpm test:ci`: 166 unit verdi (+5 `featured`), 32 E2E verdi (+1 home featured)
-- `pnpm build`: OK end-to-end; `validate-content` verde
-
----
-
-## Ciclo 8 - Link esterno progetto apre in nuova scheda (2026-06-02)
-
-### Obiettivo
-
-Il link al sito del progetto, nella pagina di dettaglio, non apriva in nuova
-scheda (mancava `target="_blank"`), a differenza dei link in Contact e Footer.
-
-### Lavoro
-
-- `fix(projects)`: aggiunto `target="_blank"` + `rel="noopener noreferrer"` al
-  link esterno in `Project.svelte`, allineandolo agli altri link esterni del sito.
+I cicli più vecchi sono in `docs/archive/` (Cicli 1-6 in `CYCLES-1-6.md`, 7-8 in
+`CYCLES-7-8.md`).
 
 ---
 
@@ -619,3 +569,29 @@ Giro su M15 (rifiniture) e primo taglio di M16 (`dbe3efb` .. `eebdd3f`).
   numero di progetti o di tag.
 - **Prossimo passo:** rilettura delle schede con Simone (testo a mano, "Il perché"),
   cover dei progetti, skill che propone le voci dai repo.
+
+## Ciclo 22 - Icone in movimento, contenuti, agente in dev (2026-10-05)
+
+Rifiniture su M15 e contenuti (`1e7a962` .. `73a29a4`).
+
+- **Icone in movimento** (`243d7ab`, concept E in `docs/concepts/concept-e-icone.html`):
+  all'hover del link che le contiene la casa salta, l'agente inclina la testa, le frecce
+  escono e rientrano, i LED dei progetti mandano un anello, la spunta della copia si
+  disegna. Solo puntatore: tastiera e touch restano fermi.
+- **Adesso**, quattro giri sulla linea di Lucide `Activity`: lampeggiava perché le
+  lunghezze senza unità dentro `calc()` facevano saltare `stroke-dashoffset` (ora in px,
+  `010e704`); poi scorrimento da monitor cardiaco (`caf225f`), ridisegno in loop con
+  dissolvenza (`5c8676b`), infine scelta del giro 3 del concept E: la linea si traccia da
+  sinistra e si ritira allo stesso modo, come un serpente (`a14d318`).
+- **Contenuti** (`f5bec03`): percorso nella pagina chi sono rimesso in ordine (un anno di
+  AI a Pavia, non concluso; corsi di coding per ragazzi; Let's Code Italia poi Ethicode;
+  la software house con il freelance accanto); Ethicode parte a fine 2022, non 2023; la
+  voce Relay in Adesso senza libghostty nel titolo.
+- **Agente in `pnpm dev`** (`73a29a4`): `env.ASSETS.fetch` su `assets.local` passa da
+  Vite, che rispondeva 403 all'host sconosciuto, e la chat restava offline. Ora
+  `allowedHosts` in `astro.config.mjs`; il deploy e `wrangler dev` non ne sono toccati.
+- **CLAUDE.md**: il redirect da `simonesalerno.it` è ancora da fare; design system più
+  stretto (il perché resta in ARCHITECTURE e #15-#16); gotcha di `pnpm check` sotto un
+  `pnpm dev` acceso.
+- **Prossimo passo:** invariato, rilettura delle schede di M16 con Simone, cover, skill
+  che propone le voci.

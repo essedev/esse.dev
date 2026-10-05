@@ -2,7 +2,7 @@
 
 Stato corrente del progetto. Milestone reali, non wishlist. Aggiornata insieme al codice.
 
-Ultimo aggiornamento: 2026-10-05 (Ciclo 21: riquadro di vetro, M16 avviata)
+Ultimo aggiornamento: 2026-10-05 (Ciclo 22: icone in movimento, contenuti, agente in dev)
 
 ## Contesto
 
