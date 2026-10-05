@@ -1,5 +1,7 @@
 # esse.dev
 
+**English** · [Italiano](README.it.md)
+
 Personal portfolio of Simone Salerno, online at [esse.dev](https://esse.dev). Built with Astro and deployed on Cloudflare Workers.
 
 ## Tech stack
@@ -43,9 +45,21 @@ Quality gate, run before every push:
 pnpm lint && pnpm check && pnpm build && pnpm test:ci
 ```
 
+## Structure
+
+- `src/pages/` - routes: `[lang]/` for the static pages, plus the few that run on the Worker
+- `src/content/` - projects, articles, method, now and single pages, one folder per item
+  with `meta.json` and one Markdown file per language
+- `src/agent/` - the site agent: Durable Objects, tools, budget and triage
+- `src/lib/` - pure logic (content, i18n, SEO, listing filters, Open Graph layout)
+- `src/components/`, `src/layouts/`, `src/scripts/` - UI: Astro and Svelte components, the
+  workspace shell and its keyboard handling
+- `docs/` - architecture, decisions, roadmap and the work-cycle log
+
 ## Documentation
 
 - [`CLAUDE.md`](CLAUDE.md) - conventions, commands and gotchas (for the coding agent)
+- [`docs/CONVENTIONS.md`](docs/CONVENTIONS.md) - language, glossary and code rules
 - [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) - design decisions and tradeoffs
 - [`docs/DECISIONS.md`](docs/DECISIONS.md) - durable decisions, citable as `#N` (inactive ones in [`docs/decisions-archive.md`](docs/decisions-archive.md))
 - [`docs/ROADMAP.md`](docs/ROADMAP.md) - current milestones
@@ -59,4 +73,6 @@ Cloudflare Workers Builds deploys on push. Manual deploy: `pnpm deploy`.
 
 ## License
 
-Private personal website.
+The code is released under the [MIT License](LICENSE). The content of the site (everything
+under `src/content/`, images, favicons and the visual identity) is all rights reserved, and
+the third-party font in `src/assets/fonts/` keeps its own licence.
