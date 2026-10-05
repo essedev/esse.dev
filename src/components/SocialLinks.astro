@@ -13,14 +13,14 @@ interface Props {
 const { links, class: className } = Astro.props;
 ---
 
-<ul class:list={['flex flex-wrap items-center gap-x-4 gap-y-1 font-mono', className]}>
+<ul class:list={['flex flex-wrap items-center gap-x-4 gap-y-2 font-mono', className]}>
 	{links.map((l) => (
 		<li>
 			<a
 				href={l.url}
 				target="_blank"
 				rel="me noopener noreferrer"
-				class="group text-muted hover:text-fg inline-flex items-center gap-1 transition-colors"
+				class="group text-muted hover:text-fg -my-1 inline-flex items-center gap-1 py-1 transition-colors"
 			>
 				{l.name.toLowerCase()}
 				<ArrowUpRight data-motion="external" class="size-3" />
