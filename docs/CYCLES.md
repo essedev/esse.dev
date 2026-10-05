@@ -5,114 +5,7 @@ lavoro svolto (con riferimenti ai commit), verifiche e cosa resta. Serve a ripre
 il filo tra una sessione e l'altra. La pianificazione ad alto livello vive in
 `docs/ROADMAP.md`.
 
-I cicli più vecchi sono in `docs/archive/` (Cicli 1-4 in `CYCLES-1-4.md`).
-
----
-
-## Ciclo 5 - Hardening da review live + nuove funzionalità (2026-06-01)
-
-### Obiettivo
-
-Dopo il deploy: verifica in produzione, rifiniture emerse dalla review live e
-aggiunta di funzionalità mancanti.
-
-### Manutenzione doc
-
-- Doc di progetto rinominati in CAPS (`CYCLES.md`, `ROADMAP.md`), riferimenti aggiornati.
-- Note personali (export chat, profilo LinkedIn, backup immagini) spostate in
-  `docs/archive/`. Le featured image dei progetti sono placeholder-only per scelta
-  (originali parziali in `docs/archive/backup/`).
-
-### Rifiniture (M9)
-
-- `00d1c6e` feat(i18n): root Accept-Language (fallback en) + redirect a un solo hop
-- `883e8f3` fix(sitemap): x-default + lastmod derivato dai contenuti
-- `5172f0e` perf(og): noise via sharp (2 passaggi, full-color), ~10x più veloce,
-  niente banding
-- Cloudflare: "Browser Cache TTL -> Respect Existing Headers" (impostazione dashboard)
-  per onorare il `Cache-Control` emesso dal worker.
-
-### Nuove funzionalità (M10)
-
-- `8771c3d` feat(projects): badge di stato sulle card
-- `247af32` feat(blog): feed RSS per-lingua (`/[lang]/rss.xml`) + discovery nel head
-- `81bacda` feat(blog): tempo di lettura + stima token (~1.3/parola, etichetta "~")
-- `744b4f5` feat(blog): sezione articoli simili (per tag in comune)
-- `6c2fea4` feat(content): tag cliccabili sui dettagli verso la listing filtrata
-
-### Decisioni / note
-
-- Stima token approssimata (niente tokenizer reale) per non gonfiare il bundle del
-  Worker; etichettata "~".
-- Tag cliccabili fatti sui dettagli (hanno sia il tag grezzo sia il tradotto); sulle
-  card servirebbe un refactor dei prop, rimandato.
-- Share articolo: valutato, versione minimale (Web Share API + copia link) non ancora
-  implementata, in attesa di conferma.
-
-### Verifiche
-
-- `pnpm check`: 0 errori; `pnpm lint`: pulito
-- `pnpm test:ci`: 156 unit verdi, 17 E2E verdi
-- `pnpm build`: OK end-to-end; produzione verificata via HTTP (redirect, OG, sitemap,
-  RSS, header)
-
----
-
-## Ciclo 6 - Metriche articolo, restyle sitemap, back contestuale (2026-06-01)
-
-### Obiettivo
-
-Rifiniture post-deploy: stima token più realistica, vista sitemap allineata
-all'identità del sito, e un bug di navigazione segnalato live (il "Indietro" delle
-pagine di dettaglio tornava sempre in home).
-
-### Lavoro
-
-- `11c261f` feat(content): stima token da caratteri/divisore per lingua (~4 EN,
-  ~3.5 IT) invece di parole\*1.3. Cattura la lunghezza media delle parole, più
-  realistica sull'italiano (BPE frammenta di più). I code block sono ora esclusi
-  dalla prosa (e dai minuti di lettura) e contati solo nei token; `extractText`
-  esplicito sui tipi di prosa, aggiunto `extractCode`, `contentMetrics` prende la
-  lingua (passata da `Article.svelte` via `currentLang`).
-- `6557978` feat(sitemap): restyle del foglio di stile della sitemap nel browser
-  (gradiente indaco su nero, font Geist, palette monocromatica fredda). I crawler
-  ignorano il CSS e leggono l'XML grezzo.
-- `ae97f6a` docs: correzione accenti italiani nei commenti (`OptimizedImage`,
-  `seo.ts`, `rss.xml`).
-- `47637a3` fix(nav): back contestuale nelle pagine di dettaglio. Il bottone era un
-  link cablato alla home: da listing -> dettaglio -> Indietro si finiva in home.
-  Nuovo componente condiviso `BackLink` che ripercorre la history se si arriva da
-  una pagina interna, altrimenti ripiega sull'URL della listing.
-- `21e8fea` test(e2e): copertura dei casi di redirect i18n finora scoperti (lingua
-  non valida, route in lingua sbagliata con slug, no-loop sul canonico, traduzione
-  slug cross-lingua sugli articoli) + 5 E2E sul back contestuale.
-- `1800f08` feat(projects): badge di stato anche nel dettaglio (prima solo sulle
-  card: il dato `meta.status` c'era ma non veniva reso). Estratto `StatusBadge`
-  condiviso (stile + etichetta da una sola fonte), elimina la duplicazione che era
-  sparsa tra `ProjectCard` (`STATUS_STYLE`) e `Projects` (`STATUS_KEY`).
-
-### Decisioni / note
-
-- La stima resta approssimata e senza tokenizer reale (etichetta "~"), come nel
-  Ciclo 5: l'euristica passa da per-parola a per-carattere/lingua, più stabile.
-  Un tokenizer reale resterebbe esatto solo per un modello specifico (per Claude
-  non esiste tokenizer offline pubblico) e andrebbe spostato a build time per non
-  pesare sul bundle del Worker: non giustificato per un'etichetta decorativa.
-- Back contestuale via `history.back()` (non un target fisso): rispetta da dove si
-  arriva. Resta un vero `<a href>` verso la listing come fallback per atterraggi
-  diretti e accessibilità.
-- Check redirect: tutti gli slug dei progetti coincidono tra en/it, quindi la
-  traduzione slug del hook (PRIORITÀ 1.5) non scatta mai sui progetti; l'unico
-  contenuto che la esercita è l'articolo. Coperto nei test.
-- Warning dev-only di SvelteKit ("Avoid using history.pushState") emerso nei nuovi
-  E2E interattivi: non proviene dal fix (`BackLink` usa `history.back`), nessun
-  `pushState` diretto nel codice. Da indagare a parte se diventa fastidioso.
-
-### Verifiche
-
-- `pnpm check`: 0 errori; `pnpm lint`: pulito
-- `pnpm test:ci`: 161 unit verdi, 31 E2E verdi (+14: 5 back, 8 redirect, 1 badge)
-- `pnpm build`: OK end-to-end
+I cicli più vecchi sono in `docs/archive/` (Cicli 1-6 in `CYCLES-1-6.md`).
 
 ---
 
@@ -691,3 +584,38 @@ Giro su M15 e M17 (`2a3862a` .. `38ece10`).
 - **Test:** unit su comando, metadati, LED e taglia del titolo delle OG.
 - **M15 chiusa** da Simone: struttura e stile fatti; l'altezza della lista resta tra le
   Aperte della ROADMAP.
+
+## Ciclo 21 - Il riquadro di vetro, M16 avviata (2026-10-04 / 2026-10-05)
+
+Giro su M15 (rifiniture) e primo taglio di M16 (`dbe3efb` .. `eebdd3f`).
+
+- **Riquadro di vetro:** il contenuto passa dal nero a un tono più chiaro (token `pane`),
+  poi torna vetro sfocando da uno strato fratello dietro toolbar e contenuto
+  (`data-pane-glass`, `e286378`): così il campo dell'agente e i menu, che stanno nel
+  contenuto, sfocano ancora (#16). Un solo punto di luce tenue nello sfondo, visto
+  attraverso la lista.
+- **Veli sul vetro** (`b3c46fa`, `a95c2b7`): `bg-panel` pieno sul vetro non si vedeva, e
+  hover delle righe, riquadro "Il perché" e blocchi dell'agente sembravano vuoti. Ora i
+  blocchi stanno su `surface/60` e c'è una scala sola: hover `surface/60`, selezione
+  `surface`, `hover` solo per i controlli che partono già da un velo.
+- **Scartati da Simone:** cursori in pixel art con una luce che segue il puntatore
+  (concept E, provati e annullati con due revert); icona dell'agente scelta dal concept F
+  (`BotMessageSquare`, la chat dice che ci si può parlare). Entrambi i concept in
+  `docs/archive/concepts/`.
+- **Fix** (`ae0caef`): l'evidenza di j/k resta solo col focus nella lista, prima sembrava
+  una seconda selezione.
+- **Favicon** (`eebdd3f`): lo stesso blocco del cursore del logo (1:2, angoli vivi, alone).
+- **M16, principi e smistamento:** `docs/features/progetti.md` con principi, voce e
+  smistamento deciso con Simone (vetrina, registro, idee, fuori). Il repo è pubblico e
+  l'agente ne legge i doc: nessun nome riservato nei file.
+- **M16, dati:** campo `previously` per le iterazioni precedenti di un'idea (#20), mostrato
+  come "Prima di questo", nell'indice dell'agente e cercabile; stato `maintained` per gli
+  strumenti finiti e ancora in uso (Portsage, Pigeon), con il LED verde fermo.
+- **M16, schede:** smistamento applicato (fuori vetrina Flux, a `published: false` idee e
+  voci escluse); prime stesure dall'analisi dei repo per le voci nuove e le famiglie
+  (pgbee e Zeno in vetrina, Copilota, Edge Lab, Wavelength, Media Hub, Watch OS, IDKCraft,
+  Milano, i server, Maia, Minerd); gli assistenti personali diventano le iterazioni di
+  Nexus. "La scelta interessante" diventa "Il perché". Gli E2E non dipendono più dal
+  numero di progetti o di tag.
+- **Prossimo passo:** rilettura delle schede con Simone (testo a mano, "Il perché"),
+  cover dei progetti, skill che propone le voci dai repo.

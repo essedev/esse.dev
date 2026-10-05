@@ -209,3 +209,17 @@ la tipografica (pulita ma slegata dal sito). La favicon è il cursore del logo c
 alone: scartate la "e" (l'iniziale del dominio, senza un motivo), la "s" (il nome della
 lettera, ma una lettera resta una scelta comune), la tilde del percorso e il cappello del
 laboratorio. I file si generano con `pnpm favicons`.
+
+## #20 - Le iterazioni precedenti di un progetto come dati, nel testo per lingua
+
+**Status:** attiva (Ciclo 21)
+
+Una scheda racconta anche i tentativi che l'hanno preceduta (`docs/features/progetti.md`),
+e li tiene come dati: `previously: [{ name, year, note }]` nel frontmatter di `<lang>.md`,
+mostrato come "Prima di questo", passato all'indice dell'agente e cercabile per nome. Sta
+nel testo e non in `meta.json`, contro il piano iniziale e la regola "fatti nel meta",
+perché la nota è prosa da tradurre; nome e anno sono fatti, e `src/lib/content.ts` fa
+fallire la build se divergono tra le lingue. Scartati: `meta.json` con la nota in ogni
+lingua (prosa fuori dal suo file), le iterazioni solo nel corpo (né cercabili né
+visibili all'agente come elenco), una scheda per ogni tentativo (tante voci da pochi
+commit invece di una famiglia).

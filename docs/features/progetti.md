@@ -38,14 +38,16 @@ Vale per tutto il sito: schede, pagine, articoli.
 
 ## Campo `previously`
 
-Da aggiungere allo schema in `src/content.config.ts`: le iterazioni precedenti di un'idea,
-`previously: [{ name, year, note }]` in `meta.json`, mostrate nella scheda come una
-piccola linea del tempo ("prima era..."). Facoltativo; la scheda della famiglia lo usa per
-i tentativi che non hanno una voce propria.
+Le iterazioni precedenti di un'idea, dalla più vecchia: `previously: [{ name, year, note }]`
+nel frontmatter di ogni `<lang>.md`, con nome e anno uguali in ogni lingua (la build lo
+controlla) e la nota tradotta. La scheda le mostra come "Prima di questo", l'agente le
+trova nell'indice. Facoltativo; la scheda della famiglia lo usa per i tentativi che non
+hanno una voce propria. Perché nel testo e non in `meta.json`: DECISIONS #20.
 
 ## Smistamento
 
-Deciso con Simone il 2026-10-04. Le voci senza scheda oggi vanno create.
+Deciso con Simone il 2026-10-04 e applicato nel Ciclo 21: ogni voce ha la sua scheda, le
+nuove in prima stesura.
 
 **Vetrina** (6): Relay, Nexus, pgbee, Zeno, mcpbelt, Portsage. Zeno è privato: scheda
 senza link al repo. Gli assistenti personali sono le iterazioni di Nexus (`previously`):

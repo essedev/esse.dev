@@ -1,4 +1,4 @@
-# Cycles 1-4 (archivio)
+# Cycles 1-6 (archivio)
 
 Cicli archiviati da `docs/CYCLES.md`, numerazione intatta.
 
@@ -226,3 +226,109 @@ resta data-access). Il codice morto si rimuove.
 - `pnpm check`: 0 errori; `pnpm lint`: pulito
 - `pnpm test:ci`: 145 unit verdi, 15 E2E verdi
 - `pnpm build`: OK end-to-end
+
+---
+
+## Ciclo 5 - Hardening da review live + nuove funzionalità (2026-06-01)
+
+### Obiettivo
+
+Dopo il deploy: verifica in produzione, rifiniture emerse dalla review live e
+aggiunta di funzionalità mancanti.
+
+### Manutenzione doc
+
+- Doc di progetto rinominati in CAPS (`CYCLES.md`, `ROADMAP.md`), riferimenti aggiornati.
+- Note personali (export chat, profilo LinkedIn, backup immagini) spostate in
+  `docs/archive/`. Le featured image dei progetti sono placeholder-only per scelta
+  (originali parziali in `docs/archive/backup/`).
+
+### Rifiniture (M9)
+
+- `00d1c6e` feat(i18n): root Accept-Language (fallback en) + redirect a un solo hop
+- `883e8f3` fix(sitemap): x-default + lastmod derivato dai contenuti
+- `5172f0e` perf(og): noise via sharp (2 passaggi, full-color), ~10x più veloce,
+  niente banding
+- Cloudflare: "Browser Cache TTL -> Respect Existing Headers" (impostazione dashboard)
+  per onorare il `Cache-Control` emesso dal worker.
+
+### Nuove funzionalità (M10)
+
+- `8771c3d` feat(projects): badge di stato sulle card
+- `247af32` feat(blog): feed RSS per-lingua (`/[lang]/rss.xml`) + discovery nel head
+- `81bacda` feat(blog): tempo di lettura + stima token (~1.3/parola, etichetta "~")
+- `744b4f5` feat(blog): sezione articoli simili (per tag in comune)
+- `6c2fea4` feat(content): tag cliccabili sui dettagli verso la listing filtrata
+
+### Decisioni / note
+
+- Stima token approssimata (niente tokenizer reale) per non gonfiare il bundle del
+  Worker; etichettata "~".
+- Tag cliccabili fatti sui dettagli (hanno sia il tag grezzo sia il tradotto); sulle
+  card servirebbe un refactor dei prop, rimandato.
+- Share articolo: valutato, versione minimale (Web Share API + copia link) non ancora
+  implementata, in attesa di conferma.
+
+### Verifiche
+
+- `pnpm check`: 0 errori; `pnpm lint`: pulito
+- `pnpm test:ci`: 156 unit verdi, 17 E2E verdi
+- `pnpm build`: OK end-to-end; produzione verificata via HTTP (redirect, OG, sitemap,
+  RSS, header)
+
+---
+
+## Ciclo 6 - Metriche articolo, restyle sitemap, back contestuale (2026-06-01)
+
+### Obiettivo
+
+Rifiniture post-deploy: stima token più realistica, vista sitemap allineata
+all'identità del sito, e un bug di navigazione segnalato live (il "Indietro" delle
+pagine di dettaglio tornava sempre in home).
+
+### Lavoro
+
+- `11c261f` feat(content): stima token da caratteri/divisore per lingua (~4 EN,
+  ~3.5 IT) invece di parole\*1.3. Cattura la lunghezza media delle parole, più
+  realistica sull'italiano (BPE frammenta di più). I code block sono ora esclusi
+  dalla prosa (e dai minuti di lettura) e contati solo nei token; `extractText`
+  esplicito sui tipi di prosa, aggiunto `extractCode`, `contentMetrics` prende la
+  lingua (passata da `Article.svelte` via `currentLang`).
+- `6557978` feat(sitemap): restyle del foglio di stile della sitemap nel browser
+  (gradiente indaco su nero, font Geist, palette monocromatica fredda). I crawler
+  ignorano il CSS e leggono l'XML grezzo.
+- `ae97f6a` docs: correzione accenti italiani nei commenti (`OptimizedImage`,
+  `seo.ts`, `rss.xml`).
+- `47637a3` fix(nav): back contestuale nelle pagine di dettaglio. Il bottone era un
+  link cablato alla home: da listing -> dettaglio -> Indietro si finiva in home.
+  Nuovo componente condiviso `BackLink` che ripercorre la history se si arriva da
+  una pagina interna, altrimenti ripiega sull'URL della listing.
+- `21e8fea` test(e2e): copertura dei casi di redirect i18n finora scoperti (lingua
+  non valida, route in lingua sbagliata con slug, no-loop sul canonico, traduzione
+  slug cross-lingua sugli articoli) + 5 E2E sul back contestuale.
+- `1800f08` feat(projects): badge di stato anche nel dettaglio (prima solo sulle
+  card: il dato `meta.status` c'era ma non veniva reso). Estratto `StatusBadge`
+  condiviso (stile + etichetta da una sola fonte), elimina la duplicazione che era
+  sparsa tra `ProjectCard` (`STATUS_STYLE`) e `Projects` (`STATUS_KEY`).
+
+### Decisioni / note
+
+- La stima resta approssimata e senza tokenizer reale (etichetta "~"), come nel
+  Ciclo 5: l'euristica passa da per-parola a per-carattere/lingua, più stabile.
+  Un tokenizer reale resterebbe esatto solo per un modello specifico (per Claude
+  non esiste tokenizer offline pubblico) e andrebbe spostato a build time per non
+  pesare sul bundle del Worker: non giustificato per un'etichetta decorativa.
+- Back contestuale via `history.back()` (non un target fisso): rispetta da dove si
+  arriva. Resta un vero `<a href>` verso la listing come fallback per atterraggi
+  diretti e accessibilità.
+- Check redirect: tutti gli slug dei progetti coincidono tra en/it, quindi la
+  traduzione slug del hook (PRIORITÀ 1.5) non scatta mai sui progetti; l'unico
+  contenuto che la esercita è l'articolo. Coperto nei test.
+- Warning dev-only di SvelteKit ("Avoid using history.pushState") emerso nei nuovi
+  E2E interattivi: non proviene dal fix (`BackLink` usa `history.back`), nessun
+  `pushState` diretto nel codice. Da indagare a parte se diventa fastidioso.
+
+### Verifiche
+
+- `pnpm check`: 0 errori; `pnpm lint`: pulito
+- `pnpm test:ci`: 161 unit verdi, 31 E2E verdi (+14: 5 back, 8 redirect, 1 badge)

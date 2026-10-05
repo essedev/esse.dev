@@ -2,7 +2,7 @@
 
 Stato corrente del progetto. Milestone reali, non wishlist. Aggiornata insieme al codice.
 
-Ultimo aggiornamento: 2026-10-04 (Ciclo 20: OG e favicon, M15 chiusa)
+Ultimo aggiornamento: 2026-10-05 (Ciclo 21: riquadro di vetro, M16 avviata)
 
 ## Contesto
 
@@ -50,16 +50,17 @@ tra le Aperte.
 
 Principi, voce e smistamento in `docs/features/progetti.md`.
 
-- Fatto: censimento dei repo e smistamento con Simone (vetrina, registro, famiglie,
-  idee, fuori). I lavori per clienti restano fuori di default; un repo privato si
-  pubblica solo voce per voce.
-- Campo `previously` nello schema: le iterazioni precedenti di un'idea come dati.
-- Schede nuove e riscritte secondo lo smistamento. I fatti (date, attività, stack) si
-  ricavano dalle fonti, il testo si scrive a mano con Simone, compreso il riquadro
-  "Il perché".
-- Cover per ogni progetto da un componente (colore, icona Lucide o SVG, scena di UI),
-  screenshot veri dove esistono. Tag ripuliti.
-- Skill che propone le voci nuove o aggiornate dai repo; propone, non pubblica.
+- Fatto (Ciclo 21): censimento dei repo e smistamento con Simone (vetrina, registro,
+  famiglie, idee, fuori), applicato alle schede. I lavori per clienti restano fuori di
+  default; un repo privato si pubblica solo voce per voce.
+- Fatto (Ciclo 21): campo `previously`, le iterazioni precedenti di un'idea come dati
+  (per DECISIONS #20); stato `maintained` per gli strumenti finiti e ancora in uso.
+- Fatto (Ciclo 21): prime stesure delle schede nuove dall'analisi dei repo.
+- Da fare: rilettura delle schede con Simone. I fatti (date, attività, stack) si ricavano
+  dalle fonti, il testo si scrive a mano, compreso il riquadro "Il perché".
+- Da fare: cover per ogni progetto da un componente (colore, icona Lucide o SVG, scena di
+  UI), screenshot veri dove esistono. Tag ripuliti.
+- Da fare: skill che propone le voci nuove o aggiornate dai repo; propone, non pubblica.
 
 ### M17 - Agente - In corso
 

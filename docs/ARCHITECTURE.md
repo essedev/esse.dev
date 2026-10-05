@@ -34,7 +34,8 @@ dev server, così redirect, header e 404 sono quelli di produzione.
 
 Ogni progetto e articolo è una cartella in `src/content/`: `meta.json` con i campi
 condivisi tra le lingue (stato, date, link, pubblicato) e un `<lang>.md` per lingua
-(frontmatter con slug, titolo, sommario, tag; corpo in Markdown). Le due metà sono
+(frontmatter con slug, titolo, sommario, tag e, per i progetti, le iterazioni precedenti
+in `previously`, #20; corpo in Markdown). Le due metà sono
 content collection separate (`src/content.config.ts`, schemi Zod) e si uniscono in
 `src/lib/content.ts`, unico accesso ai contenuti per pagine ed endpoint. Lì si fanno
 rispettare a build le regole che lo schema non vede: un contenuto pubblicato ha il
@@ -73,9 +74,11 @@ testate a unità e usate da pagine, header, SEO, sitemap e catch-all.
 
 Un endpoint prerenderizzato (`src/pages/og/[name].png.ts`) produce un PNG per pagina
 con satori e resvg: `home`, `listing-<sezione>-<lingua>`,
-`detail-<sezione>-<id>-<lingua>`. Il layout è un albero puro in `src/lib/og.ts`. Zero
-compute a runtime, niente superficie di injection, immagini deterministiche. Gotcha
-di satori: font `woff`/`ttf`, mai `woff2` (si leggono da `@fontsource/geist-sans`).
+`detail-<sezione>-<id>-<lingua>`. Il layout è un albero puro in `src/lib/og.ts`, nello
+stile terminale del concept D (`docs/DECISIONS.md` #19). Zero compute a runtime, niente
+superficie di injection, immagini deterministiche. Gotcha di satori: font `woff`/`ttf`,
+mai `woff2` (Geist Sans da `@fontsource/geist-sans`, Departure Mono dal `woff` in
+`src/assets/fonts/`).
 
 ## Sicurezza e header
 
@@ -113,7 +116,9 @@ altri (lista, campo dell'agente, menu): in Chromium un vetro che sfoca dentro un
 smette di sfocare, quindi la cornice ha solo il bordo e il riquadro sfoca da uno strato
 dietro il contenuto (`data-pane-glass`, `pane` #0f0e15 al 75%), fratello e non antenato
 del campo dell'agente e dei menu, che così sfocano ancora. La toolbar resta piatta. `surface` e `hover` sono veli chiari e non grigi pieni,
-così i controlli sul vetro schiariscono invece di fare da buco; `subtle` è tarato sul
+così i controlli sul vetro schiariscono invece di fare da buco: una scala sola, hover
+`surface/60` e selezione `surface` (il "sei qui" resta sopra l'hover), blocchi del
+riquadro su `surface/60`, perché `panel` pieno sul vetro non si distingue. `subtle` è tarato sul
 vetro dove il velo dietro è più chiaro. Viene dal concept C
 (`docs/concepts/concept-c-vetro.html`, variante B), scelte in `docs/DECISIONS.md` #16.
 Niente rimbalzo né scroll che passa sotto: `overscroll-none` sulla pagina e sui

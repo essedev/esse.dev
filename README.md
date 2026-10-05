@@ -50,6 +50,7 @@ pnpm lint && pnpm check && pnpm build && pnpm test:ci
 - [`docs/DECISIONS.md`](docs/DECISIONS.md) - durable decisions, citable as `#N` (inactive ones in [`docs/decisions-archive.md`](docs/decisions-archive.md))
 - [`docs/ROADMAP.md`](docs/ROADMAP.md) - current milestones
 - [`docs/CYCLES.md`](docs/CYCLES.md) - work-cycle log
+- [`docs/features/progetti.md`](docs/features/progetti.md) - how projects are chosen and written up
 - [`docs/archive/RESTYLE.md`](docs/archive/RESTYLE.md) - history of the visual identity work
 
 ## Deployment
