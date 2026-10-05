@@ -33,6 +33,9 @@ server: redirect, header, CSP, 404 e Durable Object esistono solo lì. Playwrigh
 build e avvia un server suo ogni volta. Ogni build riscrive `dist/` sotto i piedi di un
 `wrangler dev` acceso: l'anteprima su :8787 risponde 404 finché non la riavvii (anche dopo
 gli E2E). Un `workerd` orfano su una di queste porte serve asset vecchi: va chiuso.
+Allo stesso modo `pnpm check` ricostruisce la cache di Vite (`node_modules/.vite`) sotto un
+`pnpm dev` acceso: le isole Svelte non si idratano più (404 sulle dipendenze, poi "reading
+'call'") finché non lo fermi, cancelli la cache e lo riavvii.
 
 Segreti in `.dev.vars` (escluso da git, modello in `.dev.vars.example`), letti da
 `wrangler dev` e copiati in `dist/server/` dalla build; in produzione
