@@ -1,0 +1,17 @@
+{
+	"title": "Media Hub",
+	"tagline": "The platform of my home server: several apps on one backend",
+	"accent": "#fde047",
+	"prompt": "play the next episode",
+	"panel": {
+		"kind": "list",
+		"lines": [
+			"stream   plays while the file arrives",
+			"remux    ffmpeg to fMP4 on the fly",
+			"library  covers, subtitles, seasons",
+			"tv       Samsung app on Tizen",
+			"stack    FastAPI, PostgreSQL, React"
+		]
+	},
+	"out": "cover.webp"
+}

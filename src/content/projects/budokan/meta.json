@@ -3,5 +3,10 @@
 	"published": true,
 	"created": "2024-09-09",
 	"updated": "2026-09-22",
-	"site": "https://budokan.it"
+	"site": "https://budokan.it",
+	"logo": "./logo.png",
+	"cover": {
+		"src": "./cover.webp",
+		"focus": "top"
+	}
 }

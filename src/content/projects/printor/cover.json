@@ -1,0 +1,17 @@
+{
+	"title": "Edge Lab",
+	"tagline": "Where does an LLM give a real edge in trading, if it does?",
+	"accent": "#60a5fa",
+	"prompt": "harness run --hypothesis h01",
+	"panel": {
+		"kind": "list",
+		"lines": [
+			"hypothesis written before the results",
+			"every data point dated as available",
+			"costs estimated name by name",
+			"vs buy and hold and a random baseline",
+			"Sharpe deflated for the attempts"
+		]
+	},
+	"out": "cover.webp"
+}

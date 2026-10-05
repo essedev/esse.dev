@@ -2,5 +2,10 @@
 	"status": "in-progress",
 	"published": true,
 	"created": "2026-08-28",
-	"updated": "2026-09-28"
+	"updated": "2026-09-28",
+	"logo": "./logo.svg",
+	"cover": {
+		"src": "./cover.webp",
+		"focus": "center"
+	}
 }

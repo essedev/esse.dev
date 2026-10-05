@@ -1,0 +1,17 @@
+{
+	"title": "Copilota",
+	"tagline": "A copilot for sales calls",
+	"accent": "#fde68a",
+	"prompt": "what did they say about budget?",
+	"panel": {
+		"kind": "list",
+		"lines": [
+			"audio     seller on mic, customer on system",
+			"question  customer asks, card in 1.1-1.3 s",
+			"card      answer with its source",
+			"overlay   hidden from screen sharing",
+			"search    hybrid dense + lexical, RRF"
+		]
+	},
+	"out": "cover.webp"
+}

@@ -3,5 +3,10 @@
 	"published": true,
 	"created": "2022-03-15",
 	"updated": "2026-10-04",
-	"site": "https://lrlelettrica.it/"
+	"site": "https://lrlelettrica.it/",
+	"logo": "./logo.svg",
+	"cover": {
+		"src": "./cover.webp",
+		"focus": "center"
+	}
 }

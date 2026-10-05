@@ -3,5 +3,10 @@
 	"published": true,
 	"created": "2024-02-23",
 	"updated": "2026-09-22",
-	"site": "https://flux.esse.dev"
+	"site": "https://flux.esse.dev",
+	"logo": "./logo.svg",
+	"cover": {
+		"src": "./cover.webp",
+		"focus": "center"
+	}
 }

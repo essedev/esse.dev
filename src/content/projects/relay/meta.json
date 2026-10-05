@@ -5,5 +5,10 @@
 	"updated": "2026-09-22",
 	"repo": "https://github.com/essedev/relay",
 	"license": "MIT",
-	"install": "brew install --cask essedev/relay/relay-terminal"
+	"install": "brew install --cask essedev/relay/relay-terminal",
+	"logo": "./logo.png",
+	"cover": {
+		"src": "./cover.webp",
+		"focus": "top"
+	}
 }

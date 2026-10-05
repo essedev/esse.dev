@@ -1,0 +1,17 @@
+{
+	"title": "Personal servers",
+	"tagline": "Two VPS, nightly restored backups, a monitor watching from outside",
+	"accent": "#93c5fd",
+	"prompt": "monitor status",
+	"panel": {
+		"kind": "list",
+		"lines": [
+			"vps-prod: serving",
+			"vps-backup: restore verified tonight",
+			"/ready: database up",
+			"MCP endpoint: 401 as expected",
+			"dead-man's switch: armed"
+		]
+	},
+	"out": "cover.webp"
+}

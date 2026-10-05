@@ -1,0 +1,18 @@
+{
+	"title": "pgbee",
+	"tagline": "AI-derived columns for PostgreSQL",
+	"accent": "#ffd166",
+	"prompt": "select bee.add_column('ticket', 'category', ...)",
+	"panel": {
+		"kind": "code",
+		"lines": [
+			"select bee.add_column('ticket', 'category',",
+			"  array['body'], 'enum', 'decision',",
+			"  p_prompt => 'What is this ticket about?',",
+			"  p_model  => '<model>');",
+			"",
+			"-- queued in your insert's transaction"
+		]
+	},
+	"out": "cover.webp"
+}

@@ -3,5 +3,10 @@
 	"published": true,
 	"created": "2025-08-15",
 	"updated": "2026-03-08",
-	"repo": "https://github.com/essedev/solplace"
+	"repo": "https://github.com/essedev/solplace",
+	"logo": "./logo.svg",
+	"cover": {
+		"src": "./cover.webp",
+		"focus": "center"
+	}
 }

@@ -3,5 +3,10 @@
 	"published": true,
 	"created": "2026-07-21",
 	"updated": "2026-07-26",
-	"repo": "https://github.com/essedev/maia"
+	"repo": "https://github.com/essedev/maia",
+	"logo": "./logo.svg",
+	"cover": {
+		"src": "./cover.webp",
+		"focus": "top"
+	}
 }

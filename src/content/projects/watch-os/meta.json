@@ -2,5 +2,10 @@
 	"status": "archived",
 	"published": true,
 	"created": "2026-04-26",
-	"updated": "2026-04-26"
+	"updated": "2026-04-26",
+	"logo": "./logo.svg",
+	"cover": {
+		"src": "./cover.webp",
+		"focus": "center"
+	}
 }

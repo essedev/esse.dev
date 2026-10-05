@@ -1,0 +1,17 @@
+{
+	"title": "Flux",
+	"tagline": "Newsletter and RSS reader",
+	"accent": "#6bb88d",
+	"prompt": "extract: find the content, copy it as is",
+	"panel": {
+		"kind": "list",
+		"lines": [
+			"cron     capture feeds, store the original",
+			"queue    extraction with an LLM recipe",
+			"rule     the model never rewrites the text",
+			"reader   PWA, offline, saved, collections",
+			"digest   push notification, twice a day"
+		]
+	},
+	"out": "cover.webp"
+}
