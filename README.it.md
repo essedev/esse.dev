@@ -4,7 +4,7 @@
 
 Portfolio personale di Simone Salerno, online su [esse.dev](https://esse.dev). Fatto con Astro e pubblicato su Cloudflare Workers.
 
-## Tech stack
+## Stack
 
 - **Astro 7** - pagine statiche, con isole Svelte 5 dove serve interazione
 - **Tailwind CSS 4** - stile, più il plugin typography per i contenuti Markdown
@@ -13,7 +13,7 @@ Portfolio personale di Simone Salerno, online su [esse.dev](https://esse.dev). F
 - **Agente del sito** - pi-durable su un Durable Object per visitatore (Cloudflare Agents SDK), modelli tramite OpenRouter
 - **TypeScript** (strict), **Vitest** e **Playwright**
 
-## Features
+## Funzionalità
 
 - Inglese e italiano con route e slug tradotti, redirect al canonico e hreflang
 - Il sito come spazio di lavoro: a sinistra una lista (pagine, vetrina dei progetti, metodo, scritti), a destra il riquadro del contenuto con la sua toolbar, navigazione da tastiera
@@ -24,15 +24,15 @@ Portfolio personale di Simone Salerno, online su [esse.dev](https://esse.dev). F
 - Immagini Open Graph generate alla build, una per pagina
 - Un agente che risponde dalle pagine del sito e dal codice pubblico dei progetti e mostra chiamate ai tool, token e costo, dietro un triage e un budget giornaliero in costo reale
 
-## Development
+## Sviluppo
 
 Servono Node 22.12+ e pnpm.
 
 ```bash
 pnpm install
-pnpm dev          # dev server on :4321
-pnpm build        # static build + Worker in dist/
-pnpm preview      # build and serve with wrangler on :8787
+pnpm dev          # dev server su :4321
+pnpm build        # build statica + Worker in dist/
+pnpm preview      # build e anteprima con wrangler su :8787
 ```
 
 L'agente richiede `OPENROUTER_API_KEY`, legge meglio il codice su GitHub con un
@@ -45,7 +45,7 @@ Giro di qualità, da lanciare prima di ogni push:
 pnpm lint && pnpm check && pnpm build && pnpm test:ci
 ```
 
-## Structure
+## Struttura
 
 - `src/pages/` - le route: `[lang]/` per le pagine statiche, più le poche che girano sul Worker
 - `src/content/` - progetti, articoli, metodo, adesso e pagine singole, una cartella per voce
@@ -56,7 +56,7 @@ pnpm lint && pnpm check && pnpm build && pnpm test:ci
   dello spazio di lavoro e la sua tastiera
 - `docs/` - architettura, decisioni, roadmap e il log dei cicli di lavoro
 
-## Documentation
+## Documentazione
 
 - [`CLAUDE.md`](CLAUDE.md) - convenzioni, comandi e gotcha (per il coding agent)
 - [`docs/CONVENTIONS.md`](docs/CONVENTIONS.md) - lingua, glossario e regole di codice
@@ -67,11 +67,11 @@ pnpm lint && pnpm check && pnpm build && pnpm test:ci
 - [`docs/features/progetti.md`](docs/features/progetti.md) - come si scelgono e si raccontano i progetti
 - [`docs/archive/RESTYLE.md`](docs/archive/RESTYLE.md) - storia del lavoro sull'identità visiva
 
-## Deployment
+## Deploy
 
 Cloudflare Workers Builds pubblica a ogni push. Deploy manuale: `pnpm deploy`.
 
-## License
+## Licenza
 
 Il codice è rilasciato con [licenza MIT](LICENSE). I contenuti del sito (tutto ciò che sta in
 `src/content/`, immagini, favicon e identità visiva) sono tutti i diritti riservati, e il font

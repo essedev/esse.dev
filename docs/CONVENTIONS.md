@@ -35,40 +35,40 @@ The English rendering of the Italian domain terms that recur in the docs, commen
 Translations use only these. A term that is also an Italian UI label stays as it is, and
 the table says so.
 
-| Italian                                 | English      | Note                                                    |
-| --------------------------------------- | ------------ | ------------------------------------------------------- |
-| vetrina                                 | showcase     | `src/config/featured.json`; UI label "in evidenza"      |
-| registro                                | registry     | The page that lists every project of a section          |
-| scheda (progetto, articolo)             | entry        | A project or an article as content                      |
-| scheda (nella trascrizione dell'agente) | card         | What `show_page` and `draft_message` render             |
-| spazio di lavoro                        | workspace    | `Workspace.astro`                                       |
-| riquadro                                | pane         | The content pane next to the list, `data-pane-glass`    |
-| lista                                   | list         | The left column of the workspace                        |
-| telaio                                  | chassis      | `Chassis.svelte`, from the discarded restyle            |
-| cassetto                                | drawer       | The mobile list, `data-drawer`                          |
-| vetro                                   | glass        | `glass` utility, `--glass-*`                            |
-| velo                                    | veil         | CRT veil (`--crt-*`), wallpaper veil (`--wall`)         |
-| sfondo                                  | wallpaper    |                                                         |
-| ciclo                                   | cycle        | Numbering is fixed: "Cycle 22"                          |
-| Aperte (ROADMAP)                        | Open         | Section title: the anchor is `#open`                    |
-| scritti                                 | writing      | Route `scritti` stays in Italian                        |
-| metodo                                  | method       | Route `metodo` stays in Italian                         |
-| progetti                                | projects     | Route `progetti` stays in Italian                       |
-| `Il perché`                             | Why          | UI label of the `why` field, in Italian                 |
-| `Prima di questo`                       | Before this  | UI label of the `previously` field                      |
-| chiacchiera                             | chat         | The `chat` intent of Jev                                |
-| fuori tema                              | off-topic    |                                                         |
-| abuso                                   | abuse        |                                                         |
-| raffica                                 | burst        | Per-IP burst limit                                      |
-| tetto                                   | cap          | Spending or token cap                                   |
-| impronta                                | fingerprint  | Daily SHA-256 of IP and day                             |
-| bozza                                   | draft        | `draft_message`                                         |
-| sotto-agente                            | sub-agent    | `delegate`                                              |
-| agente, Jev                             | agent, Jev   | Jev is the proper name of the triage, it stays          |
-| smistamento                             | sorting      | Where a project goes: showcase, registry, ideas, out    |
-| ricerca                                 | search       |                                                         |
-| sommario                                | excerpt      | The `excerpt` frontmatter field                         |
-| gate                                    | quality gate | `pnpm lint && pnpm check && pnpm build && pnpm test:ci` |
+| Italian                                 | English      | Note                                                                         |
+| --------------------------------------- | ------------ | ---------------------------------------------------------------------------- |
+| vetrina                                 | showcase     | `src/config/featured.json`; UI label "in evidenza"                           |
+| registro                                | registry     | The page that lists every project of a section                               |
+| scheda (progetto, articolo)             | entry        | A project or an article as content                                           |
+| scheda (nella trascrizione dell'agente) | card         | What `show_page` and `draft_message` render                                  |
+| spazio di lavoro                        | workspace    | `Workspace.astro`                                                            |
+| riquadro                                | pane         | The content pane next to the list, `data-pane-glass`                         |
+| lista                                   | list         | The left column of the workspace                                             |
+| telaio                                  | chassis      | `Chassis.svelte`, from the discarded restyle                                 |
+| cassetto                                | drawer       | The mobile list, `data-drawer`                                               |
+| vetro                                   | glass        | `glass` utility, `--glass-*`                                                 |
+| velo                                    | veil         | CRT veil (`--crt-*`), wallpaper veil (`--wall`)                              |
+| sfondo                                  | wallpaper    | The layer behind the window (`--wall`); a plain fill (fondo) is "background" |
+| ciclo                                   | cycle        | Numbering is fixed: "Cycle 22"                                               |
+| Aperte (ROADMAP)                        | Open         | Section title: the anchor is `#open`                                         |
+| scritti                                 | writing      | Route `scritti` stays in Italian                                             |
+| metodo                                  | method       | Route `metodo` stays in Italian                                              |
+| progetti                                | projects     | Route `progetti` stays in Italian                                            |
+| `Il perché`                             | Why          | UI label of the `why` field, in Italian                                      |
+| `Prima di questo`                       | Before this  | UI label of the `previously` field                                           |
+| chiacchiera                             | small talk   | Jev's intent id stays `chat`; "small talk" is also the English UI label      |
+| fuori tema                              | off-topic    |                                                                              |
+| abuso                                   | abuse        |                                                                              |
+| raffica                                 | burst        | Per-IP burst limit                                                           |
+| tetto                                   | cap          | Spending or token cap                                                        |
+| impronta                                | fingerprint  | Daily SHA-256 of IP and day                                                  |
+| bozza                                   | draft        | `draft_message`                                                              |
+| sotto-agente                            | sub-agent    | `delegate`                                                                   |
+| agente, Jev                             | agent, Jev   | Jev is the proper name of the triage, it stays                               |
+| smistamento                             | sorting      | Where a project goes: showcase, registry, ideas, out                         |
+| ricerca                                 | search       |                                                                              |
+| sommario                                | excerpt      | The `excerpt` frontmatter field                                              |
+| gate                                    | quality gate | `pnpm lint && pnpm check && pnpm build && pnpm test:ci`                      |
 
 ## Code
 
