@@ -9,6 +9,9 @@ deploy su Cloudflare Workers; una pagina è un agente (Durable Object con pi-dur
 da OpenRouter). Il perché delle scelte sta in `docs/ARCHITECTURE.md` e `docs/DECISIONS.md`;
 stato e log in `docs/ROADMAP.md` e `docs/CYCLES.md`.
 
+Public repository: code, comments, docs and commits in English; README.md is mirrored in
+README.it.md in the same commit.
+
 ## Comandi
 
 - `pnpm dev` - dev server Astro su :4321.
