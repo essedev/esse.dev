@@ -5,7 +5,9 @@
  * others). An SVG with no margin around the tile: every logo on the site that has no tile of
  * its own comes from here, so they share one geometry.
  *
- * Usage: node --experimental-strip-types scripts/render-logo.ts <lucide-name | mark-file> <#accent> <out.svg>
+ * Usage: node --experimental-strip-types scripts/render-logo.ts <lucide-name | mark-file> <#accent> <out.svg> [--tile=#rrggbb]
+ * `--tile` sets the tile's base colour (default the site's dark #121019): a light one for a mark
+ * drawn with dark outlines, which would sink into the dark tile.
  * Examples:
  *   node --experimental-strip-types scripts/render-logo.ts plug '#7dd3fc' src/content/projects/mcpbelt/logo.svg
  *   node --experimental-strip-types scripts/render-logo.ts mark.png '#fb7185' src/content/projects/zeno/logo.svg
@@ -13,9 +15,14 @@
 import { existsSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { extname, join } from 'node:path';
 
-const [symbol, accent, out] = process.argv.slice(2);
-if (!symbol || !/^#[0-9a-f]{6}$/i.test(accent ?? '') || !out) {
-	console.error('usage: render-logo.ts <lucide-name | mark-file> <#rrggbb> <out.svg>');
+const args = process.argv.slice(2);
+const [symbol, accent, out] = args.filter((a) => !a.startsWith('--'));
+const tile = args.find((a) => a.startsWith('--tile='))?.slice(7) ?? '#121019';
+const hex = /^#[0-9a-f]{6}$/i;
+if (!symbol || !hex.test(accent ?? '') || !out || !hex.test(tile)) {
+	console.error(
+		'usage: render-logo.ts <lucide-name | mark-file> <#rrggbb> <out.svg> [--tile=#rrggbb]'
+	);
 	process.exit(1);
 }
 
@@ -63,7 +70,7 @@ const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" vi
 			<stop offset="1" stop-color="${accent}" stop-opacity="0.08"/>
 		</linearGradient>
 	</defs>
-	<rect width="128" height="128" rx="28" fill="#121019"/>
+	<rect width="128" height="128" rx="28" fill="${tile}"/>
 	<rect width="128" height="128" rx="28" fill="url(#t)"/>
 	${content}
 </svg>
