@@ -13,7 +13,7 @@
 	const number = (n: number) => n.toLocaleString(locale, { maximumFractionDigits: 2 });
 </script>
 
-<figure class="flex flex-col gap-4 rounded-[var(--radius-control)] bg-panel px-4 py-4">
+<figure class="flex flex-col gap-4 rounded-[var(--radius-control)] bg-surface/60 px-4 py-4">
 	<figcaption class="font-mono text-xs text-subtle">{view.title}</figcaption>
 	{#if view.type === 'bars'}
 		<dl class="grid grid-cols-[minmax(0,auto)_minmax(0,1fr)_auto] items-center gap-x-4 gap-y-2">

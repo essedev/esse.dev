@@ -140,7 +140,7 @@ const ogSection = section === 'projects' ? 'projects' : section === 'articles' ?
 						<li>
 							<a
 								href={`${path}/${m.text.slug}`}
-								class="group hover:bg-panel grid grid-cols-[2.5rem_minmax(0,1fr)_auto] items-baseline gap-x-4 rounded-[var(--radius-panel)] px-3 py-5 transition-colors"
+								class="group hover:bg-surface grid grid-cols-[2.5rem_minmax(0,1fr)_auto] items-baseline gap-x-4 rounded-[var(--radius-panel)] px-3 py-5 transition-colors"
 							>
 								<span class="text-subtle font-mono text-sm tabular-nums">
 									{String(i + 1).padStart(2, '0')}
@@ -307,7 +307,7 @@ const ogSection = section === 'projects' ? 'projects' : section === 'articles' ?
 												href={l.url}
 												target="_blank"
 												rel="noopener noreferrer me"
-												class="group text-text hover:bg-panel hover:text-fg flex items-center justify-between gap-3 rounded-[var(--radius-control)] px-3.5 py-3 transition-colors"
+												class="group text-text hover:bg-surface hover:text-fg flex items-center justify-between gap-3 rounded-[var(--radius-control)] px-3.5 py-3 transition-colors"
 											>
 												{l.name}
 												<ArrowUpRight class="text-subtle size-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />

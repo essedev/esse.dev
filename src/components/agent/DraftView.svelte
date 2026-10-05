@@ -118,7 +118,7 @@
 
 <form
 	onsubmit={submit}
-	class="flex flex-col gap-3 rounded-[var(--radius-control)] bg-panel px-4 py-4"
+	class="flex flex-col gap-3 rounded-[var(--radius-control)] bg-surface/60 px-4 py-4"
 >
 	<p class="flex items-center gap-2.5 font-mono text-xs text-subtle">
 		<span class="led" data-status={sent ? 'completed' : 'in-progress'}></span>

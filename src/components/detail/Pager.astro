@@ -25,7 +25,7 @@ const { prev, next, t } = Astro.props;
 			<a
 				href={prev.href}
 				data-pager="prev"
-				class="group hover:bg-panel flex min-w-0 flex-col gap-1.5 rounded-[var(--radius-panel)] px-3 py-3 transition-colors"
+				class="group hover:bg-surface flex min-w-0 flex-col gap-1.5 rounded-[var(--radius-panel)] px-3 py-3 transition-colors"
 			>
 				<span class="label flex items-center gap-2">
 					<span class="kbd hidden tracking-normal normal-case lg:inline-flex">h</span>
@@ -43,7 +43,7 @@ const { prev, next, t } = Astro.props;
 			<a
 				href={next.href}
 				data-pager="next"
-				class="group hover:bg-panel flex min-w-0 flex-col items-end gap-1.5 rounded-[var(--radius-panel)] px-3 py-3 text-right transition-colors"
+				class="group hover:bg-surface flex min-w-0 flex-col items-end gap-1.5 rounded-[var(--radius-panel)] px-3 py-3 text-right transition-colors"
 			>
 				<span class="label flex items-center gap-2">
 					{t('next')}

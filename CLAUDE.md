@@ -108,7 +108,8 @@ tastiera in `src/scripts/workspace.ts`.
 - Vetro (`docs/concepts/concept-c-vetro.html`, variante B): sfondo colorato
   (`wallpaper`), cornice, lista, contenuto e campo dell'agente con l'utility `glass` e i
   valori in `--glass-*`; la toolbar resta piatta. I controlli usano `surface` e `hover`,
-  veli chiari e non grigi pieni. Un vetro che sfoca non va dentro un altro che sfoca
+  veli chiari e non grigi pieni; nel riquadro anche i blocchi (`bg-surface/60`) e l'hover delle
+  righe (`bg-surface`): `bg-panel` pieno sul vetro non si vede. Un vetro che sfoca non va dentro un altro che sfoca
   (Chromium smette di sfocare): la cornice ha solo il bordo, e il riquadro sfoca da uno strato
   dietro il contenuto (`data-pane-glass`), che non contiene altri vetri. Un colore di testo nuovo si misura sul vetro, dove il
   velo dietro è più chiaro, non sul nero. Lo sfondo è un velo continuo con un solo punto di

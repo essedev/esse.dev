@@ -21,7 +21,7 @@
 	} = $props();
 </script>
 
-<section class="flex flex-col gap-2 rounded-[var(--radius-control)] bg-panel px-4 py-3">
+<section class="flex flex-col gap-2 rounded-[var(--radius-control)] bg-surface/60 px-4 py-3">
 	<h3 class="font-mono text-xs text-subtle">delegate · {labels.subagents}</h3>
 	<ol class="flex flex-col gap-2">
 		{#each tasks as task, i (i)}
