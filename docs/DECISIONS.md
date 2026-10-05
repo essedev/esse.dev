@@ -240,6 +240,8 @@ no page opens on a hole. A project's own logo when it has one, otherwise a desig
 from `scripts/render-logo.ts`; in the list it takes the LED's place, with the LED on its
 corner so the status stays. Files sit in the project's folder and go through `image()`, so a
 wrong path fails the build. A logo is content, not a UI icon, so it does not break "icons
-only Lucide". Rejected: logos of the technologies (a wall of badges, colors against the
+only Lucide". No text in a cover: the name, tagline and command drawn into a mockup repeated
+the heading and excerpt below it and stayed in English on the Italian pages, so a designed
+cover is a single centered panel. Rejected: logos of the technologies (a wall of badges, colors against the
 lavender), the cover only where a screenshot exists (half the pages would open bare),
 screenshots in the side column (variant C, the page loses its opening).

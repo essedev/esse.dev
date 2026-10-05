@@ -105,10 +105,16 @@ Every project page opens with a cover and has a logo beside the title and in the
 Both are files in the project's folder, declared in `meta.json` (`logo`, `cover` with its
 `focus`) and validated by `image()`: a wrong path fails the build.
 
-- **Cover, three sources, in this order.** A real screenshot of the interface; a designed
-  mockup for projects with nothing to show (CLI, backend, firmware, idea), rendered with
-  `scripts/render-cover.ts` from a `cover.json` kept next to it; the generated cover
-  (accent veil and the Lucide `icon` from `meta.json`) when there is neither.
+- **Cover, three sources, in this order.** A real screenshot of the interface, full bleed; a
+  designed panel for projects with nothing to show (CLI, backend, firmware, idea) or with
+  only a small screenshot, rendered with `scripts/render-cover.ts` from a `cover.json` kept
+  next to it; the generated cover (accent veil and the Lucide `icon` from `meta.json`) when
+  there is neither.
+- **No text in a cover.** No title, tagline or command drawn into the image: the logo, the
+  heading and the excerpt say them right below, translated, while text in an image stays in
+  one language. A designed cover is one panel (code, a list or a screenshot) centered on the
+  accent's glow, inside the 16:9 crop of mobile. A small screenshot goes in a panel rather
+  than full bleed, which would blow it up.
 - **Screenshots only from demo data.** No real personal data, no client or company names,
   no copyrighted posters or third-party content, no paths of private repos. A screenshot is
   looked at before it is saved. Dark interfaces where the project has a dark mode.
