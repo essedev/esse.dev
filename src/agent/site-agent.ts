@@ -7,7 +7,7 @@ import {
 	type ToolRegistration
 } from '@earendil-works/pi-durable';
 import { PiHarness, ROOT_SESSION, type PiReceipt, type PiSessionId } from 'agents/harness/pi';
-import { Lifecycle } from 'agents/lifecycle';
+import { Lifecycle, type LifecycleJobContext } from 'agents/lifecycle';
 import { WebSockets } from 'agents/websockets';
 import { costOf, ipFingerprint, remaining, today, VISITOR_DAILY_USD, type Spend } from './budget';
 import type { PiServerMessage } from './protocol';
@@ -25,6 +25,7 @@ import {
 import { GitHubReader } from './github';
 import { MODEL, siteModels } from './models';
 import { parseRender, RENDER_LIMITS } from './render';
+import { EXPIRE_JOB, expiresAt } from './retention';
 import { RUN_LIMITS, runCode, sandboxTypes } from './run-code';
 import { listProjects, publicRepos, searchSite, type SiteDoc } from './site-index';
 import { PiSessionSockets } from './sockets';
@@ -582,6 +583,25 @@ export class SiteAgent extends DurableObject<Env> {
 	async onStart(): Promise<void> {
 		await this.#syncModel();
 		await this.sockets.reattach();
+		// Conversations from before the retention have no deadline yet: they get one from now.
+		if (!this.lifecycle.jobs.get(EXPIRE_JOB)) await this.#keep();
+	}
+
+	/** Moves the conversation's deadline to `RETENTION_DAYS` from now (same id: replaces). */
+	async #keep(): Promise<void> {
+		await this.lifecycle.jobs.push({ id: EXPIRE_JOB, fn: EXPIRE_JOB, time: expiresAt(Date.now()) });
+	}
+
+	/**
+	 * The deadline has passed: the object is emptied and the instance reset, so the next
+	 * visit finds an empty conversation. Alarms first, because `deleteAll` does not remove
+	 * them; then the abort, because the harness in memory still points at deleted tables.
+	 */
+	async onJob({ job }: LifecycleJobContext): Promise<void> {
+		if (job.fn !== EXPIRE_JOB) return;
+		await this.lifecycle.disableAlarms();
+		await this.ctx.storage.deleteAll();
+		this.ctx.abort('conversation expired', { retryAlarm: false });
 	}
 
 	/**
@@ -757,6 +777,7 @@ export class SiteAgent extends DurableObject<Env> {
 	async settle(session: PiSessionId, receipt: PiReceipt): Promise<void> {
 		const handle = this.harness.session(session);
 		await handle.wait(receipt.operationId);
+		await this.#keep();
 		const mark = (await this.ctx.storage.get<number>('charged-through')) ?? 0;
 		const entries = (await handle.messages()).filter((e) => e.id > mark);
 		if (entries.length === 0) return;
