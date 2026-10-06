@@ -203,8 +203,25 @@ const ogSection = section === 'projects' ? 'projects' : section === 'articles' ?
 						stop: t('agentStop'),
 						connecting: t('agentConnecting'),
 						offline: t('agentOffline'),
-						thinking: t('agentThinking'),
+						reconnecting: t('agentReconnecting'),
+						reconnected: t('agentReconnected'),
+						phases: {
+							triage: t('agentPhaseTriage'),
+							think: t('agentPhaseThink'),
+							reason: t('agentPhaseReason'),
+							write: t('agentPhaseWrite'),
+							resume: t('agentPhaseResume')
+						},
 						retrying: t('agentRetrying'),
+						retryIn: t('agentRetryIn'),
+						retryNow: t('agentRetryNow'),
+						errors: {
+							provider: { tag: t('agentErrorTagProvider'), text: t('agentErrorProvider') },
+							timeout: { tag: t('agentErrorTagTimeout'), text: t('agentErrorTimeout') },
+							aborted: { tag: t('agentErrorTagAborted'), text: t('agentErrorAborted') },
+							internal: { tag: t('agentErrorTagInternal'), text: t('agentErrorInternal') }
+						},
+						errorDetails: t('agentErrorDetails'),
 						tools: t('agentTools'),
 						toolsNote: t('agentToolsNote'),
 						privacyNote: t('agentPrivacyNote'),

@@ -295,6 +295,19 @@
 	}
 }
 
+/* Phosphor (concept G): a character of the answer being streamed is born in the accent and
+   cools down to the text color. Without `to`, it ends on the inherited color and fringe. The
+   duration is LIFE_MS in src/components/agent/phosphor.ts. */
+.phosphor {
+	animation: phosphor 1.1s var(--ease-out) both;
+}
+@keyframes phosphor {
+	from {
+		color: var(--color-accent);
+		text-shadow: 0 0 var(--crt-accent-glow) color-mix(in srgb, var(--color-accent) 90%, transparent);
+	}
+}
+
 @keyframes caret-blink {
 	50% {
 		opacity: 0;

@@ -7,9 +7,12 @@
 	import { renderMarkdown } from '../../agent/markdown';
 	import { parseRender, type RenderView as View } from '../../agent/render';
 	import type { ChildReport } from '../../agent/delegate';
+	import AgentStatus from './AgentStatus.svelte';
 	import DelegateView from './DelegateView.svelte';
 	import DraftView from './DraftView.svelte';
 	import RenderView from './RenderView.svelte';
+	import { phosphor } from './phosphor';
+	import { errorKind, phaseOf, type ErrorKind, type Phase } from '../../agent/phase';
 	import type {
 		NoticeReason,
 		ServerMessage,
@@ -34,8 +37,17 @@
 		stop: string;
 		connecting: string;
 		offline: string;
-		thinking: string;
+		reconnecting: string;
+		reconnected: string;
+		/** The phases of the status line; the one of a tool is its label. */
+		phases: { triage: string; think: string; reason: string; write: string; resume: string };
 		retrying: string;
+		/** `{n}` is the seconds left before pi retries. */
+		retryIn: string;
+		retryNow: string;
+		/** Per kind: the short tag and the sentence for the visitor. */
+		errors: Record<ErrorKind, { tag: string; text: string }>;
+		errorDetails: string;
 		tools: string;
 		toolsNote: string;
 		/** The line under the field on how long conversations are kept, and its link. */
@@ -90,6 +102,11 @@
 		{}
 	);
 	let client: AgentClient | undefined;
+	/** Whether the socket was ever open: a close after that is a drop, not a failed start. */
+	let opened = $state(false);
+	let reconnected = $state(false);
+	let reconnectedTimer: ReturnType<typeof setTimeout> | undefined;
+	const RECONNECTED_MS = 2000;
 
 	function visitorId(): string {
 		try {
@@ -145,7 +162,16 @@
 	onMount(() => {
 		prefill();
 		client = new AgentClient({ agent: 'SiteAgent', name: visitorId(), host: location.host });
-		client.addEventListener('open', () => (status = 'open'));
+		client.addEventListener('open', () => {
+			// Back after a drop: say so for a moment, then the model returns in the line.
+			if (status === 'closed') {
+				reconnected = true;
+				clearTimeout(reconnectedTimer);
+				reconnectedTimer = setTimeout(() => (reconnected = false), RECONNECTED_MS);
+			}
+			status = 'open';
+			opened = true;
+		});
 		client.addEventListener('close', () => (status = 'closed'));
 		client.addEventListener('message', (event: MessageEvent) => {
 			let message: ServerMessage;
@@ -166,6 +192,7 @@
 					triages = { ...triages, [message.text]: message.triage };
 					break;
 				case 'notice':
+					if (pending?.text === message.text) pending = null;
 					locals = [...locals, { text: message.text, reason: message.reason, after: shown.length }];
 					track('agent-notice', { reason: message.reason });
 					break;
@@ -187,6 +214,7 @@
 					budget = { remaining: message.remaining, limit: message.limit };
 					break;
 				case 'error':
+					pending = null;
 					view = { ...view, error: message.message };
 					track('agent-error');
 					break;
@@ -199,6 +227,7 @@
 		document.addEventListener('click', onReset);
 		return () => {
 			document.removeEventListener('click', onReset);
+			clearTimeout(reconnectedTimer);
 			client?.close();
 		};
 	});
@@ -250,6 +279,7 @@
 		if (!text || status !== 'open') return;
 		sent = true;
 		following = true;
+		wait(text);
 		send({ type: 'submit', input: text, whenBusy: 'followUp' });
 		track('agent-message', { source: 'typed' });
 		input = '';
@@ -273,6 +303,7 @@
 	function retry() {
 		if (!lastUserText || status !== 'open') return;
 		view = { ...view, error: null };
+		wait(lastUserText);
 		send({ type: 'submit', input: lastUserText, whenBusy: 'followUp' });
 		track('agent-retry');
 	}
@@ -281,6 +312,7 @@
 		if (status !== 'open') return;
 		sent = true;
 		following = true;
+		wait(text);
 		send({ type: 'submit', input: text, whenBusy: 'followUp' });
 		track('agent-message', { source: 'suggestion' });
 	}
@@ -288,6 +320,47 @@
 	// The empty state disappears on the first send, without waiting for the server to confirm.
 	let sent = $state(false);
 	const empty = $derived(!sent && shown.length === 0 && locals.length === 0 && !view.running);
+
+	/**
+	 * The message sent and not yet in the transcript: it shows at once, under it the status
+	 * line says Jev is weighing it. It leaves when pi records it (one user message more), when
+	 * a notice stops it, or on an error.
+	 */
+	let pending: { text: string; users: number } | null = $state(null);
+	const users = $derived(view.messages.filter((m) => m.role === 'user').length);
+	function wait(text: string) {
+		pending = { text, users };
+	}
+	$effect(() => {
+		if (pending && users > pending.users) pending = null;
+	});
+	const phase: Phase | null = $derived(
+		phaseOf(view, pending ? (triages[pending.text] === undefined ? 'triage' : 'admitted') : null)
+	);
+
+	// Seconds since the work started, ticking while there is a phase.
+	const working = $derived(phase !== null);
+	let since = 0;
+	let clock = $state(0);
+	$effect(() => {
+		if (!working) return;
+		since = Date.now();
+		clock = since;
+		const timer = setInterval(() => (clock = Date.now()), 100);
+		return () => clearInterval(timer);
+	});
+	const seconds = (ms: number) =>
+		`${(ms / 1000).toLocaleString(locale, { minimumFractionDigits: 1, maximumFractionDigits: 1 })} s`;
+	function phaseLabel(p: Phase): string {
+		if (p.kind === 'tool') return toolLabel(p.name) || p.name;
+		if (p.kind === 'retry') return labels.retrying;
+		return labels.phases[p.kind];
+	}
+	function phaseMeta(p: Phase): string {
+		if (p.kind !== 'retry') return seconds(Math.max(0, clock - since));
+		const left = Math.ceil((p.at - clock) / 1000);
+		return left > 0 ? labels.retryIn.replace('{n}', String(left)) : labels.retryNow;
+	}
 
 	// The page title and subtitle are the welcome, like the example questions: when the
 	// conversation starts they disappear (they stay for screen readers). Until the transcript
@@ -319,6 +392,7 @@
 		sent = false;
 		triages = {};
 		locals = [];
+		pending = null;
 	}
 
 	// Tool results arrive as separate messages: attach them to their call.
@@ -444,6 +518,35 @@
 	{/if}
 {/snippet}
 
+{#snippet failure(raw: string, kind: ErrorKind, retryable: boolean)}
+	<div class="flex flex-col gap-2" data-agent-error={kind}>
+		<p class="text-[0.9375rem] text-pretty text-text">
+			<span class="mr-2 font-mono text-xs text-danger">{labels.errors[kind].tag}</span>
+			{labels.errors[kind].text}
+		</p>
+		<div class="flex flex-wrap items-center gap-3">
+			{#if retryable}
+				<button type="button" onclick={retry} class="chip hover:text-fg">{labels.retry}</button>
+			{/if}
+			{#if raw}
+				{@render details(raw)}
+			{/if}
+		</div>
+	</div>
+{/snippet}
+
+{#snippet details(raw: string)}
+	<details class="min-w-0">
+		<summary
+			class="cursor-pointer font-mono text-[0.7rem] text-subtle transition-colors hover:text-fg"
+		>
+			{labels.errorDetails}
+		</summary>
+		<pre
+			class="mt-2 overflow-x-auto overscroll-x-none rounded-[var(--radius-control)] bg-surface/60 px-3 py-2 text-xs whitespace-pre-wrap text-muted">{raw}</pre>
+	</details>
+{/snippet}
+
 {#snippet localNotice(item: Local)}
 	<div class="flex flex-col gap-1.5">
 		<p class="flex gap-3 font-mono text-[0.875rem] text-fg">
@@ -545,6 +648,7 @@
 					{#each message.parts as part, i (i)}
 						{#if part.type === 'text' && part.text.trim()}
 							<div
+								use:phosphor={{ text: part.text, live: message.id === 'live' }}
 								class="prose max-w-none text-[1.0625rem] leading-relaxed prose-invert prose-headings:mt-6 prose-headings:mb-2 prose-headings:font-medium prose-headings:text-fg prose-h1:text-[1.2em] prose-h2:text-[1.1em] prose-h3:text-[1em] prose-p:my-3 prose-p:text-text prose-a:text-fg prose-a:decoration-subtle prose-a:underline-offset-4 prose-strong:font-medium prose-strong:text-fg prose-code:rounded prose-code:bg-surface prose-code:px-1.5 prose-code:py-0.5 prose-code:font-normal prose-code:text-fg prose-code:before:content-none prose-code:after:content-none prose-pre:rounded-[var(--radius-control)] prose-pre:bg-surface/60 prose-pre:text-xs prose-ol:my-3 prose-ul:my-3 prose-li:my-1 prose-li:text-text prose-li:marker:text-accent [&_pre_code]:bg-transparent [&_pre_code]:p-0 [&>:first-child]:mt-0 [&>:last-child]:mb-0"
 							>
 								<!-- eslint-disable-next-line svelte/no-at-html-tags -- renderMarkdown neutralizes HTML and links (src/agent/markdown.ts, with tests) -->
@@ -641,8 +745,12 @@
 							</details>
 						{/if}
 					{/each}
-					{#if message.error}
-						<p class="font-mono text-xs text-danger">{message.error}</p>
+					{#if message.error && !(view.error && message.id === shown.at(-1)?.id)}
+						{@render failure(
+							message.error,
+							message.stopReason === 'aborted' ? 'aborted' : errorKind(message.error),
+							false
+						)}
 					{/if}
 					{#if message.usage && message.id !== 'live'}
 						<p class="font-mono text-[0.7rem] text-subtle">
@@ -656,20 +764,34 @@
 				{@render localNotice(item)}
 			{/each}
 		{/each}
-		{#if view.running && !view.live}
-			<p class="flex items-center gap-2.5 pl-6 font-mono text-xs text-subtle">
-				<span class="led" data-status="in-progress"></span>{labels.thinking}
-			</p>
+		{#if pending}
+			<div class="flex flex-col gap-1.5">
+				<p class="flex gap-3 font-mono text-[0.875rem] text-fg">
+					<span class="text-accent glow select-none" aria-hidden="true">›</span>
+					<span class="whitespace-pre-wrap">{pending.text}</span>
+				</p>
+				{@render verdict(triages[pending.text])}
+			</div>
 		{/if}
-		{#if view.retry}
-			<p class="pl-6 font-mono text-xs text-subtle">{labels.retrying}: {view.retry.error}</p>
+		{#if !loaded && remembered && status !== 'closed'}
+			<!-- A conversation already open is coming: the title is gone, the transcript not here yet. -->
+			<AgentStatus label={labels.phases.resume} />
+		{:else if phase}
+			<div class="flex flex-col gap-2">
+				<AgentStatus label={phaseLabel(phase)} meta={phaseMeta(phase)} />
+				{#if phase.kind === 'retry' && phase.error}
+					<div class="pl-6">{@render details(phase.error)}</div>
+				{/if}
+			</div>
 		{/if}
 		{#if view.error}
-			<div class="flex items-center gap-3 pl-6">
-				<p class="font-mono text-xs text-danger">{view.error}</p>
-				{#if !view.running && lastUserText}
-					<button type="button" onclick={retry} class="chip hover:text-fg">{labels.retry}</button>
-				{/if}
+			{@const kind = errorKind(view.error)}
+			<div class="pl-6">
+				{@render failure(
+					view.error,
+					kind,
+					!view.running && Boolean(lastUserText) && kind !== 'aborted'
+				)}
 			</div>
 		{/if}
 	</div>
@@ -711,10 +833,16 @@
 		<div
 			class="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 px-1 font-mono text-[0.7rem] text-subtle"
 		>
-			<span class="flex items-center gap-2">
+			<span class="flex items-center gap-2" aria-live="polite">
 				<span class="led" data-status={status === 'open' ? 'in-progress' : 'idea'}></span>
-				{view.model?.modelId ??
-					(status === 'open' ? '' : status === 'connecting' ? labels.connecting : labels.offline)}
+				{#if reconnected}
+					<span class="text-live">{labels.reconnected}</span>
+				{:else if status === 'closed' && opened}
+					{labels.reconnecting}
+				{:else}
+					{view.model?.modelId ??
+						(status === 'open' ? '' : status === 'connecting' ? labels.connecting : labels.offline)}
+				{/if}
 			</span>
 			{#if budget && lowBudget}
 				<span>{credits(budget.remaining).toLocaleString(locale)} {labels.budget}</span>
