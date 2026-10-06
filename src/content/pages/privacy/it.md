@@ -5,9 +5,15 @@ updated: "2026-10-06"
 
 Questo sito è mio e i dati che raccoglie li tratto io: Simone Salerno, [hello@esse.dev](mailto:hello@esse.dev). Qui c'è tutto quello che passa di qui, perché, dove finisce e per quanto resta. Niente cookie, niente pubblicità, niente profilazione.
 
+In breve:
+
+- le statistiche sono anonime e senza cookie;
+- le conversazioni con l'agente restano 90 giorni dall'ultimo messaggio, poi si cancellano da sole;
+- per vedere o cancellare i tuoi dati basta scrivermi.
+
 ## Statistiche
 
-Conto le visite con [Umami](https://umami.is), installato su un mio server in Germania (OVH). Registra la pagina, da dove arrivi, il paese, il tipo di dispositivo e alcune azioni sul sito: un messaggio mandato all'agente, un link copiato, un link verso un altro sito. Il testo dei messaggi non ci finisce mai.
+Conto le visite con [Umami](https://umami.is), installato su un mio server nell'Unione europea. Registra la pagina, da dove arrivi, il paese, il tipo di dispositivo e alcune azioni sul sito: un messaggio mandato all'agente, un link copiato, un link verso un altro sito. Il testo dei messaggi non ci finisce mai.
 
 Umami non usa cookie e non salva niente sul tuo dispositivo. L'indirizzo IP non viene conservato: serve a ricavare il paese e un identificativo anonimo, un hash che cambia ogni mese, per distinguere i visitatori senza sapere chi sono. I dati sono aggregati e li tengo senza scadenza, per confrontare un anno con l'altro. Base giuridica: il mio legittimo interesse a capire cosa viene letto.
 
@@ -18,12 +24,12 @@ Quando scrivi all'[agente](/it/agente) salvo la conversazione: i tuoi messaggi, 
 Per rispondere, ogni messaggio passa da:
 
 - **TypeSafe**, che prima decide se il messaggio è in tema;
-- **OpenRouter**, che lo inoltra al modello e al fornitore che lo esegue (oggi GLM di Z.ai, servito da BaseTen, Fireworks o Parasail, negli Stati Uniti);
-- **GitHub**, quando l'agente cerca nei miei repository pubblici: riceve le parole di ricerca che sceglie il modello, che possono riprendere la tua domanda.
+- **OpenRouter**, che lo inoltra a un modello AI eseguito da fornitori negli Stati Uniti;
+- **GitHub**, quando gli strumenti dell'agente cercano nei miei repository pubblici.
 
 Non scrivere all'agente dati che non vuoi far leggere a un modello. Base giuridica: la tua richiesta, a cui l'agente risponde.
 
-Il browser tiene un identificativo casuale (`agent-visitor`) per ritrovare la tua conversazione quando torni, e un segno (`agent-started`) per sapere se l'hai già iniziata. Restano sul tuo dispositivo finché non li cancelli e non servono a seguirti altrove.
+Il browser tiene un identificativo casuale per ritrovare la tua conversazione quando torni. Resta sul tuo dispositivo finché non lo cancelli e non serve a seguirti altrove.
 
 ## Limiti di spesa
 

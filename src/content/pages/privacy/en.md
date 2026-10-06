@@ -5,9 +5,15 @@ updated: "2026-10-06"
 
 This site is mine and I am the one handling the data it collects: Simone Salerno, [hello@esse.dev](mailto:hello@esse.dev). Here is everything that goes through it, why, where it ends up and how long it stays. No cookies, no ads, no profiling.
 
+In short:
+
+- statistics are anonymous and cookieless;
+- conversations with the agent are kept 90 days from the last message, then delete themselves;
+- to see or delete your data, just write to me.
+
 ## Statistics
 
-I count visits with [Umami](https://umami.is), installed on a server of mine in Germany (OVH). It records the page, where you came from, the country, the kind of device and a few actions on the site: a message sent to the agent, a copied link, a link to another site. The text of the messages never ends up there.
+I count visits with [Umami](https://umami.is), installed on a server of mine in the European Union. It records the page, where you came from, the country, the kind of device and a few actions on the site: a message sent to the agent, a copied link, a link to another site. The text of the messages never ends up there.
 
 Umami uses no cookies and stores nothing on your device. The IP address is not kept: it is used to derive the country and an anonymous identifier, a hash that changes every month, to tell visitors apart without knowing who they are. The data is aggregated and I keep it with no expiry, to compare one year with the next. Legal basis: my legitimate interest in understanding what gets read.
 
@@ -18,12 +24,12 @@ When you write to the [agent](/en/agent) I save the conversation: your messages,
 To answer, every message goes through:
 
 - **TypeSafe**, which first decides whether the message is on topic;
-- **OpenRouter**, which forwards it to the model and the provider running it (today GLM by Z.ai, served by BaseTen, Fireworks or Parasail, in the United States);
-- **GitHub**, when the agent searches my public repositories: it receives the search terms the model picks, which may echo your question.
+- **OpenRouter**, which forwards it to an AI model run by providers in the United States;
+- **GitHub**, when the agent's tools search my public repositories.
 
 Do not write to the agent anything you would not want a model to read. Legal basis: your request, which the agent answers.
 
-The browser keeps a random identifier (`agent-visitor`) to find your conversation when you come back, and a flag (`agent-started`) to know whether you already started it. They stay on your device until you clear them and are not used to follow you elsewhere.
+The browser keeps a random identifier to find your conversation when you come back. It stays on your device until you clear it and is not used to follow you elsewhere.
 
 ## Spending limits
 
