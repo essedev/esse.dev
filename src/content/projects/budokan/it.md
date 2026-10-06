@@ -1,16 +1,27 @@
 ---
 slug: "budokan"
 title: "Polisportiva Bu Do Kan"
-excerpt: "Il sito della polisportiva Bu Do Kan: corsi, istruttori e richiesta di una lezione di prova, con i contenuti gestiti dalla palestra."
+excerpt: "Il sito della polisportiva Bu Do Kan: corsi, orari, istruttori e richiesta di una lezione di prova, con un pannello su misura da cui la palestra gestisce contenuti e richieste."
 tags:
-  - "SvelteKit"
-  - "Sanity"
-  - "Sport"
-  - "Fitness"
+  - "Next.js"
+  - "Cloudflare Workers"
+  - "D1"
   - "CMS"
-  - "TypeScript"
+  - "CRM"
+  - "Sport"
+previously:
+  - name: "Bu Do Kan su SvelteKit"
+    year: 2024
+    note: "La prima versione: SvelteKit su Cloudflare Pages, con Sanity come CMS headless. Nel 2026 il sito è passato a Next.js e i contenuti di Sanity sono migrati nel database del pannello."
 ---
 
-Il sito della polisportiva Bu Do Kan. La palestra aggiorna da sola corsi, orari, istruttori e galleria tramite Sanity, e chi vuole provare una disciplina prenota una lezione gratuita direttamente dal sito.
+Il sito della polisportiva Bu Do Kan: karate, danza, yoga, ginnastica. La palestra aggiorna da sola corsi, orari, staff, eventi e galleria da un pannello fatto su misura, e chi vuole provare una disciplina chiede una lezione gratuita direttamente dal sito.
 
-SvelteKit e TypeScript per il frontend, Sanity come CMS headless.
+## Il pannello
+
+- Contenuti: corsi, sedi e orari, staff, blog, avvisi, eventi, galleria e la home con l'annuncio in evidenza. Ogni modifica ha la sua cronologia, e quello che si cancella passa dal cestino.
+- Richieste: le prove e i contatti finiscono in un piccolo CRM, con stati, note, storico dei cambi ed export CSV. Chi telefona o passa in palestra si aggiunge a mano.
+
+## Come è fatto
+
+Next.js 16 su Cloudflare Workers con OpenNext, dati su D1 con Drizzle e media su R2. Le email partono da [Pigeon](/it/progetti/pigeon) e i moduli sono protetti da Turnstile. Ogni push su `main` applica le migrazioni, deploya e controlla le pagine pubbliche.
