@@ -1,0 +1,44 @@
+---
+import Workspace from '../layouts/Workspace.astro';
+import Page from './Page.astro';
+
+/**
+ * The frame of the 404 and the 500 (concept G): the number as a disturbed signal, a mono
+ * line under it (the path asked for, the request code), the title, then the page's own
+ * content. `noise` fills the digits with snow: the fault is on my side.
+ */
+interface Props {
+	lang: string;
+	code: '404' | '500';
+	title: string;
+	noise?: boolean;
+}
+
+const { lang, code, title, noise = false } = Astro.props;
+---
+
+<Workspace
+	lang={lang}
+	path={`/${lang}`}
+	title={title}
+	noindex
+	current=""
+	crumbs={[{ label: code }]}
+	view="home"
+>
+	<Page>
+		<p
+			class="signal self-start font-mono text-[clamp(4.5rem,3rem+6vw,8rem)] leading-none"
+			data-text={code}
+			data-noise={noise || undefined}
+			aria-hidden="true"
+		>
+			{code}
+		</p>
+		<slot name="meta" />
+		<h1 class="mt-3 text-[clamp(1.5rem,1.1rem+1.4vw,2.25rem)] leading-[1.1] font-medium tracking-[-0.02em]">
+			{title}
+		</h1>
+		<slot />
+	</Page>
+</Workspace>

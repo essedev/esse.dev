@@ -1,0 +1,68 @@
+---
+import { Check, Copy } from '@lucide/astro';
+import ErrorPage from '../components/ErrorPage.astro';
+import { defaultLang, languageCodes } from '../lib/config';
+import { getPage } from '../lib/content';
+import { translator } from '../lib/site';
+
+/**
+ * The 500 (concept G, B): what Astro renders when a route on the Worker throws. The error
+ * stays in the logs, with Cloudflare's request id; the page shows only that id, to quote
+ * when writing to me.
+ */
+interface Props {
+	error: unknown;
+}
+
+export const prerender = false;
+
+const ray = Astro.request.headers.get('cf-ray') ?? '';
+// Opened directly, `/500` has no error to log.
+if (Astro.props.error !== undefined) console.error('render failed', ray, Astro.props.error);
+
+const first = Astro.url.pathname.split('/')[1];
+const lang = languageCodes.includes(first) ? first : defaultLang;
+const t = await translator(lang);
+const email = (await getPage('contact', lang)).data.links
+	.find((l) => l.url.startsWith('mailto:'))
+	?.url.slice(7);
+const subject = t('serverErrorSubject').replace('{id}', ray || '-');
+
+Astro.response.status = 500;
+Astro.response.headers.set('Cache-Control', 'no-store');
+---
+
+<ErrorPage lang={lang} code="500" title={t('serverError')} noise>
+	{ray && (
+		<p slot="meta" class="text-subtle mt-5 flex flex-wrap items-center gap-2 font-mono text-sm">
+			{t('serverErrorRequest')}
+			<code class="text-muted break-all">{ray}</code>
+			<button
+				type="button"
+				data-copy={ray}
+				data-copy-message={t('serverErrorCopied')}
+				class="group chip hover:text-fg"
+			>
+				<Copy data-motion="copy" class="size-3.5 group-data-[copied]:hidden" />
+				<Check data-motion="check" class="text-live hidden size-3.5 group-data-[copied]:block" />
+				<span class="sr-only">{t('serverErrorCopy')}</span>
+			</button>
+		</p>
+	)}
+	<p class="text-muted mt-4 max-w-[46ch] text-[clamp(1rem,0.92rem+0.28vw,1.1875rem)] text-pretty">
+		{`${t('serverErrorText')} ${ray ? t('serverErrorQuote') : t('serverErrorNoCode')}`}
+	</p>
+	<div class="mt-6 flex flex-wrap gap-2">
+		<a href={Astro.url.pathname + Astro.url.search} class="chip hover:text-fg">
+			{t('serverErrorReload')}
+		</a>
+		<a href={`/${lang}`} class="chip hover:text-fg">
+			{t('backHome')}
+		</a>
+		{email && (
+			<a href={`mailto:${email}?subject=${encodeURIComponent(subject)}`} class="chip hover:text-fg">
+				{t('serverErrorWrite')}
+			</a>
+		)}
+	</div>
+</ErrorPage>

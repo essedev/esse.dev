@@ -70,6 +70,9 @@
 		--crt-scan: 0.018;
 		--crt-scan-gap: 3px;
 		--crt-vignette: 0.14;
+		/* The two colors of the fringe: on all text, faint; on the error number, the full signal. */
+		--crt-fringe-red: rgb(255 40 140);
+		--crt-fringe-cyan: rgb(40 220 255);
 
 		/* The glass (concept C, variant B): a window on a colored wallpaper, frame, list and agent
 		   field translucent. `--wall` is the intensity of the glow behind. */
@@ -305,6 +308,125 @@
 	from {
 		color: var(--color-accent);
 		text-shadow: 0 0 var(--crt-accent-glow) color-mix(in srgb, var(--color-accent) 90%, transparent);
+	}
+}
+
+/* The number of the error pages (concept G): a disturbed signal. The two copies of the
+   fringe slip out of place in horizontal slices and the number jumps, for 0.7 s on arrival
+   and again every 7 s. The 404 is a wrong address with the signal there; the 500
+   (`data-noise`) is a fault on my side: the disturbance comes once, then the digits stay
+   full of snow. */
+.signal {
+	position: relative;
+	display: inline-block;
+	color: var(--color-fg);
+	text-shadow: 0 0 10px color-mix(in srgb, var(--color-accent) 55%, transparent);
+	animation: signal-jump 7s steps(1) 200ms infinite;
+}
+.signal::before,
+.signal::after {
+	content: attr(data-text);
+	position: absolute;
+	inset: 0;
+	opacity: 0;
+	mix-blend-mode: screen;
+	pointer-events: none;
+}
+.signal::before {
+	color: var(--crt-fringe-red);
+	animation: signal-slice-red 7s steps(1) 200ms infinite;
+}
+.signal::after {
+	color: var(--crt-fringe-cyan);
+	animation: signal-slice-cyan 7s steps(1) 200ms infinite;
+}
+/* Snow: a tile of lavender noise (48 px, src/assets/noise.png) fills the digits and runs in
+   jumps. The glow goes to drop-shadow: with transparent text a text-shadow would draw the
+   glyphs solid. */
+.signal[data-noise] {
+	color: transparent;
+	background: url('../assets/noise.png') 0 0 / 96px 96px;
+	-webkit-background-clip: text;
+	background-clip: text;
+	text-shadow: none;
+	filter: drop-shadow(0 0 6px color-mix(in srgb, var(--color-accent) 55%, transparent));
+	animation:
+		signal-snow 0.6s steps(6) infinite,
+		signal-jump 7s steps(1) 200ms 1;
+}
+.signal[data-noise]::before,
+.signal[data-noise]::after {
+	animation-iteration-count: 1;
+}
+
+@keyframes signal-jump {
+	0%,
+	10% {
+		transform: none;
+	}
+	1.5% {
+		transform: translateX(1px);
+	}
+	4.5% {
+		transform: translateX(-2px) skewX(-4deg);
+	}
+	7% {
+		transform: translateX(1px);
+	}
+}
+@keyframes signal-slice-red {
+	0% {
+		opacity: 0.8;
+		clip-path: inset(10% 0 70% 0);
+		transform: translateX(-4px);
+	}
+	2% {
+		clip-path: inset(55% 0 20% 0);
+		transform: translateX(3px);
+	}
+	4% {
+		clip-path: inset(30% 0 50% 0);
+		transform: translateX(-2px);
+	}
+	6% {
+		clip-path: inset(80% 0 5% 0);
+		transform: translateX(5px);
+	}
+	8% {
+		clip-path: inset(0 0 85% 0);
+		transform: translateX(-1px);
+	}
+	10%,
+	100% {
+		opacity: 0;
+	}
+}
+@keyframes signal-slice-cyan {
+	0% {
+		opacity: 0.8;
+		clip-path: inset(60% 0 15% 0);
+		transform: translateX(4px);
+	}
+	2.5% {
+		clip-path: inset(5% 0 75% 0);
+		transform: translateX(-3px);
+	}
+	5% {
+		clip-path: inset(40% 0 40% 0);
+		transform: translateX(2px);
+	}
+	7.5% {
+		clip-path: inset(85% 0 2% 0);
+		transform: translateX(-4px);
+	}
+	10%,
+	100% {
+		opacity: 0;
+	}
+}
+@keyframes signal-snow {
+	to {
+		background-position: 96px 192px;
 	}
 }
 
@@ -708,8 +830,8 @@
    and a vignette. The veil receives no clicks and does not print. */
 [data-workspace] {
 	text-shadow:
-		calc(-1 * var(--crt-aberration)) 0 rgb(255 40 140 / 0.45),
-		var(--crt-aberration) 0 rgb(40 220 255 / 0.45);
+		calc(-1 * var(--crt-aberration)) 0 color-mix(in srgb, var(--crt-fringe-red) 45%, transparent),
+		var(--crt-aberration) 0 color-mix(in srgb, var(--crt-fringe-cyan) 45%, transparent);
 }
 body::after {
 	content: '';

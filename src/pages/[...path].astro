@@ -1,8 +1,10 @@
 ---
 import NotFound from '../components/NotFound.astro';
 import { defaultLang, languageCodes, languages, navigation } from '../lib/config';
-import { getSlugMap } from '../lib/content';
-import { resolveRedirect } from '../lib/i18n';
+import { getArticles, getMethod, getProjects, getSlugMap } from '../lib/content';
+import { resolveRedirect, SECTIONS } from '../lib/i18n';
+import { getSite } from '../lib/site';
+import { searchWords, suggestPages, type PageRef } from '../lib/suggest';
 
 // Only what is not a static page arrives here: a URL with a wrong language, route or slug
 // goes to the canonical with a single redirect, the rest is a real 404.
@@ -17,9 +19,47 @@ const target = resolveRedirect(pathname, {
 });
 if (target) return Astro.redirect(target, 302);
 
-const first = pathname.split('/')[1];
-const lang = languageCodes.includes(first) ? first : defaultLang;
+const segments = pathname.split('/').filter(Boolean);
+const lang = languageCodes.includes(segments[0]) ? segments[0] : defaultLang;
+const wanted = (lang === segments[0] ? segments.slice(1) : segments).join('/');
+
+// The pages of the language, for the closest to the path asked for.
+const routes = navigation[lang];
+const { sections } = await getSite(lang);
+const [projects, articles, method] = await Promise.all([
+	getProjects(lang),
+	getArticles(lang),
+	getMethod(lang)
+]);
+const section = (s: (typeof SECTIONS)[number]) => `/${lang}/${routes[s]}`;
+const pages: PageRef[] = [
+	...SECTIONS.map((s) => ({ path: section(s), title: sections[s], kind: 'section' })),
+	...projects.map((p) => ({
+		path: `${section('projects')}/${p.text.slug}`,
+		title: p.text.title,
+		kind: 'projects',
+		parent: section('projects')
+	})),
+	...articles.map((a) => ({
+		path: `${section('articles')}/${a.text.slug}`,
+		title: a.text.title,
+		kind: 'articles',
+		parent: section('articles')
+	})),
+	...method.map((m) => ({
+		path: `${section('method')}/${m.text.slug}`,
+		title: m.text.title,
+		kind: 'method',
+		parent: section('method')
+	}))
+];
+
 Astro.response.status = 404;
 ---
 
-<NotFound lang={lang} />
+<NotFound
+	lang={lang}
+	path={pathname}
+	suggestions={suggestPages(wanted, pages)}
+	query={searchWords(wanted)}
+/>

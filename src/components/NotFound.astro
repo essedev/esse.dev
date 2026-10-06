@@ -1,35 +1,90 @@
 ---
-import Workspace from '../layouts/Workspace.astro';
-import Page from './Page.astro';
-import { translator } from '../lib/site';
+import { ArrowRight } from '@lucide/astro';
+import ErrorPage from './ErrorPage.astro';
+import { navigation } from '../lib/config';
+import { routeOf } from '../lib/i18n';
+import { getSite, translator } from '../lib/site';
+import type { PageRef } from '../lib/suggest';
 
+/**
+ * The 404 (concept G, B). With the path asked for, from the catch-all on the Worker: the
+ * closest pages, the list search with its words and the agent with the question ready. The
+ * prerendered `/404` has no path and only offers the way home.
+ */
 interface Props {
 	lang: string;
+	/** The path asked for. */
+	path?: string;
+	suggestions?: PageRef[];
+	/** The words of the path, for `?q=` of the list search. */
+	query?: string;
 }
 
-const { lang } = Astro.props;
+const { lang, path, suggestions = [], query = '' } = Astro.props;
 const t = await translator(lang);
+const { sections } = await getSite(lang);
+const kindLabel = (kind: string) =>
+	kind === 'section' ? t('notFoundSection') : (sections[kind as keyof typeof sections] ?? kind);
+const agent = routeOf('agent', lang, navigation);
+const ask = path
+	? `/${lang}/${agent}?ask=${encodeURIComponent(t('notFoundAskText').replace('{path}', path))}`
+	: null;
+const lead = [
+	path && (suggestions.length ? t('pageNotFoundNear') : t('pageNotFoundFar')),
+	t('pageNotFoundHint')
+]
+	.filter(Boolean)
+	.join(' ');
+const search = query ? `/${lang}?q=${encodeURIComponent(query)}#search` : null;
 ---
 
-<Workspace
-	lang={lang}
-	path={`/${lang}`}
-	title={t('pageNotFound')}
-	noindex
-	current=""
-	crumbs={[{ label: '404' }]}
-	view="home"
->
-	<Page>
-		<p class="text-subtle font-mono text-sm">404</p>
-		<h1 class="mt-6 text-[clamp(2rem,1.2rem+2.6vw,3.5rem)] leading-[1.05] font-medium tracking-[-0.025em]">
-			{t('pageNotFound')}
-		</h1>
-		<p class="text-muted mt-4 text-[clamp(1rem,0.92rem+0.28vw,1.1875rem)]">
-			{t('pageNotFoundText')}
+<ErrorPage lang={lang} code="404" title={t('pageNotFound')}>
+	{path && (
+		<p slot="meta" class="text-subtle mt-5 font-mono text-sm break-all">
+			{path}
 		</p>
-		<a href={`/${lang}`} class="ulink text-text mt-8 inline-block">
+	)}
+	<p class="text-muted mt-4 max-w-[46ch] text-[clamp(1rem,0.92rem+0.28vw,1.1875rem)] text-pretty">
+		{lead}
+	</p>
+	{suggestions.length > 0 && (
+		<section class="mt-8 flex flex-col gap-2" data-suggestions>
+			<h2 class="label">{t('notFoundGuess')}</h2>
+			<ul class="flex flex-col gap-1.5">
+				{suggestions.map((page) => (
+					<li>
+						<a
+							href={page.path}
+							class="group bg-surface hover:bg-hover flex items-center gap-4 rounded-[var(--radius-control)] px-4 py-2.5 transition-colors"
+						>
+							<span class="text-subtle w-20 shrink-0 font-mono text-xs lowercase">
+								{kindLabel(page.kind)}
+							</span>
+							<span class="text-fg min-w-0 flex-1 truncate">{page.title}</span>
+							<span class="text-subtle hidden font-mono text-xs sm:inline">{page.path}</span>
+							<ArrowRight
+								data-motion="arrow"
+								class="text-subtle group-hover:text-accent size-3.5 shrink-0 transition-colors"
+							/>
+						</a>
+					</li>
+				))}
+			</ul>
+		</section>
+	)}
+	<div class="mt-6 flex flex-wrap gap-2">
+		{search && (
+			<a href={search} class="chip hover:text-fg">
+				{t('notFoundSearch').replace('{q}', query)}
+			</a>
+		)}
+		{ask && (
+			<a href={ask} class="chip hover:text-fg">
+				{t('notFoundAsk')}
+			</a>
+		)}
+		<a href={`/${lang}`} class="chip hover:text-fg">
 			{t('backHome')}
 		</a>
-	</Page>
-</Workspace>
+	</div>
+</ErrorPage>
