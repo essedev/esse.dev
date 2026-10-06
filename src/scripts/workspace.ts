@@ -13,6 +13,8 @@
  * - on mobile the list is a drawer that slides in from the left over the pane.
  */
 
+import { track } from './track';
+
 const reduceMotion = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const isMac = /Mac|iPhone|iPad/.test(navigator.platform);
 const workspace = document.querySelector<HTMLElement>('[data-workspace]');
@@ -289,6 +291,14 @@ document.addEventListener('click', (event) => {
 	event.preventDefault();
 	const text = button.dataset.copy === 'url' ? location.href : (button.dataset.copy ?? '');
 	copy(text, button.dataset.copyMessage ?? '', button);
+	track('copy', { what: button.dataset.copy === 'url' ? 'link' : 'command' });
+});
+
+// Links that leave the site: only the destination host, the path stays out.
+document.addEventListener('click', (event) => {
+	const link = (event.target as HTMLElement).closest<HTMLAnchorElement>('a[href]');
+	if (!link || link.host === location.host || !link.protocol.startsWith('http')) return;
+	track('outbound', { host: link.host });
 });
 
 // Global keyboard.

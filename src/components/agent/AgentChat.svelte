@@ -18,6 +18,7 @@
 	} from '../../agent/protocol';
 	import type { Triage } from '../../agent/triage';
 	import { EMPTY_VIEW, reduceEvents, type PiSessionView } from '../../agent/view';
+	import { track } from '../../scripts/track';
 
 	/**
 	 * The agent's transcript: a WebSocket to the visitor's Durable Object, pi's events folded
@@ -163,6 +164,7 @@
 					break;
 				case 'notice':
 					locals = [...locals, { text: message.text, reason: message.reason, after: shown.length }];
+					track('agent-notice', { reason: message.reason });
 					break;
 				case 'drafts':
 					drafts = {
@@ -171,6 +173,8 @@
 					};
 					break;
 				case 'draft':
+					if (message.status === 'sent') track('draft-sent');
+					if (message.status === 'error') track('draft-error');
 					drafts = {
 						...drafts,
 						[message.draftId]: { status: message.status, message: message.message }
@@ -181,6 +185,7 @@
 					break;
 				case 'error':
 					view = { ...view, error: message.message };
+					track('agent-error');
 					break;
 			}
 		});
@@ -243,6 +248,7 @@
 		sent = true;
 		following = true;
 		send({ type: 'submit', input: text, whenBusy: 'followUp' });
+		track('agent-message', { source: 'typed' });
 		input = '';
 	}
 
@@ -265,6 +271,7 @@
 		if (!lastUserText || status !== 'open') return;
 		view = { ...view, error: null };
 		send({ type: 'submit', input: lastUserText, whenBusy: 'followUp' });
+		track('agent-retry');
 	}
 
 	function ask(text: string) {
@@ -272,6 +279,7 @@
 		sent = true;
 		following = true;
 		send({ type: 'submit', input: text, whenBusy: 'followUp' });
+		track('agent-message', { source: 'suggestion' });
 	}
 
 	// The empty state disappears on the first send, without waiting for the server to confirm.
@@ -304,6 +312,7 @@
 
 	function reset() {
 		send({ type: 'reset' });
+		track('agent-reset');
 		sent = false;
 		triages = {};
 		locals = [];
