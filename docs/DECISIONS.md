@@ -219,7 +219,7 @@ attempt (many items of a few commits instead of a family).
 
 ## #21 - In a public repo, a reserved project is deleted, not unpublished
 
-**Status:** active (Cycle 22)
+**Status:** active (Cycle 23)
 
 The repo is public and the agent reads its docs, so `published: false` hides a project
 from the site but not from anyone reading the files. A project that must not be named
@@ -231,7 +231,7 @@ is already public and cloned, a rewrite removes nothing).
 
 ## #22 - Every project page opens with a cover, and every project has a logo
 
-**Status:** active (Cycle 22)
+**Status:** active (Cycle 23)
 
 The page opens with a 21:9 cover (16:9 on mobile) and the logo rises over its bottom edge,
 from concept F, variant B. The cover is a real screenshot from demo data, a designed mockup
@@ -242,6 +242,19 @@ corner so the status stays. Files sit in the project's folder and go through `im
 wrong path fails the build. A logo is content, not a UI icon, so it does not break "icons
 only Lucide". No text in a cover: the name, tagline and command drawn into a mockup repeated
 the heading and excerpt below it and stayed in English on the Italian pages, so a designed
-cover is a single centered panel. Rejected: logos of the technologies (a wall of badges, colors against the
-lavender), the cover only where a screenshot exists (half the pages would open bare),
-screenshots in the side column (variant C, the page loses its opening).
+cover is a single centered panel. Rejected: logos of the technologies (a wall of badges,
+colors against the lavender), the cover only where a screenshot exists (half the pages would
+open bare), screenshots in the side column (variant C, the page loses its opening).
+
+## #23 - Agent conversations expire after 90 days, the privacy notice names categories
+
+**Status:** active (Cycle 24)
+
+A visitor's conversation is kept 90 days from the last message (`RETENTION_DAYS` in
+`src/agent/retention.ts`), then a Lifecycle job empties the whole object: transcript, drafts,
+spend. "Nuova conversazione" restarts the context and does not delete. The privacy notice
+states the same number: changing one means changing the other. The notice names categories
+(an AI model, providers in the United States, a server in the EU), not the model, the
+providers, the server's location or the storage keys, which change with the code and would
+make the page go stale silently. Umami is cookieless, so no consent banner. Rejected: the
+notice listing those details.

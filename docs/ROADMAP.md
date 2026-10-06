@@ -2,47 +2,19 @@
 
 Current state of the project. Real milestones, not a wishlist. Updated together with the code.
 
-Last update: 2026-10-05 (Cycle 22: icons in motion, content, agent in dev)
+Last update: 2026-10-06 (Cycle 24: analytics, privacy notice, conversations that expire)
 
 ## Context
 
-The Astro site (M14 onwards) is on `main`, which replaced the SvelteKit site (M1-M10,
-history in `docs/CYCLES.md`). The "Laboratorio" restyle (M11) is paused: its motifs are in
-`docs/archive/RESTYLE.md`, and its branches (`restyle/laboratory`, `restyle/base`) and the
-`astro` working branch were retired when `astro` reached `main`. Their full history is kept
-in a git bundle outside the repo; the discarded pixel-art PNGs were dropped from the history
-that reached `main`.
+The Astro site is on `main` and in production, and replaced the SvelteKit site (M1-M10,
+history in `docs/CYCLES.md`). Closed: M14, the migration to Astro (Cycle 11, DECISIONS
+#10), and M15, structure and style (Cycles 12-20, DECISIONS #15, #16, #19). The
+"Laboratorio" restyle (M11) is paused: its motifs are in `docs/archive/RESTYLE.md`, and its
+branches (`restyle/laboratory`, `restyle/base`) and the `astro` working branch were retired
+when `astro` reached `main`. Their full history is kept in a git bundle outside the repo;
+the discarded pixel-art PNGs were dropped from the history that reached `main`.
 
 ## Milestones
-
-### M14 - Migration to Astro - Done
-
-Site rebuilt in Astro with a neutral starting look (Simone's choice: a canvas to start
-from instead of parity with the base look). Log in `docs/CYCLES.md` (Cycle 11), choices
-in `docs/DECISIONS.md` #10. Gate green: lint, check, build, unit, E2E.
-
-- To go online: check in the Cloudflare Workers Builds settings that the build command
-  is `pnpm build`, the deploy `npx wrangler deploy` and Node at least 22.12; upload the
-  secret `OPENROUTER_API_KEY` (`wrangler secret put`), without which the agent does not
-  answer, and `GITHUB_TOKEN` (fine-grained, read-only on public repos), without which the
-  code tools get 60 requests an hour per shared IP; for `draft_message`: Email Routing
-  active on `esse.dev` with the destination address verified, the secrets `MAIL_TO` and
-  `TURNSTILE_SECRET` and the build variable `PUBLIC_TURNSTILE_SITE_KEY` of a real
-  Turnstile widget (without it, the test key that always passes applies); then merge to
-  `main` with squash (see Open) and push.
-
-### M15 - Structure and style - Done
-
-Chosen structure: the site as a workspace (concept A, Cycle 12), ported to Astro. Done:
-two columns as tall as the window (list and pane with toolbar), the level above in the
-toolbar and not in the content, the pager at the bottom of the pane with h/l, the list in
-order of importance with only the project showcase. Style from concept B (Cycle 17, per
-DECISIONS #15): lavender and green for live states, Departure Mono, CRT veil, window with
-two cards on a wide screen; slimmer home with the agent first. On mobile the window with
-the pane and the list in a drawer (Cycle 18), finishing touches closed in Cycle 19. The
-glass window on a colored background (Cycle 19, per DECISIONS #16). OG in the terminal
-style and favicon with the logo cursor, from concept D (Cycle 20, per DECISIONS #19).
-Closed by Simone in Cycle 20; the height of the list is among the Open items.
 
 ### M16 - Projects - In progress
 
@@ -56,8 +28,8 @@ Principles, voice and sorting in `docs/features/progetti.md`.
 - Done (Cycle 21): first drafts of the new entries from the repo analysis.
 - To do: rereading the entries with Simone. Facts (dates, activity, stack) come from the
   sources, the text is written by hand, including the "Why" box.
-- To do: a cover for every project from a component (color, Lucide icon or SVG, UI scene),
-  real screenshots where they exist. Tags cleaned up.
+- Done (Cycle 23): a cover and a logo for every published project (per DECISIONS #22).
+- To do: tags cleaned up.
 - To do: a skill that proposes the new or updated items from the repos; it proposes, it
   does not publish.
 
@@ -72,8 +44,7 @@ of the earlier idea (the site redesigned live by a model). Choices in
   OpenRouter, `search_site` and `read_page`, triage with Jev evaluated on a labeled set,
   limit in real cost per visitor and for the site, transcript with tokens and cost.
 - Done (Cycle 15): `list_projects`, `show_page` (card to open) and the tools on public
-  repos via the GitHub API (#13). The site repo is read from the `main` branch: until the
-  merge the agent sees the old site.
+  repos via the GitHub API (#13). The site repo is read from the `main` branch.
 - Done (Cycle 16): the demo tools, one per capability, with the limits in code: `render`
   (bars, tables, timelines), `run_code` (Code Mode in a Dynamic Worker), `delegate` (2-3
   pi-durable sub-agents), `draft_message` (a draft the visitor sends, after Turnstile).
@@ -82,6 +53,8 @@ of the earlier idea (the site redesigned live by a model). Choices in
   per-IP limits, burst of 10 messages a minute and 50 cents a day (#17); red team: 10
   attacks in Jev's set, passed live too. No allowlist of external links until
   conversations are shareable (#18).
+- Done (Cycle 24): conversations expire 90 days after the last message, stated in the
+  privacy notice (#23).
 - Read-only tools on already public data. No writes, no fetch of arbitrary URLs, no
   private repos, no memory between visits. The only effect outside the site is the
   `draft_message` email, and it goes out only from a visitor's click.
@@ -108,7 +81,8 @@ of the earlier idea (the site redesigned live by a model). Choices in
   from `simonesalerno.it` and `www.simonesalerno.it` to `https://esse.dev` with the path
   preserved. `essedev.it` is not renewed: no redirect to maintain.
 
-- Email `hello@esse.dev`: check that the mailbox receives before going online.
+- Email `hello@esse.dev`: check that the mailbox receives; the contacts and the privacy
+  notice point to it.
 
 ## Deploy state
 
