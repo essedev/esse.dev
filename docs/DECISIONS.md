@@ -258,3 +258,19 @@ states the same number: changing one means changing the other. The notice names 
 providers, the server's location or the storage keys, which change with the code and would
 make the page go stale silently. Umami is cookieless, so no consent banner. Rejected: the
 notice listing those details.
+
+## #24 - Agent states and error pages from concept G
+
+**Status:** active (Cycle 25)
+
+The agent page shows the phase of the work in a single status line under the answer, read
+from the state the client already has (`phaseOf` in `src/agent/phase.ts`): a new state is
+derived there, not added as a server event. The phase decodes from block glyphs (variant B);
+the streamed words glow in the accent and cool down. Errors are shown by kind in the
+visitor's language, the raw text only under "details", since pi's and the providers' wording
+is not a contract. The 404 and the 500 are one family, the number as a disturbed CRT signal:
+the 404 suggests the closest pages, the search and the agent; the 500 fills the digits with
+noise and shows only the request id. Everything stands still with `prefers-reduced-motion`,
+and no new blinking cursor. Rejected: a rotating quadrant (A) or an oscilloscope trace (C)
+for the phase, a terminal-style 404 (A), a 500 identical to the 404 (A) or losing vertical
+hold (C), a plainer 500 (too far from the 404).

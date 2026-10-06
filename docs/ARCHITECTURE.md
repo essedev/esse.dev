@@ -18,8 +18,12 @@ only receives what is not a file:
 - the root `/` (`src/pages/index.ts`), which picks the language from `Accept-Language`;
 - the catch-all `src/pages/[...path].astro`, which for a URL with the wrong language,
   route or slug makes a single redirect to the canonical one (`resolveRedirect` in
-  `src/lib/i18n.ts`) and otherwise answers 404 with the localized page;
+  `src/lib/i18n.ts`) and otherwise answers 404 with the localized page, which suggests
+  the pages closest to the wrong path (`src/lib/suggest.ts`), the list search and the agent;
 - `/agents/site-agent/*`, the agent's WebSocket (below).
+
+When a route on the Worker throws, Astro renders `src/pages/500.astro` (not prerendered):
+it logs the error with Cloudflare's `cf-ray` id and shows the visitor only that id.
 
 The Worker entry is `src/worker.ts`: it sends only `/agents/site-agent/*` to
 `routeAgentRequest` and everything else to the Astro handler, and it exports the two
@@ -243,6 +247,12 @@ sides.
   also contains attacks. Choices in `docs/DECISIONS.md` #12 and #17.
 - **Transcript:** Markdown passed through a sanitizing renderer (`markdown.ts`), reasoning
   collapsed, Jev's verdict, tokens, cost and remaining budget for every answer.
+- **States:** a status line under the answer shows the phase of the work (Jev, thinking,
+  reasoning, the tool at work, writing, retry with countdown), derived in the browser by
+  `phaseOf` (`phase.ts`) from the session view and the message waiting for Jev, with no
+  extra server events. Errors go through `errorKind` and show by kind in the visitor's
+  language, the raw text under "details"; a resumed conversation and a dropped connection
+  have their own state. The streamed text glows and cools (`phosphor.ts`). Choices in #24.
 - **Retention:** a conversation expires 90 days after the last message (`retention.ts`,
   #23). Every settled turn moves the `expire` job of the object's Lifecycle queue; when it
   runs, it disables the alarms, deletes the storage and resets the instance. "New
@@ -255,8 +265,8 @@ The Worker code has its own `tsconfig.worker.json`: the Cloudflare runtime types
 
 Thin pages -> `src/lib/content.ts` (data) -> collection schemas (validation) ->
 components (UI). The pure logic (i18n, SEO, list filters, reading metrics, showcase,
-related items, OG layout) is in `src/lib/` modules with no Astro dependency, testable
-with vitest in Node. The same for the agent: the pure logic (budget, triage, site index,
-transcript) lives in `src/agent/` modules separate from the Durable Object. The Svelte
-islands receive already serialized data (`ListItem` in `src/lib/listing.ts`) and do not
-read content.
+related items, OG layout, 404 suggestions) is in `src/lib/` modules with no Astro
+dependency, testable with vitest in Node. The same for the agent: the pure logic (budget,
+triage, site index, transcript, phase of the work) lives in `src/agent/` modules separate
+from the Durable Object. The Svelte islands receive already serialized data (`ListItem` in
+`src/lib/listing.ts`) and do not read content.

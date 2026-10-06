@@ -1,0 +1,903 @@
+<!doctype html>
+<html lang="it">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Concept G - Stati</title>
+		<!--
+			Concept G: gli stati dell'agente e le pagine d'errore.
+			Oggi: un solo stato d'attesa ("ci sto pensando", solo prima del primo token), errori crudi
+			in inglese dal server o dal provider, nessun segno di riconnessione o di conversazione in
+			caricamento; la 404 è testo statico; la 500 non esiste (Astro usa src/pages/500.astro).
+
+			1  Al lavoro: un indicatore unico che dice la fase vera, presa dallo stato che il client
+			   ha già: triage di Jev in attesa, run senza messaggio (pensa), ultima parte thinking
+			   (ragiona), view.tools (il tool in corso, con l'etichetta della UI), testo in arrivo
+			   (scrive). Più i secondi e i token. Si sceglie la forma:
+			   A  quadrante: quattro punti, uno acceso che gira, e la fase.
+			   B  decodifica: la fase cambia passando per glifi a blocchi, poi si legge.
+			   C  traccia: una piccola onda da oscilloscopio, una forma per fase (il segno di Adesso).
+			   Fosforo, a parte: le parole appena arrivate nascono lavanda e si raffreddano.
+			2  Attese di contorno: conversazione in caricamento, riprova con conto alla rovescia
+			   (view.retry.at), connessione persa e ripresa.
+			3  Errori dell'agente: in italiano per categoria, il testo crudo in "dettagli".
+			4  404: A terminale, B segnale disturbato. In entrambe "forse cercavi" (distanza tra il
+			   path e rotte e slug, calcolata sul Worker in [...path].astro), cerca nella lista
+			   (?q= con le parole del path) e chiedi all'agente (?ask=).
+			5  500: della stessa famiglia della 404 B (giro 2). Il numero, la sbavatura e la
+			   struttura sono gli stessi; cambia il disturbo, che dice di chi è il guasto. Sotto il
+			   numero il codice della richiesta (cf-ray) da copiare, al posto del path.
+			   A  gemella: identica alla 404, cambiano solo numero e testo.
+			   B  rumore nelle cifre: dopo la sbavatura le cifre restano riempite di neve che scorre.
+			   C  tenuta verticale: ogni tanto il numero perde il quadro e scivola, come un televisore.
+
+			Giro 2: scelte 1B con fosforo, 2B (le attese con l'indicatore della 1), 4B. La 3 senza
+			obiezioni. La 500 rifatta: la prima versione (sobria o con un riquadro di rumore) era
+			troppo lontana dalla 404 B.
+
+			Vincoli rispettati: nessun cursore che lampeggia (resta solo quello del logo), nessuna
+			barra di stato a lato, verde solo per vivo e riuscito, tutto fermo con
+			prefers-reduced-motion (qui anche col bottone "movimento").
+		-->
+		<style>
+			@font-face { font-family: 'Geist'; font-weight: 400; src: url(https://cdn.jsdelivr.net/fontsource/fonts/geist@latest/latin-400-normal.woff2) format('woff2'); }
+			@font-face { font-family: 'Geist'; font-weight: 500; src: url(https://cdn.jsdelivr.net/fontsource/fonts/geist@latest/latin-500-normal.woff2) format('woff2'); }
+			@font-face { font-family: 'Geist Mono'; src: url(https://cdn.jsdelivr.net/fontsource/fonts/geist-mono@latest/latin-400-normal.woff2) format('woff2'); }
+			@font-face { font-family: 'Departure Mono'; src: url(https://cdn.jsdelivr.net/gh/rektdeckard/departure-mono@main/public/assets/DepartureMono-Regular.woff2) format('woff2'); }
+
+			:root {
+				--desk: #050507;
+				--pane: #0f0e15;
+				--surface: rgb(255 255 255 / 0.05);
+				--surface-60: rgb(255 255 255 / 0.03);
+				--hover: rgb(255 255 255 / 0.08);
+				--line: #23232b;
+				--fg: #efedf5;
+				--text: #cbc9d4;
+				--muted: #9c9aa8;
+				--subtle: #908e9b;
+				--accent: #b59cff;
+				--live: #7dff9b;
+				--danger: #f2857a;
+				--archived: #4d4d58;
+				--sans: 'Geist', ui-sans-serif, system-ui, sans-serif;
+				--mono: 'Departure Mono', ui-monospace, monospace;
+				--code: 'Geist Mono', ui-monospace, monospace;
+				--ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+				--title-glow: 0 0 3.5px rgb(181 156 255 / 0.55), 0 0 0.9px rgb(181 156 255 / 0.35);
+				color-scheme: dark;
+			}
+
+			* { box-sizing: border-box; }
+			html, body { margin: 0; }
+			body {
+				min-height: 100vh;
+				background:
+					radial-gradient(22% 26% at 14% 6%, rgb(181 156 255 / 0.16), transparent),
+					linear-gradient(135deg, rgb(110 80 255 / 0.1), transparent 60%),
+					var(--desk);
+				color: var(--text);
+				font-family: var(--sans);
+				-webkit-font-smoothing: antialiased;
+				overscroll-behavior: none;
+			}
+			button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; padding: 0; }
+			a { color: inherit; }
+
+			.top {
+				position: sticky; top: 0; z-index: 5;
+				display: flex; flex-wrap: wrap; align-items: center; gap: 12px 24px;
+				padding: 14px 24px;
+				background: rgb(5 5 7 / 0.8); backdrop-filter: blur(12px);
+				border-bottom: 1px solid var(--line);
+				font-family: var(--mono); font-size: 12px;
+			}
+			.top h1 { margin: 0; font-size: 13px; font-weight: 400; color: var(--fg); text-shadow: var(--title-glow); }
+			.top .hint { color: var(--subtle); }
+			.top .spacer { flex: 1; }
+			.toggle { display: inline-flex; align-items: center; gap: 8px; height: 28px; padding: 0 10px; border-radius: 6px; background: var(--surface); color: var(--muted); }
+			.toggle[aria-pressed='true'] { color: var(--live); }
+
+			main { display: flex; flex-direction: column; gap: 24px; padding: 24px; max-width: 1180px; margin: 0 auto; }
+			.card { display: flex; flex-direction: column; gap: 16px; padding: 20px; border-radius: 11px; background: rgb(15 14 21 / 0.85); border: 1px solid var(--line); }
+			.card > header { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; }
+			.card h2 { margin: 0; font-size: 15px; font-weight: 500; color: var(--fg); }
+			.card .num { font-family: var(--mono); font-size: 12px; color: var(--accent); }
+			.card .note { flex-basis: 100%; margin: 0; font-size: 13px; line-height: 1.5; color: var(--muted); }
+			.pick { display: flex; gap: 2px; margin-left: auto; }
+			.pick button { height: 26px; min-width: 26px; padding: 0 8px; border-radius: 4px; font-family: var(--mono); font-size: 11px; color: var(--subtle); }
+			.pick button:hover { background: var(--surface-60); color: var(--fg); }
+			.pick button[aria-pressed='true'] { background: var(--surface); color: var(--accent); }
+			.variant-note { margin: 0; font-size: 12.5px; color: var(--muted); }
+			.variant-note b { font-family: var(--mono); font-weight: 400; color: var(--accent); margin-right: 6px; }
+
+			.split { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; }
+
+			/* Il pannello finto: lo stesso vetro del sito, con lo spazio della trascrizione. */
+			.pane {
+				position: relative;
+				display: flex; flex-direction: column; gap: 20px;
+				min-height: 380px; padding: 24px 28px 16px;
+				border-radius: 10px;
+				background: rgb(18 16 28 / 0.55);
+				border: 1px solid rgb(255 255 255 / 0.08);
+				overflow: hidden;
+			}
+			.pane.short { min-height: 0; }
+			.pane-head { display: flex; align-items: center; gap: 10px; font-family: var(--mono); font-size: 11px; color: var(--subtle); }
+			.pane-head .spacer { flex: 1; }
+			.chip { text-decoration: none; display: inline-flex; align-items: center; gap: 6px; height: 26px; padding: 0 10px; border-radius: 6px; background: var(--surface); font-family: var(--mono); font-size: 11.5px; color: var(--muted); transition: color 150ms, background-color 150ms; }
+			.chip:hover { color: var(--fg); background: var(--hover); }
+			.label { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--subtle); text-shadow: var(--title-glow); }
+
+			.transcript { display: flex; flex-direction: column; gap: 18px; flex: 1; }
+			.user { display: flex; gap: 12px; font-family: var(--mono); font-size: 14px; color: var(--fg); }
+			.user .p { color: var(--accent); filter: drop-shadow(0 0 2.5px var(--accent)); }
+			.verdict { margin: 4px 0 0 24px; font-family: var(--mono); font-size: 11px; color: var(--subtle); }
+			.answer { display: flex; flex-direction: column; gap: 10px; padding-left: 24px; }
+			.answer .prose { font-size: 16px; line-height: 1.65; color: var(--text); text-wrap: pretty; }
+			.answer .prose strong { color: var(--fg); font-weight: 500; }
+			.usage { font-family: var(--mono); font-size: 11px; color: var(--subtle); }
+
+			.tool { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: 6px; background: var(--surface-60); font-family: var(--mono); font-size: 12px; color: var(--muted); }
+			.tool .name { color: var(--fg); }
+			.tool .args { flex: 1; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+			.tool .time { color: var(--subtle); font-variant-numeric: tabular-nums; }
+
+			.led { position: relative; display: inline-block; flex: none; width: 7px; height: 7px; border-radius: 999px; background: var(--archived); }
+			.led[data-s='run'] { background: var(--live); box-shadow: 0 0 5px rgb(125 255 155 / 0.75); animation: breathe 2.8s var(--ease-out) infinite; }
+			.led[data-s='done'] { background: var(--fg); }
+			.led[data-s='off'] { background: transparent; box-shadow: inset 0 0 0 1.5px var(--muted); }
+			.led[data-s='err'] { background: var(--archived); }
+			@keyframes breathe { 50% { opacity: 0.55; box-shadow: 0 0 2px rgb(125 255 155 / 0.7); } }
+
+			/* L'indicatore di fase. Sta sotto la risposta in corso per tutta la run. */
+			.status { display: flex; align-items: center; gap: 10px; min-height: 18px; font-family: var(--mono); font-size: 12px; color: var(--subtle); }
+			.status .phase { color: var(--text); }
+			.status .meta { font-variant-numeric: tabular-nums; }
+			.status[hidden] { display: none; }
+
+			/* A: quadrante. Quattro punti, uno acceso che gira in senso orario. */
+			.quad { display: grid; grid-template-columns: 3px 3px; gap: 2px; flex: none; }
+			.quad i { width: 3px; height: 3px; background: rgb(181 156 255 / 0.22); animation: quad 0.72s steps(1) infinite; }
+			.quad i:nth-child(1) { animation-delay: 0s; }
+			.quad i:nth-child(2) { animation-delay: 0.18s; }
+			.quad i:nth-child(4) { animation-delay: 0.36s; }
+			.quad i:nth-child(3) { animation-delay: 0.54s; }
+			@keyframes quad { 0%, 24.9% { background: var(--accent); box-shadow: 0 0 4px var(--accent); } 25%, 100% { background: rgb(181 156 255 / 0.22); box-shadow: none; } }
+			/* Per il triage di Jev il quadrante gira il doppio: è una decisione da 300 ms. */
+			.quad[data-fast] i { animation-duration: 0.36s; }
+			.quad[data-fast] i:nth-child(2) { animation-delay: 0.09s; }
+			.quad[data-fast] i:nth-child(4) { animation-delay: 0.18s; }
+			.quad[data-fast] i:nth-child(3) { animation-delay: 0.27s; }
+
+			/* C: traccia. */
+			.scope { display: block; width: 44px; height: 14px; flex: none; }
+
+			/* Fosforo: la parola nasce lavanda e luminosa e si raffredda al colore del testo. */
+			.ph { animation: phosphor 1.1s var(--ease-out) both; }
+			@keyframes phosphor {
+				from { color: var(--accent); text-shadow: 0 0 6px rgb(181 156 255 / 0.9); }
+				to { color: inherit; text-shadow: none; }
+			}
+
+			/* Caricamento della conversazione: A blocchi che respirano. */
+			.skel { display: flex; flex-direction: column; gap: 10px; }
+			.skel i { display: block; height: 12px; border-radius: 3px; background: var(--surface); animation: veil 1.8s ease-in-out infinite; }
+			.skel i:nth-child(2) { animation-delay: 0.15s; }
+			.skel i:nth-child(3) { animation-delay: 0.3s; }
+			@keyframes veil { 50% { background: rgb(255 255 255 / 0.09); } }
+
+			/* Il campo in fondo, come nel sito. */
+			.field { margin-top: auto; padding: 12px 12px 10px; border-radius: 10px; background: rgb(14 14 18 / 0.6); border: 1px solid rgb(255 255 255 / 0.06); }
+			.field .row { display: flex; align-items: center; gap: 12px; }
+			.field .p { font-family: var(--mono); font-size: 14px; color: var(--accent); filter: drop-shadow(0 0 2.5px var(--accent)); }
+			.field .ph-text { flex: 1; font-family: var(--mono); font-size: 14px; color: var(--subtle); }
+			.field .foot { display: flex; align-items: center; gap: 8px; margin-top: 8px; padding: 0 4px; font-family: var(--mono); font-size: 11px; color: var(--subtle); }
+			.field .foot .ok { color: var(--live); }
+			.field[data-off] .row { opacity: 0.5; }
+
+			/* Errori. */
+			.err { display: flex; flex-direction: column; gap: 8px; padding-left: 24px; }
+			.err .msg { margin: 0; font-size: 15px; color: var(--text); }
+			.err .msg .d { color: var(--danger); font-family: var(--mono); font-size: 12px; margin-right: 8px; }
+			.err .actions { display: flex; align-items: center; gap: 8px; }
+			.err details summary { cursor: pointer; font-family: var(--mono); font-size: 11px; color: var(--subtle); list-style: none; }
+			.err details summary:hover { color: var(--fg); }
+			.err pre { margin: 8px 0 0; padding: 8px 10px; border-radius: 6px; background: var(--surface-60); font-family: var(--code); font-size: 11.5px; color: var(--muted); white-space: pre-wrap; }
+			.before { font-family: var(--mono); font-size: 12px; color: var(--danger); padding-left: 24px; }
+			.tag { font-family: var(--mono); font-size: 11px; color: var(--subtle); }
+
+			/* 404 e 500. */
+			.page { display: flex; flex-direction: column; gap: 0; padding: 40px 36px; min-height: 460px; }
+			.page .code { font-family: var(--mono); font-size: 13px; color: var(--subtle); }
+			.page h3 { margin: 22px 0 0; font-size: clamp(2rem, 1.2rem + 2.6vw, 3.1rem); line-height: 1.05; font-weight: 500; letter-spacing: -0.025em; color: var(--fg); text-shadow: var(--title-glow); }
+			.page .lead { margin: 14px 0 0; font-size: 17px; color: var(--muted); max-width: 46ch; }
+			.term { margin: 0; font-family: var(--mono); font-size: 13px; line-height: 1.9; color: var(--muted); }
+			.term .p { color: var(--accent); filter: drop-shadow(0 0 2.5px var(--accent)); margin-right: 10px; }
+			.term .path { color: var(--fg); }
+			.term .bad { color: var(--danger); }
+			.guess { display: flex; flex-direction: column; gap: 6px; margin-top: 28px; }
+			.guess a { display: flex; align-items: center; gap: 12px; padding: 10px 14px; border-radius: 6px; background: var(--surface); text-decoration: none; transition: background-color 150ms; }
+			.guess a:hover { background: var(--hover); }
+			.guess .k { font-family: var(--mono); font-size: 11px; color: var(--subtle); min-width: 64px; }
+			.guess .t { color: var(--fg); flex: 1; }
+			.guess .u { font-family: var(--mono); font-size: 11px; color: var(--subtle); }
+			.page .acts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+			.paths { display: flex; flex-wrap: wrap; gap: 6px; }
+			.paths button { height: 24px; padding: 0 8px; border-radius: 4px; font-family: var(--mono); font-size: 11px; color: var(--subtle); }
+			.paths button[aria-pressed='true'] { background: var(--surface); color: var(--fg); }
+
+			/* 404 B: il numero con il segnale disturbato, una volta all'arrivo e poi di rado. */
+			.glitch { position: relative; display: inline-block; font-family: var(--mono); font-size: clamp(4.5rem, 3rem + 6vw, 8rem); line-height: 1; color: var(--fg); text-shadow: 0 0 10px rgb(181 156 255 / 0.55); }
+			.glitch::before, .glitch::after { content: attr(data-text); position: absolute; inset: 0; opacity: 0; }
+			.glitch::before { color: #ff5c7a; mix-blend-mode: screen; }
+			.glitch::after { color: #5cf2ff; mix-blend-mode: screen; }
+			.motion .glitch.go::before { animation: slice-a 0.7s steps(1) both; }
+			.motion .glitch.go::after { animation: slice-b 0.7s steps(1) both; }
+			.motion .glitch.go { animation: jitter 0.7s steps(1) both; }
+			@keyframes slice-a {
+				0% { opacity: 0.8; clip-path: inset(10% 0 70% 0); transform: translate(-4px, 0); }
+				20% { clip-path: inset(55% 0 20% 0); transform: translate(3px, 0); }
+				40% { clip-path: inset(30% 0 50% 0); transform: translate(-2px, 0); }
+				60% { clip-path: inset(80% 0 5% 0); transform: translate(5px, 0); }
+				80% { clip-path: inset(0 0 85% 0); transform: translate(-1px, 0); }
+				100% { opacity: 0; }
+			}
+			@keyframes slice-b {
+				0% { opacity: 0.8; clip-path: inset(60% 0 15% 0); transform: translate(4px, 0); }
+				25% { clip-path: inset(5% 0 75% 0); transform: translate(-3px, 0); }
+				50% { clip-path: inset(40% 0 40% 0); transform: translate(2px, 0); }
+				75% { clip-path: inset(85% 0 2% 0); transform: translate(-4px, 0); }
+				100% { opacity: 0; }
+			}
+			@keyframes jitter { 0%, 100% { transform: none; } 15% { transform: translateX(1px); } 45% { transform: translateX(-2px) skewX(-4deg); } 70% { transform: translateX(1px); } }
+
+			/* 500 B: rumore di un segnale assente, in un riquadro. */
+			/* 500 B: neve dentro le cifre. Il riempimento è una tessera di rumore che scorre a scatti;
+			   il bagliore passa a drop-shadow, che con background-clip: text funziona. */
+			.glitch.snow { color: transparent; background-image: var(--snow); background-size: 96px 96px; -webkit-background-clip: text; background-clip: text; text-shadow: none; filter: drop-shadow(0 0 6px rgb(181 156 255 / 0.55)); }
+			.glitch.snow::before, .glitch.snow::after { background: none; }
+			.motion .glitch.snow { animation: snow 0.6s steps(6) infinite; }
+			.motion .glitch.snow.go { animation: snow 0.6s steps(6) infinite, jitter 0.7s steps(1) both; }
+			@keyframes snow { to { background-position: 96px 192px; } }
+			/* 500 C: il quadro che scivola. */
+			.vhold { display: inline-block; overflow: hidden; }
+			.motion .vhold.roll .glitch { animation: roll 0.9s steps(1) both; }
+			@keyframes roll {
+				0% { transform: translateY(0); }
+				10% { transform: translateY(-38%); }
+				20% { transform: translateY(54%); }
+				30% { transform: translateY(-16%); }
+				40% { transform: translateY(22%); }
+				52% { transform: translateY(-5%); }
+				64%, 100% { transform: translateY(0); }
+			}
+			.ray { display: flex; align-items: center; gap: 8px; margin-top: 18px; font-family: var(--mono); font-size: 11px; color: var(--subtle); }
+			.ray code { font-family: var(--mono); color: var(--muted); }
+
+			/* Senza movimento: tutto fermo nello stato leggibile. */
+			body:not(.motion) .quad i { animation: none; }
+			body:not(.motion) .quad i:first-child { background: var(--accent); }
+			body:not(.motion) .ph { animation: none; }
+			body:not(.motion) .skel i { animation: none; }
+			body:not(.motion) .led { animation: none; }
+
+			.visually-hidden { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+		</style>
+	</head>
+	<body class="motion">
+		<div class="top">
+			<h1>Concept G · stati</h1>
+			<span class="hint">agente al lavoro, attese, errori, 404, 500</span>
+			<span class="spacer"></span>
+			<button class="toggle" id="motion" aria-pressed="true">movimento</button>
+		</div>
+
+		<main>
+			<!-- 1. Al lavoro -->
+			<section class="card" id="work">
+				<header>
+					<span class="num">1</span>
+					<h2>Al lavoro</h2>
+					<div class="pick" data-group="work">
+						<button aria-pressed="false" data-v="a">A</button>
+						<button aria-pressed="true" data-v="b">B</button>
+						<button aria-pressed="false" data-v="c">C</button>
+					</div>
+					<p class="note">
+						Una run simulata con i tempi veri: triage di Jev, ragionamento, due tool, risposta in streaming. L'indicatore resta sotto la risposta per tutta la run e dice la fase che il client conosce già. Oggi c'è solo "ci sto pensando", e sparisce al primo token.
+					</p>
+				</header>
+				<p class="variant-note" id="work-note"></p>
+				<div class="split">
+					<div class="pane">
+						<div class="pane-head">
+							<span>agente</span><span class="spacer"></span>
+							<button class="chip" id="phos" aria-pressed="true">fosforo: sì</button>
+							<button class="chip" id="replay">riproduci</button>
+						</div>
+						<div class="transcript" id="run"></div>
+					</div>
+				</div>
+			</section>
+
+			<!-- 2. Attese di contorno -->
+			<section class="card">
+				<header>
+					<span class="num">2</span>
+					<h2>Attese di contorno</h2>
+					<div class="pick" data-group="load">
+						<button aria-pressed="false" data-v="a">A</button>
+						<button aria-pressed="true" data-v="b">B</button>
+					</div>
+					<p class="note">
+						Tre momenti che oggi non si vedono. Riprendere una conversazione già aperta (il titolo sparisce subito, la trascrizione arriva dopo: un pannello vuoto). Il provider che non risponde e pi che riprova (oggi una riga con l'errore crudo). La connessione che cade e torna (oggi solo il segnaposto del campo cambia).
+					</p>
+				</header>
+				<p class="variant-note" id="load-note"></p>
+				<div class="split">
+					<div class="pane short">
+						<div class="pane-head"><span>riprendere la conversazione</span><span class="spacer"></span><button class="chip" data-replay="resume">riproduci</button></div>
+						<div class="transcript" id="resume"></div>
+					</div>
+					<div class="pane short">
+						<div class="pane-head"><span>il modello non risponde</span><span class="spacer"></span><button class="chip" data-replay="retry">riproduci</button></div>
+						<div class="transcript" id="retry"></div>
+					</div>
+					<div class="pane short">
+						<div class="pane-head"><span>connessione persa</span><span class="spacer"></span><button class="chip" data-replay="conn">riproduci</button></div>
+						<div class="transcript" id="conn"></div>
+					</div>
+				</div>
+			</section>
+
+			<!-- 3. Errori dell'agente -->
+			<section class="card">
+				<header>
+					<span class="num">3</span>
+					<h2>Errori dell'agente</h2>
+					<p class="note">
+						Oggi l'errore arriva com'è: dal provider, da pi o dal Durable Object, in inglese e in rosso. Proposta: una frase in italiano per categoria, che dice cosa è successo e cosa fare; il testo crudo resta, in "dettagli", per chi vuole vedere come lavora l'agente (è il punto della pagina). Il rosso solo sul codice, non sulla frase.
+					</p>
+				</header>
+				<div class="split">
+					<div class="pane short">
+						<div class="pane-head"><span>oggi</span></div>
+						<div class="transcript">
+							<div><p class="user"><span class="p">›</span><span>Mostrami il codice di Portsage</span></p></div>
+							<p class="before">Not answered: provider_error</p>
+							<p class="before">429 Provider returned error: upstream rate limited (openrouter)</p>
+							<p class="before">Malformed JSON</p>
+						</div>
+					</div>
+					<div class="pane short">
+						<div class="pane-head"><span>proposta</span><span class="spacer"></span>
+							<div class="paths" id="err-kinds">
+								<button aria-pressed="true" data-k="provider">provider</button>
+								<button aria-pressed="false" data-k="timeout">tempo</button>
+								<button aria-pressed="false" data-k="aborted">fermata</button>
+								<button aria-pressed="false" data-k="internal">interno</button>
+							</div>
+						</div>
+						<div class="transcript">
+							<div><p class="user"><span class="p">›</span><span>Mostrami il codice di Portsage</span></p></div>
+							<div class="err" id="err"></div>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<!-- 4. 404 -->
+			<section class="card">
+				<header>
+					<span class="num">4</span>
+					<h2>404</h2>
+					<div class="pick" data-group="nf">
+						<button aria-pressed="false" data-v="a">A</button>
+						<button aria-pressed="true" data-v="b">B</button>
+					</div>
+					<p class="note">
+						Oggi: titolo, una frase, "Torna alla home". [...path].astro gira già sul Worker e ha la mappa degli slug: lì si calcola la pagina più vicina al path sbagliato. Se non c'è niente di vicino restano la ricerca (con le parole del path) e l'agente.
+					</p>
+				</header>
+				<p class="variant-note" id="nf-note"></p>
+				<div class="paths" id="nf-paths">
+					<button aria-pressed="true" data-p="route">/it/progeti</button>
+					<button aria-pressed="false" data-p="slug">/it/progetti/portsag</button>
+					<button aria-pressed="false" data-p="none">/it/wp-admin/setup.php</button>
+				</div>
+				<div class="pane page" id="nf"></div>
+			</section>
+
+			<!-- 5. 500 -->
+			<section class="card">
+				<header>
+					<span class="num">5</span>
+					<h2>500</h2>
+					<div class="pick" data-group="se">
+						<button aria-pressed="false" data-v="a">A</button>
+						<button aria-pressed="true" data-v="b">B</button>
+						<button aria-pressed="false" data-v="c">C</button>
+					</div>
+					<p class="note">
+						Non esiste: oggi un errore nelle rotte del Worker (home con Accept-Language, redirect, 404 dinamica) dà la pagina di default. Giro 2: stessa famiglia della 404 B, cambia il disturbo. La 404 è un indirizzo sbagliato con il segnale che c'è: una sbavatura breve. La 500 è un guasto mio: il segnale non torna pulito. Sotto il numero il codice della richiesta al posto del path. Nessun dettaglio tecnico in pagina: quello va nei log.
+					</p>
+				</header>
+				<p class="variant-note" id="se-note"></p>
+				<div class="pane page" id="se"></div>
+			</section>
+		</main>
+
+		<script>
+			const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+			let motion = !reduced;
+			const body = document.body;
+			const motionBtn = document.getElementById('motion');
+			const setMotion = (on) => {
+				motion = on;
+				body.classList.toggle('motion', on);
+				motionBtn.setAttribute('aria-pressed', String(on));
+			};
+			setMotion(motion);
+			motionBtn.addEventListener('click', () => {
+				setMotion(!motion);
+				replayAll();
+			});
+
+			const choice = { work: 'b', load: 'b', nf: 'b', se: 'b' };
+			const notes = {
+				work: {
+					a: 'quadrante: quattro punti, uno acceso che gira (il doppio più veloce mentre decide Jev). Sobrio, si legge la fase.',
+					b: 'decodifica: a ogni cambio di fase la parola passa per glifi a blocchi e si compone. Più carattere, sempre leggibile in 350 ms.',
+					c: "traccia: un'onda da oscilloscopio, una forma per fase (spazzata, rumore, onda quadra, sinusoide). Riprende il segno di Adesso."
+				},
+				load: {
+					a: "blocchi: la conversazione in arrivo si vede come righe che respirano; riprova e connessione con l'indicatore di fase.",
+					b: "una riga: anche il caricamento usa l'indicatore di fase della 1, niente sagome. Un solo linguaggio per tutte le attese."
+				},
+				nf: {
+					a: 'terminale: il path come comando che fallisce, poi "forse cercavi". Coerente con il resto della UI.',
+					b: 'segnale disturbato: il 404 grande, con una sbavatura rosso-ciano all\'arrivo e poi ogni tanto. Stessi suggerimenti sotto.'
+				},
+				se: {
+					a: 'gemella: identica alla 404, sbavatura all\'arrivo e ogni 7 s. Si distingue solo dal numero e dal testo.',
+					b: 'rumore nelle cifre: sbavatura all\'arrivo, poi le cifre restano piene di neve che scorre. Ferme, la neve resta e non si muove.',
+					c: 'tenuta verticale: sbavatura all\'arrivo, poi ogni 5 s il numero perde il quadro e scivola su e giù per un attimo.'
+				}
+			};
+
+			for (const group of document.querySelectorAll('.pick')) {
+				group.addEventListener('click', (e) => {
+					const btn = e.target.closest('button');
+					if (!btn) return;
+					const key = group.dataset.group;
+					choice[key] = btn.dataset.v;
+					for (const b of group.querySelectorAll('button')) b.setAttribute('aria-pressed', String(b === btn));
+					renderNotes();
+					rerender[key]();
+				});
+			}
+			function renderNotes() {
+				for (const key of Object.keys(choice)) {
+					const el = document.getElementById(`${key}-note`);
+					if (el) el.innerHTML = `<b>${choice[key].toUpperCase()}</b>${notes[key][choice[key]]}`;
+				}
+			}
+
+			// Timer per ogni scena: rifare una scena cancella i suoi.
+			const timers = {};
+			function later(scene, ms, fn) {
+				(timers[scene] ??= []).push(setTimeout(fn, ms));
+			}
+			function every(scene, ms, fn) {
+				(timers[scene] ??= []).push(setInterval(fn, ms));
+			}
+			function clear(scene) {
+				for (const t of timers[scene] ?? []) { clearTimeout(t); clearInterval(t); }
+				timers[scene] = [];
+				for (const stop of stoppers[scene] ?? []) stop();
+				stoppers[scene] = [];
+			}
+			const stoppers = {};
+
+			const el = (html) => {
+				const t = document.createElement('template');
+				t.innerHTML = html.trim();
+				return t.content.firstElementChild;
+			};
+			const secs = (ms) => `${(ms / 1000).toLocaleString('it', { minimumFractionDigits: 1, maximumFractionDigits: 1 })} s`;
+			const tok = (n) => (n >= 1000 ? `${(n / 1000).toLocaleString('it', { maximumFractionDigits: 1 })}k` : String(n));
+
+			// L'indicatore di fase, nelle tre forme. `set(phase, label)` cambia fase, `meta(text)` i numeri.
+			const GLYPHS = '▖▗▘▝▚▞▙▛▜▟█▓▒░<>/\\|=+*#';
+			function indicator(scene, variant) {
+				const root = el(`<p class="status" role="status" aria-live="polite"><span class="mark"></span><span class="phase"></span><span class="meta"></span></p>`);
+				const mark = root.querySelector('.mark');
+				const phaseEl = root.querySelector('.phase');
+				const metaEl = root.querySelector('.meta');
+				let phase = '';
+				let scramble;
+
+				if (variant === 'a') {
+					mark.replaceWith((mark.el = el('<span class="quad" aria-hidden="true"><i></i><i></i><i></i><i></i></span>')));
+				}
+				let canvas, raf;
+				if (variant === 'c') {
+					canvas = el('<canvas class="scope" aria-hidden="true"></canvas>');
+					mark.replaceWith(canvas);
+					const dpr = devicePixelRatio || 1;
+					canvas.width = 44 * dpr;
+					canvas.height = 14 * dpr;
+					const ctx = canvas.getContext('2d');
+					ctx.scale(dpr, dpr);
+					const start = performance.now();
+					let seed = Array.from({ length: 64 }, () => Math.random());
+					let lastShuffle = 0;
+					const draw = (now) => {
+						const t = (now - start) / 1000;
+						ctx.clearRect(0, 0, 44, 14);
+						ctx.lineWidth = 1.25;
+						ctx.strokeStyle = '#b59cff';
+						ctx.shadowColor = '#b59cff';
+						ctx.shadowBlur = 4;
+						ctx.beginPath();
+						if (now - lastShuffle > 90) { seed = seed.map((s) => s * 0.4 + Math.random() * 0.6); lastShuffle = now; }
+						for (let x = 0; x <= 44; x += 1) {
+							let y = 7;
+							const tt = motion ? t : 0.3;
+							if (phase === 'triage') {
+								// Spazzata: un impulso che corre da sinistra a destra.
+								const head = ((tt * 2.6) % 1) * 54 - 5;
+								y = 7 - 5 * Math.exp(-((x - head) ** 2) / 6);
+							} else if (phase === 'think' || phase === 'reason') {
+								// Rumore morbido: pensa senza un ritmo.
+								const i = Math.floor(x / 44 * 15);
+								const f = (x / 44 * 15) % 1;
+								const a = seed[(i + Math.floor(tt * 11)) % 64] - 0.5;
+								const b = seed[(i + 1 + Math.floor(tt * 11)) % 64] - 0.5;
+								y = 7 + (a + (b - a) * (f * f * (3 - 2 * f))) * (phase === 'reason' ? 9 : 6);
+							} else if (phase === 'tool') {
+								// Onda quadra che scorre: una chiamata, un ritmo meccanico.
+								y = Math.sin((x / 44) * Math.PI * 4 - tt * 9) > 0 ? 3.5 : 10.5;
+							} else if (phase === 'write') {
+								y = 7 + Math.sin((x / 44) * Math.PI * 3 - tt * 7) * 4.2;
+							}
+							x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+						}
+						ctx.stroke();
+						raf = requestAnimationFrame(draw);
+					};
+					raf = requestAnimationFrame(draw);
+				}
+				(stoppers[scene] ??= []).push(() => { cancelAnimationFrame(raf); clearInterval(scramble); });
+
+				return {
+					root,
+					set(next, label) {
+						phase = next;
+						const quad = root.querySelector('.quad');
+						if (quad) quad.toggleAttribute('data-fast', next === 'triage');
+						if (variant === 'b' && motion) {
+							clearInterval(scramble);
+							const start = performance.now();
+							const dur = 350;
+							scramble = setInterval(() => {
+								const p = Math.min(1, (performance.now() - start) / dur);
+								const fixed = Math.floor(label.length * p);
+								phaseEl.textContent =
+									label.slice(0, fixed) +
+									Array.from(label.slice(fixed), (c) => (c === ' ' ? ' ' : GLYPHS[Math.floor(Math.random() * GLYPHS.length)])).join('');
+								if (p === 1) clearInterval(scramble);
+							}, 30);
+						} else {
+							phaseEl.textContent = label;
+						}
+					},
+					meta(text) { metaEl.textContent = text ? `· ${text}` : ''; },
+					hide() { root.hidden = true; clearInterval(scramble); cancelAnimationFrame(raf); }
+				};
+			}
+
+			// 1. La run simulata.
+			let phosphor = true;
+			const phosBtn = document.getElementById('phos');
+			phosBtn.addEventListener('click', () => {
+				phosphor = !phosphor;
+				phosBtn.textContent = `fosforo: ${phosphor ? 'sì' : 'no'}`;
+				phosBtn.setAttribute('aria-pressed', String(phosphor));
+				runWork();
+			});
+			document.getElementById('replay').addEventListener('click', () => runWork());
+
+			const ANSWER =
+				'Fanno due lavori diversi sullo stesso problema. **Portsage** assegna le porte ai progetti locali e sa quali sono occupate leggendo i processi in ascolto, così due dev server non si pestano. **Relay** invece è un ponte tra sessioni di coding agent: passa messaggi e contesto da una sessione all\'altra. Si incontrano quando più agent lavorano in parallelo: Portsage tiene libere le porte, Relay tiene allineate le sessioni.';
+
+			function runWork() {
+				clear('work');
+				const root = document.getElementById('run');
+				root.innerHTML = '';
+				const v = choice.work;
+				const t0 = performance.now();
+
+				root.append(el(`<div><p class="user"><span class="p">›</span><span>Che differenza c'è tra Relay e Portsage?</span></p></div>`));
+				const answer = el('<div class="answer"></div>');
+				root.append(answer);
+				const ind = indicator('work', v);
+				answer.append(ind.root);
+				ind.set('triage', 'jev valuta la domanda');
+
+				let tokens = 0;
+				every('work', 100, () => ind.meta(tokens ? `${secs(performance.now() - t0)} · ${tok(tokens)} token` : secs(performance.now() - t0)));
+
+				later('work', 320, () => {
+					root.firstElementChild.append(el(`<p class="verdict">jev · su Simone 0,97 · media · it · 312 ms</p>`));
+					ind.set('think', 'pensa');
+				});
+				later('work', 1100, () => ind.set('reason', 'ragiona'));
+
+				const tool = (at, name, args, label, dur) => {
+					later('work', at, () => {
+						const row = el(`<div class="tool"><span class="led" data-s="run"></span><span class="name">${name}</span><span class="args">${args}</span><span class="time"></span></div>`);
+						answer.insertBefore(row, ind.root);
+						ind.set('tool', label);
+						const start = performance.now();
+						const tick = setInterval(() => (row.querySelector('.time').textContent = secs(performance.now() - start)), 100);
+						(timers.work ??= []).push(tick);
+						later('work', dur, () => {
+							clearInterval(tick);
+							row.querySelector('.led').dataset.s = 'done';
+							row.querySelector('.time').textContent = secs(dur);
+							tokens += 380;
+						});
+					});
+				};
+				tool(2000, 'search_site', '{"query":"Relay Portsage"}', 'cerca tra progetti, scritti, metodo e adesso', 1300);
+				tool(3500, 'read_page', '{"path":"/it/progetti/portsage"}', 'legge una pagina intera del sito', 1100);
+
+				later('work', 4800, () => {
+					ind.set('write', 'scrive');
+					const prose = el('<div class="prose"></div>');
+					answer.insertBefore(prose, ind.root);
+					const words = ANSWER.split(/(\s+)/);
+					let i = 0;
+					let bold = false;
+					const step = () => {
+						if (i >= words.length) {
+							ind.hide();
+							answer.append(el(`<p class="usage">2,4k token · 3 crediti</p>`));
+							return;
+						}
+						// A blocchi di 1-3 parole, come arrivano i delta.
+						const n = 1 + Math.floor(Math.random() * 3) * 2;
+						const chunk = words.slice(i, i + n).join('');
+						i += n;
+						for (const part of chunk.split(/(\*\*)/)) {
+							if (part === '**') { bold = !bold; continue; }
+							if (!part) continue;
+							const span = document.createElement(bold ? 'strong' : 'span');
+							span.textContent = part;
+							if (phosphor && part.trim()) span.className = 'ph';
+							prose.append(span);
+						}
+						tokens += 9;
+						later('work', 40 + Math.random() * 60, step);
+					};
+					step();
+				});
+			}
+
+			// 2. Attese di contorno.
+			function runResume() {
+				clear('resume');
+				const root = document.getElementById('resume');
+				root.innerHTML = '';
+				if (choice.load === 'a') {
+					root.append(el(`<div class="skel" aria-label="carico la conversazione"><i style="width:55%"></i><i style="width:88%"></i><i style="width:72%"></i></div>`));
+				} else {
+					const ind = indicator('resume', choice.work);
+					root.append(ind.root);
+					ind.set('think', 'carico la conversazione');
+				}
+				later('resume', 1600, () => {
+					root.innerHTML = '';
+					root.append(el(`<div><p class="user"><span class="p">›</span><span>Su cosa sta lavorando adesso?</span></p><p class="verdict">jev · su Simone 0,99 · leggera · it · 280 ms</p></div>`));
+					root.append(el(`<div class="answer"><div class="prose">Sul sito che stai guardando, e su un agente che lo racconta.</div><p class="usage">1,1k token · 1 credito</p></div>`));
+				});
+			}
+
+			function runRetry() {
+				clear('retry');
+				const root = document.getElementById('retry');
+				root.innerHTML = '';
+				root.append(el(`<div><p class="user"><span class="p">›</span><span>Come lavora Simone con i coding agent?</span></p></div>`));
+				const answer = el('<div class="answer"></div>');
+				root.append(answer);
+				const ind = indicator('retry', choice.work);
+				answer.append(ind.root);
+				ind.set('think', 'pensa');
+				later('retry', 900, () => {
+					const at = performance.now() + 4000;
+					ind.set('think', 'il modello non risponde, riprovo');
+					const tick = () => {
+						const left = Math.max(0, Math.ceil((at - performance.now()) / 1000));
+						ind.meta(left ? `tra ${left} s` : 'ora');
+					};
+					tick();
+					every('retry', 200, tick);
+					answer.append(el(`<details class="err" style="padding:0"><summary>dettagli</summary><pre>502 upstream connect error (openrouter, provider 1 di 3)</pre></details>`));
+				});
+				later('retry', 5000, () => {
+					clear('retry');
+					answer.querySelector('details')?.remove();
+					const ind2 = indicator('retry', choice.work);
+					ind.root.replaceWith(ind2.root);
+					ind2.set('write', 'scrive');
+					later('retry', 900, () => {
+						ind2.hide();
+						answer.prepend(el(`<div class="prose">Architettura prima, codice dopo: definisce data model e confini, poi l'agente accelera.</div>`));
+					});
+				});
+			}
+
+			function runConn() {
+				clear('conn');
+				const root = document.getElementById('conn');
+				root.innerHTML = '';
+				const field = el(`<div class="field"><div class="row"><span class="p">›</span><span class="ph-text">Chiedi dei miei progetti</span><span class="chip">invia</span></div><div class="foot"><span class="led" data-s="run"></span><span class="txt">z-ai/glm-5.3-flash</span></div></div>`);
+				root.append(el(`<div class="answer" style="padding:0"><div class="prose" style="color:var(--muted);font-size:14px">La connessione cade dopo un secondo, la ripresa dopo quattro.</div></div>`));
+				root.append(field);
+				const led = field.querySelector('.led');
+				const txt = field.querySelector('.txt');
+				const ph = field.querySelector('.ph-text');
+				later('conn', 1000, () => {
+					field.setAttribute('data-off', '');
+					led.dataset.s = 'off';
+					ph.textContent = 'non connesso';
+					let n = 3;
+					txt.textContent = `connessione persa · riprovo tra ${n} s`;
+					every('conn', 1000, () => {
+						n -= 1;
+						txt.textContent = n > 0 ? `connessione persa · riprovo tra ${n} s` : 'riconnessione…';
+					});
+				});
+				later('conn', 5000, () => {
+					clear('conn');
+					field.removeAttribute('data-off');
+					led.dataset.s = 'run';
+					ph.textContent = 'Chiedi dei miei progetti';
+					txt.innerHTML = '<span class="ok">riconnesso</span>';
+					later('conn', 1800, () => (txt.textContent = 'z-ai/glm-5.3-flash'));
+				});
+			}
+
+			// 3. Errori.
+			const ERRORS = {
+				provider: { code: 'provider', msg: 'Il modello non è disponibile in questo momento, anche dopo tre tentativi.', act: 'riprova', raw: 'Not answered: provider_error\n429 Provider returned error: upstream rate limited (openrouter)' },
+				timeout: { code: 'tempo', msg: 'La risposta ci ha messo troppo e l\'ho interrotta. Una domanda più stretta di solito passa.', act: 'riprova', raw: 'Not answered: timeout\nrun exceeded 120000 ms' },
+				aborted: { code: 'fermata', msg: 'Hai fermato la risposta. Quello che era arrivato resta sopra.', act: null, raw: 'Not answered: aborted' },
+				internal: { code: 'interno', msg: 'Qualcosa si è rotto dal mio lato. Se continua, scrivimi dalla pagina contatti.', act: 'riprova', raw: 'Malformed JSON' }
+			};
+			function renderErr(kind) {
+				const e = ERRORS[kind];
+				const root = document.getElementById('err');
+				root.innerHTML = `
+					<p class="msg"><span class="d">${e.code}</span>${e.msg}</p>
+					<div class="actions">${e.act ? `<button class="chip">${e.act}</button>` : ''}
+						<details><summary>dettagli</summary><pre>${e.raw}</pre></details>
+					</div>`;
+			}
+			document.getElementById('err-kinds').addEventListener('click', (ev) => {
+				const b = ev.target.closest('button');
+				if (!b) return;
+				for (const x of ev.currentTarget.querySelectorAll('button')) x.setAttribute('aria-pressed', String(x === b));
+				renderErr(b.dataset.k);
+			});
+
+			// 4. 404.
+			const NF = {
+				route: { path: '/it/progeti', q: 'progeti', guesses: [{ k: 'sezione', t: 'Progetti', u: '/it/progetti' }] },
+				slug: { path: '/it/progetti/portsag', q: 'portsag', guesses: [{ k: 'progetto', t: 'Portsage', u: '/it/progetti/portsage' }, { k: 'sezione', t: 'Progetti', u: '/it/progetti' }] },
+				none: { path: '/it/wp-admin/setup.php', q: 'wp admin setup', guesses: [] }
+			};
+			let nfPath = 'route';
+			document.getElementById('nf-paths').addEventListener('click', (ev) => {
+				const b = ev.target.closest('button');
+				if (!b) return;
+				nfPath = b.dataset.p;
+				for (const x of ev.currentTarget.querySelectorAll('button')) x.setAttribute('aria-pressed', String(x === b));
+				renderNf();
+			});
+			function renderNf() {
+				clear('nf');
+				const d = NF[nfPath];
+				const root = document.getElementById('nf');
+				const guesses = d.guesses.length
+					? `<div class="guess"><span class="label">forse cercavi</span>${d.guesses.map((g) => `<a href="#"><span class="k">${g.k}</span><span class="t">${g.t}</span><span class="u">${g.u}</span></a>`).join('')}</div>`
+					: '';
+				const acts = `<div class="acts"><a class="chip" href="#">cerca «${d.q}» nella lista</a><a class="chip" href="#">chiedi all'agente</a><a class="chip" href="#">torna alla home</a></div>`;
+				if (choice.nf === 'a') {
+					root.innerHTML = `
+						<pre class="term"><span class="p">›</span>cd <span class="path">${d.path}</span>
+<span class="bad">404</span> nessuna pagina a questo indirizzo</pre>
+						<h3>Pagina non trovata</h3>
+						<p class="lead">${d.guesses.length ? 'L\'indirizzo è sbagliato di poco.' : 'Qui non c\'è niente, e niente di simile.'} Dalla lista trovi tutto, o chiedi all'agente.</p>
+						${guesses}${acts}`;
+				} else {
+					root.innerHTML = `
+						<span class="glitch" data-text="404">404</span>
+						<p class="code" style="margin-top:18px">${d.path}</p>
+						<h3 style="margin-top:10px;font-size:clamp(1.5rem,1.1rem+1.4vw,2.2rem)">Pagina non trovata</h3>
+						<p class="lead">${d.guesses.length ? 'L\'indirizzo è sbagliato di poco.' : 'Qui non c\'è niente, e niente di simile.'} Dalla lista trovi tutto, o chiedi all'agente.</p>
+						${guesses}${acts}`;
+					const g = root.querySelector('.glitch');
+					const fire = () => { g.classList.remove('go'); void g.offsetWidth; g.classList.add('go'); };
+					later('nf', 200, fire);
+					every('nf', 7000, fire);
+				}
+			}
+
+			// 5. 500. La tessera di neve per la B: nel sito un PNG piccolo in public/.
+			const SNOW = (() => {
+				const c = document.createElement('canvas');
+				c.width = c.height = 48;
+				const ctx = c.getContext('2d');
+				const img = ctx.createImageData(48, 48);
+				for (let i = 0; i < img.data.length; i += 4) {
+					const v = 90 + Math.random() * 165;
+					img.data[i] = v * 0.9;
+					img.data[i + 1] = v * 0.86;
+					img.data[i + 2] = v;
+					img.data[i + 3] = 255;
+				}
+				ctx.putImageData(img, 0, 0);
+				return c.toDataURL();
+			})();
+			document.documentElement.style.setProperty('--snow', `url(${SNOW})`);
+
+			function renderSe() {
+				clear('se');
+				const root = document.getElementById('se');
+				const ray = '8d3f2a9c1e7b04f2-MXP';
+				const v = choice.se;
+				const number = `<span class="glitch${v === 'b' ? ' snow' : ''}" data-text="500">500</span>`;
+				root.innerHTML = `
+					${v === 'c' ? `<span class="vhold">${number}</span>` : number}
+					<p class="ray">richiesta <code>${ray}</code><button class="chip" id="copy-ray">copia</button></p>
+					<h3 style="margin-top:10px;font-size:clamp(1.5rem,1.1rem+1.4vw,2.2rem)">Qualcosa si è rotto</h3>
+					<p class="lead">L'errore è dal mio lato, non dal tuo. Riprova tra poco; se continua, scrivimi e cita il codice qui sopra.</p>
+					<div class="acts"><button class="chip">ricarica</button><a class="chip" href="#">torna alla home</a><a class="chip" href="#">contatti</a></div>`;
+				const copy = root.querySelector('#copy-ray');
+				copy.addEventListener('click', () => {
+					navigator.clipboard?.writeText(ray);
+					copy.innerHTML = '<span style="color:var(--live)">copiato</span>';
+					later('se', 1600, () => (copy.textContent = 'copia'));
+				});
+				const g = root.querySelector('.glitch');
+				const fire = () => { g.classList.remove('go'); void g.offsetWidth; g.classList.add('go'); };
+				later('se', 200, fire);
+				if (v === 'a') every('se', 7000, fire);
+				if (v === 'c') {
+					const hold = root.querySelector('.vhold');
+					every('se', 5000, () => { hold.classList.remove('roll'); void hold.offsetWidth; hold.classList.add('roll'); });
+				}
+			}
+
+			const rerender = {
+				work: () => { runWork(); runResume(); runRetry(); },
+				load: () => { runResume(); runRetry(); runConn(); },
+				nf: renderNf,
+				se: renderSe
+			};
+			for (const b of document.querySelectorAll('[data-replay]')) {
+				b.addEventListener('click', () => ({ resume: runResume, retry: runRetry, conn: runConn })[b.dataset.replay]());
+			}
+			function replayAll() {
+				runWork(); runResume(); runRetry(); runConn(); renderErr('provider'); renderNf(); renderSe();
+				for (const x of document.querySelectorAll('#err-kinds button')) x.setAttribute('aria-pressed', String(x.dataset.k === 'provider'));
+			}
+			renderNotes();
+			replayAll();
+		</script>
+	</body>
+</html>

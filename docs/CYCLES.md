@@ -400,3 +400,27 @@ Mobile fixes, then what the site collects and for how long (`fa4e6a6` .. `7ce1c7
 - **Content:** Budokan is the Next.js rewrite, the SvelteKit site goes to `previously`.
 - **Next step:** the Open items of the ROADMAP (redirect from `simonesalerno.it`, the
   `hello@esse.dev` mailbox) and the production secrets for `draft_message`.
+
+## Cycle 25 - Agent states and error pages from concept G (2026-10-06)
+
+What the visitor sees while waiting and when something breaks (`3a9964a` .. `9227244`),
+from concept G (`docs/concepts/concept-g-stati.html`, #24).
+
+- **Agent at work:** the only wait state was "thinking", gone at the first token, and errors
+  arrived raw in English. A status line under the answer now follows the real phase (Jev,
+  thinking, reasoning, the tool at work, writing, retry with countdown), read by
+  `phaseOf` in `src/agent/phase.ts` from what the client already receives; the phase decodes
+  from block glyphs into the word (`AgentStatus.svelte`). The streamed text is born in the
+  accent and cools to the text color (`phosphor.ts`).
+- **Recovery states:** a resumed conversation, a dropped and restored connection, and errors
+  by kind (`errorKind`: provider, timeout, aborted, internal) in the visitor's language,
+  with the raw text under "details". E2E in `tests/e2e/agent-states.spec.ts` against a fake
+  socket (`routeWebSocket`), with no model calls.
+- **404:** the number as a disturbed CRT signal; the catch-all computes on the Worker the
+  pages closest to the wrong path (`src/lib/suggest.ts`, edit distance on routes and slugs)
+  and offers the list search (`?q=` with the words of the path) and the agent (`?ask=`).
+- **500:** it did not exist (Astro's default page). `src/pages/500.astro`, on the Worker,
+  logs the error with the `cf-ray` id and shows only that id to quote, with the digits full
+  of snow: same family as the 404, the noise says the fault is on the site's side.
+- **Next step:** the Open items of the ROADMAP and the production secrets for
+  `draft_message`.

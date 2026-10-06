@@ -2,7 +2,7 @@
 
 Current state of the project. Real milestones, not a wishlist. Updated together with the code.
 
-Last update: 2026-10-06 (Cycle 24: analytics, privacy notice, conversations that expire)
+Last update: 2026-10-06 (Cycle 25: agent states and error pages from concept G)
 
 ## Context
 
@@ -55,6 +55,9 @@ of the earlier idea (the site redesigned live by a model). Choices in
   conversations are shareable (#18).
 - Done (Cycle 24): conversations expire 90 days after the last message, stated in the
   privacy notice (#23).
+- Done (Cycle 25): the status line follows the real phase of the work, the streamed text
+  glows and cools, resumed conversations, dropped connections and errors in the visitor's
+  language each have a state (per DECISIONS #24).
 - Read-only tools on already public data. No writes, no fetch of arbitrary URLs, no
   private repos, no memory between visits. The only effect outside the site is the
   `draft_message` email, and it goes out only from a visitor's click.
