@@ -47,6 +47,8 @@
 	--radius-panel: 10px;
 	--radius-card: 11px;
 	--radius-window: 18px;
+	/* A pane 6px from a phone's screen edge: closer to the screen's own rounded corners. */
+	--radius-edge: 24px;
 
 	--ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 
