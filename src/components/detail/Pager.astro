@@ -14,12 +14,14 @@ const { prev, next, t } = Astro.props;
 // Previous and next in the same group of the list. It sits at the bottom of the pane even
 // when the page is short (`mt-auto` inside `Page`), right after the text when it is long.
 // Rows with no background, like the list rows; h and l (or the arrows) open them by keyboard.
+// Always side by side, also on a phone: a long title wraps on two lines instead of the pair
+// stacking.
 ---
 
 {(prev || next) && (
 	<nav
 		aria-label={`${t('prev')} / ${t('next')}`}
-		class="-mx-3 mt-auto grid gap-1 pt-20 sm:grid-cols-2 sm:gap-6"
+		class="-mx-3 mt-auto grid grid-cols-2 gap-2 pt-20 sm:gap-6"
 	>
 		{prev ? (
 			<a
@@ -32,12 +34,12 @@ const { prev, next, t } = Astro.props;
 					<ArrowLeft class="size-3.5 transition-transform group-hover:-translate-x-0.5 lg:hidden" />
 					{t('prev')}
 				</span>
-				<span class="text-text group-hover:text-fg truncate text-[1.0625rem] transition-colors">
+				<span class="text-text group-hover:text-fg line-clamp-2 text-[1.0625rem] transition-colors">
 					{prev.title}
 				</span>
 			</a>
 		) : (
-			<span class="hidden sm:block" />
+			<span />
 		)}
 		{next && (
 			<a
@@ -50,7 +52,7 @@ const { prev, next, t } = Astro.props;
 					<span class="kbd hidden tracking-normal normal-case lg:inline-flex">l</span>
 					<ArrowRight class="size-3.5 transition-transform group-hover:translate-x-0.5 lg:hidden" />
 				</span>
-				<span class="text-text group-hover:text-fg max-w-full truncate text-[1.0625rem] transition-colors">
+				<span class="text-text group-hover:text-fg line-clamp-2 max-w-full text-[1.0625rem] transition-colors">
 					{next.title}
 				</span>
 			</a>
