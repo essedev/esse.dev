@@ -42,14 +42,14 @@ export default defineConfig({
 				"default-src 'self'",
 				"img-src 'self' data:",
 				"font-src 'self'",
-				"connect-src 'self' https://umami.essedev.it",
+				"connect-src 'self' https://analytics.esse.dev",
 				// Turnstile, for sending the agent's drafts: the widget's script and iframe.
 				'frame-src https://challenges.cloudflare.com',
 				"object-src 'none'",
 				"base-uri 'self'"
 			],
 			scriptDirective: {
-				resources: ["'self'", 'https://umami.essedev.it', 'https://challenges.cloudflare.com']
+				resources: ["'self'", 'https://analytics.esse.dev', 'https://challenges.cloudflare.com']
 			}
 		}
 	},

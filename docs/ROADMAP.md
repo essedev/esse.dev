@@ -108,9 +108,6 @@ of the earlier idea (the site redesigned live by a model). Choices in
   from `simonesalerno.it` and `www.simonesalerno.it` to `https://esse.dev` with the path
   preserved. `essedev.it` is not renewed: no redirect to maintain.
 
-- Analytics: the Umami script points to `umami.essedev.it`, but `essedev.it` is not
-  renewed. Move Umami to a subdomain of `esse.dev` before it expires, or the statistics
-  stop without errors.
 - Email `hello@esse.dev`: check that the mailbox receives before going online.
 
 ## Deploy state
