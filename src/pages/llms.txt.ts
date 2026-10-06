@@ -26,7 +26,7 @@ export const GET: APIRoute = async ({ site }) => {
 	const articles = (await getArticles(lang)).map((a) =>
 		item(a.text.title, url(nav.articles, a.text.slug), a.text.description)
 	);
-	const pages = (['about', 'now', 'agent'] as const).map((s) =>
+	const pages = (['about', 'now', 'agent', 'privacy'] as const).map((s) =>
 		item(text.sections[s], url(nav[s]), text.sectionDescriptions[s])
 	);
 	const others = languages

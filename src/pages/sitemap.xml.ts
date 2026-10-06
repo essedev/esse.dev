@@ -23,7 +23,7 @@ export const GET: APIRoute = async ({ site }) => {
 		paths.push({ path: `/${lang}`, lastmod: lastAny ?? '' });
 		paths.push({ path: `/${lang}/${navigation[lang].projects}`, lastmod: lastProject ?? '' });
 		paths.push({ path: `/${lang}/${navigation[lang].articles}`, lastmod: lastArticle ?? '' });
-		for (const section of ['method', 'now', 'about', 'agent'] as const) {
+		for (const section of ['method', 'now', 'about', 'agent', 'privacy'] as const) {
 			paths.push({ path: `/${lang}/${navigation[lang][section]}`, lastmod: lastAny ?? '' });
 		}
 		for (const m of await getMethod(lang)) {

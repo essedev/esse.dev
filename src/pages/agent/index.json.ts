@@ -74,6 +74,18 @@ export const GET: APIRoute = async () => {
 			tags: [],
 			body: about.body ?? ''
 		});
+		// So the agent can answer "do you keep my messages?" from the notice, not from memory.
+		const privacy = await getPage('privacy', lang);
+		docs.push({
+			path: `/${lang}/${routes.privacy}`,
+			lang,
+			kind: 'privacy',
+			title: privacy.data.title,
+			summary: (await getSite(lang)).sectionDescriptions.privacy,
+			tags: [],
+			date: privacy.data.updated,
+			body: privacy.body ?? ''
+		});
 	}
 	return new Response(JSON.stringify(docs), {
 		headers: { 'Content-Type': 'application/json; charset=utf-8' }

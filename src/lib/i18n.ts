@@ -7,7 +7,15 @@ import type { Language, NavigationConfig } from './config';
  */
 
 /** The logical sections of the site. */
-export const SECTIONS = ['projects', 'articles', 'method', 'now', 'about', 'agent'] as const;
+export const SECTIONS = [
+	'projects',
+	'articles',
+	'method',
+	'now',
+	'about',
+	'agent',
+	'privacy'
+] as const;
 /** One of `SECTIONS`. */
 export type Section = (typeof SECTIONS)[number];
 

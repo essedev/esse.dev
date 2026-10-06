@@ -3,6 +3,7 @@ import { ListFilter, X } from '@lucide/astro';
 import type { Nav } from '../../lib/workspace';
 import NavRow from './NavRow.astro';
 import SocialLinks from '../SocialLinks.astro';
+import { navigation } from '../../lib/config';
 import type { Translate } from '../../lib/site';
 
 interface Props {
@@ -107,7 +108,16 @@ const keys: [string[], string][] = [
 		data-statusline
 		class="group/status text-subtle flex shrink-0 flex-col gap-2.5 px-5 pt-3 pb-4 font-mono text-[0.7rem] lg:px-6"
 	>
-		<SocialLinks links={social} class="gap-x-3 text-[0.7rem] whitespace-nowrap" />
+		<SocialLinks links={social} class="gap-x-3 text-[0.7rem] whitespace-nowrap">
+			<li>
+				<a
+					href={`/${lang}/${navigation[lang].privacy}`}
+					class="text-muted hover:text-fg -my-1 inline-flex py-1 transition-colors"
+				>
+					privacy
+				</a>
+			</li>
+		</SocialLinks>
 		<div class="flex flex-wrap items-center gap-x-4 gap-y-1 whitespace-nowrap">
 			<span class="flex items-center gap-1.5">
 				<span class="led" data-status="in-progress" />

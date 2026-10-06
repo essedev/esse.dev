@@ -3,7 +3,8 @@ import { ArrowUpRight } from '@lucide/astro';
 
 /**
  * The external profiles as monospace names with an arrow: Lucide has no brand logos, and
- * on the site icons are Lucide only. The same links as the contact page.
+ * on the site icons are Lucide only. The same links as the contact page. The slot adds
+ * internal links to the same row, after the profiles.
  */
 interface Props {
 	links: { name: string; url: string }[];
@@ -27,4 +28,5 @@ const { links, class: className } = Astro.props;
 			</a>
 		</li>
 	))}
+	<slot />
 </ul>

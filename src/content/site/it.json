@@ -7,7 +7,8 @@
 		"method": "Metodo",
 		"now": "Adesso",
 		"about": "Chi sono",
-		"agent": "Agente"
+		"agent": "Agente",
+		"privacy": "Privacy"
 	},
 	"ui": {
 		"skipToContent": "Salta al contenuto",
@@ -119,7 +120,9 @@
 		"agentDraftSending": "invio…",
 		"agentDraftSent": "inviato, grazie",
 		"agentOpen": "apri",
-		"agentAsk4": "Come fa Portsage a sapere quali porte sono occupate? Mostrami il codice"
+		"agentAsk4": "Come fa Portsage a sapere quali porte sono occupate? Mostrami il codice",
+		"agentPrivacyNote": "conversazioni conservate 90 giorni",
+		"privacyUpdated": "aggiornata il"
 	},
 	"sectionDescriptions": {
 		"projects": "Cose che ho costruito e che sto costruendo: prodotti, strumenti per sviluppatori, esperimenti con l'AI e qualche idea ancora sulla carta.",
@@ -127,6 +130,7 @@
 		"method": "Come lavoro con i coding agent: architettura prima del codice, il contesto come lavoro, misurare invece di fidarsi.",
 		"now": "Su cosa sto lavorando adesso, aggiornato dai progetti.",
 		"about": "Chi sono, da dove arrivo e come scrivermi.",
-		"agent": "Un agente con tool veri che lavora sui miei progetti e mostra come lo fa: ogni chiamata, i token e il costo."
+		"agent": "Un agente con tool veri che lavora sui miei progetti e mostra come lo fa: ogni chiamata, i token e il costo.",
+		"privacy": "Quali dati raccoglie il sito, perché, dove finiscono e per quanto restano: statistiche senza cookie, conversazioni con l'agente, messaggi a me."
 	}
 }

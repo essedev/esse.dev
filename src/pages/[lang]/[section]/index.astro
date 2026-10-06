@@ -62,6 +62,8 @@ const now = section === 'now' ? await getNow(lang) : [];
 const about = section === 'about' ? await getPage('about', lang) : null;
 const contact = section === 'about' ? await getPage('contact', lang) : null;
 const AboutBody = about ? (await render(about)).Content : null;
+const privacy = section === 'privacy' ? await getPage('privacy', lang) : null;
+const PrivacyBody = privacy ? (await render(privacy)).Content : null;
 const nowBodies = await Promise.all(now.map(async (n) => (await render(n.entry)).Content));
 
 const labels = {
@@ -205,6 +207,8 @@ const ogSection = section === 'projects' ? 'projects' : section === 'articles' ?
 						retrying: t('agentRetrying'),
 						tools: t('agentTools'),
 						toolsNote: t('agentToolsNote'),
+						privacyNote: t('agentPrivacyNote'),
+						privacyHref: `/${lang}/${routes.privacy}`,
 						toolLabels: {
 							search_site: t('agentToolSearch'),
 							read_page: t('agentToolRead'),
@@ -239,7 +243,8 @@ const ogSection = section === 'projects' ? 'projects' : section === 'articles' ?
 							article: site.sections.articles,
 							method: site.sections.method,
 							now: site.sections.now,
-							about: site.sections.about
+							about: site.sections.about,
+							privacy: site.sections.privacy
 						},
 						open: t('agentOpen'),
 						subagents: t('agentSubagents'),
@@ -274,6 +279,15 @@ const ogSection = section === 'projects' ? 'projects' : section === 'articles' ?
 						}
 					}}
 				/>
+			)}
+
+			{privacy && PrivacyBody && (
+				<Prose>
+					<p class="label">
+						{t('privacyUpdated')} {formatDate(privacy.data.updated, lang)}
+					</p>
+					<PrivacyBody />
+				</Prose>
 			)}
 
 			{about && AboutBody && contact && (

@@ -88,7 +88,7 @@ const SearchSite = Type.Object({
 	lang: Lang,
 	kind: Type.Optional(
 		Type.Union(
-			['project', 'article', 'method', 'now', 'about'].map((k) => Type.Literal(k)),
+			['project', 'article', 'method', 'now', 'about', 'privacy'].map((k) => Type.Literal(k)),
 			{ description: 'Only this kind of page.' }
 		)
 	)

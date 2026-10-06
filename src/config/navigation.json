@@ -5,7 +5,8 @@
 		"method": "method",
 		"now": "now",
 		"about": "about",
-		"agent": "agent"
+		"agent": "agent",
+		"privacy": "privacy"
 	},
 	"it": {
 		"projects": "progetti",
@@ -13,6 +14,7 @@
 		"method": "metodo",
 		"now": "adesso",
 		"about": "chi-sono",
-		"agent": "agente"
+		"agent": "agente",
+		"privacy": "privacy"
 	}
 }

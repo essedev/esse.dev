@@ -144,6 +144,12 @@ const about = defineCollection({
 	schema: z.object({ title: z.string().min(1) })
 });
 
+// The privacy notice: what the site collects, why, where it goes and for how long.
+const privacy = defineCollection({
+	loader: glob({ pattern: '*.md', base: './src/content/pages/privacy', generateId: langId }),
+	schema: z.object({ title: z.string().min(1), updated: isoDate })
+});
+
 const contact = defineCollection({
 	loader: glob({ pattern: '*.md', base: './src/content/pages/contact', generateId: langId }),
 	schema: z.object({
@@ -158,7 +164,15 @@ const contact = defineCollection({
 // stops the build and the keys are a type (`UiKey` in src/lib/site.ts).
 const text = z.string().min(1);
 const sections = z
-	.object({ projects: text, articles: text, method: text, now: text, about: text, agent: text })
+	.object({
+		projects: text,
+		articles: text,
+		method: text,
+		now: text,
+		about: text,
+		agent: text,
+		privacy: text
+	})
 	.strict();
 
 const site = defineCollection({
@@ -189,6 +203,8 @@ const site = defineCollection({
 					linkCopied: text,
 					commandCopied: text,
 					emailCopied: text,
+					agentPrivacyNote: text,
+					privacyUpdated: text,
 					keysMove: text,
 					keysOpen: text,
 					keysBack: text,
@@ -304,5 +320,6 @@ export const collections = {
 	welcome,
 	about,
 	contact,
+	privacy,
 	site
 };

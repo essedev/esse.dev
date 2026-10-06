@@ -38,6 +38,9 @@
 		retrying: string;
 		tools: string;
 		toolsNote: string;
+		/** The line under the field on how long conversations are kept, and its link. */
+		privacyNote: string;
+		privacyHref: string;
 		/** Description for the visitor; without it, the one the server gives the model. */
 		toolLabels: Record<string, string>;
 		/** How to group the catalog; a tool outside the groups goes last. */
@@ -714,10 +717,11 @@
 					(status === 'open' ? '' : status === 'connecting' ? labels.connecting : labels.offline)}
 			</span>
 			{#if budget && lowBudget}
-				<span class="ml-auto"
-					>{credits(budget.remaining).toLocaleString(locale)} {labels.budget}</span
-				>
+				<span>{credits(budget.remaining).toLocaleString(locale)} {labels.budget}</span>
 			{/if}
+			<a href={labels.privacyHref} class="ml-auto transition-colors hover:text-fg"
+				>{labels.privacyNote}</a
+			>
 		</div>
 	</div>
 </div>

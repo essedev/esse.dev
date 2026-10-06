@@ -223,7 +223,7 @@ export async function getSlugMap(): Promise<SlugMap> {
 }
 
 /** A single page (welcome, about, contact) in one language. */
-export async function getPage<C extends 'welcome' | 'about' | 'contact'>(
+export async function getPage<C extends 'welcome' | 'about' | 'contact' | 'privacy'>(
 	collection: C,
 	lang: string
 ): Promise<CollectionEntry<C>> {

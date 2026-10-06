@@ -21,7 +21,8 @@ export const NavigationSchema = z.record(
 		method: z.string().min(1),
 		now: z.string().min(1),
 		about: z.string().min(1),
-		agent: z.string().min(1)
+		agent: z.string().min(1),
+		privacy: z.string().min(1)
 	})
 );
 /** Schema of `featured.json`: the showcase, at most six projects. */
