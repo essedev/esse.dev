@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="it">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Concept H - Favicon tilde</title>
+		<!--
+			Concept H: la favicon con la tilde al posto del cursore, stesso stile (segno lavanda con
+			bagliore su tessera scura, bordo chiaro a 0,1). La tilde è quella del breadcrumb
+			("~ / agente"): la radice del sito.
+			Oggi  il cursore del logo, 8x16 sulla griglia 32.
+			A  la tilde di Departure Mono, il font del logo: una scaletta di 5x3 pixel, celle da 4
+			   unità sulla griglia 32, quindi 10x6 pixel esatti a 16 px, nitida come il cursore.
+			B  un tratto morbido disegnato a mano, capi tondi: si legge come tilde anche a 16 px, ma
+			   esce dal linguaggio a pixel del logo.
+			C  il glifo di Geist Mono (peso 600), il font del codice nella prosa.
+			I disegni sono gli stessi che andrebbero in scripts/generate-favicons.ts.
+			Scelta: A, nel sito (DECISIONS #26).
+		-->
+		<style>
+			@font-face { font-family: 'Geist'; font-weight: 400; src: url(https://cdn.jsdelivr.net/fontsource/fonts/geist@latest/latin-400-normal.woff2) format('woff2'); }
+			@font-face { font-family: 'Departure Mono'; src: url(https://cdn.jsdelivr.net/gh/rektdeckard/departure-mono@main/public/assets/DepartureMono-Regular.woff2) format('woff2'); }
+			:root {
+				--desk: #050507;
+				--line: #23232b;
+				--fg: #efedf5;
+				--text: #cbc9d4;
+				--muted: #9c9aa8;
+				--subtle: #908e9b;
+				--accent: #b59cff;
+				--surface: rgb(255 255 255 / 0.05);
+				--mono: 'Departure Mono', ui-monospace, monospace;
+				color-scheme: dark;
+			}
+			* { box-sizing: border-box; }
+			html, body { margin: 0; }
+			body { min-height: 100vh; background: radial-gradient(22% 26% at 14% 6%, rgb(181 156 255 / 0.16), transparent), var(--desk); color: var(--text); font-family: 'Geist', system-ui, sans-serif; }
+			.top { display: flex; gap: 24px; align-items: center; padding: 14px 24px; border-bottom: 1px solid var(--line); font-family: var(--mono); font-size: 12px; }
+			.top h1 { margin: 0; font-size: 13px; font-weight: 400; color: var(--fg); text-shadow: 0 0 3.5px rgb(181 156 255 / 0.55); }
+			.top span { color: var(--subtle); }
+			main { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 16px; padding: 24px; max-width: 1280px; margin: 0 auto; }
+			.card { display: flex; flex-direction: column; gap: 18px; padding: 20px; border-radius: 11px; background: rgb(15 14 21 / 0.85); border: 1px solid var(--line); }
+			.card header { display: flex; align-items: baseline; gap: 10px; }
+			.card .letter { font-family: var(--mono); font-size: 13px; color: var(--accent); }
+			.card h2 { margin: 0; font-size: 15px; font-weight: 500; color: var(--fg); }
+			.card p { margin: 0; font-size: 13px; line-height: 1.5; color: var(--muted); }
+			.big { display: flex; justify-content: center; padding: 8px 0; }
+			.big svg { width: 160px; height: 160px; }
+			.sizes { display: flex; align-items: end; gap: 18px; font-family: var(--mono); font-size: 11px; color: var(--subtle); }
+			.sizes figure { margin: 0; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+			.tab { display: flex; align-items: center; gap: 8px; height: 34px; padding: 0 12px; border-radius: 8px 8px 0 0; font-size: 12px; max-width: 260px; }
+			.tab.dark { background: #2b2a33; color: #e8e6ef; }
+			.tab.light { background: #f1f0f4; color: #1f1d24; }
+			.tab span { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
+			.tabs { display: flex; flex-direction: column; gap: 8px; }
+			.ios { display: flex; align-items: center; gap: 14px; font-size: 12px; color: var(--muted); }
+			.ios svg { width: 60px; height: 60px; border-radius: 14px; }
+			.crisp { image-rendering: pixelated; }
+		</style>
+	</head>
+	<body>
+		<div class="top"><h1>Concept H · favicon con la tilde</h1><span>stesso stile del cursore: segno lavanda con bagliore, tessera scura</span></div>
+		<main id="grid"></main>
+		<script>
+			const BG = '#0a0a0d';
+			const ACCENT = '#b59cff';
+			const glow = '<filter id="g" x="-1" y="-1" width="3" height="3"><feGaussianBlur stdDeviation="1.6"/></filter>';
+			// Every mark drawn twice, as in the generator: a blurred copy at 0.7 under the sharp one.
+			const twice = (shape) =>
+				`<g fill-opacity=".7" stroke-opacity=".7" filter="url(#g)">${shape}</g>${shape}`;
+
+			const marks = {
+				oggi: `<rect x="12" y="8" width="8" height="16" fill="${ACCENT}"/>`,
+				// Departure Mono's ~ : 5x3 cells of 4 units, from x 6 and y 10.
+				a: [
+					[10, 10],
+					[6, 14],
+					[14, 14],
+					[22, 14],
+					[18, 18]
+				]
+					.map(([x, y]) => `<rect x="${x}" y="${y}" width="4" height="4" fill="${ACCENT}"/>`)
+					.join(''),
+				b: `<path d="M7 18.5C8.6 13.4 12.6 13 16 16S23.4 18.6 25 13.5" fill="none" stroke="${ACCENT}" stroke-width="3.2" stroke-linecap="round"/>`,
+				// Geist Mono 600, scaled to 20 units wide and flipped (font y grows upwards).
+				c: `<path transform="matrix(.04515 0 0 -.04515 2.433 31.03)" fill="${ACCENT}" d="M385.4 238.4Q353.2 238.4 331.5 250.1Q309.8 261.8 283.8 291Q266.2 311.6 256.1 321.1Q246 330.6 238.7 333.2Q231.4 335.8 222 335.8Q200 335.8 188.4 313Q176.8 290.2 176.8 245.6H79Q79 328.4 116 378Q153 427.6 215.4 427.6Q249.4 427.6 272.1 414.6Q294.8 401.6 318.8 373.2Q341.2 346 352.9 338.1Q364.6 330.2 380 330.2Q402.4 330.2 413.5 353.1Q424.6 376 424.6 420.4H522Q522 337.2 485 287.8Q448 238.4 385.4 238.4Z"/>`
+			};
+			const tile = (mark) =>
+				`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><defs>${glow}</defs><rect width="32" height="32" rx="7" fill="${BG}"/><rect x=".5" y=".5" width="31" height="31" rx="6.5" fill="none" stroke="#ffffff" stroke-opacity=".1"/>${twice(mark)}</svg>`;
+			const full = (mark) =>
+				`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><defs>${glow}</defs><rect width="32" height="32" fill="${BG}"/>${twice(mark)}</svg>`;
+			// The tab sizes go through a canvas at their real pixel count, so 16 px looks as a
+			// browser draws it and not as a retina screen enlarges it.
+			const raster = (svg, size, css) => {
+				const img = new Image();
+				img.src = 'data:image/svg+xml,' + encodeURIComponent(svg);
+				const canvas = document.createElement('canvas');
+				canvas.width = canvas.height = size;
+				canvas.style.width = canvas.style.height = `${css}px`;
+				canvas.className = 'crisp';
+				img.onload = () => canvas.getContext('2d').drawImage(img, 0, 0, size, size);
+				return canvas;
+			};
+
+			const cards = [
+				['oggi', 'Oggi', 'Il cursore del logo, 8x16 sulla griglia 32.'],
+				['a', 'Tilde di Departure Mono', 'La scaletta 5x3 del font del logo, celle da 4: a 16 px sono 10x6 pixel esatti, nitida come il cursore.'],
+				['b', 'Tratto morbido', 'Disegnata, capi tondi: si legge come tilde anche minuscola, ma esce dal linguaggio a pixel del logo.'],
+				['c', 'Glifo di Geist Mono', 'La tilde del font del codice, peso 600: liscia, più sottile del tratto B.']
+			];
+			const grid = document.getElementById('grid');
+			for (const [key, title, note] of cards) {
+				const card = document.createElement('section');
+				card.className = 'card';
+				card.innerHTML = `
+					<header><span class="letter">${key === 'oggi' ? '·' : key.toUpperCase()}</span><h2>${title}</h2></header>
+					<div class="big">${tile(marks[key])}</div>
+					<div class="sizes"></div>
+					<div class="tabs">
+						<div class="tab dark"><i></i><span>Simone Salerno · Lead AI Engineer</span></div>
+						<div class="tab light"><i></i><span>Simone Salerno · Lead AI Engineer</span></div>
+					</div>
+					<div class="ios">${full(marks[key])}<span>iOS e manifest: fondo a filo, gli angoli li arrotonda il sistema</span></div>
+					<p>${note}</p>`;
+				const sizes = card.querySelector('.sizes');
+				for (const [size, label] of [[16, '16 px'], [32, '32 px'], [48, '48 px']]) {
+					const fig = document.createElement('figure');
+					fig.append(raster(tile(marks[key]), size, size * 3), Object.assign(document.createElement('figcaption'), { textContent: `${label} (x3)` }));
+					sizes.append(fig);
+				}
+				for (const slot of card.querySelectorAll('.tab i')) slot.replaceWith(raster(tile(marks[key]), 16 * devicePixelRatio, 16));
+				grid.append(card);
+			}
+		</script>
+	</body>
+</html>

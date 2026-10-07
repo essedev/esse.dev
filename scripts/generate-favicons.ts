@@ -1,7 +1,8 @@
 /**
- * Favicons from the logo's blinking caret (concept D, proposal 7): a lavender rectangle
- * with a glow on a dark background. Run by hand with `pnpm favicons` when the mark or the
- * palette changes; the generated files are committed in `public/`.
+ * Favicons with the tilde of Departure Mono (concept H, A; DECISIONS #26): the site's root,
+ * as in the breadcrumb "~ / agente", in lavender with a glow on a dark background. Run by
+ * hand with `pnpm favicons` when the mark or the palette changes; the generated files are
+ * committed in `public/`.
  *
  * Two versions of the same drawing: the rounded tile for browser tabs, and the full-bleed
  * one for iOS and the manifest (iOS rounds the corners itself, and "maskable" icons want the
@@ -14,14 +15,23 @@ import { writeFileSync } from 'node:fs';
 const BG = '#0a0a0d';
 const ACCENT = '#b59cff';
 
-// The same block as the logo's caret (`.caret` in global.css): 1 to 2 proportions, sharp
-// corners like the pixels of Departure Mono, soft glow. 8x16 on the 32 grid becomes exactly
-// 4x8 pixels in the 16 favicon, with no blurred edges.
+// The ~ of Departure Mono (the logo's font) is 5x3 pixels: one cell high on the left, three
+// in the middle, one low on the right. Cells of 4 units on the 32 grid, from x 6 and y 10:
+// in the 16 favicon each is exactly 2x2 pixels, with no blurred edges. Drawn twice, as the
+// caret was: a blurred copy at 0.7 for the glow, the sharp one above.
+const CELLS = [
+	[10, 10],
+	[6, 14],
+	[14, 14],
+	[22, 14],
+	[18, 18]
+];
 const glow = `<filter id="glow" x="-1" y="-1" width="3" height="3"><feGaussianBlur stdDeviation="1.6"/></filter>`;
-const caret = `<rect x="12" y="8" width="8" height="16" fill="${ACCENT}" fill-opacity=".7" filter="url(#glow)"/><rect x="12" y="8" width="8" height="16" fill="${ACCENT}"/>`;
+const cells = CELLS.map(([x, y]) => `<rect x="${x}" y="${y}" width="4" height="4"/>`).join('');
+const tilde = `<g fill="${ACCENT}" fill-opacity=".7" filter="url(#glow)">${cells}</g><g fill="${ACCENT}">${cells}</g>`;
 
-const tile = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><defs>${glow}</defs><rect width="32" height="32" rx="7" fill="${BG}"/><rect x=".5" y=".5" width="31" height="31" rx="6.5" fill="none" stroke="#ffffff" stroke-opacity=".1"/>${caret}</svg>\n`;
-const full = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><defs>${glow}</defs><rect width="32" height="32" fill="${BG}"/>${caret}</svg>\n`;
+const tile = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><defs>${glow}</defs><rect width="32" height="32" rx="7" fill="${BG}"/><rect x=".5" y=".5" width="31" height="31" rx="6.5" fill="none" stroke="#ffffff" stroke-opacity=".1"/>${tilde}</svg>\n`;
+const full = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32"><defs>${glow}</defs><rect width="32" height="32" fill="${BG}"/>${tilde}</svg>\n`;
 
 const png = (svg: string, size: number): Buffer =>
 	Buffer.from(new Resvg(svg, { fitTo: { mode: 'width', value: size } }).render().asPng());

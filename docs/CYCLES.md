@@ -427,6 +427,8 @@ from concept G (`docs/concepts/concept-g-stati.html`, #24).
   colors and phosphor included. Now only displacement stops and gets an equivalent that
   stays put (icons glow, the error number keeps a still fringe, the drawer fades), #25;
   `tests/e2e/motion.spec.ts` checks both sides.
+- **Favicon:** the tilde of Departure Mono in place of the cursor, same style, from concept H
+  (A), #26; `pnpm favicons` regenerated the set in `public/`.
 - **404:** the number as a disturbed CRT signal; the catch-all computes on the Worker the
   pages closest to the wrong path (`src/lib/suggest.ts`, edit distance on routes and slugs)
   and offers the list search (`?q=` with the words of the path) and the agent (`?ask=`).
