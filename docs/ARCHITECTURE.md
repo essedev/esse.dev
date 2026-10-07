@@ -251,8 +251,11 @@ sides.
   reasoning, the tool at work, writing, retry with countdown), derived in the browser by
   `phaseOf` (`phase.ts`) from the session view and the message waiting for Jev, with no
   extra server events. Errors go through `errorKind` and show by kind in the visitor's
-  language, the raw text under "details"; a resumed conversation and a dropped connection
-  have their own state. The streamed text glows and cools (`phosphor.ts`). Choices in #24.
+  language, the raw text under "details"; a resumed conversation, a dropped connection, an
+  agent that never answers and a message queued behind an answer have their own state. An
+  empty snapshot after a conversation (it expired with the page open) resets what lives only
+  in the browser. Before hydration `AgentFallback.astro` holds the field in place. The
+  streamed text glows and cools (`phosphor.ts`). Choices in #24.
 - **Retention:** a conversation expires 90 days after the last message (`retention.ts`,
   #23). Every settled turn moves the `expire` job of the object's Lifecycle queue; when it
   runs, it disables the alarms, deletes the storage and resets the instance. "New

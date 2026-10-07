@@ -403,7 +403,7 @@ Mobile fixes, then what the site collects and for how long (`fa4e6a6` .. `7ce1c7
 
 ## Cycle 25 - Agent states and error pages from concept G (2026-10-06)
 
-What the visitor sees while waiting and when something breaks (`3a9964a` .. `9227244`),
+What the visitor sees while waiting and when something breaks (`3a9964a` .. `a9c13e7`),
 from concept G (`docs/concepts/concept-g-stati.html`, #24).
 
 - **Agent at work:** the only wait state was "thinking", gone at the first token, and errors
@@ -416,6 +416,12 @@ from concept G (`docs/concepts/concept-g-stati.html`, #24).
   by kind (`errorKind`: provider, timeout, aborted, internal) in the visitor's language,
   with the raw text under "details". E2E in `tests/e2e/agent-states.spec.ts` against a fake
   socket (`routeWebSocket`), with no model calls.
+- **Edge states:** a message sent during an answer waits under it, marked as queued
+  (`view.queued`), with the status line above it; a socket that never opens says so after
+  8 s; before hydration the field is already in place, disabled (`AgentFallback.astro`, the
+  `client:only` fallback), with a `<noscript>` line; a conversation that expires with the
+  page open comes back empty. Cloudflare's own error pages (a Worker that throws outside
+  Astro) stay as they are: custom error rules need a paid plan.
 - **404:** the number as a disturbed CRT signal; the catch-all computes on the Worker the
   pages closest to the wrong path (`src/lib/suggest.ts`, edit distance on routes and slugs)
   and offers the list search (`?q=` with the words of the path) and the agent (`?ask=`).
