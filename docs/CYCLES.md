@@ -403,8 +403,7 @@ Mobile fixes, then what the site collects and for how long (`fa4e6a6` .. `7ce1c7
 
 ## Cycle 25 - Agent states and error pages from concept G (2026-10-06)
 
-What the visitor sees while waiting and when something breaks (`3a9964a` .. this cycle's
-last commit),
+What the visitor sees while waiting and when something breaks (`3a9964a` .. `e39bf1c`),
 from concept G (`docs/concepts/concept-g-stati.html`, #24).
 
 - **Agent at work:** the only wait state was "thinking", gone at the first token, and errors

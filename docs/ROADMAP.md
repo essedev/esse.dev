@@ -2,7 +2,7 @@
 
 Current state of the project. Real milestones, not a wishlist. Updated together with the code.
 
-Last update: 2026-10-06 (Cycle 25: agent states and error pages from concept G)
+Last update: 2026-10-07 (Cycle 25: agent states, error pages, reduced motion, favicon)
 
 ## Context
 

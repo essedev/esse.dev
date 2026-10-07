@@ -143,7 +143,10 @@ them and once when it leaves. Icons with `data-motion` make a gesture of their o
 hover of the link that contains them (concept E, `docs/concepts/concept-e-icone.html`):
 the house jumps, the agent tilts its head, the line of Now traces itself and retracts in
 a loop, the arrows go out and come back, the LEDs send out a ring; with the keyboard and
-on touch they stay still.
+on touch they stay still. With `prefers-reduced-motion` only displacement stops: what
+translates, rotates or scales gets an equivalent that stays put (the icons glow in the
+accent, the drawer fades), while color, opacity and redrawn strokes keep running
+(`docs/DECISIONS.md` #25).
 
 - **List** (`src/lib/workspace.ts`): in order of importance and at most 900 px tall.
   First Welcome (the home) and the single pages (about, now, agent), then the project
