@@ -1,0 +1,47 @@
+---
+/**
+ * The agent page before the island hydrates (`client:only` renders nothing on the server):
+ * the field in its place, disabled, so nothing jumps when the island arrives, and without
+ * JavaScript a line that says why it stays disabled. The markup copies the field at the
+ * bottom of AgentChat.svelte: a change there goes here too.
+ */
+interface Props {
+	placeholder: string;
+	send: string;
+	privacyNote: string;
+	privacyHref: string;
+	noScript: string;
+}
+
+const { placeholder, send, privacyNote, privacyHref, noScript } = Astro.props;
+---
+
+<div class="flex flex-1 flex-col" data-agent-fallback>
+	<noscript>
+		<p class="text-muted text-[0.9375rem] text-pretty">{noScript}</p>
+	</noscript>
+	<div class="flex-1"></div>
+	<div class="glass bg-panel/60 sticky bottom-3 z-10 mt-8 mb-3 rounded-[var(--radius-panel)] px-3 pt-3 pb-2.5">
+		<div class="flex items-end gap-3">
+			<span class="text-accent glow pb-1.5 font-mono text-sm select-none" aria-hidden="true">
+				›
+			</span>
+			<textarea
+				rows="1"
+				disabled
+				placeholder={placeholder}
+				aria-label={placeholder}
+				class="text-fg placeholder:text-subtle min-h-8 flex-1 resize-none bg-transparent py-1.5 font-mono text-[0.875rem] outline-none [field-sizing:content]"
+			></textarea>
+			<button type="button" disabled class="chip opacity-40">
+				{send}
+			</button>
+		</div>
+		<div class="text-subtle mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 px-1 font-mono text-[0.7rem]">
+			<span class="led" data-status="idea"></span>
+			<a href={privacyHref} class="hover:text-fg ml-auto transition-colors">
+				{privacyNote}
+			</a>
+		</div>
+	</div>
+</div>

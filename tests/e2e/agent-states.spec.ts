@@ -220,4 +220,110 @@ test.describe('agent states', () => {
 		await page.reload();
 		await expect(page.locator('[data-agent-status]')).toContainText('loading the conversation');
 	});
+
+	test('a message sent during an answer waits under it, marked as queued', async ({ page }) => {
+		const server = await fakeServer(page);
+		await page.goto('/en/agent');
+		await ask(page, 'First question');
+		const { ws } = server();
+		const userEntry = (id: number, text: string) => ({
+			type: 'entry_appended',
+			entry: {
+				id,
+				kind: 'pi.message',
+				model: [{ role: 'user', content: [{ type: 'text', text }], timestamp: 0 }]
+			}
+		});
+		const triage = (text: string) =>
+			ws.send(
+				JSON.stringify({
+					type: 'triage',
+					text,
+					triage: { intent: 'about', confidence: 0.9, weight: 'light', lang: 'en', ms: 200 }
+				})
+			);
+		triage('First question');
+		events(ws, userEntry(1, 'First question'), { type: 'run_start' });
+
+		await page.locator('[data-agent-input]').fill('Second question');
+		await page.locator('[data-agent-input]').press('Enter');
+		triage('Second question');
+		events(ws, { type: 'inbox_update', items: [{}] });
+
+		const waiting = page.locator('[data-agent-pending]');
+		await expect(waiting).toContainText('Second question');
+		await expect(waiting).toContainText('queued, after this answer');
+		// The status line is about the answer in progress: above the queued message.
+		const status = await page.locator('[data-agent-status]').boundingBox();
+		const queued = await waiting.boundingBox();
+		expect(status!.y).toBeLessThan(queued!.y);
+
+		// pi takes it: it leaves the queue and becomes part of the transcript.
+		events(ws, { type: 'inbox_update', items: [] }, userEntry(2, 'Second question'));
+		await expect(waiting).toHaveCount(0);
+		await expect(page.getByText('Second question')).toHaveCount(1);
+	});
+
+	test('an agent that never answers says so', async ({ page }) => {
+		await page.routeWebSocket(/\/agents\/site-agent\//, (ws) => ws.close());
+		await page.goto('/en/agent');
+		await expect(page.locator('[data-agent-status]')).toContainText(
+			'the agent is not answering, retrying by itself'
+		);
+		await expect(page.locator('main ul button').first()).toBeDisabled();
+	});
+
+	test('a conversation that expires with the page open starts again empty', async ({ page }) => {
+		let connections = 0;
+		let first: WebSocketRoute | undefined;
+		await page.routeWebSocket(/\/agents\/site-agent\//, (ws) => {
+			connections += 1;
+			if (connections === 1) first = ws;
+			const entries =
+				connections === 1
+					? [
+							{
+								id: 1,
+								kind: 'pi.message',
+								model: [
+									{ role: 'user', content: [{ type: 'text', text: 'Old question' }], timestamp: 0 }
+								]
+							},
+							{
+								id: 2,
+								kind: 'pi.message',
+								model: [assistant([{ type: 'text', text: 'Old answer' }])]
+							}
+						]
+					: [];
+			ws.send(JSON.stringify({ type: 'hello', tools: [{ name: 'search_site', description: '' }] }));
+			ws.send(JSON.stringify({ type: 'events', events: [{ ...snapshot, entries }] }));
+		});
+		await page.goto('/en/agent');
+		await expect(page.getByText('Old answer')).toBeVisible({ timeout: 15_000 });
+		// The title leaves with an open conversation (it stays for screen readers).
+		const workspace = page.locator('[data-workspace]');
+		await expect(workspace).toHaveAttribute('data-agent-started');
+
+		// The object empties itself and drops the socket; the client comes back to nothing.
+		await first!.close();
+		await expect(page.getByText('Old answer')).toHaveCount(0, { timeout: 15_000 });
+		await expect(page.locator('main ul button')).toHaveCount(4);
+		await expect(workspace).not.toHaveAttribute('data-agent-started');
+	});
+});
+
+test.describe('agent before and without JavaScript', () => {
+	test.use({ javaScriptEnabled: false });
+
+	test('the field is in place, disabled, and a line says why', async ({ page }) => {
+		await page.goto('/en/agent');
+		const fallback = page.locator('[data-agent-fallback]');
+		await expect(fallback.locator('textarea')).toBeDisabled();
+		// Playwright's text matching skips what is inside <noscript>, like <script>: the line is
+		// read from the DOM and its box measured.
+		const line = fallback.locator('noscript p');
+		expect(await line.evaluate((p) => p.textContent)).toContain('The agent needs JavaScript.');
+		expect((await line.boundingBox())!.height).toBeGreaterThan(0);
+	});
 });

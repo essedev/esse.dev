@@ -3,6 +3,7 @@ import { render } from 'astro:content';
 import { ArrowRight, ArrowUpRight, Check, Copy, SquarePen } from '@lucide/astro';
 import { TURNSTILE_TEST_SITE_KEY } from '../../../agent/draft';
 import AgentChat from '../../../components/agent/AgentChat.svelte';
+import AgentFallback from '../../../components/agent/AgentFallback.astro';
 import CollectionBrowser from '../../../components/CollectionBrowser.svelte';
 import Page from '../../../components/Page.astro';
 import Prose from '../../../components/Prose.astro';
@@ -205,6 +206,8 @@ const ogSection = section === 'projects' ? 'projects' : section === 'articles' ?
 						offline: t('agentOffline'),
 						reconnecting: t('agentReconnecting'),
 						reconnected: t('agentReconnected'),
+						unreachable: t('agentUnreachable'),
+						queued: t('agentQueued'),
 						phases: {
 							triage: t('agentPhaseTriage'),
 							think: t('agentPhaseThink'),
@@ -295,7 +298,16 @@ const ogSection = section === 'projects' ? 'projects' : section === 'articles' ?
 							heavy: t('agentWeightHeavy')
 						}
 					}}
-				/>
+				>
+					<AgentFallback
+						slot="fallback"
+						placeholder={t('agentPlaceholder')}
+						send={t('agentSend')}
+						privacyNote={t('agentPrivacyNote')}
+						privacyHref={`/${lang}/${routes.privacy}`}
+						noScript={t('agentNoScript')}
+					/>
+				</AgentChat>
 			)}
 
 			{privacy && PrivacyBody && (

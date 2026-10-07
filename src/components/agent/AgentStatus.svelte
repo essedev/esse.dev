@@ -4,7 +4,16 @@
 	 * change decodes from block glyphs into the word, and its numbers. Screen readers get the
 	 * phase alone, once per change; the numbers tick every 100 ms and stay out.
 	 */
-	let { label, meta = '' }: { label: string; meta?: string } = $props();
+	let {
+		label,
+		meta = '',
+		inset = true
+	}: {
+		label: string;
+		meta?: string;
+		/** Indented like the answers; off where the line stands above the empty state. */
+		inset?: boolean;
+	} = $props();
 
 	const GLYPHS = '▖▗▘▝▚▞▙▛▜▟█▓▒░<>/\\|=+*#';
 	const DECODE_MS = 350;
@@ -34,7 +43,10 @@
 	});
 </script>
 
-<p class="flex items-center gap-2.5 pl-6 font-mono text-xs text-subtle" data-agent-status>
+<p
+	class={['flex items-center gap-2.5 font-mono text-xs text-subtle', inset && 'pl-6']}
+	data-agent-status
+>
 	<span class="text-text" aria-hidden="true">{text}</span>
 	<span class="sr-only" role="status">{label}</span>
 	{#if meta}<span class="tabular-nums" aria-hidden="true">· {meta}</span>{/if}

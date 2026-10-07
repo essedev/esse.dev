@@ -39,6 +39,10 @@
 		offline: string;
 		reconnecting: string;
 		reconnected: string;
+		/** The socket never opened: the client keeps trying by itself. */
+		unreachable: string;
+		/** Under a message waiting in pi's inbox behind the answer in progress. */
+		queued: string;
 		/** The phases of the status line; the one of a tool is its label. */
 		phases: { triage: string; think: string; reason: string; write: string; resume: string };
 		retrying: string;
@@ -107,6 +111,10 @@
 	let reconnected = $state(false);
 	let reconnectedTimer: ReturnType<typeof setTimeout> | undefined;
 	const RECONNECTED_MS = 2000;
+	/** After this long without a first open, the page says the agent is not answering. */
+	const UNREACHABLE_MS = 8000;
+	let slow = $state(false);
+	const unreachable = $derived(!opened && (status === 'closed' || slow));
 
 	function visitorId(): string {
 		try {
@@ -161,6 +169,7 @@
 
 	onMount(() => {
 		prefill();
+		const slowTimer = setTimeout(() => (slow = true), UNREACHABLE_MS);
 		client = new AgentClient({ agent: 'SiteAgent', name: visitorId(), host: location.host });
 		client.addEventListener('open', () => {
 			// Back after a drop: say so for a moment, then the model returns in the line.
@@ -184,15 +193,26 @@
 				case 'hello':
 					catalog = [...message.tools];
 					break;
-				case 'events':
+				case 'events': {
+					const had = view.messages.length;
 					view = reduceEvents(view, message.events);
 					loaded = true;
+					// An empty snapshot after a conversation: it expired while the page was open (the
+					// object empties itself after RETENTION_DAYS). A new empty one, as on a new visit.
+					if (
+						had > 0 &&
+						view.messages.length === 0 &&
+						message.events.some((e) => e.type === 'snapshot')
+					) {
+						forget();
+					}
 					break;
+				}
 				case 'triage':
 					triages = { ...triages, [message.text]: message.triage };
 					break;
 				case 'notice':
-					if (pending?.text === message.text) pending = null;
+					unwait(message.text);
 					locals = [...locals, { text: message.text, reason: message.reason, after: shown.length }];
 					track('agent-notice', { reason: message.reason });
 					break;
@@ -214,7 +234,7 @@
 					budget = { remaining: message.remaining, limit: message.limit };
 					break;
 				case 'error':
-					pending = null;
+					pending = [];
 					view = { ...view, error: message.message };
 					track('agent-error');
 					break;
@@ -228,6 +248,7 @@
 		return () => {
 			document.removeEventListener('click', onReset);
 			clearTimeout(reconnectedTimer);
+			clearTimeout(slowTimer);
 			client?.close();
 		};
 	});
@@ -322,21 +343,35 @@
 	const empty = $derived(!sent && shown.length === 0 && locals.length === 0 && !view.running);
 
 	/**
-	 * The message sent and not yet in the transcript: it shows at once, under it the status
-	 * line says Jev is weighing it. It leaves when pi records it (one user message more), when
-	 * a notice stops it, or on an error.
+	 * The messages sent and not yet in the transcript, in order: they show at once, under the
+	 * first the status line says Jev is weighing it. Each knows how many user messages come
+	 * before it (`after`) and leaves when pi records it, when a notice stops it, or on an error.
 	 */
-	let pending: { text: string; users: number } | null = $state(null);
+	let pending: { text: string; after: number }[] = $state([]);
 	const users = $derived(view.messages.filter((m) => m.role === 'user').length);
 	function wait(text: string) {
-		pending = { text, users };
+		pending = [...pending, { text, after: users + pending.length }];
+	}
+	/** A notice stopped a message: it will never be recorded, the ones after it move up. */
+	function unwait(text: string) {
+		const index = pending.findIndex((p) => p.text === text);
+		if (index < 0) return;
+		pending = pending
+			.filter((_, i) => i !== index)
+			.map((p, i) => (i >= index ? { ...p, after: p.after - 1 } : p));
 	}
 	$effect(() => {
-		if (pending && users > pending.users) pending = null;
+		if (pending.some((p) => users > p.after)) pending = pending.filter((p) => users <= p.after);
 	});
 	const phase: Phase | null = $derived(
-		phaseOf(view, pending ? (triages[pending.text] === undefined ? 'triage' : 'admitted') : null)
+		phaseOf(
+			view,
+			pending.length ? (triages[pending[0].text] === undefined ? 'triage' : 'admitted') : null
+		)
 	);
+	// Messages waiting in pi's inbox behind the answer in progress: the status line, which is
+	// about that answer, goes above them.
+	const queued = $derived(view.running && view.queued > 0 && pending.length > 0);
 
 	// Seconds since the work started, ticking while there is a phase.
 	const working = $derived(phase !== null);
@@ -389,10 +424,15 @@
 	function reset() {
 		send({ type: 'reset' });
 		track('agent-reset');
+		forget();
+	}
+
+	/** Back to an empty conversation in the browser: what lives only here goes too. */
+	function forget() {
 		sent = false;
 		triages = {};
 		locals = [];
-		pending = null;
+		pending = [];
 	}
 
 	// Tool results arrive as separate messages: attach them to their call.
@@ -547,6 +587,20 @@
 	</details>
 {/snippet}
 
+{#snippet progress()}
+	{#if !loaded && remembered && status !== 'closed' && !unreachable}
+		<!-- A conversation already open is coming: the title is gone, the transcript not here yet. -->
+		<AgentStatus label={labels.phases.resume} />
+	{:else if phase}
+		<div class="flex flex-col gap-2">
+			<AgentStatus label={phaseLabel(phase)} meta={phaseMeta(phase)} />
+			{#if phase.kind === 'retry' && phase.error}
+				<div class="pl-6">{@render details(phase.error)}</div>
+			{/if}
+		</div>
+	{/if}
+{/snippet}
+
 {#snippet localNotice(item: Local)}
 	<div class="flex flex-col gap-1.5">
 		<p class="flex gap-3 font-mono text-[0.875rem] text-fg">
@@ -559,6 +613,9 @@
 {/snippet}
 
 <div class="flex flex-1 flex-col">
+	{#if unreachable}
+		<div class="mb-8"><AgentStatus label={labels.unreachable} inset={false} /></div>
+	{/if}
 	{#if empty}
 		<div class="flex flex-col gap-10">
 			<section class="flex flex-col gap-3">
@@ -764,25 +821,23 @@
 				{@render localNotice(item)}
 			{/each}
 		{/each}
-		{#if pending}
-			<div class="flex flex-col gap-1.5">
+		{#if queued}
+			{@render progress()}
+		{/if}
+		{#each pending as item, i (i)}
+			<div class="flex flex-col gap-1.5" data-agent-pending>
 				<p class="flex gap-3 font-mono text-[0.875rem] text-fg">
 					<span class="text-accent glow select-none" aria-hidden="true">›</span>
-					<span class="whitespace-pre-wrap">{pending.text}</span>
+					<span class="whitespace-pre-wrap">{item.text}</span>
 				</p>
-				{@render verdict(triages[pending.text])}
-			</div>
-		{/if}
-		{#if !loaded && remembered && status !== 'closed'}
-			<!-- A conversation already open is coming: the title is gone, the transcript not here yet. -->
-			<AgentStatus label={labels.phases.resume} />
-		{:else if phase}
-			<div class="flex flex-col gap-2">
-				<AgentStatus label={phaseLabel(phase)} meta={phaseMeta(phase)} />
-				{#if phase.kind === 'retry' && phase.error}
-					<div class="pl-6">{@render details(phase.error)}</div>
+				{@render verdict(triages[item.text])}
+				{#if queued && triages[item.text] !== undefined}
+					<p class="pl-6 font-mono text-[0.7rem] text-subtle">{labels.queued}</p>
 				{/if}
 			</div>
+		{/each}
+		{#if !queued}
+			{@render progress()}
 		{/if}
 		{#if view.error}
 			{@const kind = errorKind(view.error)}
