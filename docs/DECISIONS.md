@@ -270,7 +270,27 @@ the streamed words glow in the accent and cool down. Errors are shown by kind in
 visitor's language, the raw text only under "details", since pi's and the providers' wording
 is not a contract. The 404 and the 500 are one family, the number as a disturbed CRT signal:
 the 404 suggests the closest pages, the search and the agent; the 500 fills the digits with
-noise and shows only the request id. Everything stands still with `prefers-reduced-motion`,
-and no new blinking cursor. Rejected: a rotating quadrant (A) or an oscilloscope trace (C)
+noise and shows only the request id. With reduced motion they follow #25, and no new
+blinking cursor. Rejected: a rotating quadrant (A) or an oscilloscope trace (C)
 for the phase, a terminal-style 404 (A), a 500 identical to the 404 (A) or losing vertical
 hold (C), a plainer 500 (too far from the 404).
+
+## #25 - Reduced motion removes displacement, not feedback
+
+**Status:** active (Cycle 25)
+
+`prefers-reduced-motion` is respected, but it stops what moves through space, not every
+animation. Whoever turns it on may have vestibular disorders, migraine or attention
+issues, and what hurts is displacement: things that jump, slide, rotate, scale or shake.
+Color, opacity, strokes that draw themselves and text that changes in place carry none, so
+they keep running: phosphor, LEDs, the logo's caret (under 3 Hz), the decoding labels, the
+hover colors, the redrawn strokes of the icons. What translates, rotates or scales gets an
+equivalent that stays put: an icon's gesture becomes a glow in the accent (the bot's eyes
+blink by opacity, the LED's ring lights up without widening), the error number keeps its
+fringe but still, the 500's snow stops, the mobile drawer fades instead of sliding, smooth
+scrolling becomes instant. Rules in the `prefers-reduced-motion` block of `global.css` and
+the `motion-safe:` variant in components; checked by `tests/e2e/motion.spec.ts`. A new
+animation picks its side there. Rejected: the global `animation: none; transition: none`
+it replaced (the site got poorer for no reason and anyone with the setting on, often just
+to calm the OS, lost details without knowing), ignoring the preference, a switch in the
+site to override it (machinery, and the OS setting is where the visitor already said it).

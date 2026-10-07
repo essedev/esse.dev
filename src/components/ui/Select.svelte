@@ -209,7 +209,9 @@
 	>
 		<span class="truncate">{summary}</span>
 		<ChevronDown
-			class="size-4 shrink-0 text-subtle transition-transform {open ? 'rotate-180' : ''}"
+			class="size-4 shrink-0 text-subtle motion-safe:transition-transform {open
+				? 'rotate-180'
+				: ''}"
 		/>
 	</button>
 

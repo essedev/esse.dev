@@ -15,13 +15,13 @@ type Arrival = { start: number; end: number; at: number };
  * stored: then nothing glows and nothing is wrapped.
  */
 export function phosphor(node: HTMLElement, params: { text: string; live: boolean }) {
-	const still = matchMedia('(prefers-reduced-motion: reduce)').matches;
 	let arrivals: Arrival[] = [];
 	// Mounted while streaming, the first words are young too.
 	let length = params.live ? 0 : (node.textContent?.length ?? 0);
 
 	function mark(live: boolean) {
-		if (still || !live) return;
+		// Color only, no displacement: it stays with reduced motion too (DECISIONS #25).
+		if (!live) return;
 		const now = performance.now();
 		const total = node.textContent?.length ?? 0;
 		if (total > length) arrivals.push({ start: length, end: total, at: now });

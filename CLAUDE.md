@@ -136,9 +136,14 @@ mobile drawer (`data-drawer`) in `src/scripts/workspace.ts`.
   not a UI icon: it lives in the project's folder (DECISIONS #22, rules in
   `docs/features/progetti.md`, Images).
 - Icons in motion: `data-motion="<name>"` on the Lucide icon, gesture on hover of the link,
-  button or field that contains it (pointer only), CSS in `global.css`. The parts are taken
-  by position in the path and the redrawn strokes have a measured length (`--len`): when
-  updating Lucide they must be rechecked. Choices in concept E.
+  button or field that contains it (pointer only; a glow with reduced motion), CSS in
+  `global.css`. The parts are taken by position in the path and the redrawn strokes have a
+  measured length (`--len`): when updating Lucide they must be rechecked. Choices in
+  concept E.
+- Reduced motion removes displacement, not feedback (DECISIONS #25): what translates, rotates
+  or scales gets an equivalent that stays put in the `prefers-reduced-motion` block of
+  `global.css` (or `motion-safe:`); color, opacity, strokes and text changing in place keep
+  running. A new animation picks its side there; never a global `animation: none`.
 - A single search in the site and a single blinking cursor. Never accent lines or bars to
   the left of or above an element to indicate selection or state: selection shows from the
   background.

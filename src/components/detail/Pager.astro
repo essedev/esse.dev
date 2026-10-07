@@ -31,7 +31,7 @@ const { prev, next, t } = Astro.props;
 			>
 				<span class="label flex items-center gap-2">
 					<span class="kbd hidden tracking-normal normal-case lg:inline-flex">h</span>
-					<ArrowLeft class="size-3.5 transition-transform group-hover:-translate-x-0.5 lg:hidden" />
+					<ArrowLeft class="size-3.5 transition-transform motion-safe:group-hover:-translate-x-0.5 lg:hidden" />
 					{t('prev')}
 				</span>
 				<span class="text-text group-hover:text-fg line-clamp-2 text-[1.0625rem] transition-colors">
@@ -50,7 +50,7 @@ const { prev, next, t } = Astro.props;
 				<span class="label flex items-center gap-2">
 					{t('next')}
 					<span class="kbd hidden tracking-normal normal-case lg:inline-flex">l</span>
-					<ArrowRight class="size-3.5 transition-transform group-hover:translate-x-0.5 lg:hidden" />
+					<ArrowRight class="size-3.5 transition-transform motion-safe:group-hover:translate-x-0.5 lg:hidden" />
 				</span>
 				<span class="text-text group-hover:text-fg line-clamp-2 max-w-full text-[1.0625rem] transition-colors">
 					{next.title}

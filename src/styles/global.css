@@ -853,12 +853,104 @@ body::after {
 	}
 }
 
+/* Reduced motion (DECISIONS #25): what moves through space stops, the rest stays. Color,
+   opacity, strokes that draw themselves and text that changes in place carry no
+   displacement, so they keep running: phosphor, LEDs, the logo's caret, the decoding labels,
+   the hover colors. What translates, rotates or scales becomes an equivalent that stays
+   put: an icon's gesture becomes a glow in the accent, the error number keeps its fringe
+   but still, the drawer fades instead of sliding. A new animation picks its side here. */
 @media (prefers-reduced-motion: reduce) {
-	*,
-	*::before,
-	*::after {
-		animation: none !important;
-		transition: none !important;
+	@media (hover: hover) {
+		:is(a, button, label):hover
+			:is(
+				[data-motion='house'],
+				[data-motion='user'],
+				[data-motion='bot'],
+				[data-motion='file'],
+				[data-motion='arrow'],
+				[data-motion='external'],
+				[data-motion='panel'],
+				[data-motion='filter']
+			) {
+			animation: icon-glow 700ms var(--ease-out);
+		}
+		:is(a, button, label):hover
+			:is(
+				[data-motion='user'] > :nth-child(2),
+				[data-motion='bot'] > :first-child,
+				[data-motion='arrow'] > *,
+				[data-motion='external'] > *,
+				[data-motion='panel'] > :nth-child(2),
+				[data-motion='filter'] > *
+			) {
+			animation: none;
+		}
+		/* The eyes still blink, by opacity instead of squashing. */
+		:is(a, button, label):hover [data-motion='bot'] > :is(:nth-child(2), :nth-child(6)) {
+			animation: icon-blink-fade 900ms ease-in-out 250ms;
+		}
+		/* The ring of the LED lights up without widening. */
+		:is(a, button, label):hover .led::after {
+			animation: icon-ping-still 700ms var(--ease-out);
+		}
+		:is(a, button, label):hover [data-motion='copy'] > :first-child {
+			translate: none;
+		}
+		:is(a, button, label):hover [data-motion='x'] {
+			rotate: none;
+		}
+	}
+
+	.signal,
+	.signal::before,
+	.signal::after {
+		animation: none;
+	}
+	.signal::before {
+		opacity: 0.5;
+		transform: translateX(-1.5px);
+	}
+	.signal::after {
+		opacity: 0.5;
+		transform: translateX(1.5px);
+	}
+}
+@media (width < 64rem) and (prefers-reduced-motion: reduce) {
+	[data-drawer-panel] {
+		translate: 0;
+		opacity: 0;
+		transition:
+			opacity 200ms var(--ease-out),
+			visibility 0s 200ms;
+	}
+	[data-drawer='open'] [data-drawer-panel] {
+		opacity: 1;
+		transition-delay: 0s;
+	}
+}
+
+@keyframes icon-glow {
+	30% {
+		color: var(--color-accent);
+		filter: drop-shadow(0 0 calc(var(--crt-accent-glow) / 2) var(--color-accent));
+	}
+}
+@keyframes icon-blink-fade {
+	11%,
+	33% {
+		opacity: 0.15;
+	}
+	22%,
+	44% {
+		opacity: 1;
+	}
+}
+@keyframes icon-ping-still {
+	0% {
+		opacity: 0.55;
+	}
+	100% {
+		opacity: 0;
 	}
 }
 

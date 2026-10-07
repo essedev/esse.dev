@@ -403,7 +403,8 @@ Mobile fixes, then what the site collects and for how long (`fa4e6a6` .. `7ce1c7
 
 ## Cycle 25 - Agent states and error pages from concept G (2026-10-06)
 
-What the visitor sees while waiting and when something breaks (`3a9964a` .. `a9c13e7`),
+What the visitor sees while waiting and when something breaks (`3a9964a` .. this cycle's
+last commit),
 from concept G (`docs/concepts/concept-g-stati.html`, #24).
 
 - **Agent at work:** the only wait state was "thinking", gone at the first token, and errors
@@ -422,6 +423,10 @@ from concept G (`docs/concepts/concept-g-stati.html`, #24).
   `client:only` fallback), with a `<noscript>` line; a conversation that expires with the
   page open comes back empty. Cloudflare's own error pages (a Worker that throws outside
   Astro) stay as they are: custom error rules need a paid plan.
+- **Reduced motion:** the global `animation: none; transition: none` turned off everything,
+  colors and phosphor included. Now only displacement stops and gets an equivalent that
+  stays put (icons glow, the error number keeps a still fringe, the drawer fades), #25;
+  `tests/e2e/motion.spec.ts` checks both sides.
 - **404:** the number as a disturbed CRT signal; the catch-all computes on the Worker the
   pages closest to the wrong path (`src/lib/suggest.ts`, edit distance on routes and slugs)
   and offers the list search (`?q=` with the words of the path) and the agent (`?ask=`).

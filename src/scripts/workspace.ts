@@ -395,8 +395,8 @@ function scrambleTargets(target: EventTarget | null): HTMLElement[] {
 for (const type of ['pointerenter', 'pointerleave'] as const) {
 	document.addEventListener(
 		type,
+		// Text that changes in place, no displacement: it stays with reduced motion (DECISIONS #25).
 		(event) => {
-			if (reduceMotion) return;
 			for (const el of scrambleTargets(event.target)) scramble(el);
 		},
 		true

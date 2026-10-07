@@ -2,7 +2,8 @@
 	/**
 	 * The status line under the answer in progress (concept G, B): the phase, which on every
 	 * change decodes from block glyphs into the word, and its numbers. Screen readers get the
-	 * phase alone, once per change; the numbers tick every 100 ms and stay out.
+	 * phase alone, once per change; the numbers tick every 100 ms and stay out. The decoding
+	 * changes text in place, nothing moves: it runs with reduced motion too (DECISIONS #25).
 	 */
 	let {
 		label,
@@ -22,10 +23,6 @@
 	let text = $state('');
 	$effect(() => {
 		const target = label;
-		if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
-			text = target;
-			return;
-		}
 		const start = performance.now();
 		const frame = () => {
 			const progress = Math.min(1, (performance.now() - start) / DECODE_MS);
