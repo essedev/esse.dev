@@ -57,6 +57,13 @@
 
 	/* The deep violet of the veil behind the window, after the lavender. */
 	--color-glow: #6e50ff;
+
+	/* The browser's bars: the wallpaper's top and bottom edges, measured on its 6px frame with
+	   the CRT veil on. Safari 26 ignores `theme-color`: on phones it takes them from the strips
+	   in Workspace.astro, on desktop from the html background. Chrome reads `theme-color`. A
+	   change to the wallpaper, the desk or the CRT veil means measuring them again. */
+	--color-bar-top: #2d2741;
+	--color-bar-bottom: #0a0910;
 }
 
 @layer base {
@@ -101,12 +108,6 @@
 		--logo-shadow: 0 8px 18px rgb(0 0 0 / 0.55);
 		/* The fringe of the error number adds light on black and takes it away on paper. */
 		--fringe-blend: screen;
-
-		/* The browser's bars, above and below the page: the wallpaper's edge, measured on its
-		   6px frame with the CRT veil on. Safari 26 ignores `theme-color` and tints them from the
-		   html background, so they live there (see html below). */
-		--bar-top: #2f294a;
-		--bar-bottom: #110e20;
 	}
 
 	/* Light mode: the same lab by day, at dusk (concept I, variant C). Smoky lavender: the
@@ -138,6 +139,8 @@
 		--color-status-idea: #504b60;
 		--color-status-archived: #a9a2bd;
 		--color-glow: #9d85ff;
+		--color-bar-top: #9282cc;
+		--color-bar-bottom: #a79cc9;
 
 		--crt-title-glow: 2px;
 		--crt-accent-glow: 4px;
@@ -158,9 +161,22 @@
 		--led-lift: rgb(255 255 255 / 0.95);
 		--logo-shadow: 0 8px 18px rgb(60 40 130 / 0.22);
 		--fringe-blend: multiply;
+	}
 
-		--bar-top: #9c8cd6;
-		--bar-bottom: #b2a7d8;
+	/* Phones: the wallpaper runs top to bottom and the vignette darkens only the top and bottom
+	   edges, so each edge is one color across the width and meets the browser's bars, which
+	   are one color (--color-bar-*). No point of light: it would break the top edge. */
+	@media (width < 64rem) {
+		:root,
+		:root[data-theme='light'] {
+			--wall-angle: 180deg;
+			--wall-light: 0;
+			--crt-vignette-shape: linear-gradient(
+				rgb(var(--shade-rgb) / var(--crt-vignette)),
+				transparent 25% 75%,
+				rgb(var(--shade-rgb) / var(--crt-vignette))
+			);
+		}
 	}
 
 	/* No elastic bounce (macOS, iOS) and no scroll that passes to the container below: the
@@ -177,12 +193,9 @@
 		overscroll-behavior-x: none;
 	}
 
-	/* Hidden by the wallpaper, it shows only around the page: Safari 26 takes the color for its
-	   top bar from here, and the canvas under the bottom bar shows the gradient's end, which
-	   meets the wallpaper's bottom edge. 100lvh: the tallest viewport, with the bars retracted. */
+	/* Hidden by the wallpaper: it colors the browser's top bar on desktop Safari 26. */
 	html {
-		background: linear-gradient(var(--bar-top), var(--bar-bottom)) top / 100% 100lvh no-repeat
-			var(--bar-top);
+		background-color: var(--color-bar-top);
 		color: var(--color-fg);
 		-webkit-font-smoothing: antialiased;
 		text-rendering: optimizeLegibility;
@@ -372,10 +385,22 @@
 		transition:
 			translate 300ms var(--ease-out),
 			opacity 300ms var(--ease-out),
-			visibility 0s 300ms;
+			visibility 0s 300ms,
+			display 0s 300ms allow-discrete;
 	}
 	[data-drawer='open'] :is([data-drawer-panel], [data-drawer-backdrop]) {
 		transition-delay: 0s;
+	}
+	/* Safari 26 tints its bars from a full-screen fixed layer even when invisible: closed, the
+	   backdrop leaves the page, and on opening it fades in from @starting-style. */
+	[data-drawer-backdrop] {
+		display: none;
+	}
+	[data-drawer='open'] [data-drawer-backdrop] {
+		display: block;
+		@starting-style {
+			opacity: 0;
+		}
 	}
 }
 
@@ -858,7 +883,7 @@
 			transparent 70%
 		),
 		linear-gradient(
-			135deg,
+			var(--wall-angle, 135deg),
 			color-mix(in srgb, var(--color-accent) calc(var(--wall) * 55%), transparent) 0%,
 			color-mix(in srgb, var(--color-glow) calc(var(--wall) * 45%), transparent) 50%,
 			transparent 100%
@@ -974,7 +999,14 @@ body::after {
 			rgb(var(--veil-rgb) / var(--crt-scan)) 0 1px,
 			transparent 1px var(--crt-scan-gap)
 		),
-		radial-gradient(ellipse at center, transparent 50%, rgb(var(--shade-rgb) / var(--crt-vignette)));
+		var(
+			--crt-vignette-shape,
+			radial-gradient(
+				ellipse at center,
+				transparent 50%,
+				rgb(var(--shade-rgb) / var(--crt-vignette))
+			)
+		);
 }
 @media print {
 	body::after {

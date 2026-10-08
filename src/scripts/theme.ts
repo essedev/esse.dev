@@ -42,7 +42,7 @@ function apply(theme: Theme) {
 	root.dataset.theme = theme;
 	// For the browsers that still read `theme-color` (Chrome, Safari before 26): the top bar's
 	// color, from global.css, read after the theme is applied.
-	const bar = getComputedStyle(root).getPropertyValue('--bar-top').trim();
+	const bar = getComputedStyle(root).getPropertyValue('--color-bar-top').trim();
 	document.querySelector('meta[name="theme-color"]')?.setAttribute('content', bar);
 	for (const button of document.querySelectorAll<HTMLElement>('[data-theme-toggle]')) {
 		const label = theme === 'light' ? button.dataset.labelDark : button.dataset.labelLight;

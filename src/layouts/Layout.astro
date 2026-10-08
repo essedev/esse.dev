@@ -39,14 +39,14 @@ const locale = lang === 'it' ? 'it_IT' : 'en_US';
 <html lang={lang}>
 	<head>
 		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 		<Font cssVariable="--font-geist" preload />
 		<Font cssVariable="--font-departure" preload />
 		<Font cssVariable="--font-geist-mono" />
 		<title>{pageTitle}</title>
 		<meta name="description" content={pageDescription} />
 		<meta name="author" content="Simone Salerno" />
-		<meta name="theme-color" content="#2f294a" />
+		<meta name="theme-color" content="#2d2741" />
 		{/* The theme before the first paint, or the dark page flashes on a light screen. Astro
 		    does not hash inline scripts: its hash is computed in astro.config.mjs from the same
 		    file. The rest of the logic is in src/scripts/theme.ts. */}

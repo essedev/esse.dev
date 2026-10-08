@@ -31,9 +31,12 @@ mobile drawer (`data-drawer`) in `src/scripts/workspace.ts`.
   color gets both values; what changes shape uses the `light:` variant. A project image with
   a light variant (`logoLight`, `cover.srcLight`) comes from the render scripts, which write
   both.
-- The browser's bars take `--bar-top` and `--bar-bottom` (global.css), the wallpaper's edge
-  measured on its frame: Safari 26 ignores `theme-color` and tints them from the html
-  background. A change to the wallpaper, the desk or the CRT veil means measuring them again.
+- The browser's bars take `--color-bar-top` and `--color-bar-bottom`, the wallpaper's edges
+  measured on its frame. Safari 26 ignores `theme-color`: on phones it samples the fixed
+  strips at the bottom of `Workspace.astro`, on desktop the html background. A full-screen
+  fixed layer is sampled even at opacity 0: closed, it leaves the page (`display: none`). On
+  phones the wallpaper runs vertically so each edge is one color. A change to the wallpaper,
+  the desk or the CRT veil means measuring them again.
 - Lavender (`accent`) for identity and interaction; green (`live`) only for "alive,
   succeeded" (LED in progress and maintained, successful copies and sends), never on
   running text.
