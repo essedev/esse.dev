@@ -1,0 +1,259 @@
+<!doctype html>
+<html lang="it">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Concept I - Tema chiaro</title>
+		<!--
+			Concept I: quanto viola nel tema chiaro. Il guscio del sito ridotto all'osso (wallpaper,
+			cornice, lista, pannello, cover di pgbee), con i token di ogni variante. Tasti x a b c.
+			X  oggi: carta quasi bianca, il viola solo nel wallpaper e nell'accento scuro.
+			A  tutto lilla: wallpaper, lista e pannello nello stesso viola chiaro. Il limite opposto,
+			   per capire dove sta "non tutto lilla".
+			B  struttura viola, lettura bianca: wallpaper, cornice e lista in viola chiaro, il
+			   pannello del contenuto resta bianco. La selezione e i riempimenti usano la lavanda
+			   della dark (#b59cff) velata, l'accento del testo resta scuro per il contrasto.
+			C  lavanda fumé: tutto un gradino sotto (pannelli lilla-grigi, non bianchi), il viola
+			   più spento e uniforme, la lettura su un grigio caldo e non sul bianco.
+			I valori sono indicativi: la variante scelta si rimisura sul vetro vero prima di andare
+			in global.css (il grigio minimo del testo a 4.5:1).
+			Scelta: C, nel sito (DECISIONS #27), con subtle scurito a #57526a dopo la misura.
+		-->
+		<style>
+			@font-face { font-family: 'Geist'; font-weight: 400; src: url(https://cdn.jsdelivr.net/fontsource/fonts/geist@latest/latin-400-normal.woff2) format('woff2'); }
+			@font-face { font-family: 'Geist'; font-weight: 500; src: url(https://cdn.jsdelivr.net/fontsource/fonts/geist@latest/latin-500-normal.woff2) format('woff2'); }
+			@font-face { font-family: 'Departure Mono'; src: url(https://cdn.jsdelivr.net/gh/rektdeckard/departure-mono@main/public/assets/DepartureMono-Regular.woff2) format('woff2'); }
+
+			/* X, oggi: i token di :root[data-theme='light'] in global.css. */
+			:root {
+				--desk: #e2ddee;
+				--wall-a: rgb(107 70 230 / 0.23);
+				--wall-b: rgb(157 133 255 / 0.19);
+				--light: rgb(107 70 230 / 0.32);
+				--grid: rgb(46 28 110 / 0.03);
+				--frame: rgb(255 255 255 / 0.2);
+				--side: rgb(253 252 255 / 0.62);
+				--pane: rgb(253 252 255 / 0.62);
+				--edge: rgb(255 255 255 / 0.9);
+				--shadow: 0 1px 2px rgb(60 40 130 / 0.06), 0 14px 36px rgb(60 40 130 / 0.12);
+				--surface: rgb(46 28 110 / 0.05);
+				--select: rgb(46 28 110 / 0.07);
+				--line: #d9d4e4;
+				--fg: #15121d;
+				--text: #34303f;
+				--muted: #57536a;
+				--subtle: #66627a;
+				--accent: #6b46e6;
+				--glow: rgb(107 70 230 / 0.35);
+				--cover: #d8d0ec;
+				--cover-panel: rgb(255 255 255 / 0.82);
+				--live: #179a4c;
+				--sans: 'Geist', ui-sans-serif, system-ui, sans-serif;
+				--mono: 'Departure Mono', ui-monospace, monospace;
+				color-scheme: light;
+			}
+			/* A, tutto lilla. */
+			body[data-v='a'] {
+				--desk: #cdc1f2;
+				--wall-a: rgb(124 92 240 / 0.42);
+				--wall-b: rgb(181 156 255 / 0.4);
+				--light: rgb(181 156 255 / 0.5);
+				--grid: rgb(60 30 150 / 0.04);
+				--frame: rgb(236 230 252 / 0.3);
+				--side: rgb(232 224 252 / 0.66);
+				--pane: rgb(238 232 253 / 0.7);
+				--edge: rgb(255 255 255 / 0.7);
+				--surface: rgb(90 60 200 / 0.08);
+				--select: rgb(124 92 240 / 0.16);
+				--line: #cfc4ee;
+				--fg: #1a1430;
+				--text: #352c50;
+				--muted: #574d77;
+				--subtle: #625882;
+				--accent: #6544de;
+				--cover: #c7b9f1;
+			}
+			/* B, struttura viola, lettura bianca. */
+			body[data-v='b'] {
+				--desk: #cbbdf3;
+				--wall-a: rgb(124 92 240 / 0.4);
+				--wall-b: rgb(181 156 255 / 0.36);
+				--light: rgb(181 156 255 / 0.55);
+				--grid: rgb(60 30 150 / 0.035);
+				--frame: rgb(225 214 252 / 0.32);
+				--side: rgb(226 216 252 / 0.6);
+				--pane: rgb(255 255 255 / 0.84);
+				--edge: rgb(255 255 255 / 0.8);
+				--surface: rgb(181 156 255 / 0.2);
+				--select: rgb(181 156 255 / 0.42);
+				--line: #ddd5f4;
+				--fg: #16122a;
+				--text: #332d48;
+				--muted: #574f72;
+				--subtle: #645c80;
+				--accent: #6b46e6;
+				--cover: #d6cbf6;
+			}
+			/* C, lavanda fumé. */
+			body[data-v='c'] {
+				--desk: #bcb2dc;
+				--wall-a: rgb(110 80 255 / 0.3);
+				--wall-b: rgb(157 133 255 / 0.26);
+				--light: rgb(181 156 255 / 0.4);
+				--grid: rgb(40 25 90 / 0.05);
+				--frame: rgb(230 226 242 / 0.25);
+				--side: rgb(226 221 238 / 0.72);
+				--pane: rgb(234 230 243 / 0.78);
+				--edge: rgb(255 255 255 / 0.55);
+				--shadow: 0 1px 2px rgb(40 25 90 / 0.08), 0 14px 36px rgb(40 25 90 / 0.16);
+				--surface: rgb(40 25 90 / 0.07);
+				--select: rgb(110 80 220 / 0.14);
+				--line: #cfc9de;
+				--fg: #17141f;
+				--text: #312d3c;
+				--muted: #504b60;
+				--subtle: #5c576d;
+				--accent: #5f40d6;
+				--cover: #c9bfe6;
+				--cover-panel: rgb(244 241 250 / 0.9);
+			}
+
+			* { box-sizing: border-box; }
+			html, body { height: 100%; margin: 0; }
+			body {
+				font-family: var(--sans);
+				font-weight: 380;
+				color: var(--fg);
+				background:
+					repeating-linear-gradient(to right, var(--grid) 0 1px, transparent 1px 48px),
+					repeating-linear-gradient(to bottom, var(--grid) 0 1px, transparent 1px 48px),
+					radial-gradient(22% 26% at 14% 6%, var(--light), transparent 70%),
+					linear-gradient(135deg, var(--wall-a) 0%, var(--wall-b) 50%, transparent 100%),
+					var(--desk);
+				-webkit-font-smoothing: antialiased;
+				display: flex;
+				flex-direction: column;
+			}
+
+			.switch { display: flex; gap: 6px; align-items: center; padding: 10px 14px; font-family: var(--mono); font-size: 12px; color: var(--muted); }
+			.switch button { font: inherit; border: 0; padding: 6px 10px; border-radius: 6px; background: rgb(255 255 255 / 0.5); color: var(--text); cursor: pointer; }
+			.switch button[aria-pressed='true'] { background: var(--fg); color: #fff; }
+			.switch p { margin: 0 0 0 10px; }
+
+			.window {
+				flex: 1; min-height: 0; margin: 0 12px 12px; padding: 8px; display: grid; grid-template-columns: 300px 1fr; gap: 8px;
+				border-radius: 18px; background: var(--frame); box-shadow: inset 0 1px 0 var(--edge), var(--shadow);
+			}
+			.card {
+				border-radius: 11px; overflow: hidden; position: relative;
+				-webkit-backdrop-filter: blur(32px) saturate(140%); backdrop-filter: blur(32px) saturate(140%);
+				box-shadow: inset 0 1px 0 var(--edge), inset 0 0 0 1px rgb(46 28 110 / 0.06), var(--shadow);
+			}
+			.side { background: var(--side); padding: 18px 14px; display: flex; flex-direction: column; gap: 2px; }
+			.pane { background: var(--pane); display: flex; flex-direction: column; }
+
+			.logo { font-family: var(--mono); font-size: 13px; padding: 4px 8px 14px; text-shadow: 0 0 2px color-mix(in srgb, var(--accent) 55%, transparent); }
+			.caret { display: inline-block; width: 0.5em; height: 1.05em; vertical-align: -0.15em; margin-left: 0.15em; background: var(--accent); box-shadow: 0 0 4px var(--accent); }
+			.search { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 12px; color: var(--subtle); background: var(--surface); border-radius: 6px; padding: 9px 10px; margin-bottom: 14px; }
+			.kbd { background: var(--surface); border-radius: 4px; padding: 0 5px; }
+			.row { display: flex; align-items: center; gap: 12px; padding: 7px 8px; border-radius: 6px; font-size: 14.5px; color: var(--fg); }
+			.row.on { background: var(--select); }
+			.row .meta { margin-left: auto; font-family: var(--mono); font-size: 11px; color: var(--subtle); }
+			.ico { width: 14px; height: 14px; border: 1.5px solid var(--subtle); border-radius: 4px; }
+			.label { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--subtle); padding: 18px 8px 6px; display: flex; justify-content: space-between; text-shadow: 0 0 2px color-mix(in srgb, var(--accent) 55%, transparent); }
+			.tile { width: 20px; height: 20px; border-radius: 5px; box-shadow: inset 0 0 0 1px rgb(46 28 110 / 0.12); position: relative; }
+			.tile::after { content: ''; position: absolute; right: -2px; bottom: -2px; width: 6px; height: 6px; border-radius: 9px; background: var(--live); box-shadow: 0 0 1.5px #fff; }
+			.tile.dark { background: #121019; box-shadow: none; }
+
+			.bar { height: 48px; display: flex; align-items: center; padding: 0 48px; font-family: var(--mono); font-size: 13px; color: var(--subtle); gap: 8px; }
+			.bar b { font-weight: 400; color: var(--fg); }
+			.bar .end { margin-left: auto; display: flex; gap: 14px; align-items: center; }
+			.bar svg { width: 18px; height: 18px; fill: var(--muted); shape-rendering: crispEdges; }
+			.body { padding: 28px 48px; overflow: auto; }
+			.cover { aspect-ratio: 21 / 9; border-radius: 10px; display: grid; place-items: center; position: relative;
+				background: radial-gradient(55% 80% at 88% 10%, rgb(132 100 5 / 0.16), transparent), radial-gradient(40% 60% at 0% 100%, rgb(157 133 255 / 0.16), transparent), var(--cover); }
+			.cover pre { margin: 0; font-family: var(--mono); font-size: clamp(11px, 1.15vw, 17px); line-height: 1.75; color: var(--text); background: var(--cover-panel); border-radius: 12px; padding: 26px 32px; box-shadow: inset 0 0 0 1px rgb(46 28 110 / 0.08), 0 20px 50px rgb(60 40 130 / 0.18); }
+			.cover pre i { font-style: normal; color: #846405; }
+			.bee { position: absolute; left: 0; bottom: -32px; width: 72px; height: 72px; border-radius: 16px; background: linear-gradient(135deg, rgb(255 209 102 / 0.34), rgb(255 209 102 / 0.16)), #fbfaff; box-shadow: inset 0 0 0 1px rgb(46 28 110 / 0.12), 0 8px 18px rgb(60 40 130 / 0.22); display: grid; place-items: center; font-size: 34px; }
+			h1 { font-size: clamp(2rem, 1.2rem + 2.6vw, 3.4rem); font-weight: 500; letter-spacing: -0.025em; margin: 56px 0 10px; text-shadow: 0 0 2px color-mix(in srgb, var(--accent) 45%, transparent); }
+			.metaline { font-family: var(--mono); font-size: 13px; color: var(--muted); display: flex; gap: 10px; align-items: center; }
+			.led { width: 7px; height: 7px; border-radius: 9px; background: var(--live); }
+			p.lead { font-size: 19px; line-height: 1.75; color: var(--text); max-width: 40em; }
+			.chips { display: flex; gap: 8px; flex-wrap: wrap; }
+			.chip { font-family: var(--mono); font-size: 12px; color: var(--muted); background: var(--surface); border-radius: 6px; padding: 6px 10px; }
+			a { color: var(--fg); text-decoration: underline; text-decoration-color: var(--accent); text-underline-offset: 4px; }
+			.acc { color: var(--accent); }
+
+			body::after { content: ''; position: fixed; inset: 0; pointer-events: none; background: repeating-linear-gradient(to bottom, rgb(46 28 110 / 0.03) 0 1px, transparent 1px 3px), radial-gradient(ellipse at center, transparent 50%, rgb(40 24 90 / 0.07)); }
+		</style>
+	</head>
+	<body data-v="x">
+		<div class="switch">
+			<button data-v="x" aria-pressed="true">X oggi</button>
+			<button data-v="a">A tutto lilla</button>
+			<button data-v="b">B viola + bianco</button>
+			<button data-v="c">C lavanda fumé</button>
+			<p data-desc></p>
+		</div>
+		<div class="window">
+			<aside class="card side">
+				<div class="logo">esse.dev<span class="caret"></span></div>
+				<div class="search">Cerca <span class="kbd">/</span></div>
+				<div class="row"><span class="ico"></span>Benvenuto</div>
+				<div class="row"><span class="ico"></span>Chi sono</div>
+				<div class="row"><span class="ico"></span>Adesso<span class="meta">set 2026</span></div>
+				<div class="row"><span class="ico acc" style="border-color: var(--accent)"></span>Agente</div>
+				<div class="label">Progetti <span>24</span></div>
+				<div class="row"><span class="tile dark"></span>Relay<span class="meta">2026</span></div>
+				<div class="row"><span class="tile" style="background: linear-gradient(135deg, rgb(125 211 252 / 0.34), rgb(125 211 252 / 0.16)), #fbfaff"></span>Nexus<span class="meta">2026</span></div>
+				<div class="row on"><span class="tile" style="background: linear-gradient(135deg, rgb(255 209 102 / 0.34), rgb(255 209 102 / 0.16)), #fbfaff"></span>pgbee<span class="meta">2026</span></div>
+				<div class="row"><span class="tile" style="background: linear-gradient(135deg, rgb(251 113 133 / 0.34), rgb(251 113 133 / 0.16)), #fbfaff"></span>Zeno<span class="meta">2026</span></div>
+				<div class="row"><span class="tile" style="background: linear-gradient(135deg, rgb(125 211 252 / 0.34), rgb(125 211 252 / 0.16)), #fbfaff"></span>mcpbelt<span class="meta">2026</span></div>
+				<div class="row"><span class="tile dark"></span>Portsage<span class="meta">2026</span></div>
+				<div class="label">Metodo <span>4</span></div>
+				<div class="row"><span class="meta" style="margin: 0">01</span>Architettura prima del codice</div>
+				<div class="row"><span class="meta" style="margin: 0">02</span>Il contesto è il lavoro</div>
+			</aside>
+			<main class="card pane">
+				<div class="bar">
+					~ / progetti / <b>pgbee</b>
+					<span class="end">
+						link &nbsp; github
+						<svg viewBox="0 0 9 9"><path d="M3 0h1v1h-1zM4 0h1v1h-1zM1 1h1v1h-1zM2 1h1v1h-1zM3 1h1v1h-1zM1 2h1v1h-1zM2 2h1v1h-1zM0 3h1v1h-1zM1 3h1v1h-1zM2 3h1v1h-1zM0 4h1v1h-1zM1 4h1v1h-1zM2 4h1v1h-1zM8 4h1v1h-1zM0 5h1v1h-1zM1 5h1v1h-1zM2 5h1v1h-1zM3 5h1v1h-1zM7 5h1v1h-1zM8 5h1v1h-1zM1 6h7v1h-7zM2 7h6v1h-6zM3 8h3v1h-3zM7 1h1v1h-1z" /></svg>
+						<span>en <b>it</b></span>
+					</span>
+				</div>
+				<div class="body">
+					<div class="cover">
+<pre><i>select bee.add_column('ticket', 'category',</i>
+  array['body'], 'enum', 'decision',
+  p_prompt => 'What is this ticket about?',
+  p_model  => '&lt;model&gt;');
+-- queued in your insert's transaction</pre>
+						<div class="bee">🐝</div>
+					</div>
+					<h1>pgbee</h1>
+					<div class="metaline"><span class="led"></span>in corso · 2026 · in evidenza</div>
+					<p class="lead">Un'estensione per PostgreSQL: dichiari in SQL che una colonna si ricava da altre con un modello, e il database la tiene <a href="#">compilata, versionata</a> e con i costi registrati.</p>
+					<div class="chips"><span class="chip">postgres</span><span class="chip">sql</span><span class="chip">llm</span><span class="chip">hello@esse.dev</span></div>
+				</div>
+			</main>
+		</div>
+		<script>
+			const DESC = {
+				x: 'oggi: carta quasi bianca, il viola nel wallpaper e nell’accento',
+				a: 'tutto nello stesso viola chiaro: il limite opposto',
+				b: 'cornice e lista viola chiaro, il contenuto bianco; selezione nella lavanda della dark',
+				c: 'tutto un gradino sotto, lilla-grigio spento, niente bianco'
+			};
+			const pick = (v) => {
+				document.body.dataset.v = v;
+				document.querySelectorAll('.switch button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.v === v)));
+				document.querySelector('[data-desc]').textContent = DESC[v];
+			};
+			document.querySelectorAll('.switch button').forEach((b) => b.addEventListener('click', () => pick(b.dataset.v)));
+			addEventListener('keydown', (e) => { if (DESC[e.key]) pick(e.key); });
+			pick('x');
+		</script>
+	</body>
+</html>

@@ -5,7 +5,7 @@
 			<stop offset="1" stop-color="#4ade80" stop-opacity="0.16"/>
 		</linearGradient>
 	</defs>
-	<rect width="128" height="128" rx="28" fill="#fbfaff"/>
+	<rect width="128" height="128" rx="28" fill="#f4f1fa"/>
 	<rect width="128" height="128" rx="28" fill="url(#t)"/>
 	<rect x="0.5" y="0.5" width="127" height="127" rx="27.5" fill="none" stroke="#2e1c6e" stroke-opacity="0.12"/>
 	<g transform="translate(32 32) scale(2.6666666666666665)" fill="none" stroke="#027e3e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20v2"/><path d="M12 2v2"/><path d="M17 20v2"/><path d="M17 2v2"/><path d="M2 12h2"/><path d="M2 17h2"/><path d="M2 7h2"/><path d="M20 12h2"/><path d="M20 17h2"/><path d="M20 7h2"/><path d="M7 20v2"/><path d="M7 2v2"/><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="8" y="8" width="8" height="8" rx="1"/></g>

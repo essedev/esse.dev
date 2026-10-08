@@ -103,33 +103,34 @@
 		--fringe-blend: screen;
 	}
 
-	/* Light mode: the same lab by day. Cold lavender paper, frosted white glass, ink almost
-	   black with a violet cast, the accent deepened to violet to hold the contrast. The CRT
+	/* Light mode: the same lab by day, at dusk (concept I, variant C). Smoky lavender: the
+	   wallpaper a muted violet, the glass a lilac grey and never white, ink almost black with
+	   a violet cast, the accent deepened to violet to hold the contrast. The CRT
 	   veil stays but turns into print: dark scan lines, a lighter vignette, a thinner glow.
 	   The theme is `data-theme` on <html>, set before the first paint by the script in the
 	   head of Layout.astro: the visitor's choice, or the system's. */
 	:root[data-theme='light'] {
 		color-scheme: light;
 
-		--color-desk: #e2ddee;
-		--color-frame: #ffffff;
-		--color-bg: #f6f4fa;
-		--color-panel: #fdfcff;
-		--color-surface: rgb(46 28 110 / 0.05);
-		--color-hover: rgb(46 28 110 / 0.085);
-		--color-line: #d9d4e4;
-		--color-fg: #15121d;
-		--color-text: #34303f;
-		--color-muted: #57536a;
-		/* 4.8:1 on the glass where the wallpaper behind is darkest. */
-		--color-subtle: #66627a;
-		--color-accent: #6b46e6;
+		--color-desk: #bcb2dc;
+		--color-frame: #e6e2f2;
+		--color-bg: #e9e5f1;
+		--color-panel: #ece8f4;
+		--color-surface: rgb(40 25 90 / 0.07);
+		--color-hover: rgb(40 25 90 / 0.1);
+		--color-line: #cfc9de;
+		--color-fg: #17141f;
+		--color-text: #312d3c;
+		--color-muted: #504b60;
+		/* 4.7:1 on the glass where the wallpaper's point of light is strongest (measured). */
+		--color-subtle: #57526a;
+		--color-accent: #5f40d6;
 		--color-on-accent: #ffffff;
 		--color-live: #179a4c;
 		--color-danger: #c43d2e;
-		--color-status-completed: #15121d;
-		--color-status-idea: #57536a;
-		--color-status-archived: #b9b4c6;
+		--color-status-completed: #17141f;
+		--color-status-idea: #504b60;
+		--color-status-archived: #a9a2bd;
 		--color-glow: #9d85ff;
 
 		--crt-title-glow: 2px;
@@ -137,16 +138,16 @@
 		--crt-scan: 0.03;
 		--crt-vignette: 0.07;
 
-		--wall: 0.42;
-		--wall-light: 0.32;
+		--wall: 0.55;
+		--wall-light: 0.4;
 		--glass-sat: 140%;
-		--glass-tint: 0.22;
-		--glass-rim: 0.9;
-		--glass-shadow: 0 1px 2px rgb(60 40 130 / 0.06), 0 14px 36px rgb(60 40 130 / 0.12);
+		--glass-tint: 0.3;
+		--glass-rim: 0.55;
+		--glass-shadow: 0 1px 2px rgb(40 25 90 / 0.08), 0 14px 36px rgb(40 25 90 / 0.16);
 		--glass-accent: 26%;
 		--glass-edge: 0.1;
 
-		--veil-rgb: 46 28 110;
+		--veil-rgb: 40 25 90;
 		--shade-rgb: 40 24 90;
 		--led-lift: rgb(255 255 255 / 0.95);
 		--logo-shadow: 0 8px 18px rgb(60 40 130 / 0.22);

@@ -312,9 +312,13 @@ tilde (B, reads better at 16 px but leaves the logo's pixel language) and Geist 
 
 **Status:** active (Cycle 26)
 
-The site gets a light theme: the same lab by day. Cold lavender paper for the wallpaper,
-frosted white glass, ink almost black with a violet cast, the accent down to `#6b46e6` to
-hold about 4.8:1 on the glass, `live` to `#179a4c`. The CRT veil stays and turns into print:
+The site gets a light theme: the same lab by day, at dusk. A muted violet wallpaper, the
+glass a lilac grey and never white, ink almost black with a violet cast, the accent down to
+`#5f40d6` and the minimum text grey to `#57526a` (4.7:1 where the glass is lightest,
+measured), `live` to `#179a4c`. From concept I (`docs/concepts/concept-i-chiaro.html`),
+variant C: the first version, white glass on lavender paper (X), read as too white, the
+violet only in the wallpaper; rejected all lilac (A, list and pane one tone) and violet
+structure with a white pane (B). The CRT veil stays and turns into print:
 dark scan lines, a lighter vignette, a thinner glow, the error number's fringe in `multiply`
 instead of `screen`. The dark values stay the tokens' own in `@theme`; the light ones
 override them under `:root[data-theme='light']`, and the white and black that were written
@@ -344,9 +348,9 @@ The logos made by `scripts/render-logo.ts` and the designed covers made by
 light logo is a light tile tinted with the bright accent, stronger than the dark one, with a
 hairline; the glyph on it in the accent darkened to the lightness of the site's light accent
 (`scripts/light-accent.ts`, OKLCH, hue kept); a mark stays as it is. The light cover puts the
-same panel, white, on a mid lavender ground, the wallpaper's tone, with the darkened accent:
-the first version, panel and ground both near the paper, stood 1.01:1 against the pane and
-melted into it, the tiles too. Both scripts always write both, and `render-logo.ts --light` reads an
+same panel, almost white, on a mid lavender ground a step under the glass, with the
+darkened accent: the first version, panel and ground both near the glass's tone, stood
+1.01:1 against the pane and melted into it, the tiles too. Both scripts always write both, and `render-logo.ts --light` reads an
 existing logo back from its SVG, since the arguments it was made with are not kept. When a
 cover has two variants both load lazily, so only the shown one is fetched (an eager image
 hidden by CSS is fetched all the same), at the cost of starting after layout. Not in two:

@@ -23,8 +23,8 @@ import { lightAccent } from './light-accent.ts';
 type Theme = 'dark' | 'light';
 
 const DARK_TILE = '#121019';
-/** The light tile: the site's light panel. */
-const LIGHT_TILE = '#fbfaff';
+/** The light tile: a step lighter than the light theme's lilac glass. */
+const LIGHT_TILE = '#f4f1fa';
 
 const MIME: Record<string, string> = {
 	'.svg': 'image/svg+xml',

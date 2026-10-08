@@ -46,18 +46,18 @@ const THEME = {
 		text: '#cbc9d4',
 		muted: '#9c9aa8'
 	},
-	// The light ground is a mid lavender, the wallpaper's tone, not the paper: on a paper
-	// ground the cover melted into the pane (1.01:1).
+	// The light ground is a mid lavender, a step under the lilac glass: on the glass's own
+	// tone the cover melted into the pane (1.01:1).
 	light: {
-		ground: '#d8d0ec',
+		ground: '#c9bfe6',
 		glow: 'color-mix(in srgb, #9d85ff 16%, transparent)',
 		accentGlow: 16,
-		scan: 'rgb(46 28 110 / 0.025)',
-		panel: 'rgb(255 255 255 / 0.82)',
-		edge: 'rgb(46 28 110 / 0.08)',
-		shadow: 'rgb(60 40 130 / 0.18)',
-		text: '#34303f',
-		muted: '#57536a'
+		scan: 'rgb(40 25 90 / 0.03)',
+		panel: 'rgb(244 241 250 / 0.9)',
+		edge: 'rgb(40 25 90 / 0.08)',
+		shadow: 'rgb(40 25 90 / 0.2)',
+		text: '#312d3c',
+		muted: '#504b60'
 	}
 } as const;
 
