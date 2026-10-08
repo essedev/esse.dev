@@ -160,7 +160,7 @@
 		"agentDraftSent": "sent, thank you",
 		"agentOpen": "open",
 		"agentAsk4": "How does Portsage know which ports are taken? Show me the code",
-		"agentPrivacyNote": "conversations kept for 90 days",
+		"agentPrivacyNote": "kept for 90 days",
 		"privacyUpdated": "updated on"
 	},
 	"sectionDescriptions": {
