@@ -330,8 +330,10 @@ next to the languages; a pick equal to the system's is not saved, so the site go
 following it. `data-theme` is set before the first paint by `scripts/theme-init.js`, inline
 in the head, or a light screen would flash dark: Astro does not hash inline scripts, so
 `astro.config.mjs` computes the hash from the same file. The toggle's sun and moon are drawn
-on the 9-pixel grid of Departure Mono (`ui/PixelIcon.astro`, 2x2-pixel cells at 18 px), the
-logic of the favicon (#26): the one exception to "icons only Lucide", so that the toggle
+in pixels (`ui/PixelIcon.astro`): 1 px cells on a 15 grid, the grain of Departure Mono next to
+them, filled, the moon from two clean pixel circles (concept J, variant B; the first version,
+2 px cells on a 9 grid, was coarser than the text and stepped unevenly), the logic of the
+favicon (#26): the one exception to "icons only Lucide", so that the toggle
 reads as part of the toolbar's mono rather than as one more line icon. On hover the sun's rays take
 turns and the moon's star twinkles, by opacity, so with reduced motion too (#25). Rejected:
 only `prefers-color-scheme` (no way to pick on a shared screen), a three-state toggle with
