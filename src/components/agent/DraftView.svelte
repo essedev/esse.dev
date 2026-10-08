@@ -76,7 +76,8 @@
 				api = t;
 				widgetId = t.render(widget, {
 					sitekey: siteKey,
-					theme: 'dark',
+					// The site's theme when the widget is drawn; a toggle later does not redraw it.
+					theme: document.documentElement.dataset.theme === 'light' ? 'light' : 'dark',
 					size: 'flexible',
 					callback: (value: string) => (token = value),
 					'expired-callback': () => (token = ''),
