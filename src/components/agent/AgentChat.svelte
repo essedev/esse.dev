@@ -33,8 +33,6 @@
 
 	type Labels = {
 		placeholder: string;
-		/** On touch screens, where the field is 16px (Safari zooms in below) and the long one wraps. */
-		placeholderShort: string;
 		send: string;
 		stop: string;
 		connecting: string;
@@ -103,8 +101,6 @@
 	/** A message stopped before the model: it lives only in the browser. */
 	type Local = { text: string; reason: NoticeReason; after: number };
 
-	// Touch screens get the short placeholder; client:only, so matchMedia is there.
-	const coarse = matchMedia('(pointer: coarse)').matches;
 	let view: PiSessionView = $state(EMPTY_VIEW);
 	let status: 'connecting' | 'open' | 'closed' = $state('connecting');
 	let input = $state('');
@@ -875,9 +871,7 @@
 				onkeydown={onKey}
 				rows="1"
 				placeholder={status === 'open'
-					? coarse
-						? labels.placeholderShort
-						: labels.placeholder
+					? labels.placeholder
 					: status === 'connecting'
 						? labels.connecting
 						: labels.offline}
