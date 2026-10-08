@@ -366,3 +366,16 @@ shown one is fetched (an eager image hidden by CSS is fetched all the same), at 
 starting after layout. Not in two: the app icons that are already a tile (Relay, Copilota,
 Portsage), which are the apps' own, the screenshots, which are the real interface, and the
 OG images, which are seen outside the site. The generated cover follows the tokens already.
+
+## #29 - The agent learns how a draft's sending went
+
+**Status:** active (Cycle 26)
+
+After the visitor sends, or fails to send, a `draft_message` draft, the server writes an
+entry (`app.draft-delivery`) into the conversation with a note for the model: from the site,
+not from the visitor, with the outcome and our own error message, never the draft's text.
+pi-durable appends it without a run, so it costs nothing; the model reads it on its next
+turn and answers "was it sent?" right. The page drops the kind in `projectEntry`, or the note
+would read as the visitor speaking. Rejected: a tool that waits for the click (the
+conversation would stay busy and queue every new question), and an answer from the agent
+right after each send (a model call that repeats the page's "sent").

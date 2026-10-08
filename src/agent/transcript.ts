@@ -10,6 +10,7 @@ import type {
 	UserMessage
 } from '@earendil-works/pi-ai';
 import type { EntryRecord } from '@earendil-works/pi-durable';
+import { DELIVERY_ENTRY } from './draft';
 
 /**
  * This app's display model for a transcript. The harness returns pi's own
@@ -127,7 +128,10 @@ export function projectEntry(entry: EntryRecord): PiMessage | undefined {
 			timestamp: 0
 		};
 	}
-	if (entry.kind === 'pi.system' || message === undefined) return undefined;
+	// A delivery note is for the model only: on the page it would read as the visitor's.
+	if (entry.kind === 'pi.system' || entry.kind === DELIVERY_ENTRY || message === undefined) {
+		return undefined;
+	}
 	return projectMessage(message, String(entry.id));
 }
 

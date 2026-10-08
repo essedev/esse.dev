@@ -86,6 +86,26 @@ export function mailBody(send: DraftSend, lang: string): string {
 	].join('\n');
 }
 
+/**
+ * The kind of the transcript entry that tells the model how a draft's sending went. The
+ * model reads it on its next turn; the page never shows it (`projectEntry`).
+ */
+export const DELIVERY_ENTRY = 'app.draft-delivery';
+
+/** How the sending of an approved draft ended, as the model learns it. */
+export type Delivery = { status: 'sent' } | { status: 'error'; reason: string };
+
+/**
+ * The note the model reads after a send: from the site, not from the visitor. It carries
+ * the outcome and our own error message, never the draft's text, which is the visitor's.
+ */
+export function deliveryNote(delivery: Delivery, at: Date): string {
+	const when = `${at.toISOString().slice(0, 16).replace('T', ' ')} UTC`;
+	return delivery.status === 'sent'
+		? `[Note from the site, not from the visitor] The visitor sent your draft to Simone at ${when}. It reached him: do not offer to draft it again, and if asked, confirm it was sent.`
+		: `[Note from the site, not from the visitor] Sending your draft failed at ${when}: ${delivery.reason} Nothing reached Simone. If it comes up, say so plainly and suggest writing to hello@esse.dev.`;
+}
+
 /** A counter for one day. */
 export interface DailyCount {
 	day: string;

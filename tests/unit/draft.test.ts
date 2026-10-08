@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
+	DELIVERY_ENTRY,
+	deliveryNote,
 	DRAFT_LIMITS,
 	DraftError,
 	mailBody,
@@ -9,6 +11,8 @@ import {
 	TURNSTILE_TEST_SITE_KEY,
 	turnstileSiteKey
 } from '../../src/agent/draft';
+import { projectEntry } from '../../src/agent/transcript';
+import type { EntryRecord } from '@earendil-works/pi-durable';
 
 const valid = {
 	draftId: 'call-1',
@@ -63,5 +67,34 @@ describe('turnstileSiteKey', () => {
 	it('lets a key set at build time win everywhere', () => {
 		expect(turnstileSiteKey('esse.dev', 'built-in')).toBe('built-in');
 		expect(turnstileSiteKey('localhost', 'built-in')).toBe('built-in');
+	});
+});
+
+describe('deliveryNote', () => {
+	const at = new Date('2026-10-08T10:11:00Z');
+
+	it('tells the model the draft reached Simone, from the site and not the visitor', () => {
+		const note = deliveryNote({ status: 'sent' }, at);
+		expect(note).toContain('[Note from the site, not from the visitor]');
+		expect(note).toContain('2026-10-08 10:11 UTC');
+		expect(note).toContain('do not offer to draft it again');
+	});
+
+	it('carries our reason on a failure and points to the address', () => {
+		const note = deliveryNote({ status: 'error', reason: 'At most 3 messages a day.' }, at);
+		expect(note).toContain('At most 3 messages a day.');
+		expect(note).toContain('Nothing reached Simone');
+		expect(note).toContain('hello@esse.dev');
+	});
+
+	it('is kept off the page: the chat does not show it as the visitor speaking', () => {
+		const entry = {
+			id: 7,
+			conversationId: 1,
+			kind: DELIVERY_ENTRY,
+			model: [{ role: 'user', content: deliveryNote({ status: 'sent' }, at), timestamp: 0 }],
+			data: { draftId: 'call-1', status: 'sent' }
+		} as unknown as EntryRecord;
+		expect(projectEntry(entry)).toBeUndefined();
 	});
 });

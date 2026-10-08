@@ -1,4 +1,5 @@
 import { DurableObject } from 'cloudflare:workers';
+import { BACKGROUND_CONTEXT } from '@earendil-works/chord/context';
 import { Type, type AssistantMessage } from '@earendil-works/pi-ai';
 import {
 	configure,
@@ -14,13 +15,16 @@ import type { PiServerMessage } from './protocol';
 import { CHILD_TOKEN_CAP, CHILD_TOKEN_OVERSHOOT, ChildBudget } from './child-budget';
 import { CHILD_INSTRUCTIONS, childReport, DELEGATE_LIMITS, type ChildReport } from './delegate';
 import {
+	DELIVERY_ENTRY,
+	deliveryNote,
 	DRAFT_LIMITS,
 	DraftError,
 	MAIL_FROM,
 	mailBody,
 	parseSend,
 	todayCount,
-	type DailyCount
+	type DailyCount,
+	type Delivery
 } from './draft';
 import { GitHubReader } from './github';
 import { MODEL, siteModels } from './models';
@@ -655,7 +659,8 @@ export class SiteAgent extends DurableObject<Env> {
 
 	/**
 	 * Sends an approved draft. In order: the draft exists in this conversation and has not
-	 * gone out yet, Turnstile, the visitor's cap, the site's cap, then the email.
+	 * gone out yet, Turnstile, the visitor's cap, the site's cap, then the email. Once the
+	 * draft is known to be real, the outcome also goes into the conversation for the model.
 	 */
 	async sendDraft(
 		session: PiSessionId,
@@ -663,6 +668,7 @@ export class SiteAgent extends DurableObject<Env> {
 		reply: Reply
 	): Promise<void> {
 		const draftId = typeof message.draftId === 'string' ? message.draftId : '';
+		let real = false;
 		try {
 			const send = parseSend(message);
 			const sent = (await this.ctx.storage.get<string[]>('drafts-sent')) ?? [];
@@ -677,6 +683,7 @@ export class SiteAgent extends DurableObject<Env> {
 				);
 			});
 			if (!drafted) throw new DraftError('No such draft in this conversation.');
+			real = true;
 			if (!(await this.#human(send.turnstile))) throw new DraftError('Turnstile check failed.');
 			const mine = todayCount(await this.ctx.storage.get<DailyCount>('messages'), new Date());
 			if (mine.count >= DRAFT_LIMITS.visitorDaily) {
@@ -697,14 +704,43 @@ export class SiteAgent extends DurableObject<Env> {
 			await this.ctx.storage.put('messages', { day: mine.day, count: mine.count + 1 });
 			await this.ctx.storage.put('drafts-sent', [...sent, send.draftId]);
 			reply({ type: 'draft', draftId: send.draftId, status: 'sent' });
+			await this.#noteDelivery(session, draftId, { status: 'sent' });
 		} catch (error) {
 			if (!(error instanceof DraftError)) console.error('draft send failed', error);
-			reply({
-				type: 'draft',
-				draftId,
-				status: 'error',
-				message: error instanceof DraftError ? error.message : 'Sending failed.'
-			});
+			const reason = error instanceof DraftError ? error.message : 'Sending failed.';
+			reply({ type: 'draft', draftId, status: 'error', message: reason });
+			if (real) await this.#noteDelivery(session, draftId, { status: 'error', reason });
+		}
+	}
+
+	/**
+	 * Tells the model how a draft's sending went: an entry it reads on its next turn, written
+	 * without asking it anything. A failure here is logged and leaves the send as it was: the
+	 * visitor already has the outcome on the page.
+	 */
+	async #noteDelivery(session: PiSessionId, draftId: string, delivery: Delivery): Promise<void> {
+		try {
+			const pi = await this.harness.pi();
+			const conversation = await pi.conversation(
+				Number(session) as Parameters<typeof pi.conversation>[0],
+				BACKGROUND_CONTEXT
+			);
+			if (!conversation) throw new Error(`Unknown session ${session}`);
+			await conversation.submit(
+				{
+					type: 'write',
+					entry: {
+						kind: DELIVERY_ENTRY,
+						model: [
+							{ role: 'user', content: deliveryNote(delivery, new Date()), timestamp: Date.now() }
+						],
+						data: { draftId, status: delivery.status }
+					}
+				},
+				BACKGROUND_CONTEXT
+			);
+		} catch (error) {
+			console.error('draft delivery note failed', error);
 		}
 	}
 
