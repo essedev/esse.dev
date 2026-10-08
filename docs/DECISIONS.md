@@ -318,7 +318,12 @@ glass a lilac grey and never white, ink almost black with a violet cast, the acc
 measured), `live` to `#179a4c`. From concept I (`docs/concepts/concept-i-chiaro.html`),
 variant C: the first version, white glass on lavender paper (X), read as too white, the
 violet only in the wallpaper; rejected all lilac (A, list and pane one tone) and violet
-structure with a white pane (B). The CRT veil stays and turns into print:
+structure with a white pane (B). The dark theme gets more light in the same cycle, from
+concept K (`docs/concepts/concept-k-scuro.html`), variant A: the surfaces stay, the desk goes
+to `#0a0912` and the wallpaper's veil and point of light double (`--wall` 0.44,
+`--wall-light` 0.32), so the glass shows more violet; the minimum grey still holds 4.67:1
+where the light is strongest. Rejected: lifting the surfaces too, toward violet (B) or
+graphite (C). The Turnstile widget takes the site's theme when it is drawn. The CRT veil stays and turns into print:
 dark scan lines, a lighter vignette, a thinner glow, the error number's fringe in `multiply`
 instead of `screen`. The dark values stay the tokens' own in `@theme`; the light ones
 override them under `:root[data-theme='light']`, and the white and black that were written

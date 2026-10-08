@@ -1,0 +1,238 @@
+<!doctype html>
+<html lang="it">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Concept K - Tema scuro</title>
+		<!--
+			Concept K: più luce nel tema scuro, sullo stesso guscio del concept I. Tasti x a b c.
+			X  oggi: nero freddo (#050507 il fondo, #0e0e12 il vetro), il viola in un velo leggero.
+			A  più velo: le superfici restano, raddoppia la luce viola del wallpaper che passa dal
+			   vetro. Cambia l'atmosfera, non il nero della lettura.
+			B  notte viola: tutto un gradino sopra e verso il viola (vetro #1e1a2f), selezione nella
+			   lavanda velata. È lo specchio della lavanda fumé del chiaro.
+			C  grafite: tutto un gradino sopra ma neutro (vetro #202026), il viola resta solo nel
+			   velo e nell'accento. Più "app" che laboratorio.
+			In B e C i grigi del testo salgono, perché su un fondo più chiaro calano di contrasto.
+			I valori sono indicativi: la scelta si rimisura sul vetro vero prima di global.css.
+			Scelta: A, nel sito (DECISIONS #27).
+		-->
+		<style>
+			@font-face { font-family: 'Geist'; font-weight: 400; src: url(https://cdn.jsdelivr.net/fontsource/fonts/geist@latest/latin-400-normal.woff2) format('woff2'); }
+			@font-face { font-family: 'Geist'; font-weight: 500; src: url(https://cdn.jsdelivr.net/fontsource/fonts/geist@latest/latin-500-normal.woff2) format('woff2'); }
+			@font-face { font-family: 'Departure Mono'; src: url(https://cdn.jsdelivr.net/gh/rektdeckard/departure-mono@main/public/assets/DepartureMono-Regular.woff2) format('woff2'); }
+
+			/* X, oggi: i token di @theme in global.css. */
+			:root {
+				--desk: #050507;
+				--wall-a: rgb(181 156 255 / 0.11);
+				--wall-b: rgb(110 80 255 / 0.09);
+				--light: rgb(181 156 255 / 0.18);
+				--grid: rgb(255 255 255 / 0.03);
+				--frame: rgb(8 8 11 / 0.2);
+				--side: rgb(14 14 18 / 0.48);
+				--pane: rgb(14 14 18 / 0.48);
+				--edge: rgb(255 255 255 / 0.09);
+				--shadow: 0 12px 32px rgb(0 0 0 / 0.35);
+				--surface: rgb(255 255 255 / 0.05);
+				--select: rgb(255 255 255 / 0.06);
+				--line: #23232b;
+				--fg: #efedf5;
+				--text: #cbc9d4;
+				--muted: #9c9aa8;
+				--subtle: #908e9b;
+				--accent: #b59cff;
+				--cover: #0b0a10;
+				--cover-panel: rgb(255 255 255 / 0.035);
+				--live: #7dff9b;
+				--sans: 'Geist', ui-sans-serif, system-ui, sans-serif;
+				--mono: 'Departure Mono', ui-monospace, monospace;
+				color-scheme: dark;
+			}
+			/* A, più velo: le superfici di oggi, il doppio della luce viola dietro il vetro. */
+			body[data-v='a'] {
+				--desk: #0a0912;
+				--wall-a: rgb(181 156 255 / 0.24);
+				--wall-b: rgb(110 80 255 / 0.22);
+				--light: rgb(181 156 255 / 0.32);
+				--edge: rgb(255 255 255 / 0.12);
+				--cover: #120f1c;
+			}
+			/* B, notte viola: tutto un gradino sopra, verso il viola. */
+			body[data-v='b'] {
+				--desk: #120f1f;
+				--wall-a: rgb(181 156 255 / 0.2);
+				--wall-b: rgb(110 80 255 / 0.18);
+				--light: rgb(181 156 255 / 0.28);
+				--grid: rgb(255 255 255 / 0.035);
+				--frame: rgb(24 20 38 / 0.3);
+				--side: rgb(28 24 44 / 0.58);
+				--pane: rgb(30 26 47 / 0.58);
+				--edge: rgb(255 255 255 / 0.12);
+				--surface: rgb(255 255 255 / 0.07);
+				--select: rgb(181 156 255 / 0.14);
+				--line: #2f2b40;
+				--subtle: #a19cb2;
+				--muted: #aaa5ba;
+				--cover: #1a1628;
+				--cover-panel: rgb(255 255 255 / 0.05);
+			}
+			/* C, grafite: tutto un gradino sopra, grigio neutro. */
+			body[data-v='c'] {
+				--desk: #121216;
+				--wall-a: rgb(181 156 255 / 0.14);
+				--wall-b: rgb(110 80 255 / 0.12);
+				--light: rgb(181 156 255 / 0.22);
+				--grid: rgb(255 255 255 / 0.035);
+				--frame: rgb(26 26 31 / 0.3);
+				--side: rgb(30 30 36 / 0.62);
+				--pane: rgb(32 32 38 / 0.62);
+				--edge: rgb(255 255 255 / 0.1);
+				--surface: rgb(255 255 255 / 0.065);
+				--select: rgb(255 255 255 / 0.08);
+				--line: #2c2c34;
+				--subtle: #a09eab;
+				--muted: #aaa8b5;
+				--cover: #17171c;
+				--cover-panel: rgb(255 255 255 / 0.045);
+			}
+
+			* { box-sizing: border-box; }
+			html, body { height: 100%; margin: 0; }
+			body {
+				font-family: var(--sans);
+				font-weight: 380;
+				color: var(--fg);
+				background:
+					repeating-linear-gradient(to right, var(--grid) 0 1px, transparent 1px 48px),
+					repeating-linear-gradient(to bottom, var(--grid) 0 1px, transparent 1px 48px),
+					radial-gradient(22% 26% at 14% 6%, var(--light), transparent 70%),
+					linear-gradient(135deg, var(--wall-a) 0%, var(--wall-b) 50%, transparent 100%),
+					var(--desk);
+				-webkit-font-smoothing: antialiased;
+				display: flex;
+				flex-direction: column;
+			}
+
+			.switch { display: flex; gap: 6px; align-items: center; padding: 10px 14px; font-family: var(--mono); font-size: 12px; color: var(--muted); }
+			.switch button { font: inherit; border: 0; padding: 6px 10px; border-radius: 6px; background: rgb(255 255 255 / 0.08); color: var(--text); cursor: pointer; }
+			.switch button[aria-pressed='true'] { background: var(--fg); color: #0a0a0d; }
+			.switch p { margin: 0 0 0 10px; }
+
+			.window {
+				flex: 1; min-height: 0; margin: 0 12px 12px; padding: 8px; display: grid; grid-template-columns: 300px 1fr; gap: 8px;
+				border-radius: 18px; background: var(--frame); box-shadow: inset 0 1px 0 var(--edge), var(--shadow);
+			}
+			.card {
+				border-radius: 11px; overflow: hidden; position: relative;
+				-webkit-backdrop-filter: blur(32px) saturate(140%); backdrop-filter: blur(32px) saturate(140%);
+				box-shadow: inset 0 1px 0 var(--edge), var(--shadow);
+			}
+			.side { background: var(--side); padding: 18px 14px; display: flex; flex-direction: column; gap: 2px; }
+			.pane { background: var(--pane); display: flex; flex-direction: column; }
+
+			.logo { font-family: var(--mono); font-size: 13px; padding: 4px 8px 14px; text-shadow: 0 0 3.5px color-mix(in srgb, var(--accent) 55%, transparent); }
+			.caret { display: inline-block; width: 0.5em; height: 1.05em; vertical-align: -0.15em; margin-left: 0.15em; background: var(--accent); box-shadow: 0 0 4px var(--accent); }
+			.search { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 12px; color: var(--subtle); background: var(--surface); border-radius: 6px; padding: 9px 10px; margin-bottom: 14px; }
+			.kbd { background: var(--surface); border-radius: 4px; padding: 0 5px; }
+			.row { display: flex; align-items: center; gap: 12px; padding: 7px 8px; border-radius: 6px; font-size: 14.5px; color: var(--fg); }
+			.row.on { background: var(--select); }
+			.row .meta { margin-left: auto; font-family: var(--mono); font-size: 11px; color: var(--subtle); }
+			.ico { width: 14px; height: 14px; border: 1.5px solid var(--subtle); border-radius: 4px; }
+			.label { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--subtle); padding: 18px 8px 6px; display: flex; justify-content: space-between; text-shadow: 0 0 3.5px color-mix(in srgb, var(--accent) 55%, transparent); }
+			.tile { width: 20px; height: 20px; border-radius: 5px; box-shadow: none; position: relative; }
+			.tile::after { content: ''; position: absolute; right: -2px; bottom: -2px; width: 6px; height: 6px; border-radius: 9px; background: var(--live); box-shadow: 0 0 1.5px #000; }
+			.tile.dark { background: #121019; box-shadow: none; }
+
+			.bar { height: 48px; display: flex; align-items: center; padding: 0 48px; font-family: var(--mono); font-size: 13px; color: var(--subtle); gap: 8px; }
+			.bar b { font-weight: 400; color: var(--fg); }
+			.bar .end { margin-left: auto; display: flex; gap: 14px; align-items: center; }
+			.bar svg { width: 18px; height: 18px; fill: var(--muted); shape-rendering: crispEdges; }
+			.body { padding: 28px 48px; overflow: auto; }
+			.cover { aspect-ratio: 21 / 9; border-radius: 10px; display: grid; place-items: center; position: relative;
+				background: radial-gradient(55% 80% at 88% 10%, rgb(255 209 102 / 0.2), transparent), radial-gradient(40% 60% at 0% 100%, rgb(110 80 255 / 0.12), transparent), var(--cover); }
+			.cover pre { margin: 0; font-family: var(--mono); font-size: clamp(11px, 1.15vw, 17px); line-height: 1.75; color: var(--text); background: var(--cover-panel); border-radius: 12px; padding: 26px 32px; box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.07), 0 20px 50px rgb(0 0 0 / 0.45); }
+			.cover pre i { font-style: normal; color: #ffd166; }
+			.bee { position: absolute; left: 0; bottom: -32px; width: 72px; height: 72px; border-radius: 16px; background: linear-gradient(135deg, rgb(255 209 102 / 0.24), rgb(255 209 102 / 0.08)), #121019; box-shadow: 0 8px 18px rgb(0 0 0 / 0.55); display: grid; place-items: center; font-size: 34px; }
+			h1 { font-size: clamp(2rem, 1.2rem + 2.6vw, 3.4rem); font-weight: 500; letter-spacing: -0.025em; margin: 56px 0 10px; text-shadow: 0 0 3.5px color-mix(in srgb, var(--accent) 55%, transparent); }
+			.metaline { font-family: var(--mono); font-size: 13px; color: var(--muted); display: flex; gap: 10px; align-items: center; }
+			.led { width: 7px; height: 7px; border-radius: 9px; background: var(--live); }
+			p.lead { font-size: 19px; line-height: 1.75; color: var(--text); max-width: 40em; }
+			.chips { display: flex; gap: 8px; flex-wrap: wrap; }
+			.chip { font-family: var(--mono); font-size: 12px; color: var(--muted); background: var(--surface); border-radius: 6px; padding: 6px 10px; }
+			a { color: var(--fg); text-decoration: underline; text-decoration-color: var(--accent); text-underline-offset: 4px; }
+			.acc { color: var(--accent); }
+
+			body::after { content: ''; position: fixed; inset: 0; pointer-events: none; background: repeating-linear-gradient(to bottom, rgb(255 255 255 / 0.018) 0 1px, transparent 1px 3px), radial-gradient(ellipse at center, transparent 50%, rgb(0 0 0 / 0.14)); }
+		</style>
+	</head>
+	<body data-v="x">
+		<div class="switch">
+			<button data-v="x" aria-pressed="true">X oggi</button>
+			<button data-v="a">A più velo</button>
+			<button data-v="b">B notte viola</button>
+			<button data-v="c">C grafite</button>
+			<p data-desc></p>
+		</div>
+		<div class="window">
+			<aside class="card side">
+				<div class="logo">esse.dev<span class="caret"></span></div>
+				<div class="search">Cerca <span class="kbd">/</span></div>
+				<div class="row"><span class="ico"></span>Benvenuto</div>
+				<div class="row"><span class="ico"></span>Chi sono</div>
+				<div class="row"><span class="ico"></span>Adesso<span class="meta">set 2026</span></div>
+				<div class="row"><span class="ico acc" style="border-color: var(--accent)"></span>Agente</div>
+				<div class="label">Progetti <span>24</span></div>
+				<div class="row"><span class="tile dark"></span>Relay<span class="meta">2026</span></div>
+				<div class="row"><span class="tile" style="background: linear-gradient(135deg, rgb(125 211 252 / 0.24), rgb(125 211 252 / 0.08)), #121019"></span>Nexus<span class="meta">2026</span></div>
+				<div class="row on"><span class="tile" style="background: linear-gradient(135deg, rgb(255 209 102 / 0.24), rgb(255 209 102 / 0.08)), #121019"></span>pgbee<span class="meta">2026</span></div>
+				<div class="row"><span class="tile" style="background: linear-gradient(135deg, rgb(251 113 133 / 0.24), rgb(251 113 133 / 0.08)), #121019"></span>Zeno<span class="meta">2026</span></div>
+				<div class="row"><span class="tile" style="background: linear-gradient(135deg, rgb(125 211 252 / 0.24), rgb(125 211 252 / 0.08)), #121019"></span>mcpbelt<span class="meta">2026</span></div>
+				<div class="row"><span class="tile dark"></span>Portsage<span class="meta">2026</span></div>
+				<div class="label">Metodo <span>4</span></div>
+				<div class="row"><span class="meta" style="margin: 0">01</span>Architettura prima del codice</div>
+				<div class="row"><span class="meta" style="margin: 0">02</span>Il contesto è il lavoro</div>
+			</aside>
+			<main class="card pane">
+				<div class="bar">
+					~ / progetti / <b>pgbee</b>
+					<span class="end">
+						link &nbsp; github
+						<svg viewBox="0 0 9 9"><path d="M3 0h1v1h-1zM4 0h1v1h-1zM1 1h1v1h-1zM2 1h1v1h-1zM3 1h1v1h-1zM1 2h1v1h-1zM2 2h1v1h-1zM0 3h1v1h-1zM1 3h1v1h-1zM2 3h1v1h-1zM0 4h1v1h-1zM1 4h1v1h-1zM2 4h1v1h-1zM8 4h1v1h-1zM0 5h1v1h-1zM1 5h1v1h-1zM2 5h1v1h-1zM3 5h1v1h-1zM7 5h1v1h-1zM8 5h1v1h-1zM1 6h7v1h-7zM2 7h6v1h-6zM3 8h3v1h-3zM7 1h1v1h-1z" /></svg>
+						<span>en <b>it</b></span>
+					</span>
+				</div>
+				<div class="body">
+					<div class="cover">
+<pre><i>select bee.add_column('ticket', 'category',</i>
+  array['body'], 'enum', 'decision',
+  p_prompt => 'What is this ticket about?',
+  p_model  => '&lt;model&gt;');
+-- queued in your insert's transaction</pre>
+						<div class="bee">🐝</div>
+					</div>
+					<h1>pgbee</h1>
+					<div class="metaline"><span class="led"></span>in corso · 2026 · in evidenza</div>
+					<p class="lead">Un'estensione per PostgreSQL: dichiari in SQL che una colonna si ricava da altre con un modello, e il database la tiene <a href="#">compilata, versionata</a> e con i costi registrati.</p>
+					<div class="chips"><span class="chip">postgres</span><span class="chip">sql</span><span class="chip">llm</span><span class="chip">hello@esse.dev</span></div>
+				</div>
+			</main>
+		</div>
+		<script>
+			const DESC = {
+				x: 'oggi: nero freddo, il viola solo in un velo leggero',
+				a: 'stesse superfici, più luce viola dal wallpaper attraverso il vetro',
+				b: 'tutto un gradino sopra, verso un viola notte: lo specchio della lavanda fumé',
+				c: 'tutto un gradino sopra, grigio grafite neutro, il viola resta nel velo'
+			};
+			const pick = (v) => {
+				document.body.dataset.v = v;
+				document.querySelectorAll('.switch button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.v === v)));
+				document.querySelector('[data-desc]').textContent = DESC[v];
+			};
+			document.querySelectorAll('.switch button').forEach((b) => b.addEventListener('click', () => pick(b.dataset.v)));
+			addEventListener('keydown', (e) => { if (DESC[e.key]) pick(e.key); });
+			pick('x');
+		</script>
+	</body>
+</html>

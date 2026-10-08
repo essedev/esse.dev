@@ -10,7 +10,7 @@ export type Theme = 'light' | 'dark';
 /** The storage key, shared with src/scripts/theme-init.js. */
 const KEY = 'theme';
 /** The `theme-color` of each theme: the color of the wallpaper's desk. */
-const BAR: Record<Theme, string> = { dark: '#050507', light: '#bcb2dc' };
+const BAR: Record<Theme, string> = { dark: '#0a0912', light: '#bcb2dc' };
 
 const system = matchMedia('(prefers-color-scheme: light)');
 const systemTheme = (): Theme => (system.matches ? 'light' : 'dark');

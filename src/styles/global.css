@@ -18,7 +18,7 @@
 	--font-code: var(--font-geist-mono), ui-monospace, monospace;
 
 	/* Outside the window, and the frame around the two cards (wide screens only). */
-	--color-desk: #050507;
+	--color-desk: #0a0912;
 	--color-frame: #08080b;
 	--color-bg: #0a0a0d;
 	--color-panel: #0e0e12;
@@ -79,13 +79,13 @@
 
 		/* The glass (concept C, variant B): a window on a colored wallpaper, frame, list and agent
 		   field translucent. `--wall` is the intensity of the glow behind. */
-		--wall: 0.2;
+		--wall: 0.44;
 		/* A single point of light, at the top left: it shows through the list's glass. */
-		--wall-light: 0.18;
+		--wall-light: 0.32;
 		--glass-blur: 32px;
 		--glass-sat: 110%;
 		--glass-tint: 0;
-		--glass-rim: 0.09;
+		--glass-rim: 0.12;
 		--glass-shadow: 0 12px 32px rgb(0 0 0 / 0.35);
 		/* The lavender end of the glass border, at the bottom right, and the alpha of its middle
 		   stretch: in the light it needs more of both to draw an edge. */
