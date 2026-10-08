@@ -64,10 +64,10 @@ Secrets in `.dev.vars` (excluded from git, template in `.dev.vars.example`), rea
   `CollectionEntry`.
 - `src/lib/content.ts` is the only access to content. It joins meta and text and fails the
   build if a language is missing, a text has no meta, a slug repeats or the showcase points
-  to an unpublished project. A project to hide goes to `published: false`; one that
-  must not be named is deleted, since the files are public (DECISIONS #21). Which projects, how to tell them and the site's voice:
-  `docs/features/progetti.md`. The repo is public and the agent reads its docs: no client
-  or reserved project names in any file.
+  to an unpublished project. A project to hide goes to `published: false`; one that must not
+  be named is deleted, since the files are public (DECISIONS #21). Which projects, how to
+  tell them and the site's voice: `docs/features/progetti.md`. The repo is public and the
+  agent reads its docs: no client or reserved project names in any file.
 - Site texts and UI strings: `site` collection (`src/content/site/<lang>.json`), read with
   `getSite(lang)` and `translator(lang)` from `src/lib/site.ts`. Strict schema: a new key
   goes in the schema and in every language, and becomes a type (`UiKey`).
@@ -120,10 +120,11 @@ mobile drawer (`data-drawer`) in `src/scripts/workspace.ts`.
 - Tokens in `@theme` (`src/styles/global.css`): a hand-written value in a component is a
   mistake.
 - Two themes (DECISIONS #27): the `@theme` values are the dark, `:root[data-theme='light']`
-  overrides them; `data-theme` is set before paint by `scripts/theme-init.js` (its CSP hash
-  is computed in `astro.config.mjs`) and switched by `scripts/theme.ts`. A new color gets both
-  values; what changes shape uses the `light:` variant. A project image with a light variant
-  (`logoLight`, `cover.srcLight`) comes from the render scripts, which write both.
+  overrides them; `data-theme` is set before paint by `src/scripts/theme-init.js` (its CSP
+  hash is computed in `astro.config.mjs`) and switched by `src/scripts/theme.ts`. A new
+  color gets both values; what changes shape uses the `light:` variant. A project image with
+  a light variant (`logoLight`, `cover.srcLight`) comes from the render scripts, which write
+  both.
 - Lavender (`accent`) for identity and interaction; green (`live`) only for "alive,
   succeeded" (LED in progress and maintained, successful copies and sends), never on
   running text.
@@ -139,9 +140,9 @@ mobile drawer (`data-drawer`) in `src/scripts/workspace.ts`.
 - Departure Mono for all the interface mono (code in prose stays Geist Mono), CRT veil with
   the values in `--crt-*`.
 - No maximum width on the content: the column and the fluid size set the measure.
-- Never native controls (`ui/Select.svelte`). Icons only Lucide, except the theme toggle (`ui/PixelIcon.astro`). A project's logo is content,
-  not a UI icon: it lives in the project's folder (DECISIONS #22, rules in
-  `docs/features/progetti.md`, Images).
+- Never native controls (`ui/Select.svelte`). Icons only Lucide, except the theme toggle
+  (`ui/PixelIcon.astro`). A project's logo is content, not a UI icon: it lives in the
+  project's folder (DECISIONS #22, rules in `docs/features/progetti.md`, Images).
 - Icons in motion: `data-motion="<name>"` on the Lucide icon, gesture on hover of the link,
   button or field that contains it (pointer only; a glow with reduced motion), CSS in
   `global.css`. The parts are taken by position in the path and the redrawn strokes have a

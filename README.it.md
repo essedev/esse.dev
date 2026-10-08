@@ -22,6 +22,7 @@ Portfolio personale di Simone Salerno, online su [esse.dev](https://esse.dev). F
 - Tempo di lettura e stima dei token degli articoli, articoli correlati
 - Feed RSS per lingua, sitemap con alternate, JSON-LD, `llms.txt`
 - Immagini Open Graph generate alla build, una per pagina
+- Tema scuro e chiaro: segue il sistema finché il visitatore non ne sceglie uno dal pulsante nella toolbar
 - Un agente che risponde dalle pagine del sito e dal codice pubblico dei progetti e mostra chiamate ai tool, token e costo, dietro un triage e un budget giornaliero in costo reale
 
 ## Sviluppo

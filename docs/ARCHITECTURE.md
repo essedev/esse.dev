@@ -8,7 +8,7 @@ the cycle log `docs/CYCLES.md`.
 A personal portfolio at `esse.dev`, in Astro (strict TS, Tailwind 4, Svelte 5 islands) on
 Cloudflare Workers. File-based content in the repo, EN/IT i18n with translated routes and
 slugs, Open Graph images generated at build. Until Cycle 10 it was SvelteKit: the rewrite
-is in `docs/CYCLES.md` (Cycle 11) and the choice in `docs/DECISIONS.md` #10.
+is in `docs/archive/CYCLES-11-12.md` (Cycle 11) and the choice in `docs/DECISIONS.md` #10.
 
 ## Rendering: static, with three exceptions on the Worker
 
@@ -170,12 +170,23 @@ accent, the drawer fades), while color, opacity and redrawn strokes keep running
   does not pass inside a scrolling container and without it the browser takes the
   gesture. It also contains the profiles and the legend; the keys it does not.
 - **Tokens** (`@theme` in `src/styles/global.css`): `desk` and `frame` behind and around
-  the window; surfaces `bg`, `panel`, `pane` (the content pane), `surface`, `hover`;
+  the window; surfaces `bg`, `panel`, `surface`, `hover`;
   `line`; text `fg`, `text`, `muted`, `subtle` (the minimum for text, 4.5:1 measured on
   the glass); `accent` and `on-accent`; `live` for live states; `glow`, the deep purple
   of the veil behind the window; `danger`; `status-*` for the status of projects; radii
-  `--radius-control`, `--radius-panel`, `--radius-card`, `--radius-window`. Shared
-  classes: `.led`, `.kbd`, `.label`, `.chip`, `.ulink`, `.caret`.
+  `--radius-control`, `--radius-panel`, `--radius-card`, `--radius-window`, `--radius-edge`
+  (the pane on a phone, close to the screen's corners). Shared classes: `.led`, `.kbd`,
+  `.label`, `.chip`, `.ulink`, `.caret`.
+- **Themes** (`docs/DECISIONS.md` #27): dark and light. The `@theme` values are the dark
+  ones; `:root[data-theme='light']` overrides them, and the values that were white or black
+  by hand (grid, scan lines, glass edge, vignette) are channel variables (`--veil-rgb`,
+  `--shade-rgb`, `--glass-edge`) that the light theme flips. What changes shape rather than
+  color uses the `light:` variant. The theme follows the system until the visitor picks one
+  with the toggle in the toolbar (`src/scripts/theme.ts`, choice in `localStorage`, not
+  saved when it equals the system's); `src/scripts/theme-init.js`, inline in the head, sets
+  `data-theme` before the first paint, and `astro.config.mjs` computes its CSP hash from the
+  same file, since Astro does not hash inline scripts. Logos and designed covers have a
+  light variant written by the render scripts (#28).
 - **Measure**: no maximum width on the content, the column and the fluid size set it
   (`Page.astro`, `Prose.astro`). In detail pages, from `xl`, the facts sit in a column on
   the right; the page fills at least the pane and the pager sits at the bottom.

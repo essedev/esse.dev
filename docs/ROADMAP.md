@@ -2,17 +2,18 @@
 
 Current state of the project. Real milestones, not a wishlist. Updated together with the code.
 
-Last update: 2026-10-07 (Cycle 25: agent states, error pages, reduced motion, favicon)
+Last update: 2026-10-08 (Cycle 26: light theme, project images in both themes)
 
 ## Context
 
 The Astro site is on `main` and in production, and replaced the SvelteKit site (M1-M10,
-history in `docs/CYCLES.md`). Closed: M14, the migration to Astro (Cycle 11, DECISIONS
-#10), and M15, structure and style (Cycles 12-20, DECISIONS #15, #16, #19). The
-"Laboratorio" restyle (M11) is paused: its motifs are in `docs/archive/RESTYLE.md`, and its
-branches (`restyle/laboratory`, `restyle/base`) and the `astro` working branch were retired
-when `astro` reached `main`. Their full history is kept in a git bundle outside the repo;
-the discarded pixel-art PNGs were dropped from the history that reached `main`.
+history in `docs/CYCLES.md`). Closed: M14, the migration to Astro (Cycle 11, DECISIONS #10),
+and M15, structure and style (Cycles 12-20, DECISIONS #15, #16, #19); the light theme came
+after it (Cycle 26, DECISIONS #27). The "Laboratorio" restyle (M11) is paused: its motifs
+are in `docs/archive/RESTYLE.md`, and its branches (`restyle/laboratory`, `restyle/base`)
+and the `astro` working branch were retired when `astro` reached `main`. Their full history
+is kept in a git bundle outside the repo; the discarded pixel-art PNGs were dropped from the
+history that reached `main`.
 
 ## Milestones
 
@@ -28,7 +29,8 @@ Principles, voice and sorting in `docs/features/progetti.md`.
 - Done (Cycle 21): first drafts of the new entries from the repo analysis.
 - To do: rereading the entries with Simone. Facts (dates, activity, stack) come from the
   sources, the text is written by hand, including the "Why" box.
-- Done (Cycle 23): a cover and a logo for every published project (per DECISIONS #22).
+- Done (Cycle 23): a cover and a logo for every published project (per DECISIONS #22);
+  light variants of the rendered logos and designed covers in Cycle 26 (#28).
 - To do: tags cleaned up.
 - To do: a skill that proposes the new or updated items from the repos; it proposes, it
   does not publish.

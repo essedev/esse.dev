@@ -35,10 +35,11 @@ move to build time, disproportionate for a decorative label.
 
 **Status:** active (Cycle 7)
 
-Selection and order of the projects on the home live in `config/featured.json`,
-validated at build (existing ids, max 6). Rejected: a `featured` boolean in the
-`meta.json` files (it gives no order) and a scattered `featured_rank` (fragile). Featured
-applies only to the home: the listing stays neutral, ordered by date and filterable.
+Selection and order of the showcase live in `src/config/featured.json`, validated at
+build (existing ids, max 6). Rejected: a `featured` boolean in the `meta.json` files (it
+gives no order) and a scattered `featured_rank` (fragile). The showcase orders the
+projects in the workspace list and gives the home its lead project; the registry stays
+neutral, ordered by date and filterable.
 
 ## #10 - Static Astro, Worker only for language and redirects
 
@@ -319,20 +320,21 @@ measured), `live` to `#179a4c`. From concept I (`docs/concepts/concept-i-chiaro.
 variant C: the first version, white glass on lavender paper (X), read as too white, the
 violet only in the wallpaper; rejected all lilac (A, list and pane one tone) and violet
 structure with a white pane (B). The dark theme gets more light in the same cycle, from
-concept K (`docs/concepts/concept-k-scuro.html`), variant A: the surfaces stay, the desk goes
-to `#0a0912` and the wallpaper's veil and point of light double (`--wall` 0.44,
+concept K (`docs/concepts/concept-k-scuro.html`), variant A: the surfaces stay, the desk
+goes to `#0a0912` and the wallpaper's veil and point of light double (`--wall` 0.44,
 `--wall-light` 0.32), so the glass shows more violet; the minimum grey still holds 4.67:1
 where the light is strongest. Rejected: lifting the surfaces too, toward violet (B) or
-graphite (C). The Turnstile widget takes the site's theme when it is drawn. The CRT veil stays and turns into print:
-dark scan lines, a lighter vignette, a thinner glow, the error number's fringe in `multiply`
-instead of `screen`. The dark values stay the tokens' own in `@theme`; the light ones
-override them under `:root[data-theme='light']`, and the white and black that were written
-by hand (grid, scan lines, glass edge, vignette, LED, covers) now go through variables
-(`--veil-rgb`, `--shade-rgb`, `--glass-edge`...), so the dark theme did not move.
+graphite (C). The Turnstile widget takes the site's theme when it is drawn. The CRT veil
+stays and turns into print: dark scan lines, a lighter vignette, a thinner glow, the error
+number's fringe in `multiply` instead of `screen`. The dark values stay the tokens' own in
+`@theme`; the light ones override them under `:root[data-theme='light']`, and the white and
+black that were written by hand (grid, scan lines, glass edge, vignette, LED, covers) now go
+through variables (`--veil-rgb`, `--shade-rgb`, `--glass-edge`...), so the dark theme did
+not move.
 
 The theme follows the system until the visitor picks one with the toggle in the toolbar,
 next to the languages; a pick equal to the system's is not saved, so the site goes back to
-following it. `data-theme` is set before the first paint by `scripts/theme-init.js`, inline
+following it. `data-theme` is set before the first paint by `src/scripts/theme-init.js`, inline
 in the head, or a light screen would flash dark: Astro does not hash inline scripts, so
 `astro.config.mjs` computes the hash from the same file. The toggle's sun and moon are drawn
 in pixels (`ui/PixelIcon.astro`): 1 px cells on a 15 grid, the grain of Departure Mono next to
@@ -354,13 +356,13 @@ The logos made by `scripts/render-logo.ts` and the designed covers made by
 `meta.json` as `logoLight` and `cover.srcLight`; the page shows the one of the theme. The
 light logo is a light tile tinted with the bright accent, stronger than the dark one, with a
 hairline; the glyph on it in the accent darkened to the lightness of the site's light accent
-(`scripts/light-accent.ts`, OKLCH, hue kept); a mark stays as it is. The light cover puts the
-same panel, almost white, on a mid lavender ground a step under the glass, with the
+(`scripts/light-accent.ts`, OKLCH, hue kept); a mark stays as it is. The light cover puts
+the same panel, almost white, on a mid lavender ground a step under the glass, with the
 darkened accent: the first version, panel and ground both near the glass's tone, stood
-1.01:1 against the pane and melted into it, the tiles too. Both scripts always write both, and `render-logo.ts --light` reads an
-existing logo back from its SVG, since the arguments it was made with are not kept. When a
-cover has two variants both load lazily, so only the shown one is fetched (an eager image
-hidden by CSS is fetched all the same), at the cost of starting after layout. Not in two:
-the app icons that are already a tile (Relay, Copilota, Portsage), which are the apps' own,
-the screenshots, which are the real interface, and the OG images, which are seen outside
-the site. The generated cover follows the tokens already.
+1.01:1 against the pane and melted into it, the tiles too. Both scripts always write both,
+and `render-logo.ts --light` reads an existing logo back from its SVG, since the arguments
+it was made with are not kept. When a cover has two variants both load lazily, so only the
+shown one is fetched (an eager image hidden by CSS is fetched all the same), at the cost of
+starting after layout. Not in two: the app icons that are already a tile (Relay, Copilota,
+Portsage), which are the apps' own, the screenshots, which are the real interface, and the
+OG images, which are seen outside the site. The generated cover follows the tokens already.

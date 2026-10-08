@@ -22,6 +22,7 @@ Personal portfolio of Simone Salerno, online at [esse.dev](https://esse.dev). Bu
 - Article reading time and token estimate, related articles
 - Per-language RSS feed, sitemap with alternates, JSON-LD, `llms.txt`
 - Open Graph images generated at build time, one per page
+- Dark and light theme: it follows the system until the visitor picks one with the toggle in the toolbar
 - A site agent that answers from the site's own pages and the public code of the projects, and shows its tool calls, tokens and cost, behind a triage step and a real-cost daily budget
 
 ## Development
