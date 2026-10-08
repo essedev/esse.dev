@@ -93,110 +93,33 @@ Secrets in `.dev.vars` (excluded from git, template in `.dev.vars.example`), rea
   `/agents/site-agent/*` (the agent, dispatched by `src/worker.ts`) run on the Worker.
   Everything else is static.
 
-## Open Graph and SEO
+## SEO
 
-- OG: prerendered endpoint `src/pages/og/[name].png.ts` (satori + resvg), pure layout in
-  `src/lib/og.ts` (terminal style, DECISIONS #19); the prerender runs in Node for resvg.
-  Satori gotchas: `woff`/`ttf` fonts, never `woff2` (Departure Mono also has the `woff` in
-  `src/assets/fonts/`); sizes in `style`; colors copied from `@theme`, because satori does
-  not read CSS variables; a file is read from `process.cwd()`, not from `import.meta.url`,
-  which at build points to `dist/`.
-- Canonical, hreflang and JSON-LD: pure helpers in `src/lib/seo.ts`.
+- Canonical, hreflang and JSON-LD: pure helpers in `src/lib/seo.ts`. The OG images have their
+  rule (below).
 
-## Design system: the workspace
+## Worker
 
-The site is used like an app: list on the left, pane with its toolbar on the right (choices
-in ARCHITECTURE, style and glass in DECISIONS #15-#16). Shell in
-`src/layouts/Workspace.astro`, list and pager order in `src/lib/workspace.ts`, keyboard and
-mobile drawer (`data-drawer`) in `src/scripts/workspace.ts`.
-
-- The list goes in order of importance: single pages, showcase (`featured.json`, 6) with
-  "tutti i N", method, writing, external profiles. The other projects are found by search.
-  It must fit in 900 px of height.
-- A new URL parameter is checked against those in use: `?q=` list search, `?ask=`
-  pre-filled agent question.
-- Navigation lives in the toolbar (breadcrumb, Esc, "‹ section" on mobile), never a "Back"
-  in the content. The level above is computed from the `crumbs` in `Workspace.astro`.
-- Tokens in `@theme` (`src/styles/global.css`): a hand-written value in a component is a
-  mistake.
-- Two themes (DECISIONS #27): the `@theme` values are the dark, `:root[data-theme='light']`
-  overrides them; `data-theme` is set before paint by `src/scripts/theme-init.js` (its CSP
-  hash is computed in `astro.config.mjs`) and switched by `src/scripts/theme.ts`. A new
-  color gets both values; what changes shape uses the `light:` variant. A project image with
-  a light variant (`logoLight`, `cover.srcLight`) comes from the render scripts, which write
-  both.
-- Lavender (`accent`) for identity and interaction; green (`live`) only for "alive,
-  succeeded" (LED in progress and maintained, successful copies and sends), never on
-  running text.
-- Glass: `glass` utility with the values in `--glass-*`, the toolbar stays flat. A blurring
-  glass does not go inside another (Chromium stops blurring): the frame has only the
-  border, the pane blurs from the `data-pane-glass` layer, which contains no other glass.
-  The wallpaper is a continuous veil with a single point of light: scattered glows turn
-  into blotches.
-- On the glass only light veils: solid `bg-panel` does not show. Blocks `bg-surface/60`; a
-  single scale for states: hover `surface/60`, selection `surface` (above the hover, so the
-  "you are here" stays), `hover` only for controls that already start from the veil. A new
-  text color is measured on the glass, where the background is lighter, not on black.
-- Departure Mono for all the interface mono (code in prose stays Geist Mono), CRT veil with
-  the values in `--crt-*`.
-- No maximum width on the content: the column and the fluid size set the measure.
-- Never native controls (`ui/Select.svelte`). Icons only Lucide, except the theme toggle
-  (`ui/PixelIcon.astro`). A project's logo is content, not a UI icon: it lives in the
-  project's folder (DECISIONS #22, rules in `docs/features/progetti.md`, Images).
-- Icons in motion: `data-motion="<name>"` on the Lucide icon, gesture on hover of the link,
-  button or field that contains it (pointer only; a glow with reduced motion), CSS in
-  `global.css`. The parts are taken by position in the path and the redrawn strokes have a
-  measured length (`--len`): when updating Lucide they must be rechecked. Choices in
-  concept E.
-- Reduced motion removes displacement, not feedback (DECISIONS #25): what translates, rotates
-  or scales gets an equivalent that stays put in the `prefers-reduced-motion` block of
-  `global.css` (or `motion-safe:`); color, opacity, strokes and text changing in place keep
-  running. A new animation picks its side there; never a global `animation: none`.
-- A single search in the site and a single blinking cursor. Never accent lines or bars to
-  the left of or above an element to indicate selection or state: selection shows from the
-  background.
-- No inline styles in attributes: the CSP blocks them. The page change is instant: no view
-  transition.
-- No bounce and no scroll passing underneath: `overscroll-none` on the main containers,
-  `overscroll-x-none` on nested blocks that scroll sideways (otherwise the wheel over the
-  code does not scroll the page); never a rule on `*`. `touch-action` does not pass inside
-  a scrolling container: put it there too.
-
-## Agent
-
-- Code in `src/agent/` and `src/components/agent/`; why and how in ARCHITECTURE (Agent),
-  DECISIONS #11-#14, #17-#18, #24.
-- Every message to the agent in preview calls real models on OpenRouter
-  (`OPENROUTER_API_KEY`) and the code tools the GitHub API (`GITHUB_TOKEN` optional). The
-  E2E tests send no messages to the model: `agent-states.spec.ts` answers the socket itself
-  with pi's events (`routeWebSocket`). A new state of the page is derived in `phaseOf`
-  (`src/agent/phase.ts`), not with a new server event. Locally `draft_message` sends into
-  wrangler's simulator (the text ends up in `.wrangler/tmp/email/`): to try it you need
-  `MAIL_TO`, even a fake one (`wrangler dev --var MAIL_TO:prova@example.com`).
-- Model, provider order and timeouts in `src/agent/models.ts`; existing conversations move
-  to the new model when the object starts. Spending limits in `src/agent/budget.ts`
-  (visitor, IP, site), per-IP burst with the `AGENT_RATE` binding. Triage in
-  `src/agent/triage.ts`, Jev's transport in `JEV_TRANSPORT` of `src/agent/site-agent.ts`.
-- A new tool is a pi-durable `ToolRegistration`, with `replay: 'safe'` only if rerunning it
-  has no effects. Site data is read from the `/agent/index.json` index (generated at
-  build), never from outside.
 - Code that runs only on the Worker must be excluded from `tsconfig.json` and included in
   `tsconfig.worker.json`.
 - On the Worker a `fetch` detached from its object (saved in a field) throws "Illegal
   invocation"; in Node and in tests it does not. Wrap it:
   `(input, init) => fetch(input, init)`.
-- In Svelte a prop or a variable is not named like a rune (`state`, `derived`, `effect`,
-  `props`): `$state(...)` becomes the subscription to a store and the page breaks at
-  runtime, with no errors from `pnpm check`.
+
+## Rules by path
+
+They load when a matching file is read; the rest of this file holds for every file.
+
+- `.claude/rules/workspace-ui.md`: the design system (shell, tokens, themes, glass, icons,
+  motion), for components, layouts, styles, scripts, pages and concepts.
+- `.claude/rules/agent.md`: the agent (models, budget, tools, its tests).
+- `.claude/rules/og.md`: the Open Graph images and satori's gotchas.
 
 ## Conventions
 
-- `pnpm` always. Tabs, 100 columns, single quotes, no trailing comma (`.prettierrc`). The
-  content Markdown is excluded from prettier.
-- Tailwind 4 CSS-first, no `tailwind.config`.
-- Code in English, UI in Italian with real accents. No em dash or section sign, not even
-  in the content.
-- Commits: Conventional Commits in English, atomic. Push only on explicit command.
+- Tabs, 100 columns, single quotes, no trailing comma (`.prettierrc`). The content Markdown
+  is excluded from prettier.
+- No em dash or section sign, not even in the content Markdown.
 - Mockups and visual variants: HTML files in `docs/concepts/`, labeled A, B, C; superseded
   ones go to `docs/archive/concepts/`.
 
@@ -206,5 +129,7 @@ mobile drawer (`data-drawer`) in `src/scripts/workspace.ts`.
   `src/middleware.ts` for the Worker's responses.
 - CSP in `astro.config.mjs` (`security.csp`): a new external domain must be added there.
   `frame-ancestors` must stay in the header: in the meta tag it is ignored.
+  Astro hashes the scripts it bundles, not an `is:inline` one: an inline script gets its hash
+  in `scriptDirective.hashes`, computed from its file as `theme-init.js` does.
 - Shiki is off (`markdown.syntaxHighlight: false`): it uses inline styles that the CSP
   blocks. If code highlighting is needed, Prism with a stylesheet.

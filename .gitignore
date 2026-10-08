@@ -29,7 +29,8 @@ vite.config.ts.timestamp-*
 !.dev.vars.example
 .env*
 
-/.claude
+/.claude/*
+!/.claude/rules/
 /.vscode
 /docs/internal
 
