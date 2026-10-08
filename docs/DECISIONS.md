@@ -341,10 +341,12 @@ only `prefers-color-scheme` (no way to pick on a shared screen), a three-state t
 The logos made by `scripts/render-logo.ts` and the designed covers made by
 `scripts/render-cover.ts` come in two: the dark one and a `-light` one, declared in
 `meta.json` as `logoLight` and `cover.srcLight`; the page shows the one of the theme. The
-light logo is a paper tile with a lower tint and a hairline, the glyph in the accent
-darkened to the lightness of the site's light accent (`scripts/light-accent.ts`, OKLCH, hue
-kept); a mark stays as it is. The light cover puts the same panel on the paper with the
-darkened accent. Both scripts always write both, and `render-logo.ts --light` reads an
+light logo is a light tile tinted with the bright accent, stronger than the dark one, with a
+hairline; the glyph on it in the accent darkened to the lightness of the site's light accent
+(`scripts/light-accent.ts`, OKLCH, hue kept); a mark stays as it is. The light cover puts the
+same panel, white, on a mid lavender ground, the wallpaper's tone, with the darkened accent:
+the first version, panel and ground both near the paper, stood 1.01:1 against the pane and
+melted into it, the tiles too. Both scripts always write both, and `render-logo.ts --light` reads an
 existing logo back from its SVG, since the arguments it was made with are not kept. When a
 cover has two variants both load lazily, so only the shown one is fetched (an eager image
 hidden by CSS is fetched all the same), at the cost of starting after layout. Not in two:

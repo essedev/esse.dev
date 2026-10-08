@@ -4,8 +4,8 @@
  * own) or the project's own mark (a transparent image, so it sits on the same tile as the
  * others). An SVG with no margin around the tile: every logo on the site that has no tile of
  * its own comes from here, so they share one geometry. Every logo comes in two, one per
- * theme: `<out>.svg` on the dark tile and `<out>-light.svg` on a paper tile with a hairline,
- * the glyph in the accent darkened for the light (light-accent.ts); a mark stays as it is.
+ * theme: `<out>.svg` on the dark tile and `<out>-light.svg` on a light tile tinted with the
+ * accent, the glyph in the accent darkened for the light (light-accent.ts); a mark stays as it is.
  *
  * Usage: node --experimental-strip-types scripts/render-logo.ts <lucide-name | mark-file> <#accent> <out.svg> [--tile=#rrggbb]
  *        node --experimental-strip-types scripts/render-logo.ts --light <logo.svg> [...]
@@ -62,10 +62,11 @@ function glyph(name: string, color: string): string {
 	return `<g transform="translate(32 32) scale(${64 / 24})" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${paths}</g>`;
 }
 
-/** The tile around a glyph or mark, in one theme. The light one lowers the tint and draws a
- * hairline, or the paper tile would melt into the paper page. */
+/** The tile around a glyph or mark, in one theme. The light one is tinted with the bright
+ * accent, stronger than the dark one, and draws a hairline: a paper tile melted into the
+ * paper page. The glyph on it takes the darkened accent. */
 function tileSvg(content: string, accent: string, tile: string, theme: Theme): string {
-	const [from, to] = theme === 'light' ? [0.16, 0.05] : [0.24, 0.08];
+	const [from, to] = theme === 'light' ? [0.34, 0.16] : [0.24, 0.08];
 	const hairline =
 		theme === 'light'
 			? '\n\t<rect x="0.5" y="0.5" width="127" height="127" rx="27.5" fill="none" stroke="#2e1c6e" stroke-opacity="0.12"/>'
@@ -101,7 +102,7 @@ function lightFrom(file: string) {
 	}
 	const ink = lightAccent(accent);
 	const light = content.replaceAll(`stroke="${accent}"`, `stroke="${ink}"`);
-	writeFileSync(lightPath(file), tileSvg(light, ink, LIGHT_TILE, 'light'));
+	writeFileSync(lightPath(file), tileSvg(light, accent, LIGHT_TILE, 'light'));
 	console.log(`${lightPath(file)} (light of ${file}, ${ink})`);
 }
 
@@ -128,7 +129,7 @@ if (args.includes('--light')) {
 	writeFileSync(out, tileSvg(isMark ? mark(symbol) : glyph(symbol, accent), accent, tile, 'dark'));
 	writeFileSync(
 		lightPath(out),
-		tileSvg(isMark ? mark(symbol) : glyph(symbol, ink), ink, LIGHT_TILE, 'light')
+		tileSvg(isMark ? mark(symbol) : glyph(symbol, ink), accent, LIGHT_TILE, 'light')
 	);
 	console.log(`${out} and ${lightPath(out)} (${isMark ? 'mark' : 'glyph'} ${symbol}, ${accent})`);
 }
