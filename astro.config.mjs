@@ -3,6 +3,14 @@ import cloudflare from '@astrojs/cloudflare';
 import svelte from '@astrojs/svelte';
 import tailwindcss from '@tailwindcss/vite';
 import { defineConfig, fontProviders } from 'astro/config';
+import { createHash } from 'node:crypto';
+import { readFileSync } from 'node:fs';
+
+// The theme script runs inline in the head, before the first paint, and Astro does not hash
+// inline scripts: its hash comes from the same file that Layout.astro inlines.
+const themeInit = readFileSync(new URL('./src/scripts/theme-init.js', import.meta.url), 'utf8');
+/** @type {`sha256-${string}`} */
+const themeInitHash = `sha256-${createHash('sha256').update(themeInit).digest('base64')}`;
 
 // Static site: every page is prerendered. Only the root (which picks the language from the
 // browser) and the i18n redirect catch-all run on the Worker, and they have
@@ -49,7 +57,8 @@ export default defineConfig({
 				"base-uri 'self'"
 			],
 			scriptDirective: {
-				resources: ["'self'", 'https://analytics.esse.dev', 'https://challenges.cloudflare.com']
+				resources: ["'self'", 'https://analytics.esse.dev', 'https://challenges.cloudflare.com'],
+				hashes: [themeInitHash]
 			}
 		}
 	},

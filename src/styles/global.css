@@ -1,6 +1,9 @@
 @import 'tailwindcss';
 @plugin '@tailwindcss/typography';
 
+/* `light:` for what changes shape with the theme, not only color (the toggle's icon). */
+@custom-variant light (&:where([data-theme='light'], [data-theme='light'] *));
+
 /*
  * Workspace (concept A), with the style of concept B: bright lavender on slightly cold
  * black, Departure Mono for all the interface monospace, a CRT monitor veil and the window
@@ -84,6 +87,70 @@
 		--glass-tint: 0;
 		--glass-rim: 0.09;
 		--glass-shadow: 0 12px 32px rgb(0 0 0 / 0.35);
+		/* The lavender end of the glass border, at the bottom right, and the alpha of its middle
+		   stretch: in the light it needs more of both to draw an edge. */
+		--glass-accent: calc(var(--glass-rim) * 90%);
+		--glass-edge: 0.04;
+
+		/* The channels of what is drawn "against" the background: veils (grid, scan lines,
+		   hairlines) lighter than it in the dark, darker in the light; shadows and vignette. */
+		--veil-rgb: 255 255 255;
+		--shade-rgb: 0 0 0;
+		/* What lifts the LED off a project logo, and the shadow under a large logo. */
+		--led-lift: rgb(0 0 0 / 0.9);
+		--logo-shadow: 0 8px 18px rgb(0 0 0 / 0.55);
+		/* The fringe of the error number adds light on black and takes it away on paper. */
+		--fringe-blend: screen;
+	}
+
+	/* Light mode: the same lab by day. Cold lavender paper, frosted white glass, ink almost
+	   black with a violet cast, the accent deepened to violet to hold the contrast. The CRT
+	   veil stays but turns into print: dark scan lines, a lighter vignette, a thinner glow.
+	   The theme is `data-theme` on <html>, set before the first paint by the script in the
+	   head of Layout.astro: the visitor's choice, or the system's. */
+	:root[data-theme='light'] {
+		color-scheme: light;
+
+		--color-desk: #e2ddee;
+		--color-frame: #ffffff;
+		--color-bg: #f6f4fa;
+		--color-panel: #fdfcff;
+		--color-surface: rgb(46 28 110 / 0.05);
+		--color-hover: rgb(46 28 110 / 0.085);
+		--color-line: #d9d4e4;
+		--color-fg: #15121d;
+		--color-text: #34303f;
+		--color-muted: #57536a;
+		/* 4.8:1 on the glass where the wallpaper behind is darkest. */
+		--color-subtle: #66627a;
+		--color-accent: #6b46e6;
+		--color-on-accent: #ffffff;
+		--color-live: #179a4c;
+		--color-danger: #c43d2e;
+		--color-status-completed: #15121d;
+		--color-status-idea: #57536a;
+		--color-status-archived: #b9b4c6;
+		--color-glow: #9d85ff;
+
+		--crt-title-glow: 2px;
+		--crt-accent-glow: 4px;
+		--crt-scan: 0.03;
+		--crt-vignette: 0.07;
+
+		--wall: 0.42;
+		--wall-light: 0.32;
+		--glass-sat: 140%;
+		--glass-tint: 0.22;
+		--glass-rim: 0.9;
+		--glass-shadow: 0 1px 2px rgb(60 40 130 / 0.06), 0 14px 36px rgb(60 40 130 / 0.12);
+		--glass-accent: 26%;
+		--glass-edge: 0.1;
+
+		--veil-rgb: 46 28 110;
+		--shade-rgb: 40 24 90;
+		--led-lift: rgb(255 255 255 / 0.95);
+		--logo-shadow: 0 8px 18px rgb(60 40 130 / 0.22);
+		--fringe-blend: multiply;
 	}
 
 	/* No elastic bounce (macOS, iOS) and no scroll that passes to the container below: the
@@ -147,7 +214,7 @@
 	.led-badge {
 		width: 6px;
 		height: 6px;
-		filter: drop-shadow(0 0 1.5px rgb(0 0 0 / 0.9));
+		filter: drop-shadow(0 0 1.5px var(--led-lift));
 	}
 	.led::after {
 		content: '';
@@ -329,7 +396,7 @@
 	position: absolute;
 	inset: 0;
 	opacity: 0;
-	mix-blend-mode: screen;
+	mix-blend-mode: var(--fringe-blend);
 	pointer-events: none;
 }
 .signal::before {
@@ -556,11 +623,28 @@
 		stroke-dasharray: var(--len) var(--len);
 		animation: icon-draw 300ms var(--ease-out) var(--delay, 0ms) backwards;
 	}
+	/* The pixel sun's rays take turns, the moon's star twinkles: opacity only, so they also
+	   run with reduced motion. */
+	:is(a, button, label):hover [data-motion='sun'] > [data-part='cross'] {
+		animation: icon-pixel-blink 900ms steps(1) infinite;
+	}
+	:is(a, button, label):hover [data-motion='sun'] > [data-part='diagonal'] {
+		animation: icon-pixel-blink 900ms steps(1) -450ms infinite;
+	}
+	:is(a, button, label):hover [data-motion='moon'] > [data-part='star'] {
+		animation: icon-pixel-blink 700ms steps(1) infinite;
+	}
 	:is(a, button, label):hover [data-motion='filter'] > :first-child {
 		animation: icon-narrow 850ms var(--ease-out);
 	}
 	:is(a, button, label):hover [data-motion='filter'] > :nth-child(3) {
 		animation: icon-widen 850ms var(--ease-out);
+	}
+}
+
+@keyframes icon-pixel-blink {
+	50% {
+		opacity: 0;
 	}
 }
 
@@ -752,8 +836,8 @@
    into blotches. */
 @utility wallpaper {
 	background:
-		repeating-linear-gradient(to right, rgb(255 255 255 / 0.03) 0 1px, transparent 1px 48px),
-		repeating-linear-gradient(to bottom, rgb(255 255 255 / 0.03) 0 1px, transparent 1px 48px),
+		repeating-linear-gradient(to right, rgb(var(--veil-rgb) / 0.03) 0 1px, transparent 1px 48px),
+		repeating-linear-gradient(to bottom, rgb(var(--veil-rgb) / 0.03) 0 1px, transparent 1px 48px),
 		radial-gradient(
 			22% 26% at 14% 6%,
 			color-mix(in srgb, var(--color-accent) calc(var(--wall-light) * 100%), transparent),
@@ -793,9 +877,9 @@
 		background: linear-gradient(
 			140deg,
 			rgb(255 255 255 / calc(var(--glass-rim) * 1.4)),
-			rgb(255 255 255 / 0.04) 32%,
-			rgb(255 255 255 / 0.02) 68%,
-			color-mix(in srgb, var(--color-accent) calc(var(--glass-rim) * 90%), transparent)
+			rgb(var(--veil-rgb) / var(--glass-edge)) 32%,
+			rgb(var(--veil-rgb) / calc(var(--glass-edge) / 2)) 68%,
+			color-mix(in srgb, var(--color-accent) var(--glass-accent), transparent)
 		);
 		-webkit-mask:
 			linear-gradient(#000 0 0) content-box,
@@ -809,6 +893,37 @@
 /* Glow on the accent for icons (a filter, so it works on SVGs too). */
 @utility glow {
 	filter: drop-shadow(0 0 calc(var(--crt-accent-glow) / 2) var(--color-accent));
+}
+
+/* The prose is written `prose-invert` for the dark: by day its inverted palette points back to
+   the tokens. Outside @layer, so it wins over the typography plugin. */
+[data-theme='light'] .prose-invert {
+	--tw-prose-invert-body: var(--color-text);
+	--tw-prose-invert-headings: var(--color-fg);
+	--tw-prose-invert-lead: var(--color-muted);
+	--tw-prose-invert-links: var(--color-fg);
+	--tw-prose-invert-bold: var(--color-fg);
+	--tw-prose-invert-counters: var(--color-subtle);
+	--tw-prose-invert-bullets: var(--color-subtle);
+	--tw-prose-invert-hr: var(--color-line);
+	--tw-prose-invert-quotes: var(--color-fg);
+	--tw-prose-invert-quote-borders: var(--color-line);
+	--tw-prose-invert-captions: var(--color-subtle);
+	--tw-prose-invert-kbd: var(--color-fg);
+	--tw-prose-invert-kbd-shadows: var(--veil-rgb);
+	--tw-prose-invert-code: var(--color-fg);
+	--tw-prose-invert-pre-code: var(--color-text);
+	--tw-prose-invert-pre-bg: var(--color-surface);
+	--tw-prose-invert-th-borders: var(--color-line);
+	--tw-prose-invert-td-borders: var(--color-line);
+}
+
+/* Switching theme changes every color at once: the hover transitions would arrive in a
+   scattered order. `theme.ts` sets this for one frame. */
+[data-theme-switching] *,
+[data-theme-switching] *::before,
+[data-theme-switching] *::after {
+	transition: none !important;
 }
 
 /* The frame and the content pane have the glass border but not the blur: in Chromium a
@@ -842,10 +957,10 @@ body::after {
 	background:
 		repeating-linear-gradient(
 			to bottom,
-			rgb(255 255 255 / var(--crt-scan)) 0 1px,
+			rgb(var(--veil-rgb) / var(--crt-scan)) 0 1px,
 			transparent 1px var(--crt-scan-gap)
 		),
-		radial-gradient(ellipse at center, transparent 50%, rgb(0 0 0 / var(--crt-vignette)));
+		radial-gradient(ellipse at center, transparent 50%, rgb(var(--shade-rgb) / var(--crt-vignette)));
 }
 @media print {
 	body::after {
@@ -957,7 +1072,7 @@ body::after {
 /* Project covers. A file (screenshot or mockup) gets a hairline so a dark image does not
    melt into the glass; a generated one is a veil with the accent's glow from a corner. */
 .cover-frame {
-	box-shadow: 0 0 0 1px rgb(255 255 255 / 0.06);
+	box-shadow: 0 0 0 1px rgb(var(--veil-rgb) / 0.06);
 }
 .cover-generated {
 	background:
@@ -967,5 +1082,5 @@ body::after {
 			transparent
 		),
 		linear-gradient(var(--color-surface), var(--color-surface));
-	box-shadow: 0 0 0 1px rgb(255 255 255 / 0.06);
+	box-shadow: 0 0 0 1px rgb(var(--veil-rgb) / 0.06);
 }

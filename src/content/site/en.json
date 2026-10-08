@@ -48,6 +48,8 @@
 		"featured": "featured",
 		"allProjects": "all {n}",
 		"search": "Search",
+		"themeLight": "Switch to the light theme",
+		"themeDark": "Switch to the dark theme",
 		"openIndex": "Open the index",
 		"close": "Close",
 		"status": "Status",

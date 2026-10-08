@@ -4,6 +4,7 @@ import { languages, navigation } from '../../lib/config';
 import { getSlugMap } from '../../lib/content';
 import { getLanguageUrl } from '../../lib/i18n';
 import type { Translate } from '../../lib/site';
+import PixelIcon from '../ui/PixelIcon.astro';
 
 interface Props {
 	lang: string;
@@ -98,6 +99,20 @@ const slugMap = await getSlugMap();
 			class="hover:text-fg hover:bg-surface/60 flex size-8 items-center justify-center rounded-[var(--radius-control)] transition-colors lg:hidden"
 		>
 			<Search class="size-4" />
+		</button>
+		{/* The theme: the icon is where you would go, the label says it. The label is set for the
+		    dark theme and corrected by src/scripts/theme.ts. */}
+		<button
+			type="button"
+			data-theme-toggle
+			data-label-light={t('themeLight')}
+			data-label-dark={t('themeDark')}
+			aria-label={t('themeLight')}
+			title={t('themeLight')}
+			class="hover:text-fg hover:bg-surface/60 flex size-8 items-center justify-center rounded-[var(--radius-control)] transition-colors"
+		>
+			<PixelIcon name="sun" class="light:hidden size-[1.125rem]" />
+			<PixelIcon name="moon" class="light:block hidden size-[1.125rem]" />
 		</button>
 		<ul class="ml-1 flex items-center" aria-label={t('language')}>
 			{languages.map((l) =>

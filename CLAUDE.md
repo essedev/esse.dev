@@ -117,6 +117,10 @@ mobile drawer (`data-drawer`) in `src/scripts/workspace.ts`.
   in the content. The level above is computed from the `crumbs` in `Workspace.astro`.
 - Tokens in `@theme` (`src/styles/global.css`): a hand-written value in a component is a
   mistake.
+- Two themes (DECISIONS #27): the `@theme` values are the dark, `:root[data-theme='light']`
+  overrides them; `data-theme` is set before paint by `scripts/theme-init.js` (its CSP hash
+  is computed in `astro.config.mjs`) and switched by `scripts/theme.ts`. A new color gets both
+  values; what changes shape uses the `light:` variant.
 - Lavender (`accent`) for identity and interaction; green (`live`) only for "alive,
   succeeded" (LED in progress and maintained, successful copies and sends), never on
   running text.
@@ -132,7 +136,7 @@ mobile drawer (`data-drawer`) in `src/scripts/workspace.ts`.
 - Departure Mono for all the interface mono (code in prose stays Geist Mono), CRT veil with
   the values in `--crt-*`.
 - No maximum width on the content: the column and the fluid size set the measure.
-- Never native controls (`ui/Select.svelte`). Icons only Lucide. A project's logo is content,
+- Never native controls (`ui/Select.svelte`). Icons only Lucide, except the theme toggle (`ui/PixelIcon.astro`). A project's logo is content,
   not a UI icon: it lives in the project's folder (DECISIONS #22, rules in
   `docs/features/progetti.md`, Images).
 - Icons in motion: `data-motion="<name>"` on the Lucide icon, gesture on hover of the link,

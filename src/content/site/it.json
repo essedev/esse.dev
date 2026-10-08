@@ -48,6 +48,8 @@
 		"featured": "in evidenza",
 		"allProjects": "tutti i {n}",
 		"search": "Cerca",
+		"themeLight": "Passa al tema chiaro",
+		"themeDark": "Passa al tema scuro",
 		"openIndex": "Apri l'indice",
 		"close": "Chiudi",
 		"status": "Stato",

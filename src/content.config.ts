@@ -229,6 +229,8 @@ const site = defineCollection({
 					featured: text,
 					allProjects: text,
 					search: text,
+					themeLight: text,
+					themeDark: text,
 					openIndex: text,
 					close: text,
 					status: text,

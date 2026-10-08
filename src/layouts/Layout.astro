@@ -5,6 +5,7 @@ import { languages, navigation } from '../lib/config';
 import { getSlugMap } from '../lib/content';
 import { buildAlternates, buildCanonical, serializeJsonLd } from '../lib/seo';
 import { getSite } from '../lib/site';
+import themeInit from '../scripts/theme-init.js?raw';
 
 interface Props {
 	lang: string;
@@ -46,6 +47,10 @@ const locale = lang === 'it' ? 'it_IT' : 'en_US';
 		<meta name="description" content={pageDescription} />
 		<meta name="author" content="Simone Salerno" />
 		<meta name="theme-color" content="#050507" />
+		{/* The theme before the first paint, or the dark page flashes on a light screen. Astro
+		    does not hash inline scripts: its hash is computed in astro.config.mjs from the same
+		    file. The rest of the logic is in src/scripts/theme.ts. */}
+		<script is:inline set:html={themeInit} />
 		{noindex && <meta name="robots" content="noindex" />}
 
 		<link rel="canonical" href={canonical} />
@@ -86,6 +91,7 @@ const locale = lang === 'it' ? 'it_IT' : 'en_US';
 		<slot />
 		<script>
 			import '../scripts/analytics';
+			import '../scripts/theme';
 		</script>
 	</body>
 </html>

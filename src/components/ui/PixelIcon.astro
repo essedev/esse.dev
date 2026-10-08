@@ -1,0 +1,84 @@
+---
+/**
+ * An icon drawn on the 9-pixel grid of Departure Mono, the interface's typeface: the one
+ * exception to "icons only Lucide", for the theme toggle, where a sun and a moon in the
+ * font's own pixels read as part of the toolbar's mono. Each part is its own path, so
+ * `data-motion` can animate it (CSS in global.css).
+ */
+interface Props {
+	name: 'sun' | 'moon';
+	class?: string;
+}
+
+const { name, class: className } = Astro.props;
+
+// One string per row, `#` a lit pixel; the parts of an icon light up separately on hover.
+const ICONS = {
+	sun: {
+		body: [
+			'.........',
+			'.........',
+			'...###...',
+			'..#####..',
+			'..#####..',
+			'..#####..',
+			'...###...'
+		],
+		cross: [
+			'....#....',
+			'.........',
+			'.........',
+			'.........',
+			'#.......#',
+			'.........',
+			'.........',
+			'.........',
+			'....#....'
+		],
+		diagonal: [
+			'.........',
+			'.#.....#.',
+			'.........',
+			'.........',
+			'.........',
+			'.........',
+			'.........',
+			'.#.....#.'
+		]
+	},
+	moon: {
+		body: [
+			'...##....',
+			'.###.....',
+			'.##......',
+			'###......',
+			'###.....#',
+			'####...##',
+			'.#######.',
+			'..######.',
+			'...###...'
+		],
+		star: ['.........', '.......#.']
+	}
+} as const;
+
+/** The path of a part: one square per lit pixel. */
+function path(rows: readonly string[]): string {
+	return rows
+		.flatMap((row, y) => [...row].map((cell, x) => (cell === '#' ? `M${x} ${y}h1v1h-1z` : '')))
+		.join('');
+}
+---
+
+<svg
+	viewBox="0 0 9 9"
+	fill="currentColor"
+	shape-rendering="crispEdges"
+	aria-hidden="true"
+	data-motion={name}
+	class={className}
+>
+	{Object.entries(ICONS[name]).map(([part, rows]) => (
+		<path data-part={part} d={path(rows)} />
+	))}
+</svg>
