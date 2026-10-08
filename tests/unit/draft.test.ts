@@ -1,5 +1,14 @@
 import { describe, expect, it } from 'vitest';
-import { DRAFT_LIMITS, DraftError, mailBody, parseSend, todayCount } from '../../src/agent/draft';
+import {
+	DRAFT_LIMITS,
+	DraftError,
+	mailBody,
+	parseSend,
+	todayCount,
+	TURNSTILE_SITE_KEY,
+	TURNSTILE_TEST_SITE_KEY,
+	turnstileSiteKey
+} from '../../src/agent/draft';
 
 const valid = {
 	draftId: 'call-1',
@@ -41,5 +50,18 @@ describe('todayCount', () => {
 			day: '2026-10-03',
 			count: 0
 		});
+	});
+});
+
+describe('turnstileSiteKey', () => {
+	it('uses the real key only on the production host', () => {
+		expect(turnstileSiteKey('esse.dev')).toBe(TURNSTILE_SITE_KEY);
+		expect(turnstileSiteKey('localhost')).toBe(TURNSTILE_TEST_SITE_KEY);
+		expect(turnstileSiteKey('simonesalerno.it')).toBe(TURNSTILE_TEST_SITE_KEY);
+	});
+
+	it('lets a key set at build time win everywhere', () => {
+		expect(turnstileSiteKey('esse.dev', 'built-in')).toBe('built-in');
+		expect(turnstileSiteKey('localhost', 'built-in')).toBe('built-in');
 	});
 });

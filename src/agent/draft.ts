@@ -21,11 +21,25 @@ export const DRAFT_LIMITS = {
 } as const;
 
 /**
- * Cloudflare's documented Turnstile test site key (it always passes): used until
- * `PUBLIC_TURNSTILE_SITE_KEY` is set at build time. Production needs the real one, with its
- * `TURNSTILE_SECRET`.
+ * Cloudflare's documented Turnstile test site key (it always passes): for every host but the
+ * production one, where the real widget refuses to load (dev, preview, the E2E tests).
  */
 export const TURNSTILE_TEST_SITE_KEY = '1x00000000000000000000AA';
+
+/** The site key of the `esse.dev` widget: public, it ends up in the page anyway. */
+export const TURNSTILE_SITE_KEY = '0x4AAAAAAFRKzBS1nK-oqJ2r';
+
+/** The only host where the real widget, and its `TURNSTILE_SECRET`, are in use. */
+const PRODUCTION_HOST = 'esse.dev';
+
+/**
+ * The site key for the page's host: the real one on `esse.dev`, the test one elsewhere. A
+ * key set at build time (`PUBLIC_TURNSTILE_SITE_KEY`) wins everywhere.
+ */
+export function turnstileSiteKey(hostname: string, override?: string): string {
+	if (override) return override;
+	return hostname === PRODUCTION_HOST ? TURNSTILE_SITE_KEY : TURNSTILE_TEST_SITE_KEY;
+}
 
 /** The sender on the site's domain; the recipient is a secret (`MAIL_TO`). */
 export const MAIL_FROM = 'agente@esse.dev';

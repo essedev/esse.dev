@@ -86,8 +86,15 @@
 		intent: Record<Triage['intent'], string>;
 		weight: Record<Triage['weight'], string>;
 	};
-	let { labels, locale, turnstileKey }: { labels: Labels; locale: string; turnstileKey: string } =
-		$props();
+	let {
+		labels,
+		locale,
+		turnstileKey
+	}: {
+		labels: Labels;
+		locale: string;
+		/** A key set at build time, if any. */ turnstileKey?: string;
+	} = $props();
 
 	const VISITOR_KEY = 'agent-visitor';
 

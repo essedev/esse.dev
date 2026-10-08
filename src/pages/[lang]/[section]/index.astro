@@ -1,7 +1,6 @@
 ---
 import { render } from 'astro:content';
 import { ArrowRight, ArrowUpRight, Check, Copy, SquarePen } from '@lucide/astro';
-import { TURNSTILE_TEST_SITE_KEY } from '../../../agent/draft';
 import AgentChat from '../../../components/agent/AgentChat.svelte';
 import AgentFallback from '../../../components/agent/AgentFallback.astro';
 import CollectionBrowser from '../../../components/CollectionBrowser.svelte';
@@ -197,7 +196,7 @@ const ogSection = section === 'projects' ? 'projects' : section === 'articles' ?
 				<AgentChat
 					client:only="svelte"
 					locale={lang}
-					turnstileKey={import.meta.env.PUBLIC_TURNSTILE_SITE_KEY ?? TURNSTILE_TEST_SITE_KEY}
+					turnstileKey={import.meta.env.PUBLIC_TURNSTILE_SITE_KEY}
 					labels={{
 						placeholder: t('agentPlaceholder'),
 						send: t('agentSend'),

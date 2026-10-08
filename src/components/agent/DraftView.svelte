@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { DRAFT_LIMITS } from '../../agent/draft';
+	import { DRAFT_LIMITS, turnstileSiteKey } from '../../agent/draft';
 
 	/**
 	 * The `draft_message` draft: the visitor rereads it, edits it, leaves a contact if they
@@ -26,7 +26,8 @@
 		subject: string;
 		text: string;
 		delivery: { status: 'sending' | 'sent' | 'error'; message?: string } | undefined;
-		siteKey: string;
+		/** A site key set at build time, if any; otherwise chosen by host. */
+		siteKey?: string;
 		labels: Labels;
 		onsend: (fields: { subject: string; text: string; contact: string; turnstile: string }) => void;
 	} = $props();
@@ -75,7 +76,7 @@
 				if (cancelled || !widget) return;
 				api = t;
 				widgetId = t.render(widget, {
-					sitekey: siteKey,
+					sitekey: turnstileSiteKey(location.hostname, siteKey),
 					// The site's theme when the widget is drawn; a toggle later does not redraw it.
 					theme: document.documentElement.dataset.theme === 'light' ? 'light' : 'dark',
 					size: 'flexible',

@@ -10,8 +10,7 @@ OPENROUTER_API_KEY=
 # permissions. Without a token: 60 requests per hour per IP and search_code on file names only.
 GITHUB_TOKEN=
 
-# draft_message: Turnstile (locally Cloudflare's test key, which always passes; in
-# production the widget's, with PUBLIC_TURNSTILE_SITE_KEY at build time) and the verified
-# address the messages arrive at.
+# draft_message: Turnstile (off esse.dev Cloudflare's test keys, which always pass; the
+# site key is chosen by host in src/agent/draft.ts) and the address the messages arrive at.
 TURNSTILE_SECRET=1x0000000000000000000000000000000AA
 MAIL_TO=

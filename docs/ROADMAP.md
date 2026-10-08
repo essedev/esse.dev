@@ -90,10 +90,9 @@ of the earlier idea (the site redesigned live by a model). Choices in
 
 In production: `main` (Astro), deployed by Workers Builds on every push to `main` (Node
 24.21.0, build `pnpm run build`, deploy `pnpm exec wrangler deploy`). First Astro deploy on
-2026-10-05. Production secrets: `OPENROUTER_API_KEY`. Missing, so `draft_message` fails with
-an explicit error: `TURNSTILE_SECRET` with `PUBLIC_TURNSTILE_SITE_KEY` at build time, and
-`MAIL_TO` (`hello@esse.dev`, verified as a destination) with `esse.dev` onboarded as a
-sending domain in Cloudflare Email Service. Not Email Routing: the domain's mail is on
+2026-10-05. Production secrets: `OPENROUTER_API_KEY`, `MAIL_TO` (`hello@esse.dev`) and
+`TURNSTILE_SECRET`; the Turnstile site key is in the code, chosen by host (`draft.ts`).
+`esse.dev` is a sending domain in Cloudflare Email Service. Not Email Routing: the domain's mail is on
 Qboxmail (MX and SPF), and Email Routing would take the MX; Email Service adds only the
 `cf-bounce` MX, DKIM and DMARC, and its SPF goes into the existing record, never a second
 one. Optional: `GITHUB_TOKEN`.
