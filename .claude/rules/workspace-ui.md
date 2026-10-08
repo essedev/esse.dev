@@ -37,6 +37,10 @@ mobile drawer (`data-drawer`) in `src/scripts/workspace.ts`.
   fixed layer is sampled even at opacity 0: closed, it leaves the page (`display: none`). On
   phones the wallpaper runs vertically so each edge is one color. A change to the wallpaper,
   the desk or the CRT veil means measuring them again.
+- On mobile the window stays still and only the pane scrolls (DECISIONS #15): Safari's bottom
+  bar then never shrinks, since it does so only when the document scrolls. A taller page
+  under an inner scroll adds a second scroll, and a document that scrolls gives up the still
+  window: both tried and dropped.
 - Lavender (`accent`) for identity and interaction; green (`live`) only for "alive,
   succeeded" (LED in progress and maintained, successful copies and sends), never on
   running text.
