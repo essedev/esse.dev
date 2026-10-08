@@ -268,6 +268,7 @@ const site = defineCollection({
 					why: text,
 					previously: text,
 					agentPlaceholder: text,
+					agentPlaceholderShort: text,
 					agentSend: text,
 					agentStop: text,
 					agentReset: text,

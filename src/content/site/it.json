@@ -82,6 +82,7 @@
 		"prev": "Precedente",
 		"next": "Successivo",
 		"agentPlaceholder": "Chiedi dei miei progetti",
+		"agentPlaceholderShort": "Chiedimi qualcosa",
 		"agentSend": "invia",
 		"agentStop": "ferma",
 		"agentReset": "nuova conversazione",

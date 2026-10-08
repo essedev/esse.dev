@@ -201,6 +201,14 @@
 		text-rendering: optimizeLegibility;
 	}
 
+	/* No double-tap zoom, and no wait for the second tap; pinch zoom stays. touch-action does
+	   not pass inside a scrolling container: the pane repeats it. The list keeps its
+	   `touch-pan-y`, a utility that wins over this layer. */
+	html,
+	[data-main-scroll] {
+		touch-action: manipulation;
+	}
+
 	body {
 		font-family: var(--font-sans);
 		font-weight: 380;
@@ -963,6 +971,15 @@
 [data-theme-switching] *::before,
 [data-theme-switching] *::after {
 	transition: none !important;
+}
+
+/* On touch screens Safari zooms into a field whose text is under 16px when it gets focus,
+   and does not zoom back out. Outside @layer, so it wins over the size utilities. */
+@media (pointer: coarse) {
+	input,
+	textarea {
+		font-size: max(1rem, 16px);
+	}
 }
 
 /* The frame and the content pane have the glass border but not the blur: in Chromium a

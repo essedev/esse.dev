@@ -199,6 +199,7 @@ const ogSection = section === 'projects' ? 'projects' : section === 'articles' ?
 					turnstileKey={import.meta.env.PUBLIC_TURNSTILE_SITE_KEY}
 					labels={{
 						placeholder: t('agentPlaceholder'),
+						placeholderShort: t('agentPlaceholderShort'),
 						send: t('agentSend'),
 						stop: t('agentStop'),
 						connecting: t('agentConnecting'),
@@ -300,7 +301,7 @@ const ogSection = section === 'projects' ? 'projects' : section === 'articles' ?
 				>
 					<AgentFallback
 						slot="fallback"
-						placeholder={t('agentPlaceholder')}
+						placeholder={t('agentPlaceholderShort')}
 						send={t('agentSend')}
 						privacyNote={t('agentPrivacyNote')}
 						privacyHref={`/${lang}/${routes.privacy}`}
