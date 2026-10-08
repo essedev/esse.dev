@@ -101,6 +101,12 @@
 		--logo-shadow: 0 8px 18px rgb(0 0 0 / 0.55);
 		/* The fringe of the error number adds light on black and takes it away on paper. */
 		--fringe-blend: screen;
+
+		/* The browser's bars, above and below the page: the wallpaper's edge, measured on its
+		   6px frame with the CRT veil on. Safari 26 ignores `theme-color` and tints them from the
+		   html background, so they live there (see html below). */
+		--bar-top: #2f294a;
+		--bar-bottom: #110e20;
 	}
 
 	/* Light mode: the same lab by day, at dusk (concept I, variant C). Smoky lavender: the
@@ -152,6 +158,9 @@
 		--led-lift: rgb(255 255 255 / 0.95);
 		--logo-shadow: 0 8px 18px rgb(60 40 130 / 0.22);
 		--fringe-blend: multiply;
+
+		--bar-top: #9c8cd6;
+		--bar-bottom: #b2a7d8;
 	}
 
 	/* No elastic bounce (macOS, iOS) and no scroll that passes to the container below: the
@@ -168,8 +177,12 @@
 		overscroll-behavior-x: none;
 	}
 
+	/* Hidden by the wallpaper, it shows only around the page: Safari 26 takes the color for its
+	   top bar from here, and the canvas under the bottom bar shows the gradient's end, which
+	   meets the wallpaper's bottom edge. 100lvh: the tallest viewport, with the bars retracted. */
 	html {
-		background: var(--color-bg);
+		background: linear-gradient(var(--bar-top), var(--bar-bottom)) top / 100% 100lvh no-repeat
+			var(--bar-top);
 		color: var(--color-fg);
 		-webkit-font-smoothing: antialiased;
 		text-rendering: optimizeLegibility;

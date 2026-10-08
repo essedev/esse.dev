@@ -31,6 +31,9 @@ mobile drawer (`data-drawer`) in `src/scripts/workspace.ts`.
   color gets both values; what changes shape uses the `light:` variant. A project image with
   a light variant (`logoLight`, `cover.srcLight`) comes from the render scripts, which write
   both.
+- The browser's bars take `--bar-top` and `--bar-bottom` (global.css), the wallpaper's edge
+  measured on its frame: Safari 26 ignores `theme-color` and tints them from the html
+  background. A change to the wallpaper, the desk or the CRT veil means measuring them again.
 - Lavender (`accent`) for identity and interaction; green (`live`) only for "alive,
   succeeded" (LED in progress and maintained, successful copies and sends), never on
   running text.

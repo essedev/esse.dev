@@ -9,8 +9,6 @@ export type Theme = 'light' | 'dark';
 
 /** The storage key, shared with src/scripts/theme-init.js. */
 const KEY = 'theme';
-/** The `theme-color` of each theme: the color of the wallpaper's desk. */
-const BAR: Record<Theme, string> = { dark: '#0a0912', light: '#bcb2dc' };
 
 const system = matchMedia('(prefers-color-scheme: light)');
 const systemTheme = (): Theme => (system.matches ? 'light' : 'dark');
@@ -42,7 +40,10 @@ function apply(theme: Theme) {
 	const root = document.documentElement;
 	root.setAttribute('data-theme-switching', '');
 	root.dataset.theme = theme;
-	document.querySelector('meta[name="theme-color"]')?.setAttribute('content', BAR[theme]);
+	// For the browsers that still read `theme-color` (Chrome, Safari before 26): the top bar's
+	// color, from global.css, read after the theme is applied.
+	const bar = getComputedStyle(root).getPropertyValue('--bar-top').trim();
+	document.querySelector('meta[name="theme-color"]')?.setAttribute('content', bar);
 	for (const button of document.querySelectorAll<HTMLElement>('[data-theme-toggle]')) {
 		const label = theme === 'light' ? button.dataset.labelDark : button.dataset.labelLight;
 		if (label) {
