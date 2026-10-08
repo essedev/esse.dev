@@ -42,12 +42,19 @@ const projects = defineCollection({
 			install: z.string().optional(),
 			/** The project's own logo, a file in its folder: content, not a UI icon. */
 			logo: image().optional(),
+			/** The logo on the light theme (`logo-light.svg`, from scripts/render-logo.ts). */
+			logoLight: image().optional(),
 			/**
 			 * The image the page opens with, a screenshot or a designed mockup, cropped to 21:9
 			 * (16:9 on mobile) around `focus`. Without it the cover is generated from `icon`.
 			 */
 			cover: z
-				.object({ src: image(), focus: z.enum(['top', 'center', 'bottom']).default('center') })
+				.object({
+					src: image(),
+					/** The cover on the light theme, for a designed one (scripts/render-cover.ts). */
+					srcLight: image().optional(),
+					focus: z.enum(['top', 'center', 'bottom']).default('center')
+				})
 				.optional(),
 			/** The Lucide icon of the generated cover and of the list row, when there is no logo. */
 			icon: coverIcon.optional()

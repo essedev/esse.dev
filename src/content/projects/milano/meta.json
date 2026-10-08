@@ -5,6 +5,7 @@
 	"updated": "2026-07-04",
 	"repo": "https://github.com/essedev/based-routing",
 	"logo": "./logo.svg",
+	"logoLight": "./logo-light.svg",
 	"cover": {
 		"src": "./cover.webp",
 		"focus": "center"

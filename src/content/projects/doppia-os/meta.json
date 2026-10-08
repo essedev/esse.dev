@@ -5,6 +5,7 @@
 	"updated": "2026-10-04",
 	"site": "https://doppia-os.pages.dev/",
 	"logo": "./logo.svg",
+	"logoLight": "./logo-light.svg",
 	"cover": {
 		"src": "./cover.webp",
 		"focus": "top"

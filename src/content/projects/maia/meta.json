@@ -5,6 +5,7 @@
 	"updated": "2026-07-26",
 	"repo": "https://github.com/essedev/maia",
 	"logo": "./logo.svg",
+	"logoLight": "./logo-light.svg",
 	"cover": {
 		"src": "./cover.webp",
 		"focus": "top"

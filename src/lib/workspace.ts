@@ -24,6 +24,8 @@ export interface NavItem {
 	status?: ProjectStatus;
 	/** The project's logo, shown in place of the LED with the LED on its corner. */
 	logo?: ImageMetadata;
+	/** The logo on the light theme. */
+	logoLight?: ImageMetadata;
 	/** Order number shown in place of the LED (method). */
 	index?: string;
 	/** Icon in place of the LED, for rows without a status: a page or a piece of writing. */
@@ -126,6 +128,7 @@ export async function getNav(lang: string, t: Translate): Promise<Nav> {
 					meta: p.meta.created.slice(0, 4),
 					status: p.meta.status,
 					logo: p.meta.logo,
+					logoLight: p.meta.logoLight,
 					search: `${p.text.title} ${p.text.tags.join(' ')} ${statusLabel(p.meta.status)}`,
 					rest: !showcase.has(p.id)
 				})),

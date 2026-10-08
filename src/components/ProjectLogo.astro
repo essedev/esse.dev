@@ -7,30 +7,46 @@ import type { ProjectStatus } from '../lib/content';
  * A project's logo. In a list row it is 20 px with the status LED inside its corner, so the row
  * keeps saying "in progress" or "idea"; next to a page title it is larger, with a shadow
  * that follows the logo's own shape (a drop-shadow, not a box): a logo without a tile has none.
+ * With a light variant, each theme shows its own; an app icon has one only.
  */
 interface Props {
 	logo: ImageMetadata;
+	logoLight?: ImageMetadata;
 	size: 'row' | 'title';
 	status?: ProjectStatus;
 }
 
-const { logo, size, status } = Astro.props;
+const { logo, logoLight, size, status } = Astro.props;
 const px = size === 'row' ? 20 : 72;
 const box = size === 'row' ? 'size-5' : 'size-14 drop-shadow-[var(--logo-shadow)] sm:size-[4.5rem]';
+const variants = logoLight
+	? [
+			{ image: logo, theme: 'light:hidden' },
+			{ image: logoLight, theme: 'hidden light:block' }
+		]
+	: [{ image: logo, theme: '' }];
 ---
 
 <span class="relative inline-flex shrink-0">
-	{logo.format === 'svg' ? (
-		<img src={logo.src} width={px} height={px} alt="" class:list={[box, 'object-contain']} />
-	) : (
-		<Image
-			src={logo}
-			width={px}
-			height={px}
-			densities={[1, 2]}
-			alt=""
-			class:list={[box, 'object-contain']}
-		/>
+	{variants.map(({ image, theme }) =>
+		image.format === 'svg' ? (
+			<img
+				src={image.src}
+				width={px}
+				height={px}
+				alt=""
+				class:list={[box, theme, 'object-contain']}
+			/>
+		) : (
+			<Image
+				src={image}
+				width={px}
+				height={px}
+				densities={[1, 2]}
+				alt=""
+				class:list={[box, theme, 'object-contain']}
+			/>
+		)
 	)}
 	{size === 'row' && status && (
 		<span class="led led-badge absolute -right-0.5 -bottom-0.5" data-status={status} />

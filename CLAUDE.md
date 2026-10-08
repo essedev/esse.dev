@@ -47,7 +47,9 @@ it, delete the cache and restart it.
 Replacing an image file keeps the old one on screen in dev: the image endpoint answers
 `immutable` and wrangler's emulated cache (`.wrangler/state/v3/cache`) keys it by URL, not by
 content. Stop the dev server, delete that folder, restart, and hard-reload the browser.
-Production is not affected: built images carry a content hash.
+Production is not affected: built images carry a content hash. An edited `meta.json` can
+stay invisible in dev even after a restart: delete `.astro/data-store.json` and
+`node_modules/.astro/data-store.json`.
 
 Secrets in `.dev.vars` (excluded from git, template in `.dev.vars.example`), read by
 `wrangler dev` and copied into `dist/server/` by the build; in production
@@ -120,7 +122,8 @@ mobile drawer (`data-drawer`) in `src/scripts/workspace.ts`.
 - Two themes (DECISIONS #27): the `@theme` values are the dark, `:root[data-theme='light']`
   overrides them; `data-theme` is set before paint by `scripts/theme-init.js` (its CSP hash
   is computed in `astro.config.mjs`) and switched by `scripts/theme.ts`. A new color gets both
-  values; what changes shape uses the `light:` variant.
+  values; what changes shape uses the `light:` variant. A project image with a light variant
+  (`logoLight`, `cover.srcLight`) comes from the render scripts, which write both.
 - Lavender (`accent`) for identity and interaction; green (`live`) only for "alive,
   succeeded" (LED in progress and maintained, successful copies and sends), never on
   running text.

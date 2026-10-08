@@ -3,28 +3,28 @@
  * centered on it, either one Lucide glyph in the accent (for projects without a mark of their
  * own) or the project's own mark (a transparent image, so it sits on the same tile as the
  * others). An SVG with no margin around the tile: every logo on the site that has no tile of
- * its own comes from here, so they share one geometry.
+ * its own comes from here, so they share one geometry. Every logo comes in two, one per
+ * theme: `<out>.svg` on the dark tile and `<out>-light.svg` on a paper tile with a hairline,
+ * the glyph in the accent darkened for the light (light-accent.ts); a mark stays as it is.
  *
  * Usage: node --experimental-strip-types scripts/render-logo.ts <lucide-name | mark-file> <#accent> <out.svg> [--tile=#rrggbb]
- * `--tile` sets the tile's base colour (default the site's dark #121019): a light one for a mark
- * drawn with dark outlines, which would sink into the dark tile.
+ *        node --experimental-strip-types scripts/render-logo.ts --light <logo.svg> [...]
+ * `--tile` sets the dark tile's base colour (default the site's dark #121019): a light one for
+ * a mark drawn with dark outlines, which would sink into the dark tile. `--light` writes the
+ * light variant of logos already made here, read back from their SVG.
  * Examples:
  *   node --experimental-strip-types scripts/render-logo.ts plug '#7dd3fc' src/content/projects/mcpbelt/logo.svg
  *   node --experimental-strip-types scripts/render-logo.ts mark.png '#fb7185' src/content/projects/zeno/logo.svg
  */
 import { existsSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
-import { extname, join } from 'node:path';
+import { basename, dirname, extname, join } from 'node:path';
+import { lightAccent } from './light-accent.ts';
 
-const args = process.argv.slice(2);
-const [symbol, accent, out] = args.filter((a) => !a.startsWith('--'));
-const tile = args.find((a) => a.startsWith('--tile='))?.slice(7) ?? '#121019';
-const hex = /^#[0-9a-f]{6}$/i;
-if (!symbol || !hex.test(accent ?? '') || !out || !hex.test(tile)) {
-	console.error(
-		'usage: render-logo.ts <lucide-name | mark-file> <#rrggbb> <out.svg> [--tile=#rrggbb]'
-	);
-	process.exit(1);
-}
+type Theme = 'dark' | 'light';
+
+const DARK_TILE = '#121019';
+/** The light tile: the site's light panel. */
+const LIGHT_TILE = '#fbfaff';
 
 const MIME: Record<string, string> = {
 	'.svg': 'image/svg+xml',
@@ -41,7 +41,7 @@ function mark(path: string): string {
 }
 
 /** A Lucide glyph, 64 of 128 (scale 64/24 from Lucide's 24 grid), stroke 2 in icon units. */
-function glyph(name: string): string {
+function glyph(name: string, color: string): string {
 	// The icon data of @lucide/astro, the same set the site uses: one file per icon.
 	// The package exports no package.json, so the folder is reached from the project root.
 	const icons = join(process.cwd(), 'node_modules/@lucide/astro/src/icons');
@@ -59,21 +59,76 @@ function glyph(name: string): string {
 			.map(([k, v]) => `${k}="${v}"`)
 			.join(' ');
 	const paths = nodes.map(([tag, a]) => `<${tag} ${attrs(a)}/>`).join('');
-	return `<g transform="translate(32 32) scale(${64 / 24})" fill="none" stroke="${accent}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${paths}</g>`;
+	return `<g transform="translate(32 32) scale(${64 / 24})" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${paths}</g>`;
 }
 
-const content = existsSync(symbol) ? mark(symbol) : glyph(symbol);
-const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+/** The tile around a glyph or mark, in one theme. The light one lowers the tint and draws a
+ * hairline, or the paper tile would melt into the paper page. */
+function tileSvg(content: string, accent: string, tile: string, theme: Theme): string {
+	const [from, to] = theme === 'light' ? [0.16, 0.05] : [0.24, 0.08];
+	const hairline =
+		theme === 'light'
+			? '\n\t<rect x="0.5" y="0.5" width="127" height="127" rx="27.5" fill="none" stroke="#2e1c6e" stroke-opacity="0.12"/>'
+			: '';
+	return `<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
 	<defs>
 		<linearGradient id="t" x1="0" y1="0" x2="1" y2="1">
-			<stop offset="0" stop-color="${accent}" stop-opacity="0.24"/>
-			<stop offset="1" stop-color="${accent}" stop-opacity="0.08"/>
+			<stop offset="0" stop-color="${accent}" stop-opacity="${from}"/>
+			<stop offset="1" stop-color="${accent}" stop-opacity="${to}"/>
 		</linearGradient>
 	</defs>
 	<rect width="128" height="128" rx="28" fill="${tile}"/>
-	<rect width="128" height="128" rx="28" fill="url(#t)"/>
+	<rect width="128" height="128" rx="28" fill="url(#t)"/>${hairline}
 	${content}
 </svg>
 `;
-writeFileSync(out, svg);
-console.log(`${out} (${existsSync(symbol) ? 'mark' : 'glyph'} ${symbol}, ${accent})`);
+}
+
+/** The path of the light variant: `logo.svg` gives `logo-light.svg`. */
+function lightPath(out: string): string {
+	const ext = extname(out);
+	return join(dirname(out), `${basename(out, ext)}-light${ext}`);
+}
+
+/** The light variant of a logo made here, read back from its SVG: accent, and glyph or mark. */
+function lightFrom(file: string) {
+	const svg = readFileSync(file, 'utf8');
+	const accent = svg.match(/stop-color="(#[0-9a-f]{6})"/i)?.[1];
+	const content = svg.match(/fill="url\(#t\)"\/>\s*([\s\S]*?)\s*<\/svg>/)?.[1];
+	if (!accent || !content || content.includes('stroke-opacity="0.12"')) {
+		console.error(`${file}: not a dark logo made by render-logo.ts`);
+		process.exit(1);
+	}
+	const ink = lightAccent(accent);
+	const light = content.replaceAll(`stroke="${accent}"`, `stroke="${ink}"`);
+	writeFileSync(lightPath(file), tileSvg(light, ink, LIGHT_TILE, 'light'));
+	console.log(`${lightPath(file)} (light of ${file}, ${ink})`);
+}
+
+const args = process.argv.slice(2);
+const files = args.filter((a) => !a.startsWith('--'));
+if (args.includes('--light')) {
+	if (!files.length) {
+		console.error('usage: render-logo.ts --light <logo.svg> [...]');
+		process.exit(1);
+	}
+	files.forEach(lightFrom);
+} else {
+	const [symbol, accent, out] = files;
+	const tile = args.find((a) => a.startsWith('--tile='))?.slice(7) ?? DARK_TILE;
+	const hex = /^#[0-9a-f]{6}$/i;
+	if (!symbol || !hex.test(accent ?? '') || !out || !hex.test(tile)) {
+		console.error(
+			'usage: render-logo.ts <lucide-name | mark-file> <#rrggbb> <out.svg> [--tile=#rrggbb]'
+		);
+		process.exit(1);
+	}
+	const isMark = existsSync(symbol);
+	const ink = lightAccent(accent);
+	writeFileSync(out, tileSvg(isMark ? mark(symbol) : glyph(symbol, accent), accent, tile, 'dark'));
+	writeFileSync(
+		lightPath(out),
+		tileSvg(isMark ? mark(symbol) : glyph(symbol, ink), ink, LIGHT_TILE, 'light')
+	);
+	console.log(`${out} and ${lightPath(out)} (${isMark ? 'mark' : 'glyph'} ${symbol}, ${accent})`);
+}

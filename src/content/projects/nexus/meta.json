@@ -4,6 +4,7 @@
 	"created": "2026-06-14",
 	"updated": "2026-09-22",
 	"logo": "./logo.svg",
+	"logoLight": "./logo-light.svg",
 	"cover": {
 		"src": "./cover.webp",
 		"focus": "top"

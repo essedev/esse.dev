@@ -5,6 +5,7 @@
 	"updated": "2026-08-22",
 	"repo": "https://github.com/essedev/local-llm-eval",
 	"logo": "./logo.svg",
+	"logoLight": "./logo-light.svg",
 	"cover": {
 		"src": "./cover.webp",
 		"focus": "top"

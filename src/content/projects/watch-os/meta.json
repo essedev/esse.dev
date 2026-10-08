@@ -4,8 +4,10 @@
 	"created": "2026-04-26",
 	"updated": "2026-04-26",
 	"logo": "./logo.svg",
+	"logoLight": "./logo-light.svg",
 	"cover": {
 		"src": "./cover.webp",
+		"srcLight": "./cover-light.webp",
 		"focus": "center"
 	}
 }

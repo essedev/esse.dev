@@ -50,7 +50,7 @@ const isCurrent = item.key === current;
 			) : item.icon === 'text' ? (
 				<FileText data-motion="file" class="text-subtle size-3.5" />
 			) : item.logo ? (
-				<ProjectLogo logo={item.logo} size="row" status={item.status} />
+				<ProjectLogo logo={item.logo} logoLight={item.logoLight} size="row" status={item.status} />
 			) : (
 				<span class="led" data-status={item.status} />
 			)}

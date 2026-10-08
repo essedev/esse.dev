@@ -126,4 +126,8 @@ Both are files in the project's folder, declared in `meta.json` (`logo`, `cover`
   shared tile with `scripts/render-logo.ts <mark-file> <accent>`; a project without a mark gets
   a Lucide glyph on the same tile (`render-logo.ts <lucide-name> <accent>`). Never a template
   favicon (Vite, Astro) and never the logo of a third party.
+- **Two themes** (DECISIONS #28): a logo from `render-logo.ts` and a designed cover from
+  `render-cover.ts` have a light variant next to them (`logo-light.svg`, `cover-light.webp`),
+  written by the same script and declared as `logoLight` and `cover.srcLight`. An app icon
+  that is its own tile, a screenshot and the generated cover have one only.
 - **Weight**: no source file over 300 KB. The pixel-art archive cost 80 MB of history.

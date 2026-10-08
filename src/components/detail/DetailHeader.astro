@@ -6,11 +6,13 @@ interface Props {
 	title: string;
 	/** A project's logo, on its own line above the title. */
 	logo?: ImageMetadata;
+	/** The logo on the light theme. */
+	logoLight?: ImageMetadata;
 	/** There is a cover above: the logo rises over its bottom edge, the title stays below. */
 	overlap?: boolean;
 }
 
-const { title, logo, overlap = false } = Astro.props;
+const { title, logo, logoLight, overlap = false } = Astro.props;
 
 // Document head: title and a line of meta (status, date). Where you are and the actions
 // live in the pane's toolbar, not here.
@@ -19,7 +21,7 @@ const { title, logo, overlap = false } = Astro.props;
 <header class="relative flex flex-col gap-5">
 	{logo && (
 		<div class:list={[overlap ? '-mt-16 sm:-mt-[4.5rem]' : '']}>
-			<ProjectLogo logo={logo} size="title" />
+			<ProjectLogo logo={logo} logoLight={logoLight} size="title" />
 		</div>
 	)}
 	<h1 class="text-[clamp(2rem,1.2rem+2.6vw,3.5rem)] leading-[1.05] font-medium tracking-[-0.025em] text-balance">

@@ -146,7 +146,12 @@ const host = (url: string) => url.replace(/^https?:\/\/(www\.)?/, '').replace(/\
 			]}
 		>
 			<article class="min-w-0">
-				<DetailHeader title={title} logo={project?.meta.logo} overlap={!!project}>
+				<DetailHeader
+					title={title}
+					logo={project?.meta.logo}
+					logoLight={project?.meta.logoLight}
+					overlap={!!project}
+				>
 					{project && (
 						<p class="text-muted flex items-center gap-2.5 font-mono text-[0.8125rem]">
 							<span class="led" data-status={project.meta.status} />

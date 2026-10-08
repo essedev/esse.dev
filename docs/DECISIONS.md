@@ -333,3 +333,21 @@ turns and the moon's star twinkles, by opacity, so with reduced motion too (#25)
 only `prefers-color-scheme` (no way to pick on a shared screen), a three-state toggle with
 "system" (one more state to explain for a choice the two-state one already undoes),
 `light-dark()` on every token (it does not cover the channel variables like `--veil-rgb`).
+
+## #28 - Project images in both themes, from the render scripts
+
+**Status:** active (Cycle 26)
+
+The logos made by `scripts/render-logo.ts` and the designed covers made by
+`scripts/render-cover.ts` come in two: the dark one and a `-light` one, declared in
+`meta.json` as `logoLight` and `cover.srcLight`; the page shows the one of the theme. The
+light logo is a paper tile with a lower tint and a hairline, the glyph in the accent
+darkened to the lightness of the site's light accent (`scripts/light-accent.ts`, OKLCH, hue
+kept); a mark stays as it is. The light cover puts the same panel on the paper with the
+darkened accent. Both scripts always write both, and `render-logo.ts --light` reads an
+existing logo back from its SVG, since the arguments it was made with are not kept. When a
+cover has two variants both load lazily, so only the shown one is fetched (an eager image
+hidden by CSS is fetched all the same), at the cost of starting after layout. Not in two:
+the app icons that are already a tile (Relay, Copilota, Portsage), which are the apps' own,
+the screenshots, which are the real interface, and the OG images, which are seen outside
+the site. The generated cover follows the tokens already.

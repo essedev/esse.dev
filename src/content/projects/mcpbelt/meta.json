@@ -5,6 +5,7 @@
 	"updated": "2026-09-22",
 	"icon": "plug",
 	"logo": "./logo.svg",
+	"logoLight": "./logo-light.svg",
 	"cover": {
 		"src": "./cover.webp",
 		"focus": "top"

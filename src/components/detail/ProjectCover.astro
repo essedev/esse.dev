@@ -6,7 +6,9 @@ import CoverIcon from './CoverIcon.astro';
 /**
  * The image a project page opens with: the cover file (screenshot or designed mockup) cropped
  * to 21:9, 16:9 on mobile, or a generated one (veil, glow and the project's Lucide icon). It
- * is the page's LCP element, so it loads eagerly and with high priority.
+ * is the page's LCP element, so it loads eagerly and with high priority. A designed cover has
+ * a light variant: then both are lazy, so the browser fetches only the one the theme shows
+ * (an eager hidden image is fetched all the same), at the cost of starting after layout.
  */
 interface Props {
 	meta: ProjectMeta;
@@ -19,29 +21,41 @@ const focus = { top: 'object-top', center: 'object-center', bottom: 'object-bott
 	cover?.focus ?? 'center'
 ];
 const frame = 'aspect-[16/9] w-full rounded-[var(--radius-panel)] sm:aspect-[21/9]';
+const variants = cover
+	? cover.srcLight
+		? [
+				{ image: cover.src, theme: 'light:hidden' },
+				{ image: cover.srcLight, theme: 'hidden light:block' }
+			]
+		: [{ image: cover.src, theme: '' }]
+	: [];
+const loading = variants.length > 1 ? 'lazy' : 'eager';
 ---
 
 {cover ? (
-	cover.src.format === 'svg' ? (
-		<img
-			src={cover.src.src}
-			width={cover.src.width}
-			height={cover.src.height}
-			alt={alt}
-			fetchpriority="high"
-			class:list={[frame, 'cover-frame object-cover', focus]}
-		/>
-	) : (
-		<Image
-			src={cover.src}
-			alt={alt}
-			layout="full-width"
-			widths={[800, 1200, 1600, 2400]}
-			sizes="(min-width: 1024px) 75vw, 100vw"
-			loading="eager"
-			fetchpriority="high"
-			class:list={[frame, 'cover-frame object-cover', focus]}
-		/>
+	variants.map(({ image, theme }) =>
+		image.format === 'svg' ? (
+			<img
+				src={image.src}
+				width={image.width}
+				height={image.height}
+				alt={alt}
+				loading={loading}
+				fetchpriority="high"
+				class:list={[frame, theme, 'cover-frame object-cover', focus]}
+			/>
+		) : (
+			<Image
+				src={image}
+				alt={alt}
+				layout="full-width"
+				widths={[800, 1200, 1600, 2400]}
+				sizes="(min-width: 1024px) 75vw, 100vw"
+				loading={loading}
+				fetchpriority="high"
+				class:list={[frame, theme, 'cover-frame object-cover', focus]}
+			/>
+		)
 	)
 ) : (
 	<div class:list={[frame, 'cover-generated grid place-items-center']} role="img" aria-label={alt}>
