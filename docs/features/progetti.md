@@ -62,7 +62,6 @@ which stopped the day Nexus restarted.
   repo.
 - Edge Lab (repo `printor`): where an LLM gives a real edge in trading, a harness built to
   resist self-deception.
-- Wavelength: AI radio with a multi-agent newsroom.
 - Media Hub (repo `home-media`): the home server and the TV app (see below).
 - Watch OS: firmware for a smartwatch that is a voice client of an agent.
 - IDKCraft: a voxel game in Kotlin, with IDKCraft Studio generating pixel-art textures
@@ -82,7 +81,8 @@ which stopped the day Nexus restarted.
 **Ideas**: Maia, with Cosmoscope and Upstream as earlier iterations; Minerd, the idle game
 as the base of a game that updates itself with AI.
 
-**Out**: Horizon and Casussy (almost no work), Templator (hidden until updated), Haystack,
+**Out**: Horizon and Casussy (almost no work), Templator (hidden until updated), Wavelength
+(AI radio with a multi-agent newsroom, hidden while it is rebuilt for a hackathon), Haystack,
 CORE, Didattica Integrata, Kebabbivori, CamperPlan.
 
 ## Media Hub
