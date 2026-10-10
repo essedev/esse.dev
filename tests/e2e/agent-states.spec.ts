@@ -219,6 +219,8 @@ test.describe('agent states', () => {
 		await page.evaluate(() => localStorage.setItem('agent-started', '1'));
 		await page.reload();
 		await expect(page.locator('[data-agent-status]')).toContainText('loading the conversation');
+		// Alone: the empty state is not drawn above a conversation that is on its way.
+		await expect(page.getByRole('heading', { name: 'Try asking' })).toHaveCount(0);
 	});
 
 	test('a message sent during an answer waits under it, marked as queued', async ({ page }) => {

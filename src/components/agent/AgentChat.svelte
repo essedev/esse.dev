@@ -345,9 +345,12 @@
 		track('agent-message', { source: 'suggestion' });
 	}
 
-	// The empty state disappears on the first send, without waiting for the server to confirm.
+	// The empty state disappears on the first send, without waiting for the server to confirm,
+	// and does not show while a conversation already open is coming back.
 	let sent = $state(false);
-	const empty = $derived(!sent && shown.length === 0 && locals.length === 0 && !view.running);
+	const empty = $derived(
+		!sent && !resuming && shown.length === 0 && locals.length === 0 && !view.running
+	);
 
 	/**
 	 * The messages sent and not yet in the transcript, in order: they show at once, under the
@@ -417,6 +420,8 @@
 		// No storage: wait for the transcript.
 	}
 	const started = $derived(loaded ? !empty : remembered);
+	/** A conversation already open is coming: the title is gone, the transcript not here yet. */
+	const resuming = $derived(!loaded && remembered && status !== 'closed' && !unreachable);
 	$effect(() => {
 		document.querySelector('[data-workspace]')?.toggleAttribute('data-agent-started', started);
 		if (!loaded) return;
@@ -595,9 +600,9 @@
 {/snippet}
 
 {#snippet progress()}
-	{#if !loaded && remembered && status !== 'closed' && !unreachable}
-		<!-- A conversation already open is coming: the title is gone, the transcript not here yet. -->
-		<AgentStatus label={labels.phases.resume} />
+	{#if resuming}
+		<!-- Nothing above it yet: it starts at the edge, like the line of an unreachable agent. -->
+		<AgentStatus label={labels.phases.resume} inset={false} />
 	{:else if phase}
 		<div class="flex flex-col gap-2">
 			<AgentStatus label={phaseLabel(phase)} meta={phaseMeta(phase)} />
