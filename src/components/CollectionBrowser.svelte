@@ -144,6 +144,19 @@
 					align="end"
 				/>
 			</div>
+			<!-- Legend of the LEDs, only for the statuses the list contains. -->
+			{#if statusOptions.length}
+				<ul
+					class="flex flex-wrap items-center gap-x-4 gap-y-1 font-mono text-xs whitespace-nowrap text-subtle sm:ml-auto"
+				>
+					{#each statusOptions as option (option.value)}
+						<li class="flex items-center gap-1.5">
+							<span class="led" data-status={option.value}></span>
+							{option.label.toLowerCase()}
+						</li>
+					{/each}
+				</ul>
+			{/if}
 		</div>
 
 		{#if active}

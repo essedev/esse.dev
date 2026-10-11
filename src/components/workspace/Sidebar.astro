@@ -103,7 +103,7 @@ const keys: [string[], string][] = [
 		</p>
 	</div>
 
-	{/* Status line: LED legend, keys, and for a moment the confirmation of an action. */}
+	{/* Status line: links, keys, and for a moment the confirmation of an action. */}
 	<div
 		data-statusline
 		class="group/status text-subtle flex shrink-0 flex-col gap-2.5 px-5 pt-3 pb-4 font-mono text-[0.7rem] lg:px-6"
@@ -118,34 +118,16 @@ const keys: [string[], string][] = [
 				</a>
 			</li>
 		</SocialLinks>
-		<div class="flex flex-wrap items-center gap-x-4 gap-y-1 whitespace-nowrap">
-			<span class="flex items-center gap-1.5">
-				<span class="led" data-status="in-progress" />
-				{t('statusInProgress').toLowerCase()}
-			</span>
-			<span class="flex items-center gap-1.5">
-				<span class="led" data-status="maintained" />
-				{t('statusMaintained').toLowerCase()}
-			</span>
-			<span class="flex items-center gap-1.5">
-				<span class="led" data-status="completed" />
-				{t('statusCompleted').toLowerCase()}
-			</span>
-			<span class="flex items-center gap-1.5">
-				<span class="led" data-status="idea" />
-				{t('statusIdea').toLowerCase()}
-			</span>
-		</div>
 		{/* The keys matter only with a keyboard: on mobile the row is not there. */}
 		<div class="hidden h-[1.4rem] items-center lg:grid">
 			<ul
-				class="flex items-center gap-4 whitespace-nowrap transition-opacity duration-150 [grid-area:1/1] group-data-[flash]/status:opacity-0"
+				class="flex items-center gap-3.5 text-[0.65rem] whitespace-nowrap transition-opacity duration-150 [grid-area:1/1] group-data-[flash]/status:opacity-0"
 				aria-hidden="true"
 			>
 				{keys.map(([ks, label]) => (
-					<li class="flex items-center gap-1.5">
+					<li class="flex items-center gap-1">
 						{ks.map((k) => (
-							<span class="kbd">{k}</span>
+							<span class="kbd h-[1.2rem] min-w-[1.2rem] px-1 text-[0.625rem]">{k}</span>
 						))}
 						{label}
 					</li>
