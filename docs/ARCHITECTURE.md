@@ -54,7 +54,10 @@ hand-written text. Astro's standard would be one Markdown per language with all 
 frontmatter: it costs duplication, and grows with every shared field (cover and logo, #22).
 
 The single pages (welcome, about, contacts, privacy) are Markdown per language in
-`src/content/pages/`. The site title, section names and UI strings are the `site`
+`src/content/pages/`. The welcome page keeps its text in the frontmatter, without a body:
+the headline (`*...*` marks the accent) and the introduction, where `{tools}` places the
+logos of the projects listed in `tools`, are composed with components, which Markdown
+cannot do. The home's method card shows the `quote` of the first note that has one. The site title, section names and UI strings are the `site`
 collection, with a strict schema: every language has all the keys and none extra, and the
 keys are a type. Config (languages, routes, showcase) stays JSON, imported and validated
 by `src/lib/config.ts`, because it is configuration and not content.

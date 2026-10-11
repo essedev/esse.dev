@@ -131,6 +131,12 @@ function loadAll() {
 					throw new Error(`projects/${p.id}: \`previously\` diverso tra ${first} e ${lang}`);
 			}
 		}
+		// The home shows a note's quote: a language without it would show another note's.
+		for (const m of method) {
+			const has = languageCodes.map((lang) => m.texts[lang].data.quote !== undefined);
+			if (has.some((x) => x !== has[0]))
+				throw new Error(`method/${m.id}: \`quote\` presente solo in alcune lingue`);
+		}
 		const publishedIds = new Set(projects.map((p) => p.id));
 		for (const id of featured.projects) {
 			if (!publishedIds.has(id))
@@ -220,6 +226,22 @@ export async function getSlugMap(): Promise<SlugMap> {
 			])
 		);
 	return { projects: toMap(projects), articles: toMap(articles), method: toMap(method) };
+}
+
+/** The home's text in one language, with the projects of its introduction in their order (each with a logo). */
+export async function getWelcome(
+	lang: string
+): Promise<{ page: CollectionEntry<'welcome'>; tools: Project[] }> {
+	const [page, projects] = await Promise.all([getPage('welcome', lang), getProjects(lang)]);
+	const byId = new Map(projects.map((p) => [p.id, p]));
+	const tools = page.data.tools.map((id) => {
+		const project = byId.get(id);
+		if (!project) throw new Error(`pages/welcome/${lang}.md: "${id}" non è un progetto pubblicato`);
+		// The introduction shows the project by its logo alone.
+		if (!project.meta.logo) throw new Error(`pages/welcome/${lang}.md: "${id}" non ha un logo`);
+		return project;
+	});
+	return { page, tools };
 }
 
 /** A single page (welcome, about, contact) in one language. */

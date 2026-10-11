@@ -2,6 +2,7 @@
 slug: "contesto"
 title: "Il contesto è il lavoro"
 summary: "Convenzioni, regole e documenti dicono all'agente come lavoro io."
+quote: "Una regola scritta in un prompt è una probabilità, la stessa regola in un hook è una *garanzia*."
 ---
 
 Una regola scritta in un prompt è una probabilità, la stessa regola in un hook è una garanzia.

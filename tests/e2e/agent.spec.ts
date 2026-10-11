@@ -65,7 +65,7 @@ test.describe('agent', () => {
 		await page.goto('/en');
 		await page.locator('a[href*="?ask="]').first().click();
 		await expect(page).toHaveURL(/\/en\/agent$/);
-		await expect(page.locator('[data-agent-input]')).toHaveValue(/Portsage/);
+		await expect(page.locator('[data-agent-input]')).toHaveValue(/coding agents/);
 		await expect(page.locator('#search')).toHaveValue('');
 		await expect(page.locator('main ul button')).toHaveCount(4);
 	});

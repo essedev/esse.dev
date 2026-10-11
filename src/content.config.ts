@@ -118,7 +118,15 @@ const methodTexts = defineCollection({
 	schema: z.object({
 		slug: z.string().min(1),
 		title: z.string().min(1),
-		summary: z.string().min(1)
+		summary: z.string().min(1),
+		/**
+		 * A line from the note, shown on the home; in every language or in none. `*...*` marks
+		 * an optional part in the accent.
+		 */
+		quote: z
+			.string()
+			.regex(/^[^*]+(\*[^*]+\*[^*]*)?$/, 'al massimo una parte tra *...*')
+			.optional()
 	})
 });
 
@@ -136,11 +144,19 @@ const nowTexts = defineCollection({
 // Home pages: one file per language, the id is the language code.
 const langId = ({ entry }: { entry: string }) => entry.replace(/\.md$/, '');
 
+// The home's text lives in the frontmatter: the headline and the introduction are composed
+// with the project logos, so they are not Markdown.
 const welcome = defineCollection({
 	loader: glob({ pattern: '*.md', base: './src/content/pages/welcome', generateId: langId }),
 	schema: z.object({
 		eyebrow: z.string().min(1),
 		title: z.string().min(1),
+		/** The largest line of the home: what I do. `*...*` marks the part in the accent. */
+		headline: z.string().regex(/^[^*]*\*[^*]+\*[^*]*$/, 'una sola parte tra *...*'),
+		/** The introduction under it; `{tools}` is where the logos of `tools` go. */
+		intro: z.string().includes('{tools}', { message: 'manca {tools}' }),
+		/** The projects whose logos stand in the introduction, in order (published ones). */
+		tools: z.array(z.string().min(1)).min(1),
 		/** Short key and value rows under the introduction. */
 		facts: z.array(z.object({ label: z.string().min(1), value: z.string().min(1) })).default([])
 	})
@@ -233,6 +249,10 @@ const site = defineCollection({
 					keysOpen: text,
 					keysBack: text,
 					startHere: text,
+					homeAsk: text,
+					homeAskNote: text,
+					homeAskReading: text,
+					homeMethodNote: text,
 					featured: text,
 					allProjects: text,
 					search: text,
