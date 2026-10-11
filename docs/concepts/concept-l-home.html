@@ -1,0 +1,759 @@
+<!doctype html>
+<html lang="it">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Concept L - Home</title>
+		<!--
+			Concept L: la home rivista. Stessi contenuti di oggi, gerarchia, dimensioni e "Da dove
+			iniziare" diversi. Tasti x a b c d e per la variante, t per il tema.
+			X  oggi: nome grande, intro, fatti in tabella, tre righe in lista.
+			A  manifesto: la prima frase dell'intro è il titolo, il nome scende a riga di stato; il
+			   metodo diventa una pipeline in tre passi; tre card numerate.
+			B  terminale: termini come token in riga, i fatti in un blocco `whoami`, "Da dove
+			   iniziare" come una command palette coi tasti 1 2 3.
+			C  vetrina: nome su due righe a sinistra, intro a destra con i loghi dei progetti in
+			   linea; tre tessere visive (chat, copertina, indice del metodo). Tasti 1-4 per il nome
+			   di C più piccolo e più terminale: 1 mono, 2 flag, 3 etichetta, 4 ridotto. Nessun
+			   cursore lampeggiante nel nome: il sito ne ha uno solo, nel logo.
+			D  adesso: una striscia "adesso" sopra il nome, intro a due toni, numeri al posto dei
+			   fatti, bento con l'agente grande.
+			E  domande: hero compatto, "Da dove iniziare" diventa il pezzo principale con tre domande
+			   di chi arriva.
+			F  sintesi: l'hero di C col nome in Departure Mono maiuscolo dopo `~ $ whoami`, il bento
+			   di D. Nel campo dell'agente la prima di tre domande; le altre si provano cliccandole. I
+			   loghi nella frase sono link: al passaggio quello sotto il puntatore viene davanti, gli
+			   altri restano fermi, e appena sopra compare il nome, piccolo.
+			G  la frase al centro: il nome scende a riga di stato (resta l'h1), il titolo è "Porto
+			   l'AI... tengo in produzione", il metodo resta nella frase sotto; fatti nella tabella di X,
+			   le tre card di C larghe uguali; quella del metodo mostra una frase delle note.
+			Le immagini sono quelle vere dei progetti (src/content/projects), i valori sono i token
+			di global.css.
+			Scelta: G. La frase della card del metodo è provvisoria: le note del metodo sono da
+			rivedere.
+		-->
+		<style>
+			@font-face { font-family: 'Geist'; font-weight: 400; src: url(https://cdn.jsdelivr.net/fontsource/fonts/geist@latest/latin-400-normal.woff2) format('woff2'); }
+			@font-face { font-family: 'Geist'; font-weight: 500; src: url(https://cdn.jsdelivr.net/fontsource/fonts/geist@latest/latin-500-normal.woff2) format('woff2'); }
+			@font-face { font-family: 'Departure Mono'; src: url(https://cdn.jsdelivr.net/gh/rektdeckard/departure-mono@main/public/assets/DepartureMono-Regular.woff2) format('woff2'); }
+
+			/* Scuro: i token di @theme. */
+			:root {
+				--desk: #0a0912;
+				--wall-a: rgb(181 156 255 / 0.24);
+				--wall-b: rgb(110 80 255 / 0.22);
+				--light: rgb(181 156 255 / 0.32);
+				--grid: rgb(255 255 255 / 0.03);
+				--frame: rgb(8 8 11 / 0.2);
+				--glass: rgb(14 14 18 / 0.48);
+				--edge: rgb(255 255 255 / 0.12);
+				--shadow: 0 12px 32px rgb(0 0 0 / 0.35);
+				--surface: rgb(255 255 255 / 0.05);
+				--hover: rgb(255 255 255 / 0.08);
+				--line: #23232b;
+				--fg: #efedf5;
+				--text: #cbc9d4;
+				--muted: #9c9aa8;
+				--subtle: #908e9b;
+				--accent: #b59cff;
+				--on-accent: #140c2b;
+				--live: #7dff9b;
+				--glow: 3.5px;
+				--scan: rgb(255 255 255 / 0.018);
+				--vignette: rgb(0 0 0 / 0.14);
+				--tile: #121019;
+				--pop: #1a1822;
+				--shade: 0 0 0;
+				--logo-shadow: 0 8px 18px rgb(0 0 0 / 0.55);
+				--sans: 'Geist', ui-sans-serif, system-ui, sans-serif;
+				--mono: 'Departure Mono', ui-monospace, monospace;
+				color-scheme: dark;
+			}
+			/* Chiaro: la lavanda fumé. */
+			:root[data-theme='light'] {
+				--desk: #bcb2dc;
+				--wall-a: rgb(157 133 255 / 0.32);
+				--wall-b: rgb(110 80 255 / 0.18);
+				--light: rgb(255 255 255 / 0.4);
+				--grid: rgb(40 25 90 / 0.04);
+				--frame: rgb(230 226 242 / 0.3);
+				--glass: rgb(236 232 244 / 0.62);
+				--edge: rgb(255 255 255 / 0.55);
+				--shadow: 0 1px 2px rgb(40 25 90 / 0.08), 0 14px 36px rgb(40 25 90 / 0.16);
+				--surface: rgb(40 25 90 / 0.07);
+				--hover: rgb(40 25 90 / 0.1);
+				--line: #cfc9de;
+				--fg: #17141f;
+				--text: #312d3c;
+				--muted: #504b60;
+				--subtle: #57526a;
+				--accent: #5f40d6;
+				--on-accent: #ffffff;
+				--live: #179a4c;
+				--glow: 2px;
+				--scan: rgb(40 25 90 / 0.03);
+				--vignette: rgb(40 24 90 / 0.07);
+				--tile: #e4def2;
+				--pop: #f7f5fc;
+				--shade: 40 24 90;
+				--logo-shadow: 0 8px 18px rgb(60 40 130 / 0.22);
+				color-scheme: light;
+			}
+
+			* { box-sizing: border-box; }
+			html, body { height: 100%; margin: 0; }
+			body {
+				font-family: var(--sans);
+				font-weight: 380;
+				color: var(--fg);
+				background:
+					repeating-linear-gradient(to right, var(--grid) 0 1px, transparent 1px 48px),
+					repeating-linear-gradient(to bottom, var(--grid) 0 1px, transparent 1px 48px),
+					radial-gradient(22% 26% at 14% 6%, var(--light), transparent 70%),
+					linear-gradient(135deg, var(--wall-a) 0%, var(--wall-b) 50%, transparent 100%),
+					var(--desk);
+				-webkit-font-smoothing: antialiased;
+				display: flex;
+				flex-direction: column;
+			}
+			body::after { content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 10; background: repeating-linear-gradient(to bottom, var(--scan) 0 1px, transparent 1px 3px), radial-gradient(ellipse at center, transparent 50%, var(--vignette)); }
+			a { color: inherit; text-decoration: none; }
+			p { margin: 0; }
+			img { display: block; }
+
+			/* Il selettore delle varianti, fuori dalla finestra. */
+			.switch { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; padding: 10px 14px; font-family: var(--mono); font-size: 12px; color: var(--muted); }
+			.switch button { font: inherit; border: 0; padding: 6px 10px; border-radius: 6px; background: var(--surface); color: var(--text); cursor: pointer; }
+			.switch button[aria-pressed='true'] { background: var(--fg); color: var(--desk); }
+			.switch .theme { margin-left: auto; }
+			.switch p { margin: 0 0 0 10px; flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+			/* Il guscio: la finestra con lista e pannello. */
+			.window { flex: 1; min-height: 0; margin: 0 12px 12px; padding: 8px; display: grid; grid-template-columns: clamp(17rem, 22vw, 22rem) 1fr; gap: 8px; border-radius: 18px; background: var(--frame); box-shadow: inset 0 1px 0 var(--edge), var(--shadow); }
+			.card { border-radius: 11px; overflow: hidden; position: relative; background: var(--glass); -webkit-backdrop-filter: blur(32px) saturate(120%); backdrop-filter: blur(32px) saturate(120%); box-shadow: inset 0 1px 0 var(--edge), var(--shadow); }
+			.side { padding: 14px 14px; display: flex; flex-direction: column; gap: 2px; }
+			.pane { display: flex; flex-direction: column; min-height: 0; }
+			.logo { font-family: var(--mono); font-size: 13px; padding: 4px 8px 14px; text-shadow: 0 0 var(--glow) color-mix(in srgb, var(--accent) 55%, transparent); }
+			.caret { display: inline-block; width: 0.5em; height: 1.05em; vertical-align: -0.15em; margin-left: 0.15em; background: var(--accent); box-shadow: 0 0 4px var(--accent); animation: blink 1.1s steps(1) infinite; }
+			@keyframes blink { 50% { opacity: 0; } }
+			.search { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 12px; color: var(--subtle); background: var(--surface); border-radius: 6px; padding: 9px 10px; margin-bottom: 14px; }
+			.kbd { display: inline-flex; align-items: center; justify-content: center; min-width: 1.4rem; height: 1.4rem; padding: 0 0.35rem; border-radius: 4px; background: var(--surface); color: var(--muted); font-family: var(--mono); font-size: 0.7rem; line-height: 1; }
+			.row { display: flex; align-items: center; gap: 12px; padding: 7px 8px; border-radius: 6px; font-size: 14.5px; color: var(--fg); }
+			.row.on { background: var(--surface); }
+			.row .meta { margin-left: auto; font-family: var(--mono); font-size: 11px; color: var(--subtle); }
+			.ico { width: 14px; height: 14px; border: 1.5px solid var(--subtle); border-radius: 4px; }
+			.side .group { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--subtle); padding: 18px 8px 6px; display: flex; justify-content: space-between; }
+			.side img { width: 20px; height: 20px; border-radius: 5px; }
+			.bar { height: 48px; flex: none; display: flex; align-items: center; padding: 0 clamp(1.25rem, 3.5vw, 3rem); font-family: var(--mono); font-size: 13px; color: var(--subtle); gap: 8px; }
+			.bar b { font-weight: 400; color: var(--fg); }
+			.bar .end { margin-left: auto; }
+			.scroll { flex: 1; min-height: 0; overflow: auto; overscroll-behavior: none; }
+			.page { padding: clamp(1.5rem, 3vw, 3rem) clamp(1.25rem, 3.5vw, 3rem) 5rem; }
+
+			/* Pezzi comuni del sistema. */
+			.label { font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--subtle); text-shadow: 0 0 var(--glow) color-mix(in srgb, var(--accent) 55%, transparent); }
+			.glow { text-shadow: 0 0 var(--glow) color-mix(in srgb, var(--accent) 55%, transparent); }
+			.mono { font-family: var(--mono); }
+			.led { display: inline-block; flex: none; width: 7px; height: 7px; border-radius: 999px; background: var(--live); box-shadow: 0 0 5px color-mix(in srgb, var(--live) 75%, transparent); animation: breathe 2.8s cubic-bezier(0.16, 1, 0.3, 1) infinite; }
+			@keyframes breathe { 50% { opacity: 0.45; } }
+			.arrow { width: 16px; height: 16px; flex: none; color: var(--subtle); transition: color 0.15s, translate 0.2s; }
+			a:hover .arrow { color: var(--accent); translate: 3px 0; }
+			.bot { width: 16px; height: 16px; color: var(--accent); filter: drop-shadow(0 0 3px color-mix(in srgb, var(--accent) 60%, transparent)); }
+			.copy { display: inline-flex; align-items: center; gap: 10px; background: var(--surface); border-radius: 6px; padding: 6px 10px 6px 12px; font-family: var(--mono); font-size: 0.8125rem; color: var(--fg); }
+			.copy svg { width: 14px; height: 14px; color: var(--subtle); }
+			.social { display: flex; flex-wrap: wrap; gap: 6px 18px; font-family: var(--mono); font-size: 0.8125rem; color: var(--text); }
+			.social span::after { content: ' ↗'; color: var(--subtle); }
+			.hl { color: var(--fg); background: linear-gradient(transparent 62%, color-mix(in srgb, var(--accent) 22%, transparent) 62%); }
+			.ul { color: var(--fg); text-decoration: underline; text-decoration-color: var(--accent); text-decoration-thickness: 1.5px; text-underline-offset: 5px; }
+			.field { display: flex; align-items: center; gap: 10px; background: var(--surface); border-radius: 10px; padding: 12px 14px; font-family: var(--mono); font-size: 0.8125rem; color: var(--text); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 25%, transparent); }
+			.field .caret { height: 1.1em; }
+			.field .send { margin-left: auto; width: 28px; height: 28px; border-radius: 6px; display: grid; place-items: center; background: var(--accent); color: var(--on-accent); flex: none; }
+			.field .send svg { width: 14px; height: 14px; }
+
+			.v { display: none; }
+			body[data-v='x'] .v-x, body[data-v='a'] .v-a, body[data-v='b'] .v-b, body[data-v^='c'] .v-c, body[data-v='d'] .v-d, body[data-v='e'] .v-e, body[data-v='f'] .v-f, body[data-v='g'] .v-g { display: block; }
+
+			/* X, oggi. */
+			.x-h1 { font-size: clamp(2.5rem, 1.5rem + 3.4vw, 4.75rem); line-height: 0.98; font-weight: 500; letter-spacing: -0.035em; margin: 0; }
+			.x-role { margin-top: 20px; display: flex; align-items: center; gap: 10px; font-family: var(--mono); font-size: 0.8125rem; color: var(--muted); }
+			.x-intro { margin-top: 32px; font-size: clamp(1.125rem, 0.98rem + 0.45vw, 1.4375rem); line-height: 1.6; color: var(--text); text-wrap: pretty; }
+			.x-facts { margin: 40px 0 0; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 16px 32px; align-items: baseline; font-size: 0.9375rem; }
+			.x-facts dd { margin: 0; color: var(--text); }
+			.x-start { margin-top: 48px; }
+			.x-list { list-style: none; margin: 12px -12px 0; padding: 0; }
+			.x-list a { display: grid; grid-template-columns: 16px minmax(0, 1fr) auto; gap: 0 16px; align-items: baseline; padding: 16px 12px; border-radius: 10px; }
+			.x-list a:hover { background: var(--surface); }
+			.x-list b { display: block; font-weight: 500; font-size: 1.0625rem; letter-spacing: -0.01em; }
+			.x-list small { display: block; margin-top: 4px; color: var(--muted); font-size: 0.9375rem; }
+			.x-list .arrow { align-self: center; }
+
+			/* A, manifesto. */
+			.a-who { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 14px; font-family: var(--mono); font-size: 0.8125rem; color: var(--muted); }
+			.a-who b { font-weight: 400; color: var(--fg); }
+			.a-h1 { margin: 28px 0 0; font-size: clamp(2.25rem, 1.3rem + 3vw, 4.25rem); line-height: 1.04; font-weight: 500; letter-spacing: -0.035em; text-wrap: balance; max-width: 15em; }
+			.a-h1 em { font-style: normal; color: var(--accent); text-shadow: 0 0 6px color-mix(in srgb, var(--accent) 45%, transparent); }
+			.a-sub { margin-top: 28px; font-size: clamp(1.0625rem, 0.98rem + 0.3vw, 1.25rem); line-height: 1.65; color: var(--muted); max-width: 36em; text-wrap: pretty; }
+			.a-pipe { margin-top: 28px; display: flex; flex-wrap: wrap; align-items: center; gap: 10px; font-family: var(--mono); font-size: 0.8125rem; }
+			.a-pipe span:not(.to) { display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 6px; background: var(--surface); color: var(--text); }
+			.a-pipe span i { font-style: normal; color: var(--subtle); }
+			.a-pipe span.me { color: var(--fg); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 45%, transparent); }
+			.a-pipe .to { color: var(--subtle); }
+			.a-meta { margin-top: 36px; display: flex; flex-wrap: wrap; align-items: center; gap: 14px 28px; }
+			.a-start { margin-top: 64px; }
+			.a-grid { margin-top: 16px; display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); gap: 12px; }
+			.a-card { position: relative; display: flex; flex-direction: column; gap: 10px; min-height: 13.5rem; padding: 20px; border-radius: 11px; background: var(--surface); transition: background 0.15s; }
+			.a-card:hover { background: var(--hover); }
+			.a-card .n { font-family: var(--mono); font-size: 2.5rem; line-height: 1; color: color-mix(in srgb, var(--subtle) 45%, transparent); transition: color 0.15s; }
+			.a-card:hover .n { color: var(--accent); }
+			.a-card b { margin-top: auto; font-weight: 500; font-size: 1.25rem; letter-spacing: -0.015em; display: flex; align-items: center; gap: 10px; }
+			.a-card small { color: var(--muted); font-size: 0.875rem; line-height: 1.5; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+			.a-card small.mono { font-size: 0.75rem; }
+			.a-card .arrow { position: absolute; top: 20px; right: 20px; }
+
+			/* B, terminale. */
+			.b-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 20px; }
+			.b-h1 { margin: 0; font-size: clamp(2.25rem, 1.4rem + 2.6vw, 3.75rem); line-height: 1; font-weight: 500; letter-spacing: -0.03em; }
+			.b-role { font-family: var(--mono); font-size: 0.8125rem; color: var(--muted); display: flex; align-items: center; gap: 10px; }
+			.b-intro { margin-top: 28px; font-size: clamp(1.125rem, 1rem + 0.4vw, 1.375rem); line-height: 1.75; color: var(--text); max-width: 38em; text-wrap: pretty; }
+			.tok { display: inline-flex; align-items: center; gap: 6px; padding: 1px 8px; border-radius: 5px; background: var(--surface); font-family: var(--mono); font-size: 0.8em; color: var(--fg); vertical-align: 0.08em; white-space: nowrap; }
+			.tok svg { width: 12px; height: 12px; color: var(--subtle); }
+			.tok.acc { color: var(--accent); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 35%, transparent); }
+			.b-term { margin-top: 32px; border-radius: 11px; background: var(--surface); font-family: var(--mono); font-size: 0.8125rem; line-height: 1.9; color: var(--text); overflow: hidden; }
+			.b-term .top { display: flex; align-items: center; gap: 6px; padding: 10px 14px; color: var(--subtle); font-size: 0.7rem; }
+			.b-term .top i { width: 8px; height: 8px; border-radius: 9px; background: var(--hover); }
+			.b-term .top span { margin-left: 8px; }
+			.b-term pre { margin: 0; padding: 4px 18px 16px; font: inherit; white-space: pre-wrap; }
+			.b-term .p { color: var(--accent); }
+			.b-term .k { color: var(--subtle); }
+			.b-term .f { color: var(--fg); }
+			.b-term .ok { color: var(--live); }
+			.b-pal { margin-top: 56px; border-radius: 11px; background: var(--surface); padding: 8px; }
+			.b-pal .q { display: flex; align-items: center; gap: 10px; padding: 10px 12px 14px; border-bottom: 1px solid var(--line); margin-bottom: 6px; font-family: var(--mono); font-size: 0.8125rem; color: var(--subtle); }
+			.b-pal .q b { font-weight: 400; color: var(--fg); }
+			.b-pal .q .kbd { margin-left: auto; }
+			.b-pal a { display: grid; grid-template-columns: 28px minmax(0, 1fr) auto; gap: 0 14px; align-items: center; padding: 12px; border-radius: 8px; }
+			.b-pal a:hover, .b-pal a.sel { background: var(--hover); }
+			.b-pal .ic { width: 28px; height: 28px; border-radius: 7px; display: grid; place-items: center; background: var(--surface); }
+			.b-pal .ic img { width: 28px; height: 28px; border-radius: 7px; }
+			.b-pal b { font-weight: 500; font-size: 1rem; }
+			.b-pal small { display: block; margin-top: 2px; color: var(--muted); font-size: 0.875rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+			.b-pal small.mono { font-size: 0.75rem; }
+			.b-pal .keys { display: flex; gap: 6px; align-items: center; color: var(--subtle); font-family: var(--mono); font-size: 0.7rem; }
+
+			/* C, vetrina. */
+			.c-hero { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); gap: clamp(1.5rem, 4vw, 4rem); align-items: end; }
+			.c-h1 { margin: 0; font-size: clamp(3rem, 1.6rem + 4.6vw, 6.25rem); line-height: 0.9; font-weight: 500; letter-spacing: -0.045em; }
+			.c-h1 span { display: block; color: transparent; -webkit-text-stroke: 1.2px var(--fg); text-shadow: none; }
+			.c-role { margin-top: 18px; display: flex; align-items: center; gap: 10px; font-family: var(--mono); font-size: 0.8125rem; color: var(--muted); }
+			.c-intro { font-size: 1.125rem; line-height: 1.7; color: var(--text); text-wrap: pretty; }
+			.c-intro b { font-weight: 500; color: var(--fg); }
+			/* Le varianti del nome di C: una sola visibile, scelta da data-v. */
+			.cn { display: none; }
+			body[data-v='c'] .cn-c, body[data-v='c1'] .cn-c1, body[data-v='c2'] .cn-c2, body[data-v='c3'] .cn-c3, body[data-v='c4'] .cn-c4 { display: block; }
+			body[data-v='c3'] .c-first { display: none; }
+			.c-cmd { font-family: var(--mono); font-size: 0.8125rem; color: var(--subtle); margin-bottom: 14px; }
+			.c-cmd .p { color: var(--accent); }
+			/* C1, mono: il nome in Departure Mono minuscolo, dopo il comando che lo stampa. */
+			.c1-h1 { margin: 0; font-family: var(--mono); font-weight: 400; font-size: clamp(2rem, 1.3rem + 2.2vw, 3.25rem); line-height: 1.05; letter-spacing: -0.01em; }
+			/* C2, prompt con flag: il nome come argomento, il ruolo come opzioni. */
+			.c2-h1 { margin: 0; font-family: var(--mono); font-weight: 400; font-size: clamp(1.875rem, 1.3rem + 1.8vw, 2.75rem); line-height: 1.1; display: flex; align-items: baseline; gap: 0.5em; }
+			.c2-h1 .p { color: var(--accent); }
+			.c2-flags { margin-top: 16px; display: flex; flex-direction: column; gap: 4px; font-family: var(--mono); font-size: 0.8125rem; color: var(--text); }
+			.c2-flags i { font-style: normal; color: var(--subtle); display: inline-block; min-width: 6.5em; }
+			/* C3, etichetta: il nome scende a riga di stato, la prima frase diventa il titolo. */
+			.c3-who { display: flex; align-items: center; gap: 10px; font-family: var(--mono); font-size: 0.8125rem; color: var(--muted); }
+			.c3-who b { font-weight: 400; color: var(--fg); letter-spacing: 0.08em; text-transform: uppercase; }
+			.c3-h1 { margin: 22px 0 0; font-size: clamp(1.875rem, 1.2rem + 2vw, 3rem); line-height: 1.08; font-weight: 500; letter-spacing: -0.03em; text-wrap: balance; }
+			.c3-h1 em { font-style: normal; color: var(--accent); }
+			/* C4, Geist ridotto: il nome di oggi su una riga, sotto un percorso mono. */
+			.c4-h1 { margin: 0; font-size: clamp(2.25rem, 1.5rem + 2.3vw, 3.5rem); line-height: 1; font-weight: 500; letter-spacing: -0.035em; }
+			.stack { display: inline-flex; vertical-align: -0.35em; margin: 0 4px; }
+			.stack img { width: 24px; height: 24px; border-radius: 6px; box-shadow: 0 0 0 2px var(--glass), var(--logo-shadow); }
+			.stack img + img { margin-left: -7px; }
+			.c-facts { margin-top: 40px; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid var(--line); }
+			.c-facts > div { padding: 16px 20px 0 0; display: flex; flex-direction: column; gap: 8px; font-size: 0.9375rem; color: var(--text); }
+			.c-start { margin-top: 64px; }
+			.c-grid { margin-top: 16px; display: grid; grid-template-columns: 1.15fr 1fr 1fr; gap: 12px; }
+			.c-tile { position: relative; display: flex; flex-direction: column; border-radius: 11px; background: var(--surface); overflow: hidden; min-height: 17rem; transition: background 0.15s; }
+			.c-tile:hover { background: var(--hover); }
+			.c-tile .vis { flex: 1; min-height: 9.5rem; position: relative; overflow: hidden; }
+			.c-tile .txt { padding: 16px 18px 18px; display: flex; flex-direction: column; gap: 4px; }
+			.c-tile b { font-weight: 500; font-size: 1.0625rem; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+			.c-tile small { color: var(--muted); font-size: 0.875rem; line-height: 1.5; }
+			.c-chat { padding: 18px; display: flex; flex-direction: column; gap: 10px; }
+			.c-chat .me { align-self: flex-end; max-width: 85%; padding: 9px 12px; border-radius: 10px 10px 3px 10px; background: color-mix(in srgb, var(--accent) 18%, transparent); font-size: 0.8125rem; color: var(--fg); }
+			.c-chat .it { align-self: flex-start; display: flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 0.7rem; color: var(--subtle); }
+			.c-chat .it .led { width: 6px; height: 6px; }
+			.c-chat .line { height: 7px; border-radius: 4px; background: var(--hover); }
+			.c-cover img:not(.badge) { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: top; transition: scale 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+			.c-tile:hover .c-cover img:not(.badge) { scale: 1.03; }
+			.c-cover .badge { position: absolute; left: 14px; bottom: 12px; width: 40px; height: 40px; border-radius: 10px; box-shadow: var(--logo-shadow); }
+			.c-toc { list-style: none; margin: 0; padding: 18px 18px 0; display: flex; flex-direction: column; gap: 10px; font-size: 0.9375rem; color: var(--text); }
+			.c-toc li { display: grid; grid-template-columns: 26px 1fr; align-items: baseline; }
+			.c-toc li span { font-family: var(--mono); font-size: 0.7rem; color: var(--subtle); }
+
+			/* D, adesso. */
+			.d-now { display: inline-flex; align-items: center; gap: 12px; padding: 7px 8px 7px 12px; border-radius: 999px; background: var(--surface); font-size: 0.875rem; color: var(--text); }
+			.d-now .mono { font-size: 0.7rem; color: var(--live); text-transform: uppercase; letter-spacing: 0.1em; }
+			.d-now em { font-style: normal; font-family: var(--mono); font-size: 0.7rem; color: var(--subtle); padding: 3px 8px; border-radius: 999px; background: var(--surface); }
+			.d-h1 { margin: 28px 0 0; font-size: clamp(2.75rem, 1.6rem + 3.8vw, 5.25rem); line-height: 0.95; font-weight: 500; letter-spacing: -0.04em; }
+			.d-role { margin-top: 14px; font-family: var(--mono); font-size: 0.875rem; color: var(--muted); }
+			.d-role b { font-weight: 400; color: var(--fg); }
+			.d-intro { margin-top: 32px; font-size: clamp(1.25rem, 1.05rem + 0.65vw, 1.75rem); line-height: 1.4; letter-spacing: -0.015em; color: var(--fg); max-width: 30em; text-wrap: pretty; }
+			.d-intro span { color: var(--subtle); }
+			.d-stats { margin-top: 40px; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; }
+			.d-stats div { display: flex; flex-direction: column; gap: 6px; padding: 14px 0 0; border-top: 1px solid var(--line); }
+			.d-stats b { font-family: var(--mono); font-weight: 400; font-size: 1.75rem; line-height: 1; color: var(--fg); }
+			.d-stats small { font-size: 0.8125rem; color: var(--muted); line-height: 1.4; }
+			.d-contacts { margin-top: 28px; display: flex; flex-wrap: wrap; align-items: center; gap: 14px 24px; }
+			.d-start { margin-top: 64px; }
+			.d-bento { margin-top: 16px; display: grid; grid-template-columns: 1.3fr 1fr; grid-template-rows: auto auto; gap: 12px; }
+			.d-agent { grid-row: span 2; display: flex; flex-direction: column; gap: 16px; padding: 22px; border-radius: 11px; background: linear-gradient(160deg, color-mix(in srgb, var(--accent) 14%, transparent), transparent 60%), var(--surface); }
+			.d-agent .t { display: flex; align-items: center; gap: 10px; font-weight: 500; font-size: 1.25rem; }
+			.d-agent p { color: var(--muted); font-size: 0.9375rem; line-height: 1.55; }
+			.d-agent .sugg { display: flex; flex-wrap: wrap; gap: 8px; margin-top: auto; }
+			.d-agent .sugg span { font-family: var(--mono); font-size: 0.7rem; color: var(--text); padding: 6px 10px; border-radius: 999px; background: var(--surface); }
+			.d-agent .sugg span:hover { background: var(--hover); color: var(--fg); }
+			.d-proj { position: relative; display: flex; flex-direction: column; justify-content: flex-end; min-height: 12rem; padding: 18px; border-radius: 11px; overflow: hidden; isolation: isolate; }
+			.d-proj img.bg { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: top; z-index: -2; }
+			.d-proj::before { content: ''; position: absolute; inset: 0; z-index: -1; background: linear-gradient(to top, rgb(10 9 18 / 0.92) 30%, rgb(10 9 18 / 0.2)); }
+			.d-proj b { color: #efedf5; font-weight: 500; font-size: 1.125rem; display: flex; align-items: center; gap: 10px; }
+			.d-proj small { color: #cbc9d4; font-size: 0.8125rem; line-height: 1.45; margin-top: 4px; }
+			.d-proj .arrow { position: absolute; top: 16px; right: 16px; color: #cbc9d4; }
+			.d-meth { display: flex; flex-direction: column; gap: 8px; padding: 18px; border-radius: 11px; background: var(--surface); position: relative; }
+			.d-meth:hover, .d-agent:hover { background-color: var(--hover); }
+			.d-meth b { font-weight: 500; font-size: 1.125rem; }
+			.d-meth .dots { display: flex; gap: 6px; flex-wrap: wrap; }
+			.d-meth .dots span { font-size: 0.8125rem; color: var(--text); padding: 4px 9px; border-radius: 6px; background: var(--surface); }
+			.d-meth .arrow { position: absolute; top: 18px; right: 18px; }
+
+			/* F, la sintesi: l'hero di C col nome mono maiuscolo, il bento di D. */
+			.f-field { cursor: text; }
+			/* The questions stay right under the field, not pushed to the bottom of the card. */
+			.v-f .d-agent .sugg, .v-g .d-agent .sugg { margin-top: -4px; }
+			/* Relay a bit lower, so the agent card has no empty bottom. */
+			.v-f .d-proj, .v-g .d-proj { min-height: 8.5rem; }
+			.d-agent .sugg button { font: inherit; font-family: var(--mono); font-size: 0.7rem; color: var(--text); padding: 6px 10px; border-radius: 999px; border: 0; background: var(--surface); cursor: pointer; transition: background 0.15s, color 0.15s; }
+			.d-agent .sugg button:hover { background: var(--hover); color: var(--fg); }
+			.d-agent .sugg button[aria-pressed='true'] { color: var(--accent); box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--accent) 35%, transparent); }
+
+			/* F: i loghi nella frase. Al passaggio si aprono a ventaglio, quello sotto il puntatore
+			   sale, prende l'anello lavanda e mostra il nome; sono link al progetto. */
+			.fan { display: inline-flex; vertical-align: -0.35em; margin: 0 4px; }
+			.fan a { position: relative; display: block; border-radius: 6px; transition: scale 0.25s cubic-bezier(0.16, 1, 0.3, 1); }
+			.fan a + a { margin-left: -7px; }
+			.fan a:focus-visible { outline: none; }
+			.fan img { width: 24px; height: 24px; border-radius: 6px; box-shadow: 0 0 0 2px var(--glass), var(--logo-shadow); }
+			.fan a:hover, .fan a:focus-visible { z-index: 2; scale: 1.18; }
+			.tip { position: absolute; left: 50%; bottom: calc(100% + 3px); translate: -50% 3px; scale: calc(1 / 1.18); transform-origin: bottom center; padding: 2px 6px 3px; border-radius: 5px; background: var(--pop); box-shadow: inset 0 0 0 1px var(--edge), 0 4px 10px rgb(var(--shade) / 0.25); white-space: nowrap; font-family: var(--mono); font-size: 0.6875rem; line-height: 1.3; color: var(--fg); opacity: 0; pointer-events: none; transition: opacity 0.12s, translate 0.18s cubic-bezier(0.16, 1, 0.3, 1); }
+			.fan a:hover .tip, .fan a:focus-visible .tip { opacity: 1; translate: -50% 0; }
+
+			/* G, la frase al centro. */
+			.g-who { margin: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; font-family: var(--mono); font-weight: 400; font-size: 0.8125rem; color: var(--muted); }
+			.g-who b { font-weight: 400; font-size: 0.9375rem; color: var(--fg); }
+			.g-title { margin-top: 22px; font-size: clamp(2rem, 1.3rem + 2vw, 3rem); line-height: 1.08; font-weight: 500; letter-spacing: -0.03em; color: var(--fg); max-width: 17em; text-wrap: balance; }
+			.g-title em { font-style: normal; color: var(--accent); text-shadow: 0 0 6px color-mix(in srgb, var(--accent) 45%, transparent); }
+			.g-sub { margin-top: 22px; font-size: clamp(1.0625rem, 0.98rem + 0.3vw, 1.25rem); line-height: 1.65; color: var(--text); max-width: 36em; }
+			.g-facts { margin-top: 36px; }
+			.g-start { margin-top: 52px; }
+			.g-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+			/* The method card shows a line from the notes, not their index: it says how, not how many. */
+			.g-quote { padding: 20px 18px 0; display: flex; flex-direction: column; gap: 10px; }
+			.g-quote p { font-size: 1.0625rem; line-height: 1.4; letter-spacing: -0.01em; color: var(--fg); text-wrap: pretty; }
+			.g-quote p::before { content: '“'; color: var(--accent); margin-right: 1px; }
+			.g-quote p::after { content: '”'; color: var(--accent); }
+			.g-quote em { font-style: normal; color: var(--accent); }
+			.g-quote .src { font-family: var(--mono); font-size: 0.7rem; color: var(--subtle); }
+			.g-quote .tabs { list-style: none; margin: auto 0 0; padding: 0; display: flex; gap: 4px; }
+			.g-quote .tabs li { flex: 1; padding-top: 6px; border-top: 2px solid var(--hover); font-family: var(--mono); font-size: 0.65rem; color: var(--subtle); }
+			.g-quote .tabs li.on { border-top-color: var(--accent); color: var(--fg); }
+
+			/* E, domande. */
+			.e-head { display: flex; flex-direction: column; gap: 14px; max-width: 44em; }
+			.e-h1 { margin: 0; font-size: clamp(2rem, 1.4rem + 1.8vw, 3rem); line-height: 1.05; font-weight: 500; letter-spacing: -0.03em; }
+			.e-h1 small { display: block; margin-top: 10px; font-family: var(--mono); font-weight: 400; font-size: 0.8125rem; letter-spacing: 0; color: var(--muted); }
+			.e-intro { font-size: 1.125rem; line-height: 1.65; color: var(--text); text-wrap: pretty; }
+			.e-qs { list-style: none; margin: 56px 0 0; padding: 0; border-top: 1px solid var(--line); }
+			.e-qs li { border-bottom: 1px solid var(--line); }
+			.e-qs a { display: grid; grid-template-columns: 3rem minmax(0, 1fr) minmax(0, 0.9fr) auto; gap: 0 20px; align-items: center; padding: 26px 8px; transition: background 0.15s; }
+			.e-qs a:hover { background: var(--surface); }
+			.e-qs .n { font-family: var(--mono); font-size: 0.8125rem; color: var(--subtle); }
+			.e-qs .q { font-size: clamp(1.375rem, 1.1rem + 0.9vw, 2rem); font-weight: 500; letter-spacing: -0.025em; line-height: 1.15; }
+			.e-qs a:hover .q { color: var(--accent); }
+			.e-qs .ans { display: flex; align-items: center; gap: 12px; color: var(--muted); font-size: 0.875rem; line-height: 1.45; }
+			.e-qs .ans img { width: 32px; height: 32px; border-radius: 8px; flex: none; }
+			.e-qs .ans .mono { font-size: 0.75rem; }
+			.e-foot { margin-top: 40px; display: flex; flex-wrap: wrap; align-items: center; gap: 14px 28px; font-size: 0.875rem; color: var(--muted); }
+			.e-foot .sep { width: 1px; height: 18px; background: var(--line); }
+
+			@media (width < 64rem) {
+				.window { grid-template-columns: 1fr; }
+				.side { display: none; }
+				.c-hero, .c-grid, .d-bento { grid-template-columns: 1fr; }
+				.d-agent { grid-row: auto; }
+				.d-stats, .c-facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+				.e-qs a { grid-template-columns: 2.5rem minmax(0, 1fr) auto; }
+				.e-qs .ans { grid-column: 2; margin-top: 10px; }
+			}
+		</style>
+	</head>
+	<body data-v="x">
+		<svg width="0" height="0" style="position: absolute">
+			<symbol id="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></symbol>
+			<symbol id="bot" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6V2H8" /><path d="m8 18-4 4V8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2Z" /><path d="M2 12h2" /><path d="M9 11v2" /><path d="M15 11v2" /><path d="M20 12h2" /></symbol>
+			<symbol id="copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2" /><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" /></symbol>
+			<symbol id="up" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 7-7 7 7" /><path d="M12 19V5" /></symbol>
+			<symbol id="term" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m4 17 6-6-6-6" /><path d="M12 19h8" /></symbol>
+			<symbol id="book" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7v14" /><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z" /></symbol>
+			<symbol id="git" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4" /><path d="M9 18c-4.51 2-5-2-7-2" /></symbol>
+		</svg>
+
+		<div class="switch">
+			<button data-v="x">X oggi</button>
+			<button data-v="a">A manifesto</button>
+			<button data-v="b">B terminale</button>
+			<button data-v="c">C vetrina</button>
+			<button data-v="c1">1 C mono</button>
+			<button data-v="c2">2 C flag</button>
+			<button data-v="c3">3 C etichetta</button>
+			<button data-v="c4">4 C ridotto</button>
+			<button data-v="d">D adesso</button>
+			<button data-v="e">E domande</button>
+			<button data-v="f">F sintesi</button>
+			<button data-v="g">G frase</button>
+			<p data-desc></p>
+			<button class="theme" data-theme-toggle>t tema</button>
+		</div>
+
+		<div class="window">
+			<aside class="card side">
+				<div class="logo">esse.dev<span class="caret"></span></div>
+				<div class="search">Cerca <span class="kbd">/</span></div>
+				<div class="row on"><span class="ico"></span>Benvenuto</div>
+				<div class="row"><span class="ico"></span>Chi sono</div>
+				<div class="row"><span class="ico"></span>Adesso<span class="meta">set 2026</span></div>
+				<div class="row"><svg class="bot"><use href="#bot" /></svg>Agente</div>
+				<div class="group">Progetti <span>23</span></div>
+				<div class="row"><img src="../../src/content/projects/relay/logo.png" alt="" />Relay<span class="meta">2026</span></div>
+				<div class="row"><img data-logo="nexus" alt="" />Nexus<span class="meta">2026</span></div>
+				<div class="row"><img data-logo="pgbee" alt="" />pgbee<span class="meta">2026</span></div>
+				<div class="row"><img data-logo="zeno" alt="" />Zeno<span class="meta">2026</span></div>
+				<div class="row"><img data-logo="mcpbelt" alt="" />mcpbelt<span class="meta">2026</span></div>
+				<div class="row"><img src="../../src/content/projects/portsage/logo.png" alt="" />Portsage<span class="meta">2026</span></div>
+				<div class="group">Metodo <span>4</span></div>
+				<div class="row"><span class="meta" style="margin: 0">01</span>Architettura prima del codice</div>
+				<div class="row"><span class="meta" style="margin: 0">02</span>Il contesto è il lavoro</div>
+				<div class="row"><span class="meta" style="margin: 0">03</span>Misurare invece di fidarsi</div>
+			</aside>
+
+			<main class="card pane">
+				<div class="bar">~ / <b>benvenuto</b><span class="end">en <b>it</b></span></div>
+				<div class="scroll">
+					<!-- X, oggi. -->
+					<div class="page v v-x">
+						<h1 class="x-h1 glow">Simone Salerno</h1>
+						<p class="x-role"><span class="led"></span>Lead AI Engineer in Yellow Tech · Milano</p>
+						<p class="x-intro">Porto l'AI generativa dentro aziende vere e la tengo in produzione. Per conto mio costruisco strumenti per sviluppatori, quasi tutti open source, e app mie. Progetto l'architettura, l'AI scrive il codice, io verifico e rilascio.</p>
+						<dl class="x-facts">
+							<dt class="label">programmo con</dt><dd>Claude Code e Codex, con un solo contesto condiviso</dd>
+							<dt class="label">nei prodotti</dt><dd>agenti su harness su misura, come quello di questo sito</dd>
+							<dt class="label">contatti</dt>
+							<dd style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px"><span class="copy">hello@esse.dev<svg><use href="#copy" /></svg></span><span class="social"><span>linkedin</span><span>github</span><span>instagram</span><span>x</span></span></dd>
+						</dl>
+						<section class="x-start">
+							<h2 class="label" style="margin: 0">Da dove iniziare</h2>
+							<ul class="x-list">
+								<li><a href="#"><svg class="bot"><use href="#bot" /></svg><span><b>Agente</b><small class="mono" style="font-size: 0.8125rem">› Come fa Portsage a sapere quali porte sono occupate? Mostrami il codice</small></span><svg class="arrow"><use href="#arrow" /></svg></a></li>
+								<li><a href="#"><span class="led" style="translate: 0 -1px"></span><span><b>Relay</b><small>Terminale nativo per macOS pensato per far girare tanti coding agent in parallelo, con lo stato di ogni agente letto dagli hook e non dall'output.</small></span><svg class="arrow"><use href="#arrow" /></svg></a></li>
+								<li><a href="#"><span class="mono" style="font-size: 0.7rem; color: var(--subtle)">01</span><span><b>Metodo</b><small>Architettura prima del codice, Il contesto è il lavoro, Misurare invece di fidarsi, Il mio setup</small></span><svg class="arrow"><use href="#arrow" /></svg></a></li>
+							</ul>
+						</section>
+					</div>
+
+					<!-- A, manifesto. -->
+					<div class="page v v-a">
+						<p class="a-who"><span class="led"></span><b>Simone Salerno</b><span>Lead AI Engineer in Yellow Tech</span><span>Milano</span></p>
+						<h1 class="a-h1">Porto l'AI generativa dentro aziende vere e la <em>tengo in produzione</em>.</h1>
+						<p class="a-sub">Per conto mio costruisco <span class="ul">strumenti per sviluppatori</span>, quasi tutti open source, e app mie. Programmo con Claude Code e Codex su un solo contesto condiviso, e nei prodotti metto agenti su harness su misura, come quello di questo sito.</p>
+						<div class="a-pipe">
+							<span class="me"><i>01</i>progetto l'architettura</span><span class="to">→</span>
+							<span><i>02</i>l'AI scrive il codice</span><span class="to">→</span>
+							<span class="me"><i>03</i>io verifico e rilascio</span>
+						</div>
+						<div class="a-meta"><span class="copy">hello@esse.dev<svg><use href="#copy" /></svg></span><span class="social"><span>linkedin</span><span>github</span><span>instagram</span><span>x</span></span></div>
+						<section class="a-start">
+							<h2 class="label" style="margin: 0">Da dove iniziare</h2>
+							<div class="a-grid">
+								<a class="a-card" href="#"><span class="n">01</span><svg class="arrow"><use href="#arrow" /></svg><b><svg class="bot"><use href="#bot" /></svg>Chiedi all'agente</b><small class="mono">› Come fa Portsage a sapere quali porte sono occupate? Mostrami il codice</small></a>
+								<a class="a-card" href="#"><span class="n">02</span><svg class="arrow"><use href="#arrow" /></svg><b><span class="led"></span>Relay</b><small>Terminale nativo per macOS pensato per far girare tanti coding agent in parallelo.</small></a>
+								<a class="a-card" href="#"><span class="n">03</span><svg class="arrow"><use href="#arrow" /></svg><b>Il metodo</b><small>Architettura prima del codice, il contesto è il lavoro, misurare invece di fidarsi.</small></a>
+							</div>
+						</section>
+					</div>
+
+					<!-- B, terminale. -->
+					<div class="page v v-b">
+						<div class="b-head">
+							<h1 class="b-h1 glow">Simone Salerno</h1>
+							<p class="b-role"><span class="led"></span>Lead AI Engineer in Yellow Tech · Milano</p>
+						</div>
+						<p class="b-intro">Porto l'AI generativa dentro aziende vere e la tengo <span class="tok acc"><span class="led" style="width: 6px; height: 6px"></span>in produzione</span>. Per conto mio costruisco strumenti per sviluppatori, quasi tutti <span class="tok"><svg><use href="#git" /></svg>open source</span>, e app mie. Progetto l'architettura, l'AI scrive il codice, io verifico e rilascio.</p>
+						<div class="b-term">
+							<div class="top"><i></i><i></i><i></i><span>~/esse.dev</span></div>
+<pre><span class="p">~ $</span> <span class="f">whoami --facts</span>
+<span class="k">programmo con</span>   <span class="f">Claude Code</span> + <span class="f">Codex</span>, un solo contesto condiviso
+<span class="k">nei prodotti </span>   agenti su harness su misura, <span class="f">come quello di questo sito</span>
+<span class="k">contatti     </span>   <span class="f">hello@esse.dev</span>  linkedin  github  instagram  x
+<span class="p">~ $</span> <span class="caret"></span></pre>
+						</div>
+						<section class="b-pal">
+							<div class="q"><svg class="arrow" style="color: var(--accent)"><use href="#arrow" /></svg><b>Da dove iniziare</b><span>3 risultati</span><span class="kbd">esc</span></div>
+							<a class="sel" href="#"><span class="ic"><svg class="bot"><use href="#bot" /></svg></span><span><b>Chiedi all'agente</b><small class="mono">› Come fa Portsage a sapere quali porte sono occupate? Mostrami il codice</small></span><span class="keys"><span class="kbd">1</span><span class="kbd">↵</span></span></a>
+							<a href="#"><span class="ic"><img src="../../src/content/projects/relay/logo.png" alt="" /></span><span><b>Relay</b><small>Terminale nativo per macOS per tanti coding agent in parallelo</small></span><span class="keys"><span class="kbd">2</span></span></a>
+							<a href="#"><span class="ic"><svg style="width: 15px; height: 15px; color: var(--muted)"><use href="#book" /></svg></span><span><b>Metodo</b><small>Architettura prima del codice · Il contesto è il lavoro · Misurare invece di fidarsi</small></span><span class="keys"><span class="kbd">3</span></span></a>
+						</section>
+					</div>
+
+					<!-- C, vetrina. -->
+					<div class="page v v-c">
+						<div class="c-hero">
+							<div>
+								<div class="cn cn-c">
+									<h1 class="c-h1 glow">Simone<span>Salerno</span></h1>
+									<p class="c-role"><span class="led"></span>Lead AI Engineer in Yellow Tech · Milano</p>
+								</div>
+								<div class="cn cn-c1">
+									<p class="c-cmd"><span class="p">~ $</span> whoami</p>
+									<h1 class="c1-h1 glow">simone salerno</h1>
+									<p class="c-role"><span class="led"></span>Lead AI Engineer in Yellow Tech · Milano</p>
+								</div>
+								<div class="cn cn-c2">
+									<h1 class="c2-h1 glow"><span class="p">›</span>Simone Salerno</h1>
+									<div class="c2-flags">
+										<span><i>--ruolo</i>Lead AI Engineer</span>
+										<span><i>--in</i>Yellow Tech</span>
+										<span><i>--da</i>Milano</span>
+										<span><i>--stato</i><span class="led" style="margin-right: 8px"></span>al lavoro</span>
+									</div>
+								</div>
+								<div class="cn cn-c3">
+									<p class="c3-who"><span class="led"></span><b>Simone Salerno</b>Lead AI Engineer in Yellow Tech · Milano</p>
+									<h1 class="c3-h1">Porto l'AI generativa dentro aziende vere e la <em class="glow">tengo in produzione</em>.</h1>
+								</div>
+								<div class="cn cn-c4">
+									<p class="c-cmd">~/simone-salerno</p>
+									<h1 class="c4-h1 glow">Simone Salerno</h1>
+									<p class="c-role"><span class="led"></span>Lead AI Engineer in Yellow Tech · Milano</p>
+								</div>
+							</div>
+							<p class="c-intro"><span class="c-first">Porto l'AI generativa dentro aziende vere e <b>la tengo in produzione</b>. </span>Per conto mio costruisco strumenti per sviluppatori <span class="stack"><img src="../../src/content/projects/relay/logo.png" alt="" /><img src="../../src/content/projects/portsage/logo.png" alt="" /><img data-logo="mcpbelt" alt="" /><img data-logo="pgbee" alt="" /></span>, quasi tutti open source, e app mie. Progetto l'architettura, l'AI scrive il codice, <b>io verifico e rilascio</b>.</p>
+						</div>
+						<div class="c-facts">
+							<div><span class="label">programmo con</span>Claude Code e Codex, un solo contesto condiviso</div>
+							<div><span class="label">nei prodotti</span>agenti su harness su misura, come quello di questo sito</div>
+							<div><span class="label">contatti</span><span class="copy" style="align-self: start">hello@esse.dev<svg><use href="#copy" /></svg></span></div>
+						</div>
+						<section class="c-start">
+							<h2 class="label" style="margin: 0">Da dove iniziare</h2>
+							<div class="c-grid">
+								<a class="c-tile" href="#">
+									<div class="vis c-chat">
+										<span class="me">Come fa Portsage a sapere quali porte sono occupate? Mostrami il codice</span>
+										<span class="it"><span class="led"></span>legge il codice</span>
+										<span class="line" style="width: 82%"></span>
+										<span class="line" style="width: 64%"></span>
+									</div>
+									<div class="txt"><b><span style="display: flex; align-items: center; gap: 8px"><svg class="bot"><use href="#bot" /></svg>Chiedi all'agente</span><svg class="arrow"><use href="#arrow" /></svg></b><small>Risponde su progetti, codice e metodo, leggendo il repo.</small></div>
+								</a>
+								<a class="c-tile" href="#">
+									<div class="vis c-cover"><img src="../../src/content/projects/relay/cover.webp" alt="" /><img class="badge" src="../../src/content/projects/relay/logo.png" alt="" /></div>
+									<div class="txt"><b><span style="display: flex; align-items: center; gap: 8px"><span class="led"></span>Relay</span><svg class="arrow"><use href="#arrow" /></svg></b><small>Il terminale per far girare tanti coding agent in parallelo.</small></div>
+								</a>
+								<a class="c-tile" href="#">
+									<ol class="vis c-toc">
+										<li><span>01</span>Architettura prima del codice</li>
+										<li><span>02</span>Il contesto è il lavoro</li>
+										<li><span>03</span>Misurare invece di fidarsi</li>
+										<li><span>04</span>Il mio setup</li>
+									</ol>
+									<div class="txt"><b>Il metodo<svg class="arrow"><use href="#arrow" /></svg></b><small>Come lavoro con i coding agent, in quattro note.</small></div>
+								</a>
+							</div>
+						</section>
+					</div>
+
+					<!-- D, adesso. -->
+					<div class="page v v-d">
+						<a class="d-now" href="#"><span class="led"></span><span class="mono">adesso</span>Relay, il terminale per gli agenti<em>set 2026</em><svg class="arrow"><use href="#arrow" /></svg></a>
+						<h1 class="d-h1 glow">Simone Salerno</h1>
+						<p class="d-role"><b>Lead AI Engineer</b> in Yellow Tech · Milano</p>
+						<p class="d-intro">Porto l'AI generativa dentro aziende vere e la tengo in produzione. <span>Per conto mio costruisco strumenti per sviluppatori, quasi tutti open source, e app mie.</span></p>
+						<div class="d-stats">
+							<div><b>23</b><small>progetti, quasi tutti open source</small></div>
+							<div><b>2</b><small>coding agent, Claude Code e Codex, un contesto</small></div>
+							<div><b>1</b><small>agente su harness su misura, in questo sito</small></div>
+							<div><b>4</b><small>note sul metodo: progetto, l'AI scrive, verifico</small></div>
+						</div>
+						<div class="d-contacts"><span class="copy">hello@esse.dev<svg><use href="#copy" /></svg></span><span class="social"><span>linkedin</span><span>github</span><span>instagram</span><span>x</span></span></div>
+						<section class="d-start">
+							<h2 class="label" style="margin: 0">Da dove iniziare</h2>
+							<div class="d-bento">
+								<a class="d-agent" href="#">
+									<span class="t"><svg class="bot" style="width: 20px; height: 20px"><use href="#bot" /></svg>Chiedi all'agente</span>
+									<p>Conosce i progetti, legge il codice dei repo e risponde con le fonti.</p>
+									<span class="field">› Come fa Portsage a sapere quali porte…<span class="caret"></span><span class="send"><svg><use href="#up" /></svg></span></span>
+									<div class="sugg"><span>Che differenza c'è tra Relay e Portsage?</span><span>Come lavora con i coding agent?</span><span>Su cosa sta lavorando?</span></div>
+								</a>
+								<a class="d-proj" href="#"><img class="bg" src="../../src/content/projects/relay/cover.webp" alt="" /><svg class="arrow"><use href="#arrow" /></svg><b><span class="led"></span>Relay</b><small>Il terminale per far girare tanti coding agent in parallelo.</small></a>
+								<a class="d-meth" href="#"><svg class="arrow"><use href="#arrow" /></svg><span class="label">metodo</span><b>Come lavoro con l'AI</b><div class="dots"><span>Architettura prima</span><span>Il contesto</span><span>Misurare</span><span>Setup</span></div></a>
+							</div>
+						</section>
+					</div>
+
+					<!-- F, sintesi: hero di C col nome mono maiuscolo, bento di D. -->
+					<div class="page v v-f">
+						<div class="c-hero">
+							<div>
+								<p class="c-cmd"><span class="p">~ $</span> whoami</p>
+								<h1 class="c1-h1 glow">Simone Salerno</h1>
+								<p class="c-role"><span class="led"></span>Lead AI Engineer in Yellow Tech · Milano</p>
+							</div>
+							<p class="c-intro">Porto l'AI generativa dentro aziende vere e <b>la tengo in produzione</b>. Per conto mio costruisco strumenti per sviluppatori <span class="fan"><a href="#" data-name="Relay"><img src="../../src/content/projects/relay/logo.png" alt="Relay" /><span class="tip">Relay</span></a><a href="#" data-name="Portsage"><img src="../../src/content/projects/portsage/logo.png" alt="Portsage" /><span class="tip">Portsage</span></a><a href="#" data-name="mcpbelt"><img data-logo="mcpbelt" alt="mcpbelt" /><span class="tip">mcpbelt</span></a><a href="#" data-name="pgbee"><img data-logo="pgbee" alt="pgbee" /><span class="tip">pgbee</span></a></span>, quasi tutti open source, e app mie. Progetto l'architettura, l'AI scrive il codice, <b>io verifico e rilascio</b>.</p>
+						</div>
+						<div class="c-facts">
+							<div><span class="label">programmo con</span>Claude Code e Codex, un solo contesto condiviso</div>
+							<div><span class="label">nei prodotti</span>agenti su harness su misura, come quello di questo sito</div>
+							<div><span class="label">contatti</span><span class="copy" style="align-self: start">hello@esse.dev<svg><use href="#copy" /></svg></span></div>
+						</div>
+						<section class="c-start">
+							<h2 class="label" style="margin: 0">Da dove iniziare</h2>
+							<div class="d-bento">
+								<div class="d-agent">
+									<span class="t"><svg class="bot" style="width: 20px; height: 20px"><use href="#bot" /></svg>Chiedi all'agente</span>
+									<p>Conosce i progetti, legge il codice dei repo e risponde con le fonti.</p>
+									<span class="field f-field">› <span data-ask>Come lavora Simone con i coding agent?</span><span class="send"><svg><use href="#up" /></svg></span></span>
+									<div class="sugg" data-asks>
+										<button type="button" aria-pressed="true">Come lavora Simone con i coding agent?</button>
+										<button type="button">Su cosa sta lavorando adesso?</button>
+										<button type="button">Com'è fatto questo sito?</button>
+									</div>
+								</div>
+								<a class="d-proj" href="#"><img class="bg" src="../../src/content/projects/relay/cover.webp" alt="" /><svg class="arrow"><use href="#arrow" /></svg><b><span class="led"></span>Relay</b><small>Il terminale per far girare tanti coding agent in parallelo.</small></a>
+								<a class="d-meth" href="#"><svg class="arrow"><use href="#arrow" /></svg><span class="label">metodo</span><b>Come lavoro con l'AI</b><div class="dots"><span>Architettura prima</span><span>Il contesto</span><span>Misurare</span><span>Setup</span></div></a>
+							</div>
+						</section>
+					</div>
+
+					<!-- G, la frase al centro: il nome a riga di stato, il titolo è cosa fa e per chi, il metodo
+						 subito sotto; i fatti nella tabella di oggi, il bento di F. -->
+					<div class="page v v-g">
+						<h1 class="g-who"><span class="led"></span><b class="glow">Simone Salerno</b><span>Lead AI Engineer in Yellow Tech · Milano</span></h1>
+						<p class="g-title">Porto l'AI generativa dentro aziende vere e la <em>tengo in produzione</em>.</p>
+						<p class="g-sub">Per conto mio costruisco strumenti per sviluppatori <span class="fan"><a href="#" data-name="Relay"><img src="../../src/content/projects/relay/logo.png" alt="Relay" /><span class="tip">Relay</span></a><a href="#" data-name="Portsage"><img src="../../src/content/projects/portsage/logo.png" alt="Portsage" /><span class="tip">Portsage</span></a><a href="#" data-name="mcpbelt"><img data-logo="mcpbelt" alt="mcpbelt" /><span class="tip">mcpbelt</span></a><a href="#" data-name="pgbee"><img data-logo="pgbee" alt="pgbee" /><span class="tip">pgbee</span></a></span>, quasi tutti open source, e app mie. Progetto l'architettura, l'AI scrive il codice, io verifico e rilascio.</p>
+						<dl class="x-facts g-facts">
+							<dt class="label">programmo con</dt><dd>Claude Code e Codex, con un solo contesto condiviso</dd>
+							<dt class="label">nei prodotti</dt><dd>agenti su harness su misura, come quello di questo sito</dd>
+							<dt class="label">contatti</dt>
+							<dd style="display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px"><span class="copy">hello@esse.dev<svg><use href="#copy" /></svg></span><span class="social"><span>linkedin</span><span>github</span><span>instagram</span><span>x</span></span></dd>
+						</dl>
+						<section class="g-start">
+							<h2 class="label" style="margin: 0">Da dove iniziare</h2>
+							<div class="c-grid g-grid">
+								<a class="c-tile" href="#">
+									<div class="vis c-chat">
+										<span class="me">Come lavora Simone con i coding agent?</span>
+										<span class="it"><span class="led"></span>legge il codice</span>
+										<span class="line" style="width: 82%"></span>
+										<span class="line" style="width: 64%"></span>
+									</div>
+									<div class="txt"><b><span style="display: flex; align-items: center; gap: 8px"><svg class="bot"><use href="#bot" /></svg>Chiedi all'agente</span><svg class="arrow"><use href="#arrow" /></svg></b><small>Risponde su progetti, codice e metodo, leggendo il repo.</small></div>
+								</a>
+								<a class="c-tile" href="#">
+									<div class="vis c-cover"><img src="../../src/content/projects/relay/cover.webp" alt="" /><img class="badge" src="../../src/content/projects/relay/logo.png" alt="" /></div>
+									<div class="txt"><b><span style="display: flex; align-items: center; gap: 8px"><span class="led"></span>Relay</span><svg class="arrow"><use href="#arrow" /></svg></b><small>Il terminale per far girare tanti coding agent in parallelo.</small></div>
+								</a>
+								<a class="c-tile" href="#">
+									<div class="vis g-quote">
+										<p>Una regola scritta in un prompt è una probabilità, la stessa regola in un hook è una <em>garanzia</em>.</p>
+										<span class="src">02 · Il contesto è il lavoro</span>
+										<ol class="tabs"><li>01</li><li class="on">02</li><li>03</li><li>04</li></ol>
+									</div>
+									<div class="txt"><b>Il metodo<svg class="arrow"><use href="#arrow" /></svg></b><small>Come lavoro con i coding agent, in quattro note.</small></div>
+								</a>
+							</div>
+						</section>
+					</div>
+
+					<!-- E, domande. -->
+					<div class="page v v-e">
+						<div class="e-head">
+							<h1 class="e-h1 glow">Simone Salerno<small><span class="led" style="margin-right: 8px"></span>Lead AI Engineer in Yellow Tech · Milano</small></h1>
+							<p class="e-intro">Porto l'AI generativa dentro aziende vere e la tengo in produzione. Per conto mio costruisco strumenti per sviluppatori, quasi tutti open source, e app mie. Progetto l'architettura, <span class="hl">l'AI scrive il codice, io verifico e rilascio</span>.</p>
+						</div>
+						<ol class="e-qs">
+							<li><a href="#"><span class="n">01</span><span class="q">Hai una domanda?</span><span class="ans"><svg class="bot" style="width: 22px; height: 22px; flex: none"><use href="#bot" /></svg><span class="mono">› Come fa Portsage a sapere quali porte sono occupate?</span></span><svg class="arrow"><use href="#arrow" /></svg></a></li>
+							<li><a href="#"><span class="n">02</span><span class="q">Cosa costruisce?</span><span class="ans"><img src="../../src/content/projects/relay/logo.png" alt="" /><span>Relay, il terminale per tanti coding agent, e altri 22 progetti</span></span><svg class="arrow"><use href="#arrow" /></svg></a></li>
+							<li><a href="#"><span class="n">03</span><span class="q">Come lavora?</span><span class="ans"><svg style="width: 22px; height: 22px; flex: none; color: var(--muted)"><use href="#book" /></svg><span>Quattro note di metodo: architettura, contesto, misure, setup</span></span><svg class="arrow"><use href="#arrow" /></svg></a></li>
+						</ol>
+						<div class="e-foot"><span>Claude Code e Codex, un solo contesto</span><span class="sep"></span><span>agenti su harness su misura</span><span class="sep"></span><span class="copy">hello@esse.dev<svg><use href="#copy" /></svg></span></div>
+					</div>
+				</div>
+			</main>
+		</div>
+
+		<script>
+			const DESC = {
+				x: 'oggi: nome, intro, fatti in tabella, tre righe',
+				a: 'la frase è il titolo, il nome scende; pipeline del metodo; tre card numerate',
+				b: 'token in riga, fatti in un blocco whoami, command palette coi tasti',
+				c: 'nome su due righe, loghi in linea, tessere visive con chat, copertina e indice',
+				c1: 'C col nome in Departure Mono minuscolo, stampato da whoami',
+				c2: 'C col nome come comando e il ruolo come flag',
+				c3: 'C col nome a riga di stato e la prima frase come titolo',
+				c4: 'C col nome di oggi in Geist, su una riga e più piccolo',
+				d: 'striscia "adesso", intro a due toni, numeri, bento con l\'agente grande',
+				f: 'hero di C col nome mono maiuscolo, bento di D; passa sui loghi nella frase, clicca una domanda',
+				g: 'il nome a riga di stato, il titolo è cosa fa; fatti in tabella, tre card con una frase del metodo',
+				e: 'hero compatto, le tre domande di chi arriva diventano il pezzo principale'
+			};
+			// Logos with a light variant follow the theme, like logoLight in the site.
+			const LOGOS = { nexus: 'nexus', pgbee: 'pgbee', zeno: 'zeno', mcpbelt: 'mcpbelt' };
+			const root = document.documentElement;
+			const setLogos = () => {
+				const light = root.dataset.theme === 'light';
+				document.querySelectorAll('[data-logo]').forEach((img) => {
+					img.src = `../../src/content/projects/${LOGOS[img.dataset.logo]}/logo${light ? '-light' : ''}.svg`;
+				});
+			};
+			const pick = (v) => {
+				document.body.dataset.v = v;
+				document.querySelectorAll('.switch [data-v]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.v === v)));
+				document.querySelector('[data-desc]').textContent = DESC[v];
+				document.querySelector('.scroll').scrollTop = 0;
+				history.replaceState(null, '', `#${v}`);
+			};
+			const toggleTheme = () => {
+				root.dataset.theme = root.dataset.theme === 'light' ? 'dark' : 'light';
+				setLogos();
+			};
+			root.dataset.theme = matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+			setLogos();
+			document.querySelectorAll('.switch [data-v]').forEach((b) => b.addEventListener('click', () => pick(b.dataset.v)));
+			document.querySelector('[data-theme-toggle]').addEventListener('click', toggleTheme);
+			addEventListener('keydown', (e) => {
+				if (DESC[e.key]) pick(e.key);
+				if (DESC[`c${e.key}`]) pick(`c${e.key}`);
+				if (e.key === 't') toggleTheme();
+			});
+			// F: a suggested question goes into the field, to try which one reads best as the first.
+			document.querySelectorAll('[data-asks] button').forEach((b) =>
+				b.addEventListener('click', () => {
+					const card = b.closest('.d-agent');
+					card.querySelector('[data-ask]').textContent = b.textContent;
+					card.querySelectorAll('[data-asks] button').forEach((x) => x.setAttribute('aria-pressed', String(x === b)));
+				})
+			);
+			pick(DESC[location.hash.slice(1)] ? location.hash.slice(1) : 'x');
+		</script>
+	</body>
+</html>
