@@ -18,6 +18,9 @@
 			In tutte il menu è un pannello che sale dal basso fino alla barra, che resta visibile
 			con Menu acceso (un secondo tocco lo chiude): ricerca in cima, poi pagine, progetti,
 			metodo, profili. La barra in alto perde il pulsante dell'indice e la lente.
+			Animazioni: al tocco ogni voce fa il suo gesto (gli stessi della lista su desktop), la
+			selezione scivola sulla voce toccata, Menu diventa una X e il contenuto del menu sale
+			a cascata; r simula il movimento ridotto (bagliore al posto dello spostamento).
 			Barre e pillola stanno fuori dalla card della pagina: un vetro che sfoca dentro un
 			altro smette di sfocare in Chromium. Su un telefono vero i colori della barra di
 			Safari (--color-bar-bottom) vanno rimisurati.
@@ -219,6 +222,62 @@
 			.links span::after { content: ' ↗'; color: var(--subtle); }
 			.bar .x-only { display: none; }
 			body[data-v='x'] .bar .x-only { display: grid; }
+
+			/* Motion. On a phone there is no hover: a tap plays the tab's gesture (the same ones
+			   as the desktop list, from global.css), the selection slides to the tab, Menu turns
+			   into an X, and the sheet's content rises in turn as it opens. */
+			.tabs, .pill { position: relative; }
+			.glider { position: absolute; top: 6px; bottom: 6px; left: 0; width: 0; border-radius: 16px; background: var(--surface); transition: translate 0.4s cubic-bezier(0.16, 1, 0.3, 1), width 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s; pointer-events: none; }
+			.pill .glider { top: 5px; bottom: 5px; border-radius: 999px; }
+			.tab { position: relative; z-index: 1; transition: color 0.2s, scale 0.15s; }
+			.tab[aria-current='page'] { background: none; }
+			.tab:active { scale: 0.92; }
+			.tab svg { transform-origin: 50% 70%; }
+			.play [data-m='house'] { animation: hop 700ms ease-out; }
+			.play [data-m='folder'] { animation: lift 800ms cubic-bezier(0.16, 1, 0.3, 1); }
+			.play [data-m='book'] { animation: sway 800ms cubic-bezier(0.16, 1, 0.3, 1); }
+			.play [data-m='bot'] { animation: tilt 800ms cubic-bezier(0.16, 1, 0.3, 1); }
+			.play [data-m='bot'] > :first-child { transform-box: view-box; transform-origin: 12px 6px; animation: wiggle 800ms ease-out; }
+			.play [data-m='bot'] > :is(:nth-child(4), :nth-child(5)) { transform-box: fill-box; transform-origin: center; animation: blink 900ms ease-in-out 250ms; }
+			body[data-v='c'] .tab.agent .disc::after { content: ''; position: absolute; inset: 0; border-radius: inherit; box-shadow: 0 0 0 2px var(--accent); opacity: 0; }
+			body[data-v='c'] .tab.agent.play .disc::after { animation: ping 700ms cubic-bezier(0.16, 1, 0.3, 1); }
+			body[data-v='c'] .tab.agent .disc { transition: scale 0.15s; }
+			body[data-v='c'] .tab.agent:active .disc { scale: 0.9; }
+			[data-m='menu'] > * { transform-box: view-box; transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s; }
+			[data-m='menu'] > :nth-child(1) { transform-origin: 12px 5px; }
+			[data-m='menu'] > :nth-child(2) { transform-origin: 12px 12px; }
+			[data-m='menu'] > :nth-child(3) { transform-origin: 12px 19px; }
+			body[data-menu] [data-m='menu'] > :nth-child(1) { transform: translateY(7px) rotate(45deg) scaleX(0.85); }
+			body[data-menu] [data-m='menu'] > :nth-child(2) { transform: scaleX(0); opacity: 0; }
+			body[data-menu] [data-m='menu'] > :nth-child(3) { transform: translateY(-7px) rotate(-45deg) scaleX(0.85); }
+			.sheet .body > * { opacity: 0; translate: 0 12px; transition: opacity 0.2s, translate 0.2s; }
+			body[data-menu] .sheet .body > * { opacity: 1; translate: 0 0; transition: opacity 0.35s ease-out, translate 0.5s cubic-bezier(0.16, 1, 0.3, 1); transition-delay: calc(80ms + var(--i, 0) * 28ms); }
+			body[data-menu] [data-m='user'] { transform-origin: 50% 70%; animation: sway 800ms cubic-bezier(0.16, 1, 0.3, 1) 350ms; }
+			[data-m='activity'] > * { stroke-dasharray: var(--len, 60) calc(var(--len, 60) + 4px); stroke-dashoffset: 0; }
+			body[data-menu] [data-m='activity'] > * { animation: snake 1.2s cubic-bezier(0.45, 0, 0.55, 1) 400ms 2 backwards; }
+			body[data-menu] [data-m='pen'] > :first-child { stroke-dasharray: 9 9; animation: write 450ms cubic-bezier(0.16, 1, 0.3, 1) 480ms backwards; }
+			@keyframes hop { 25% { transform: translateY(-22%) scale(0.94, 1.06); } 48% { transform: translateY(0) scale(1.1, 0.88); } 66% { transform: scale(0.97, 1.03); } 82% { transform: none; } }
+			@keyframes lift { 25%, 70% { transform: translateY(-12%) rotate(-7deg); } }
+			@keyframes sway { 22% { transform: rotate(-12deg); } 50% { transform: rotate(9deg); } 76% { transform: rotate(-4deg); } }
+			@keyframes tilt { 25% { transform: rotate(-12deg); } 55% { transform: rotate(7deg); } 80% { transform: rotate(-3deg); } }
+			@keyframes wiggle { 20% { transform: rotate(-25deg); } 45% { transform: rotate(18deg); } 70% { transform: rotate(-8deg); } }
+			@keyframes blink { 11%, 33% { transform: scaleY(0.1); } 22%, 44% { transform: none; } }
+			@keyframes ping { 0% { opacity: 0.6; transform: scale(1); } 100% { opacity: 0; transform: scale(1.5); } }
+			@keyframes snake { 0% { stroke-dashoffset: calc(var(--len, 60) * -1 - 2px); } 50% { stroke-dashoffset: 0; } 100% { stroke-dashoffset: calc(var(--len, 60) + 2px); } }
+			@keyframes write { from { stroke-dashoffset: 9; } to { stroke-dashoffset: 0; } }
+			@keyframes glow { 40% { filter: drop-shadow(0 0 5px var(--accent)); color: var(--accent); } }
+
+			/* Reduced motion keeps the feedback, not the displacement: the tapped icon glows, the
+			   selection jumps, the sheet fades in place and its content appears without rising. */
+			body[data-reduce] .play :is([data-m='house'], [data-m='folder'], [data-m='book'], [data-m='bot']) { animation: glow 700ms ease-out; }
+			body[data-reduce] .play [data-m='bot'] > * { animation: none; }
+			body[data-reduce] .glider { transition: opacity 0.2s; }
+			body[data-reduce] .tab:active, body[data-reduce] .tab.agent:active .disc { scale: none; }
+			body[data-reduce] .sheet { translate: 0 0; opacity: 0; transition: opacity 0.25s, visibility 0s 0.25s; }
+			body[data-reduce][data-menu] .sheet { opacity: 1; transition: opacity 0.25s, visibility 0s; }
+			body[data-reduce] .sheet .body > * { translate: none; }
+			body[data-reduce][data-menu] [data-m='user'] { animation: glow 800ms ease-out 300ms; }
+			body[data-reduce] [data-m='menu'] > * { transition: none; }
 		</style>
 	</head>
 	<body data-v="a">
@@ -243,6 +302,7 @@
 			<button data-v="c">C agente al centro</button>
 			<button data-menu-toggle>m menu</button>
 			<button data-theme-toggle>t tema</button>
+			<button data-reduce-toggle>r riduci movimento</button>
 			<p data-desc></p>
 		</div>
 
@@ -277,22 +337,24 @@
 					</main>
 
 					<nav class="card tabs" aria-label="Sezioni">
-						<a class="tab" href="#" aria-current="page"><svg class="i"><use href="#house" /></svg>Home</a>
-						<a class="tab" href="#"><svg class="i"><use href="#folder" /></svg>Progetti</a>
-						<a class="tab agent" href="#"><span class="disc"><svg class="i"><use href="#bot" /></svg></span>Agente</a>
-						<a class="tab" href="#"><svg class="i"><use href="#book" /></svg>Metodo</a>
-						<button class="tab" data-menu-toggle><svg class="i"><use href="#menu" /></svg>Menu</button>
+						<span class="glider" aria-hidden="true"></span>
+						<a class="tab" href="#" aria-current="page"><svg class="i" data-m="house"><use href="#house" /></svg>Home</a>
+						<a class="tab" href="#"><svg class="i" data-m="folder"><use href="#folder" /></svg>Progetti</a>
+						<a class="tab agent" href="#"><span class="disc"><svg class="i" data-m="bot" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6V2H8" /><path d="m8 18-4 4V8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2Z" /><path d="M2 12h2" /><path d="M9 11v2" /><path d="M15 11v2" /><path d="M20 12h2" /></svg></span>Agente</a>
+						<a class="tab" href="#"><svg class="i" data-m="book"><use href="#book" /></svg>Metodo</a>
+						<button class="tab" data-menu-toggle><svg class="i" data-m="menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16" /><path d="M4 12h16" /><path d="M4 19h16" /></svg>Menu</button>
 					</nav>
 				</div>
 
 				<div class="float">
 					<nav class="pill" aria-label="Sezioni">
-						<a class="tab" href="#" aria-current="page"><svg class="i"><use href="#house" /></svg>Home</a>
-						<a class="tab" href="#"><svg class="i"><use href="#folder" /></svg>Progetti</a>
-						<a class="tab agent" href="#"><svg class="i"><use href="#bot" /></svg>Agente</a>
-						<a class="tab" href="#"><svg class="i"><use href="#book" /></svg>Metodo</a>
+						<span class="glider" aria-hidden="true"></span>
+						<a class="tab" href="#" aria-current="page"><svg class="i" data-m="house"><use href="#house" /></svg>Home</a>
+						<a class="tab" href="#"><svg class="i" data-m="folder"><use href="#folder" /></svg>Progetti</a>
+						<a class="tab agent" href="#"><svg class="i" data-m="bot" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6V2H8" /><path d="m8 18-4 4V8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2Z" /><path d="M2 12h2" /><path d="M9 11v2" /><path d="M15 11v2" /><path d="M20 12h2" /></svg>Agente</a>
+						<a class="tab" href="#"><svg class="i" data-m="book"><use href="#book" /></svg>Metodo</a>
 					</nav>
-					<button class="round" data-menu-toggle aria-label="Menu"><svg class="i"><use href="#menu" /></svg></button>
+					<button class="round" data-menu-toggle aria-label="Menu"><svg class="i" data-m="menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16" /><path d="M4 12h16" /><path d="M4 19h16" /></svg></button>
 				</div>
 
 				<div class="scrim" data-close></div>
@@ -318,9 +380,9 @@
 						<div class="field"><svg><use href="#search" /></svg>Cerca progetti, note, pagine</div>
 						<div class="group">Pagine</div>
 						<div class="grid2">
-							<a class="row" href="#"><svg><use href="#user" /></svg>Chi sono</a>
-							<a class="row" href="#"><svg><use href="#activity" /></svg>Adesso</a>
-							<a class="row" href="#"><svg><use href="#pen" /></svg>Writing</a>
+							<a class="row" href="#"><svg data-m="user"><use href="#user" /></svg>Chi sono</a>
+							<a class="row" href="#"><svg data-m="activity" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2" /></svg>Adesso</a>
+							<a class="row" href="#"><svg data-m="pen" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9" /><path d="M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.854z" /></svg>Writing</a>
 						</div>
 						<div class="group">Progetti <span>23</span></div>
 						<a class="row" href="#"><img src="../../src/content/projects/relay/logo.png" alt="" />Relay<span class="meta">2026</span></a>
@@ -400,8 +462,37 @@
 					document.querySelectorAll('.tabs, .pill').forEach((nav) =>
 						[...nav.children].forEach((t, j) => (j === i ? t.setAttribute('aria-current', 'page') : t.removeAttribute('aria-current')))
 					);
+					placeGliders();
 				})
 			);
+			// Motion: the glider follows the current tab of each bar; a tap plays the gesture.
+			const placeGliders = () => {
+				document.querySelectorAll('.tabs, .pill').forEach((nav) => {
+					const glider = nav.querySelector('.glider');
+					const current = nav.querySelector('.tab[aria-current]');
+					const hidden = !current || (body.dataset.v === 'c' && current.classList.contains('agent'));
+					glider.style.opacity = hidden || body.dataset.menu !== undefined ? '0' : '1';
+					if (!current) return;
+					glider.style.translate = `${current.offsetLeft}px 0`;
+					glider.style.width = `${current.offsetWidth}px`;
+				});
+			};
+			const play = (el) => {
+				el.classList.remove('play');
+				void el.offsetWidth;
+				el.classList.add('play');
+				clearTimeout(el.playTimer);
+				el.playTimer = setTimeout(() => el.classList.remove('play'), 1200);
+			};
+			document.querySelectorAll('.tab').forEach((tab) => tab.addEventListener('pointerdown', () => play(tab)));
+			// The sheet's content rises in turn: each direct child knows its place.
+			[...document.querySelector('.sheet .body').children].forEach((el, i) => el.style.setProperty('--i', String(Math.min(i, 14))));
+			document.querySelectorAll('[data-m="activity"] > *').forEach((path) => path.style.setProperty('--len', `${path.getTotalLength()}px`));
+			new MutationObserver(placeGliders).observe(body, { attributes: true, attributeFilter: ['data-v', 'data-menu'] });
+			document.querySelector('[data-reduce-toggle]').addEventListener('click', () => {
+				if (body.dataset.reduce !== undefined) delete body.dataset.reduce;
+				else body.dataset.reduce = '';
+			});
 			// B: the pill leaves while scrolling down and comes back on the way up.
 			const scroller = document.querySelector('[data-scroll]');
 			let last = 0;
@@ -415,9 +506,11 @@
 				if (DESC[e.key]) pick(e.key);
 				if (e.key === 'm') toggleMenu();
 				if (e.key === 't') toggleTheme();
+				if (e.key === 'r') document.querySelector('[data-reduce-toggle]').click();
 				if (e.key === 'Escape') close();
 			});
 			pick(DESC[location.hash.slice(1)] ? location.hash.slice(1) : 'a');
+			requestAnimationFrame(placeGliders);
 		</script>
 	</body>
 </html>
