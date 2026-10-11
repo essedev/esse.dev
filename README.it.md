@@ -16,8 +16,8 @@ Portfolio personale di Simone Salerno, online su [esse.dev](https://esse.dev). F
 ## Funzionalità
 
 - Inglese e italiano con route e slug tradotti, redirect al canonico e hreflang
-- Il sito come spazio di lavoro: a sinistra una lista (pagine, vetrina dei progetti, metodo, scritti), a destra il riquadro del contenuto con la sua toolbar, navigazione da tastiera
-- Home con una breve presentazione, i contatti e da dove iniziare: l'agente, un progetto di punta, il metodo
+- Il sito come spazio di lavoro: a sinistra una lista (pagine, vetrina dei progetti, metodo, scritti), a destra il riquadro del contenuto con la sua toolbar, navigazione da tastiera; sul telefono una barra delle schede con l'agente al centro
+- Home con al centro cosa faccio, i loghi dei progetti nella presentazione, i contatti e tre card da cui iniziare: l'agente, un progetto di punta, il metodo
 - Elenchi di progetti e articoli con ricerca e filtri per tag, stato e ordine, tenuti nell'URL
 - Tempo di lettura e stima dei token degli articoli, articoli correlati
 - Feed RSS per lingua, sitemap con alternate, JSON-LD, `llms.txt`

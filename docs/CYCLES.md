@@ -424,3 +424,45 @@ The site in two themes, then the project images and the dark theme to match (`90
   invisible in dev (`.astro/data-store.json`).
 - **Next step:** unchanged, the Open items of the ROADMAP and the production secrets for
   `draft_message`.
+
+## Cycle 27 - Agent mail, Safari's bars, the home, a tab bar on phones (2026-10-08 / 2026-10-12)
+
+`draft_message` in production, then phones and the home from concepts L and M (`6ae5c18` ..
+`72a08c5`).
+
+- **Agent mail:** `hello@esse.dev` confirmed as `MAIL_TO`, sent through Cloudflare Email
+  Service and not Email Routing, which would take the MX of the domain's mail (Qboxmail).
+  The real Turnstile site key lives in the code, chosen by host (`turnstileSiteKey` in
+  `src/agent/draft.ts`): it is public, and dev, preview and the E2E tests run on localhost,
+  where the real widget refuses to load; a key set at build still wins.
+- **Delivery note (#29):** after a send or a failure the server writes a note for the model
+  into the conversation, without a run, so the agent answers "was it sent?" right; the page
+  drops the entry.
+- **Safari's bars:** Safari 26 ignores `theme-color` and tints its bars from the html
+  background or from a fixed element on each edge. The html background becomes the
+  wallpaper's edge, measured on its frame (`--color-bar-top`, `--color-bar-bottom`); on phones
+  two solid fixed strips carry the edge colors and the closed drawer backdrop leaves the
+  page, since Safari samples it even at opacity 0. The window stays still and only the pane
+  scrolls, so the bottom bar never shrinks (rule in `.claude/rules/workspace-ui.md`).
+- **Touch:** no zoom on double tap (`touch-action: manipulation`, on the pane too) or on
+  focusing a field (16 px on touch screens); one short placeholder for the agent, "Ask me
+  anything", and a one-line privacy note under its field.
+- **Agent:** "the site" means the esse.dev repo when the question is how it is built; a
+  conversation coming back shows only its loading line.
+- **Content:** Wavelength hidden while it is rebuilt for a hackathon. The LED legend moves
+  from the sidebar's status line to the projects list, only for the statuses it contains.
+- **Home (#30):** concept L (`docs/concepts/concept-l-home.html`), variant G. The name goes
+  to a status line (still the h1), the largest line is what Simone does; the welcome text
+  lives in the frontmatter (`headline`, `intro` with the logos of `tools`). "Where to start"
+  becomes three equal cards: the agent with its first question, the lead project on its
+  cover, the method with a `quote` from its notes. Three short rounds on the shadow of the
+  stacked logos, which ended as a light drop-shadow following their shape.
+- **Mobile navigation (#31):** concept M (`docs/concepts/concept-m-nav-mobile.html`),
+  variant C. A tab bar under the pane (`TabBar.astro`) with Home, Projects, the agent raised
+  at the center, Method and Menu; Menu opens the list as a sheet from below in place of the
+  drawer from the left, and the toolbar loses the index button and the magnifier. A tap
+  plays the tab icon's gesture (`data-play`), the sheet's blocks rise in turn.
+- **Tests:** unit on the Turnstile key by host and on the headline's accent
+  (`emphasis.test.ts`); E2E on the tab bar and the sheet in `navigation.spec.ts`.
+- **Next step:** the Open items of the ROADMAP; the tab bar and Safari's bar colors on a
+  real iPhone.

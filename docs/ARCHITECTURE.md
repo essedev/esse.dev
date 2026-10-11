@@ -57,10 +57,11 @@ The single pages (welcome, about, contacts, privacy) are Markdown per language i
 `src/content/pages/`. The welcome page keeps its text in the frontmatter, without a body:
 the headline (`*...*` marks the accent) and the introduction, where `{tools}` places the
 logos of the projects listed in `tools`, are composed with components, which Markdown
-cannot do. The home's method card shows the `quote` of the first note that has one. The site title, section names and UI strings are the `site`
-collection, with a strict schema: every language has all the keys and none extra, and the
-keys are a type. Config (languages, routes, showcase) stays JSON, imported and validated
-by `src/lib/config.ts`, because it is configuration and not content.
+cannot do. The home's method card shows the `quote` of the first note that has one (#30).
+The site title, section names and UI strings are the `site` collection, with a strict
+schema: every language has all the keys and none extra, and the keys are a type. Config
+(languages, routes, showcase) stays JSON, imported and validated by `src/lib/config.ts`,
+because it is configuration and not content.
 
 Where Astro has a standard, that is used: content collections, `@astrojs/rss`, the Fonts
 API for self-hosted fonts with preload and tuned fallbacks. The sitemap is not:
@@ -106,12 +107,12 @@ immutable. No endpoint reflects user input.
 
 The site is used like an app (concept A, `docs/concepts/concept-a-spazio.html`, Cycle 12):
 two columns as tall as the window, each with its own tone. On the left the list (logo,
-search, items, a status line with legend and keys), on the right the content pane with a
-toolbar (path, document actions, language). No full-width bar: with two tones on
-horizontal rows the page formed a T that matched no zone (Cycle 13). Each item stays a
-static page with its own URL, with no router. The page change is instant, like changing
-document in an app: the earlier fade with a rise (view transition) looked like a site
-loading a new page and slowed down j k and h/l.
+search, items, a status line with the keys; the LED legend sits in the projects list), on
+the right the content pane with a toolbar (path, document actions, language). No
+full-width bar: with two tones on horizontal rows the page formed a T that matched no zone
+(Cycle 13). Each item stays a static page with its own URL, with no router. The page
+change is instant, like changing document in an app: the earlier fade with a rise (view
+transition) looked like a site loading a new page and slowed down j k and h/l.
 
 On a wide screen the two columns are two cards inside a rounded window, detached from the
 edges. On mobile the window stays, with the content pane only. The window rests on a
@@ -148,7 +149,7 @@ the house jumps, the agent tilts its head, the line of Now traces itself and ret
 a loop, the arrows go out and come back, the LEDs send out a ring; with the keyboard and
 on touch they stay still. With `prefers-reduced-motion` only displacement stops: what
 translates, rotates or scales gets an equivalent that stays put (the icons glow in the
-accent, the drawer fades), while color, opacity and redrawn strokes keep running
+accent, the mobile menu fades), while color, opacity and redrawn strokes keep running
 (`docs/DECISIONS.md` #25).
 
 - **List** (`src/lib/workspace.ts`): in order of importance and at most 900 px tall.
@@ -176,7 +177,12 @@ accent, the drawer fades), while color, opacity and redrawn strokes keep running
   method and the profiles; the keys it does not. A phone has no hover: a tap sets
   `data-play` on a tab and its icon makes the gesture the desktop list makes on hover, and
   the sheet's blocks rise in turn as it opens. With reduced motion the tap glows and the
-  sheet fades in place.
+  sheet fades in place. Choices in `docs/DECISIONS.md` #31. The window stays still and only
+  the pane scrolls, so Safari's bottom bar never shrinks. Safari 26 ignores `theme-color`
+  and tints its bars from a fixed element on each edge or the html background: two solid
+  strips on phones and the html background carry the wallpaper's edge colors, measured on
+  its frame (`--color-bar-top`, `--color-bar-bottom`), and a closed full-screen layer leaves
+  the page, since Safari samples it even at opacity 0.
 - **Tokens** (`@theme` in `src/styles/global.css`): `desk` and `frame` behind and around
   the window; surfaces `bg`, `panel`, `surface`, `hover`;
   `line`; text `fg`, `text`, `muted`, `subtle` (the minimum for text, 4.5:1 measured on
@@ -248,7 +254,11 @@ sides.
   draft is a call of the agent in this conversation and has not already gone out,
   verifies Turnstile, applies the daily caps (per visitor in the `SiteAgent`, for the
   site in the `Ledger`) and sends with the `send_email` binding to the address verified
-  in `MAIL_TO` (`draft.ts`, `DraftView.svelte`).
+  in `MAIL_TO` (`draft.ts`, `DraftView.svelte`), through Cloudflare Email Service. The
+  Turnstile site key is public and lives in the code, chosen by host: the real one on
+  `esse.dev`, the test one on localhost, where the real widget does not load. After a send
+  or a failure the server writes a note for the model into the conversation, without a run,
+  with the outcome and never the draft's text, so the agent knows how it went (#29).
 - **Link to the agent:** `?ask=` writes a question into the input without sending it
   (the home uses it). Not `?q=`, which is the list's search.
 - **Page with a conversation started:** `data-agent-started` on `[data-workspace]` hides

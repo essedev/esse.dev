@@ -1,8 +1,9 @@
 # Conventions
 
 Rules the code and the docs already follow. Read them before writing, and flag code that
-breaks them. Commands, gotchas and the design system rules live in `CLAUDE.md`; the why
-behind the choices in `docs/ARCHITECTURE.md` and `docs/DECISIONS.md`.
+breaks them. Commands and gotchas live in `CLAUDE.md`, the rules by path (design system,
+agent, OG) in `.claude/rules/`; the why behind the choices in `docs/ARCHITECTURE.md` and
+`docs/DECISIONS.md`.
 
 ## Language
 
@@ -45,7 +46,8 @@ the table says so.
 | riquadro                                | pane         | The content pane next to the list, `data-pane-glass`                         |
 | lista                                   | list         | The left column of the workspace                                             |
 | telaio                                  | chassis      | `Chassis.svelte`, from the discarded restyle                                 |
-| cassetto                                | drawer       | The mobile list, `data-drawer`                                               |
+| cassetto                                | drawer       | The mobile list, a sheet from below since Cycle 27 (`data-drawer`)           |
+| barra delle schede                      | tab bar      | The mobile bar under the pane, `TabBar.astro`                                |
 | vetro                                   | glass        | `glass` utility, `--glass-*`                                                 |
 | velo                                    | veil         | CRT veil (`--crt-*`), wallpaper veil (`--wall`)                              |
 | sfondo                                  | wallpaper    | The layer behind the window (`--wall`); a plain fill (fondo) is "background" |

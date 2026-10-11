@@ -135,7 +135,7 @@ mistake would take `delegate` away from the questions that deserve it.
 
 ## #15 - Style from concept B: lavender, green only for live states, CRT veil
 
-**Status:** active (Cycle 17)
+**Status:** active (Cycle 17); the mobile drawer superseded by #31
 
 Chosen with Simone on `docs/concepts/concept-b-stile.html`, which tuned palette, mono,
 CRT effect and frame live. Lavender accent on a slightly cold black (palette G); a
@@ -288,7 +288,7 @@ they keep running: phosphor, LEDs, the logo's caret (under 3 Hz), the decoding l
 hover colors, the redrawn strokes of the icons. What translates, rotates or scales gets an
 equivalent that stays put: an icon's gesture becomes a glow in the accent (the bot's eyes
 blink by opacity, the LED's ring lights up without widening), the error number keeps its
-fringe but still, the 500's snow stops, the mobile drawer fades instead of sliding, smooth
+fringe but still, the 500's snow stops, the mobile menu fades instead of sliding, smooth
 scrolling becomes instant. Rules in the `prefers-reduced-motion` block of `global.css` and
 the `motion-safe:` variant in components; checked by `tests/e2e/motion.spec.ts`. A new
 animation picks its side there. Rejected: the global `animation: none; transition: none`
@@ -369,7 +369,7 @@ OG images, which are seen outside the site. The generated cover follows the toke
 
 ## #29 - The agent learns how a draft's sending went
 
-**Status:** active (Cycle 26)
+**Status:** active (Cycle 27)
 
 After the visitor sends, or fails to send, a `draft_message` draft, the server writes an
 entry (`app.draft-delivery`) into the conversation with a note for the model: from the site,
@@ -379,3 +379,34 @@ turn and answers "was it sent?" right. The page drops the kind in `projectEntry`
 would read as the visitor speaking. Rejected: a tool that waits for the click (the
 conversation would stay busy and queue every new question), and an answer from the agent
 right after each send (a model call that repeats the page's "sent").
+
+## #30 - The home from concept L: what Simone does at the center, three start cards
+
+**Status:** active (Cycle 27)
+
+From concept L (`docs/concepts/concept-l-home.html`), variant G. The name goes down to a
+status line and stays the h1; the largest line is what Simone does and for whom, with one
+part in the accent. The introduction under it carries the logos of the projects it names,
+inline. "Where to start" is three equal cards: the agent with its first question, the lead
+project on its cover, the method with a quote from its notes. The text lives in the
+welcome page's frontmatter (`headline`, `intro` with `{tools}`, `tools`) and the quote in
+the note's (`quote`, in every language or none), because the components compose them with
+the logos and the accent, which Markdown cannot; the build checks that every tool is
+published and has a logo. Rejected: the big name of before (X), a manifesto with a
+pipeline (A), a terminal with a command palette (B), the name on two lines (C), a "now"
+strip with a bento (D), questions as the main piece (E), the mono name after `whoami` (F).
+
+## #31 - On phones a tab bar with the agent at the center, the list as a sheet from below
+
+**Status:** active (Cycle 27)
+
+From concept M (`docs/concepts/concept-m-nav-mobile.html`), variant C. Under the pane a tab
+bar (`TabBar.astro`): Home, Projects, the agent raised in a lavender circle at the center,
+Method, Menu. Menu opens the whole list as a sheet that rises from below up to the bar,
+which stays usable and turns Menu into an X; only the handle drags it, since the list
+scrolls. The toolbar loses the index button and the magnifier, the search sits at the top
+of the sheet. The bar is a card of its own outside the pane, so no blurring glass sits
+inside another (#16). A tap plays the gesture the desktop list makes on hover; with
+reduced motion it glows and the sheet fades (#25). It replaces the drawer from the left
+of #15, where the main places stayed out of sight until it opened. Rejected: the bar without the
+raised agent (A) and a floating pill that hides on scroll (B).

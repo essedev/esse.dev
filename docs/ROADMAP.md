@@ -2,17 +2,18 @@
 
 Current state of the project. Real milestones, not a wishlist. Updated together with the code.
 
-Last update: 2026-10-08 (Cycle 26: light theme, project images in both themes)
+Last update: 2026-10-12 (Cycle 27: agent mail live, new home, tab bar on phones)
 
 ## Context
 
 The Astro site is on `main` and in production, and replaced the SvelteKit site (M1-M10,
-history in `docs/CYCLES.md`). Closed: M14, the migration to Astro (Cycle 11, DECISIONS #10),
-and M15, structure and style (Cycles 12-20, DECISIONS #15, #16, #19); the light theme came
-after it (Cycle 26, DECISIONS #27). The "Laboratorio" restyle (M11) is paused: its motifs
-are in `docs/archive/RESTYLE.md`, and its branches (`restyle/laboratory`, `restyle/base`)
-and the `astro` working branch were retired when `astro` reached `main`. Their full history
-is kept in a git bundle outside the repo; the discarded pixel-art PNGs were dropped from the
+history in `docs/CYCLES.md`). Closed: M14, the migration to Astro (Cycle 11, DECISIONS
+#10), and M15, structure and style (Cycles 12-20, DECISIONS #15, #16, #19); the light
+theme came after it (Cycle 26, DECISIONS #27), the new home and the tab bar on phones
+after that (Cycle 27, #30, #31). The "Laboratorio" restyle (M11) is paused: its motifs are
+in `docs/archive/RESTYLE.md`, and its branches (`restyle/laboratory`, `restyle/base`) and
+the `astro` working branch were retired when `astro` reached `main`. Their full history is
+kept in a git bundle outside the repo; the discarded pixel-art PNGs were dropped from the
 history that reached `main`.
 
 ## Milestones
@@ -60,6 +61,8 @@ of the earlier idea (the site redesigned live by a model). Choices in
 - Done (Cycle 25): the status line follows the real phase of the work, the streamed text
   glows and cools, resumed conversations, dropped connections and errors in the visitor's
   language each have a state (per DECISIONS #24).
+- Done (Cycle 27): `draft_message` live on `hello@esse.dev` with the real Turnstile key;
+  the agent learns how a draft's sending went (#29).
 - Read-only tools on already public data. No writes, no fetch of arbitrary URLs, no
   private repos, no memory between visits. The only effect outside the site is the
   `draft_message` email, and it goes out only from a visitor's click.
@@ -78,9 +81,9 @@ of the earlier idea (the site redesigned live by a model). Choices in
 
 ## Open
 
-- List height: it should fit in 900 px (CLAUDE.md), today it needs about 1,000 and on
-  short screens it scrolls. Left like this by Simone at the close of M15; to be picked up
-  again if the showcase or the single pages grow.
+- List height: it should fit in 900 px (`.claude/rules/workspace-ui.md`), today it needs
+  about 1,000 and on short screens it scrolls. Left like this by Simone at the close of
+  M15; to be picked up again if the showcase or the single pages grow.
 
 - Domain: `esse.dev` is the main one. To do in the Cloudflare panel: 301 Redirect Rule
   from `simonesalerno.it` and `www.simonesalerno.it` to `https://esse.dev` with the path
