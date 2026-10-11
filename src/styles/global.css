@@ -106,10 +106,11 @@
 		/* What lifts the LED off a project logo, and the shadow under a large logo. */
 		--led-lift: rgb(0 0 0 / 0.9);
 		--logo-shadow: 0 8px 18px rgb(0 0 0 / 0.55);
-		/* The logos stacked in a sentence of the home: a light edge instead of a ring in the
-		   page color (the glass is not one color), and a shadow cast on the logo to the left. */
-		--stack-shadow:
-			0 0 0 1px rgb(255 255 255 / 0.14), -3px 0 6px rgb(0 0 0 / 0.45), 0 2px 5px rgb(0 0 0 / 0.3);
+		/* The logos stacked in a sentence of the home: a drop-shadow, which follows each logo's
+		   own shape (a box-shadow drew a square edge around rounded tiles), cast on the logo
+		   to the left so the overlap reads. No edge: the glass is not one color. */
+		--stack-shadow: drop-shadow(-2px 0 3px rgb(0 0 0 / 0.5))
+			drop-shadow(0 1px 2px rgb(0 0 0 / 0.35));
 		/* The fringe of the error number adds light on black and takes it away on paper. */
 		--fringe-blend: screen;
 	}
@@ -164,9 +165,8 @@
 		--shade-rgb: 40 24 90;
 		--led-lift: rgb(255 255 255 / 0.95);
 		--logo-shadow: 0 8px 18px rgb(60 40 130 / 0.22);
-		--stack-shadow:
-			0 0 0 1px rgb(255 255 255 / 0.65), -3px 0 7px rgb(40 24 90 / 0.3),
-			0 2px 6px rgb(40 24 90 / 0.22);
+		--stack-shadow: drop-shadow(-2px 0 3px rgb(40 24 90 / 0.32))
+			drop-shadow(0 1px 2px rgb(40 24 90 / 0.22));
 		--fringe-blend: multiply;
 	}
 
