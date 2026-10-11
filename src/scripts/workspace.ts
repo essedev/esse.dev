@@ -10,7 +10,8 @@
  * - `[data-copy]` buttons copy and confirm in the status line.
  * - the level up (Esc, breadcrumb, "‹") goes back through history if you came from there.
  * - the list remembers its scroll between pages.
- * - on mobile the list is a drawer that slides in from the left over the pane.
+ * - on mobile the list is a sheet that rises from below over the pane, from the tab bar's
+ *   Menu; a tap on a tab plays its icon's gesture.
  */
 
 import { track } from './track';
@@ -88,9 +89,10 @@ if (scrollBox) {
 	});
 }
 
-// On mobile the list is a drawer: it slides in from the left over the pane, which becomes
-// inert meanwhile. It closes with Esc, a tap outside, the X, or by dragging it to the left.
-// From `lg` up the list is always there and the drawer does not exist.
+// On mobile the list is a sheet (the drawer): it rises from below over the pane, which
+// becomes inert meanwhile, up to the tab bar. Menu opens and closes it; it also closes with
+// Esc, a tap outside, a tap on its handle or by dragging the handle down. From `lg` up the
+// list is always there and the drawer does not exist.
 const wide = matchMedia('(min-width: 64rem)');
 const drawer = document.querySelector<HTMLElement>('[data-drawer-panel]');
 const content = document.querySelector<HTMLElement>('[data-content]');
@@ -119,57 +121,77 @@ function closeDrawer() {
 }
 
 for (const el of openers) {
-	el.addEventListener('click', () => {
-		openDrawer();
-		if (el.dataset.drawerOpen === 'search') focusSearch();
-	});
+	el.addEventListener('click', () => (drawerOpen() ? closeDrawer() : openDrawer()));
 }
 for (const el of document.querySelectorAll('[data-drawer-close]')) {
 	el.addEventListener('click', closeDrawer);
 }
 wide.addEventListener('change', () => wide.matches && closeDrawer());
 
-// Dragging the drawer: it follows the finger to the left and, released past a third of the
-// width (or with a firm flick), it closes; otherwise it returns to its place. The list's
-// vertical scroll stays with the browser through `touch-pan-y`, which must be set on the
-// list too: it does not pass inside a scrolling container, and there the browser would take
-// the gesture.
-if (drawer) {
-	let start: { x: number; y: number; t: number } | null = null;
-	let dx = 0;
-	let dragging = false;
+// Dragging the sheet down by its handle: it follows the finger and, released past a quarter
+// of its height (or with a firm flick), it closes; otherwise it returns to its place. Only
+// the handle drags: the list scrolls vertically, so the browser keeps that gesture. A drag
+// that returns the sheet must not close it with the handle's own click.
+const grab = document.querySelector<HTMLElement>('[data-drawer-grab]');
+if (drawer && grab) {
+	let start: { y: number; t: number } | null = null;
+	let dy = 0;
+	let dragged = false;
 	const release = () => {
 		drawer.style.removeProperty('translate');
 		drawer.style.removeProperty('transition');
 		start = null;
-		dragging = false;
 	};
-	drawer.addEventListener('pointerdown', (event) => {
-		if (event.pointerType !== 'touch' || !drawerOpen()) return;
-		start = { x: event.clientX, y: event.clientY, t: event.timeStamp };
-		dx = 0;
+	grab.addEventListener('pointerdown', (event) => {
+		if (!drawerOpen()) return;
+		start = { y: event.clientY, t: event.timeStamp };
+		dy = 0;
+		dragged = false;
+		grab.setPointerCapture(event.pointerId);
 	});
-	drawer.addEventListener('pointermove', (event) => {
+	grab.addEventListener('pointermove', (event) => {
 		if (!start) return;
-		dx = event.clientX - start.x;
-		const dy = event.clientY - start.y;
-		if (!dragging) {
-			if (Math.abs(dy) > 10 && Math.abs(dy) > Math.abs(dx)) return release();
-			if (Math.abs(dx) < 10) return;
-			dragging = true;
-			drawer.setPointerCapture(event.pointerId);
-			drawer.style.transition = 'none';
-		}
-		drawer.style.translate = `${Math.min(0, dx)}px 0`;
+		dy = Math.max(0, event.clientY - start.y);
+		if (!dragged && dy < 6) return;
+		dragged = true;
+		drawer.style.transition = 'none';
+		drawer.style.translate = `0 ${dy}px`;
 	});
-	drawer.addEventListener('pointerup', (event) => {
+	grab.addEventListener('pointerup', (event) => {
 		if (!start) return;
-		const fast = dx / Math.max(1, event.timeStamp - start.t) < -0.5;
-		const close = dragging && (dx < -drawer.offsetWidth / 3 || fast);
+		const fast = dy / Math.max(1, event.timeStamp - start.t) > 0.5;
+		const close = dragged && (dy > drawer.offsetHeight / 4 || fast);
 		release();
 		if (close) closeDrawer();
 	});
-	drawer.addEventListener('pointercancel', release);
+	grab.addEventListener('pointercancel', release);
+	grab.addEventListener(
+		'click',
+		(event) => {
+			if (!dragged) return;
+			dragged = false;
+			event.stopImmediatePropagation();
+		},
+		true
+	);
+}
+
+// The sheet's blocks rise in turn as it opens: each knows its place (CSS in global.css).
+drawer?.querySelectorAll<HTMLElement>('[data-stagger]').forEach((el, i) => {
+	el.style.setProperty('--i', String(i));
+});
+
+// A tap on a tab plays its icon's gesture: a phone has no hover. The attribute is reset
+// first, so a second tap restarts the gesture.
+for (const tab of document.querySelectorAll<HTMLElement>('[data-tab]')) {
+	let timer: ReturnType<typeof setTimeout> | undefined;
+	tab.addEventListener('pointerdown', () => {
+		tab.removeAttribute('data-play');
+		void tab.offsetWidth;
+		tab.setAttribute('data-play', '');
+		clearTimeout(timer);
+		timer = setTimeout(() => tab.removeAttribute('data-play'), 1200);
+	});
 }
 
 // Rows reachable by keyboard: only the visible ones (the filter hides some).

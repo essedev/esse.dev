@@ -164,14 +164,19 @@ accent, the drawer fades), while color, opacity and redrawn strokes keep running
   breadcrumb, "‹ section" on mobile) is computed from the `crumbs` and goes back through
   history when you arrive from there, so the registry finds its filters again. The
   document has only title, meta and text: no "Back" in the content.
-- **Mobile**: every page shows only the pane, which scrolls inside the window with the
-  toolbar fixed at the top and "‹ section" as in iOS. The list is a drawer (`data-drawer`
-  on `[data-workspace]`): it comes in from the left like a card above the pane, which
-  becomes inert, and opens from the button on the left of the toolbar or from the
-  magnifier, which leads straight to search. It closes with Esc, the X, a tap outside or
-  by dragging it to the left: drawer and list have `touch-pan-y`, because `touch-action`
-  does not pass inside a scrolling container and without it the browser takes the
-  gesture. It also contains the profiles and the legend; the keys it does not.
+- **Mobile**: every page shows the pane, which scrolls inside the window with the toolbar
+  fixed at the top and "‹ section" as in iOS, and under it the tab bar
+  (`src/components/workspace/TabBar.astro`, concept M): Home, Projects, the agent raised at
+  the center, Method, and Menu. Menu opens the list (`data-drawer` on `[data-workspace]`)
+  as a sheet that rises from below up to the bar, over the pane, which becomes inert; the
+  bar stays usable and Menu turns into an X. It closes with Menu, Esc, a tap outside, a tap
+  on its handle or by dragging the handle down: only the handle drags, because the list
+  scrolls vertically (`touch-pan-y`, which does not pass inside a scrolling container and
+  must be set on the list too). The sheet holds the search, the pages, the projects, the
+  method and the profiles; the keys it does not. A phone has no hover: a tap sets
+  `data-play` on a tab and its icon makes the gesture the desktop list makes on hover, and
+  the sheet's blocks rise in turn as it opens. With reduced motion the tap glows and the
+  sheet fades in place.
 - **Tokens** (`@theme` in `src/styles/global.css`): `desk` and `frame` behind and around
   the window; surfaces `bg`, `panel`, `surface`, `hover`;
   `line`; text `fg`, `text`, `muted`, `subtle` (the minimum for text, 4.5:1 measured on

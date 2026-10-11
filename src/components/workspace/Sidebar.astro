@@ -1,5 +1,5 @@
 ---
-import { ListFilter, X } from '@lucide/astro';
+import { ListFilter } from '@lucide/astro';
 import type { Nav } from '../../lib/workspace';
 import NavRow from './NavRow.astro';
 import SocialLinks from '../SocialLinks.astro';
@@ -24,20 +24,23 @@ const keys: [string[], string][] = [
 ---
 
 <nav aria-label="Indice" data-sidebar class="flex h-full min-h-0 flex-col">
-	<div class="flex h-12 shrink-0 items-center justify-between pr-2 pl-5 lg:pl-6">
+	{/* On phones the list is a sheet rising from below: a handle to drag it down or tap it
+	    closed, in place of the logo row. */}
+	<button
+		type="button"
+		data-drawer-close
+		data-drawer-grab
+		aria-label={t('close')}
+		class="flex h-7 shrink-0 touch-none items-center justify-center lg:hidden"
+	>
+		<span class="bg-hover h-1.5 w-10 rounded-full"></span>
+	</button>
+	<div class="hidden h-12 shrink-0 items-center justify-between pr-2 pl-5 lg:flex lg:pl-6">
 		<a href={`/${lang}`} data-glow class="text-fg font-mono text-[0.8125rem] whitespace-nowrap">
 			esse.dev<span class="caret" aria-hidden="true"></span>
 		</a>
-		<button
-			type="button"
-			data-drawer-close
-			aria-label={t('close')}
-			class="text-subtle hover:text-fg hover:bg-surface/60 flex size-8 items-center justify-center rounded-[var(--radius-control)] transition-colors lg:hidden"
-		>
-			<X data-motion="x" class="size-4" />
-		</button>
 	</div>
-	<div class="px-3 pt-3 pb-2 lg:px-4 lg:pt-1">
+	<div data-stagger class="px-3 pt-1 pb-2 lg:px-4 lg:pt-1">
 		<label class="bg-surface focus-within:bg-hover flex h-9 items-center gap-2 rounded-[var(--radius-control)] pr-1.5 pl-2.5 transition-colors">
 			<ListFilter data-motion="filter" class="text-subtle size-4 shrink-0" />
 			<span class="sr-only">{t('search')}</span>
@@ -58,7 +61,7 @@ const keys: [string[], string][] = [
 		data-sidebar-scroll
 		class="min-h-0 flex-1 overflow-y-auto overscroll-none touch-pan-y px-3 pb-6 lg:px-4 lg:[mask-image:linear-gradient(to_bottom,black_calc(100%-2.5rem),transparent)]"
 	>
-		<section data-group="pages" class="mt-2">
+		<section data-group="pages" data-stagger class="mt-2">
 			<ul>
 				{nav.pages.map((item) => (
 					<NavRow item={item} current={current} />
@@ -66,7 +69,7 @@ const keys: [string[], string][] = [
 			</ul>
 		</section>
 		{nav.groups.map((group) => (
-			<section data-group={group.section} class="mt-5">
+			<section data-group={group.section} data-stagger class="mt-5">
 				<a
 					href={group.href}
 					class:list={[
@@ -106,6 +109,7 @@ const keys: [string[], string][] = [
 	{/* Status line: links, keys, and for a moment the confirmation of an action. */}
 	<div
 		data-statusline
+		data-stagger
 		class="group/status text-subtle flex shrink-0 flex-col gap-2.5 px-5 pt-3 pb-4 font-mono text-[0.7rem] lg:px-6"
 	>
 		<SocialLinks links={social} class="gap-x-3 text-[0.7rem] whitespace-nowrap">

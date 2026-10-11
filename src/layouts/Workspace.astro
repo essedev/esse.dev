@@ -1,5 +1,6 @@
 ---
 import Sidebar from '../components/workspace/Sidebar.astro';
+import TabBar from '../components/workspace/TabBar.astro';
 import Toolbar from '../components/workspace/Toolbar.astro';
 import { getPage } from '../lib/content';
 import { translator } from '../lib/site';
@@ -43,8 +44,8 @@ const up =
 
 // A window detached from the edges on every screen, resting on a colored wallpaper that
 // shows through the glass frame and list. On a wide screen it holds two cards, the list
-// (panel) and the content pane (bg); on mobile only the pane, and the list slides in from
-// the left as a card over it (the drawer, `data-drawer`).
+// (panel) and the content pane (bg); on mobile the pane and the tab bar under it, and the
+// list rises from below as a sheet over the pane, up to the bar (the drawer, `data-drawer`).
 ---
 
 <Layout lang={lang} path={path} {...head}>
@@ -92,10 +93,11 @@ const up =
 				id="sidebar"
 				data-drawer-panel
 				tabindex="-1"
-				class="glass bg-panel/75 lg:bg-panel/48 touch-pan-y outline-none invisible fixed top-[max(0.375rem,env(safe-area-inset-top))] bottom-[max(0.375rem,env(safe-area-inset-bottom))] left-1.5 z-50 flex w-[min(21rem,calc(100vw-3.5rem))] -translate-x-[calc(100%+1rem)] flex-col overflow-hidden rounded-[var(--radius-edge)] lg:rounded-[var(--radius-card)] group-data-[drawer=open]/ws:visible group-data-[drawer=open]/ws:translate-x-0 lg:visible lg:relative lg:inset-auto lg:order-1 lg:z-auto lg:w-auto lg:translate-x-0"
+				class="glass bg-panel/75 lg:bg-panel/48 touch-pan-y outline-none invisible fixed inset-x-1.5 top-[calc(max(0.375rem,env(safe-area-inset-top))+3.5rem)] bottom-[calc(max(0.375rem,env(safe-area-inset-bottom))+4.75rem)] z-50 flex translate-y-[calc(100%+6rem)] flex-col overflow-hidden rounded-[var(--radius-edge)] lg:rounded-[var(--radius-card)] group-data-[drawer=open]/ws:visible group-data-[drawer=open]/ws:translate-y-0 lg:visible lg:relative lg:inset-auto lg:order-1 lg:z-auto lg:translate-y-0"
 			>
 				<Sidebar lang={lang} nav={nav} current={current} social={social} t={t} />
 			</aside>
+			<TabBar lang={lang} current={current} t={t} />
 		</div>
 	</div>
 	{/* Safari 26 on phones colors each bar from a fixed element on that edge, else from the html

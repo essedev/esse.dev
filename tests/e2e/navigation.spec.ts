@@ -57,37 +57,57 @@ test.describe('mobile toolbar', () => {
 		await expect(page).toHaveURL(/\/it\/progetti$/);
 	});
 
-	test('the index opens as a drawer and closes with Esc, the X and a tap outside', async ({
+	test('the tab bar marks the section of a detail page', async ({ page }) => {
+		await open(page, '/it/progetti/relay');
+		const tabs = page.getByRole('navigation', { name: 'Sezioni' });
+		await expect(tabs.getByRole('link', { name: 'Progetti' })).toHaveAttribute(
+			'aria-current',
+			'page'
+		);
+		await expect(tabs.getByRole('link', { name: 'Home' })).not.toHaveAttribute('aria-current');
+	});
+
+	test('Menu opens the index from below and closes it with Esc, Menu, the handle and a tap outside', async ({
 		page
 	}) => {
 		await open(page, '/it/progetti/relay');
 		const sidebar = page.locator('[data-sidebar]');
-		const toggle = page.getByRole('button', { name: "Apri l'indice" });
-		await expect(toggle).toHaveAttribute('aria-expanded', 'false');
+		const menu = page.getByRole('navigation', { name: 'Sezioni' }).getByRole('button', {
+			name: 'Menu'
+		});
+		await expect(menu).toHaveAttribute('aria-expanded', 'false');
 
-		await toggle.click();
+		await menu.click();
 		await expect(sidebar).toBeVisible();
-		await expect(toggle).toHaveAttribute('aria-expanded', 'true');
+		await expect(menu).toHaveAttribute('aria-expanded', 'true');
 		await expect(page.locator('[data-content]')).toHaveAttribute('inert', '');
 		await page.keyboard.press('Escape');
 		await expect(sidebar).toBeHidden();
 		await expect(page).toHaveURL(/\/it\/progetti\/relay$/);
 
-		await toggle.click();
+		await menu.click();
+		await expect(sidebar).toBeVisible();
+		await menu.click();
+		await expect(sidebar).toBeHidden();
+
+		await menu.click();
 		await page.getByRole('button', { name: 'Chiudi' }).click();
 		await expect(sidebar).toBeHidden();
 
-		await toggle.click();
-		await page.mouse.click(380, 420);
+		await menu.click();
+		await page.mouse.click(200, 30);
 		await expect(sidebar).toBeHidden();
 		await expect(page.locator('[data-content]')).not.toHaveAttribute('inert', '');
 	});
 
-	test('a finger swipe to the left closes the drawer, a vertical one scrolls the list', async ({
+	test('dragging the handle down closes the menu, a vertical swipe in it scrolls the list', async ({
 		page
 	}) => {
 		await open(page, '/it/progetti/relay');
-		await page.getByRole('button', { name: "Apri l'indice" }).click();
+		await page
+			.getByRole('navigation', { name: 'Sezioni' })
+			.getByRole('button', { name: 'Menu' })
+			.click();
 		const workspace = page.locator('[data-workspace]');
 		await expect(workspace).toHaveAttribute('data-drawer', 'open');
 		// Real touches via CDP: they generate touch pointer events, like a finger.
@@ -97,26 +117,42 @@ test.describe('mobile toolbar', () => {
 				type,
 				touchPoints: type === 'touchEnd' ? [] : [{ x, y }]
 			});
-		await touch('touchStart', 150, 600);
-		for (let y = 580; y >= 300; y -= 20) await touch('touchMove', 152, y);
+		await touch('touchStart', 200, 600);
+		for (let y = 580; y >= 300; y -= 20) await touch('touchMove', 202, y);
 		await touch('touchEnd');
 		await expect(workspace).toHaveAttribute('data-drawer', 'open');
 		await expect
 			.poll(() => page.locator('[data-sidebar-scroll]').evaluate((el) => el.scrollTop))
 			.toBeGreaterThan(0);
-		await touch('touchStart', 250, 400);
-		for (let x = 240; x >= 40; x -= 20) await touch('touchMove', x, 402);
+		const handle = await page.locator('[data-drawer-grab]').boundingBox();
+		const y0 = handle!.y + handle!.height / 2;
+		await touch('touchStart', 200, y0);
+		for (let y = y0 + 20; y <= y0 + 400; y += 20) await touch('touchMove', 200, y);
 		await touch('touchEnd');
 		await expect(workspace).not.toHaveAttribute('data-drawer');
 	});
 
-	test('the search button opens the drawer on the search field', async ({ page }) => {
+	test('the menu holds the search', async ({ page }) => {
 		await open(page, '/it/metodo');
-		await page.getByRole('button', { name: 'Cerca' }).click();
-		await expect(page.locator('#search')).toBeFocused();
-		await page.keyboard.type('relay');
+		await page
+			.getByRole('navigation', { name: 'Sezioni' })
+			.getByRole('button', { name: 'Menu' })
+			.click();
+		await page.locator('#search').fill('relay');
 		await page.locator('[data-sidebar] a[href="/it/progetti/relay"]').click();
 		await expect(page).toHaveURL(/\/it\/progetti\/relay$/);
+	});
+
+	test('a tap on a tab plays its icon gesture', async ({ page }) => {
+		await open(page, '/it/progetti/relay');
+		const home = page.getByRole('navigation', { name: 'Sezioni' }).getByRole('link', {
+			name: 'Home'
+		});
+		await home.dispatchEvent('pointerdown');
+		await expect(home).toHaveAttribute('data-play', '');
+		expect(
+			await home.locator('[data-motion="house"]').evaluate((n) => getComputedStyle(n).animationName)
+		).toBe('icon-hop');
 	});
 
 	test('a section goes up to the home', async ({ page }) => {

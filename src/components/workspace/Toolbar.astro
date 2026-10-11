@@ -1,5 +1,5 @@
 ---
-import { ChevronLeft, PanelLeft, Search } from '@lucide/astro';
+import { ChevronLeft } from '@lucide/astro';
 import { languages, navigation } from '../../lib/config';
 import { getSlugMap } from '../../lib/content';
 import { getLanguageUrl } from '../../lib/i18n';
@@ -21,20 +21,10 @@ const slugMap = await getSlugMap();
 
 // The pane's toolbar: it says where you are and carries the document actions. It has the
 // tone of the content, because it is part of it, and stays fixed above the scroll. On mobile
-// it opens the list.
+// the list opens from the tab bar's Menu (TabBar.astro).
 ---
 
-<header class="flex h-12 shrink-0 items-center gap-2 pr-3 pl-2 lg:gap-3 lg:px-(--pad)">
-	<button
-		type="button"
-		data-drawer-open
-		aria-controls="sidebar"
-		aria-expanded="false"
-		aria-label={t('openIndex')}
-		class="text-muted hover:text-fg hover:bg-surface/60 flex size-8 shrink-0 items-center justify-center rounded-[var(--radius-control)] transition-colors lg:hidden"
-	>
-		<PanelLeft data-motion="panel" class="size-[1.0625rem]" />
-	</button>
+<header class="flex h-12 shrink-0 items-center gap-2 pr-3 pl-4 lg:gap-3 lg:px-(--pad)">
 	{up ? (
 		<a
 			href={up.href}
@@ -91,15 +81,6 @@ const slugMap = await getSlugMap();
 
 	<div class="text-subtle ml-auto flex items-center gap-1 font-mono text-xs">
 		<slot name="actions" />
-		<button
-			type="button"
-			data-drawer-open="search"
-			aria-controls="sidebar"
-			aria-label={t('search')}
-			class="hover:text-fg hover:bg-surface/60 flex size-8 items-center justify-center rounded-[var(--radius-control)] transition-colors lg:hidden"
-		>
-			<Search class="size-4" />
-		</button>
 		{/* The theme: the icon is where you would go, the label says it. The label is set for the
 		    dark theme and corrected by src/scripts/theme.ts. */}
 		<button

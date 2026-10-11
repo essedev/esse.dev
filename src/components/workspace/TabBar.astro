@@ -1,0 +1,105 @@
+---
+import { BookOpen, BotMessageSquare, Folder, House, Menu } from '@lucide/astro';
+import { navigation } from '../../lib/config';
+import { getSite, type Translate } from '../../lib/site';
+
+interface Props {
+	lang: string;
+	/** Key of the open row (`projects/relay`), of the section (`projects`) or `home`. */
+	current: string;
+	t: Translate;
+}
+
+const { lang, current, t } = Astro.props;
+const site = await getSite(lang);
+const routes = navigation[lang];
+// A section is current on its list and on each of its pages (`projects/relay`).
+const inSection = (section: 'projects' | 'method') =>
+	current === section || current.startsWith(`${section}/`);
+
+const tabs = [
+	{ href: `/${lang}`, label: t('tabHome'), Icon: House, motion: 'house', on: current === 'home' },
+	{
+		href: `/${lang}/${routes.projects}`,
+		label: site.sections.projects,
+		Icon: Folder,
+		motion: 'folder',
+		on: inSection('projects')
+	}
+];
+const after = [
+	{
+		href: `/${lang}/${routes.method}`,
+		label: site.sections.method,
+		Icon: BookOpen,
+		motion: 'book',
+		on: inSection('method')
+	}
+];
+// With the menu open, Menu is the lit tab: the current page waits underneath.
+const open = 'group-data-[drawer=open]/ws:bg-transparent group-data-[drawer=open]/ws:text-subtle';
+const tab =
+	'relative flex flex-1 flex-col items-center justify-center gap-1 rounded-[calc(var(--radius-edge)-0.375rem)] font-mono text-[0.65625rem] transition-[color,background-color,scale] duration-150 motion-safe:active:scale-[0.92]';
+
+// On phones the sections that matter most stay in sight, as in an app, with the agent at the
+// center; the last tab opens the whole index from below (the list, `data-drawer`). It sits
+// outside the pane, so it stays usable while the pane is inert under the open menu, and
+// its own glass does not end up inside the pane's. A tap plays the icon's gesture
+// (`data-play`, from src/scripts/workspace.ts): a phone has no hover.
+---
+
+<nav
+	aria-label={t('tabs')}
+	class="glass bg-panel/75 relative z-[55] mt-1.5 flex h-16 shrink-0 items-stretch gap-0.5 rounded-[var(--radius-edge)] p-1.5 lg:hidden"
+>
+	{tabs.map(({ href, label, Icon, motion, on }) => (
+		<a
+			href={href}
+			data-tab
+			aria-current={on ? 'page' : undefined}
+			class:list={[tab, on ? 'bg-surface text-fg' : 'text-subtle', on && open]}
+		>
+			<Icon data-motion={motion} class="size-5" />
+			{label}
+		</a>
+	))}
+	<a
+		href={`/${lang}/${routes.agent}`}
+		data-tab
+		aria-current={current === 'agent' ? 'page' : undefined}
+		class:list={[tab, 'text-accent justify-end pb-1.5']}
+	>
+		<span
+			data-agent-disc
+			class="bg-accent text-on-accent ring-desk absolute -top-[1.125rem] grid size-[3.125rem] place-items-center rounded-full shadow-[0_6px_18px_color-mix(in_srgb,var(--color-accent)_45%,transparent)] ring-4"
+		>
+			<BotMessageSquare data-motion="bot" class="size-5" />
+		</span>
+		{site.sections.agent}
+	</a>
+	{after.map(({ href, label, Icon, motion, on }) => (
+		<a
+			href={href}
+			data-tab
+			aria-current={on ? 'page' : undefined}
+			class:list={[tab, on ? 'bg-surface text-fg' : 'text-subtle', on && open]}
+		>
+			<Icon data-motion={motion} class="size-5" />
+			{label}
+		</a>
+	))}
+	<button
+		type="button"
+		data-tab
+		data-drawer-open
+		aria-controls="sidebar"
+		aria-expanded="false"
+		class:list={[
+			tab,
+			'text-subtle group-data-[drawer=open]/ws:bg-surface group-data-[drawer=open]/ws:text-fg'
+		]}
+	>
+		<Menu data-motion="menu" class="size-5" />
+		{t('menu')}
+	</button>
+</nav>

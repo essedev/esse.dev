@@ -392,16 +392,17 @@
 	}
 }
 
-/* The list drawer on mobile. Visibility changes at once on opening, so focus can enter in
-   the same gesture, and only at the end of the travel on closing. */
+/* The list on mobile, a sheet that rises from below to the tab bar. Visibility changes at
+   once on opening, so focus can enter in the same gesture, and only at the end of the travel
+   on closing. */
 @media (width < 64rem) {
 	[data-drawer-panel],
 	[data-drawer-backdrop] {
 		transition:
-			translate 300ms var(--ease-out),
+			translate 400ms var(--ease-out),
 			opacity 300ms var(--ease-out),
-			visibility 0s 300ms,
-			display 0s 300ms allow-discrete;
+			visibility 0s 400ms,
+			display 0s 400ms allow-discrete;
 	}
 	[data-drawer='open'] :is([data-drawer-panel], [data-drawer-backdrop]) {
 		transition-delay: 0s;
@@ -1038,6 +1039,100 @@ body::after {
 	}
 }
 
+/* The tab bar and the menu sheet on phones (concept M, C). A phone has no hover: a tap sets
+   `data-play` on the tab for a moment (src/scripts/workspace.ts) and the icon makes the same
+   gesture the desktop list makes on hover. Menu turns into an X while the sheet is open, and
+   the sheet's blocks rise in turn (`--i`, set by the script). */
+[data-play] [data-motion='house'] {
+	animation: icon-hop 700ms ease-out;
+}
+[data-play] [data-motion='folder'] {
+	animation: icon-lift 800ms var(--ease-out);
+}
+[data-play] [data-motion='book'] {
+	animation: icon-sway 800ms var(--ease-out);
+}
+[data-play] [data-motion='bot'] {
+	animation: icon-tilt 800ms var(--ease-out);
+}
+[data-play] [data-motion='bot'] > :first-child {
+	animation: icon-wiggle 800ms ease-out;
+}
+[data-play] [data-motion='bot'] > :is(:nth-child(2), :nth-child(6)) {
+	animation: icon-blink 900ms ease-in-out 250ms;
+}
+[data-agent-disc]::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	border-radius: inherit;
+	box-shadow: 0 0 0 2px var(--color-accent);
+	opacity: 0;
+	pointer-events: none;
+}
+[data-play] [data-agent-disc]::after {
+	animation: icon-ping-disc 700ms var(--ease-out);
+}
+[data-motion='menu'] > * {
+	transform-box: view-box;
+	transition:
+		transform 350ms var(--ease-out),
+		opacity 200ms;
+}
+[data-motion='menu'] > :nth-child(1) {
+	transform-origin: 12px 5px;
+}
+[data-motion='menu'] > :nth-child(2) {
+	transform-origin: 12px 12px;
+}
+[data-motion='menu'] > :nth-child(3) {
+	transform-origin: 12px 19px;
+}
+[data-drawer='open'] [data-motion='menu'] > :nth-child(1) {
+	transform: translateY(7px) rotate(45deg) scaleX(0.85);
+}
+[data-drawer='open'] [data-motion='menu'] > :nth-child(2) {
+	transform: scaleX(0);
+	opacity: 0;
+}
+[data-drawer='open'] [data-motion='menu'] > :nth-child(3) {
+	transform: translateY(-7px) rotate(-45deg) scaleX(0.85);
+}
+@media (width < 64rem) {
+	[data-drawer-panel] [data-stagger] {
+		opacity: 0;
+		translate: 0 12px;
+		transition:
+			opacity 200ms,
+			translate 200ms;
+	}
+	[data-drawer='open'] [data-drawer-panel] [data-stagger] {
+		opacity: 1;
+		translate: 0 0;
+		transition:
+			opacity 350ms ease-out,
+			translate 500ms var(--ease-out);
+		transition-delay: calc(80ms + var(--i, 0) * 40ms);
+	}
+	[data-drawer='open'] [data-drawer-panel] [data-motion='user'] {
+		animation: icon-sway 800ms var(--ease-out) 350ms;
+	}
+	[data-drawer='open'] [data-drawer-panel] [data-motion='activity'] > * {
+		stroke-dasharray: var(--len) calc(var(--len) + 4px);
+		animation: icon-snake 1.2s cubic-bezier(0.45, 0, 0.55, 1) 400ms 2 backwards;
+	}
+}
+@keyframes icon-ping-disc {
+	0% {
+		opacity: 0.6;
+		transform: scale(1);
+	}
+	100% {
+		opacity: 0;
+		transform: scale(1.5);
+	}
+}
+
 /* Reduced motion (DECISIONS #25): what moves through space stops, the rest stays. Color,
    opacity, strokes that draw themselves and text that changes in place carry no
    displacement, so they keep running: phosphor, LEDs, the logo's caret, the decoding labels,
@@ -1100,7 +1195,31 @@ body::after {
 		transform: translateX(1.5px);
 	}
 }
+@media (prefers-reduced-motion: reduce) {
+	[data-play]
+		:is([data-motion='house'], [data-motion='folder'], [data-motion='book'], [data-motion='bot']) {
+		animation: icon-glow 700ms var(--ease-out);
+	}
+	[data-play] [data-motion='bot'] > :first-child {
+		animation: none;
+	}
+	[data-play] [data-motion='bot'] > :is(:nth-child(2), :nth-child(6)) {
+		animation: icon-blink-fade 900ms ease-in-out 250ms;
+	}
+	[data-play] [data-agent-disc]::after {
+		animation: icon-ping-still 700ms var(--ease-out);
+	}
+	[data-motion='menu'] > * {
+		transition: opacity 200ms;
+	}
+}
 @media (width < 64rem) and (prefers-reduced-motion: reduce) {
+	[data-drawer-panel] [data-stagger] {
+		translate: none;
+	}
+	[data-drawer='open'] [data-drawer-panel] [data-motion='user'] {
+		animation: icon-glow 800ms var(--ease-out) 300ms;
+	}
 	[data-drawer-panel] {
 		translate: 0;
 		opacity: 0;

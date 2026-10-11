@@ -34,7 +34,15 @@ test.describe('with reduced motion', () => {
 			.toBe('led-breathe');
 	});
 
-	test('the drawer fades in place instead of sliding', async ({ page }) => {
+	test('a tapped tab glows instead of hopping', async ({ page }) => {
+		await page.setViewportSize({ width: 390, height: 844 });
+		await page.goto('/en');
+		const home = page.locator('[data-tab]').first();
+		await home.dispatchEvent('pointerdown');
+		expect(await animation(home.locator('[data-motion="house"]'))).toBe('icon-glow');
+	});
+
+	test('the menu fades in place instead of rising', async ({ page }) => {
 		await page.setViewportSize({ width: 390, height: 844 });
 		await page.goto('/en');
 		const panel = page.locator('[data-drawer-panel]');
