@@ -1,0 +1,423 @@
+<!doctype html>
+<html lang="it">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+		<title>Concept M - Navigazione mobile</title>
+		<!--
+			Concept M: la navigazione su telefono. Quattro voci "da app" sempre in vista (Home,
+			Progetti, Agente, Metodo) e una quinta, Menu, che apre l'indice completo dal basso.
+			Tasti x a b c per la variante, m apre e chiude il menu, t per il tema.
+			X  oggi: l'indice è un cassetto da sinistra, aperto dal pulsante in alto a sinistra o
+			   dalla lente.
+			A  barra: una seconda card sotto la pagina, dentro la finestra. La pagina si accorcia
+			   di 64 px ma niente le sta sopra.
+			B  pillola: le quattro voci in una pillola che galleggia sopra il fondo della pagina,
+			   il Menu in un pulsante tondo a parte; si nasconde scorrendo giù, torna scorrendo su.
+			C  agente al centro: come A, con l'Agente in un cerchio lavanda rialzato.
+			In tutte il menu è un pannello che sale dal basso fino alla barra, che resta visibile
+			con Menu acceso (un secondo tocco lo chiude): ricerca in cima, poi pagine, progetti,
+			metodo, profili. La barra in alto perde il pulsante dell'indice e la lente.
+			Barre e pillola stanno fuori dalla card della pagina: un vetro che sfoca dentro un
+			altro smette di sfocare in Chromium. Su un telefono vero i colori della barra di
+			Safari (--color-bar-bottom) vanno rimisurati.
+			Scelta: C.
+		-->
+		<style>
+			@font-face { font-family: 'Geist'; font-weight: 400; src: url(https://cdn.jsdelivr.net/fontsource/fonts/geist@latest/latin-400-normal.woff2) format('woff2'); }
+			@font-face { font-family: 'Geist'; font-weight: 500; src: url(https://cdn.jsdelivr.net/fontsource/fonts/geist@latest/latin-500-normal.woff2) format('woff2'); }
+			@font-face { font-family: 'Departure Mono'; src: url(https://cdn.jsdelivr.net/gh/rektdeckard/departure-mono@main/public/assets/DepartureMono-Regular.woff2) format('woff2'); }
+
+			/* Scuro: i token di @theme. */
+			:root {
+				--desk: #0a0912;
+				--wall-a: rgb(181 156 255 / 0.24);
+				--wall-b: rgb(110 80 255 / 0.22);
+				--glass: rgb(14 14 18 / 0.55);
+				--sheet: rgb(18 17 24 / 0.86);
+				--edge: rgb(255 255 255 / 0.12);
+				--shadow: 0 12px 32px rgb(0 0 0 / 0.35);
+				--surface: rgb(255 255 255 / 0.05);
+				--hover: rgb(255 255 255 / 0.08);
+				--line: #23232b;
+				--fg: #efedf5;
+				--text: #cbc9d4;
+				--muted: #9c9aa8;
+				--subtle: #908e9b;
+				--accent: #b59cff;
+				--on-accent: #140c2b;
+				--live: #7dff9b;
+				--glow: 3.5px;
+				--scan: rgb(255 255 255 / 0.018);
+				--scrim: rgb(5 4 10 / 0.5);
+				--stack: drop-shadow(-1.5px 0 2px rgb(0 0 0 / 0.38)) drop-shadow(0 1px 1.5px rgb(0 0 0 / 0.25));
+				--device: #000;
+				--sans: 'Geist', ui-sans-serif, system-ui, sans-serif;
+				--mono: 'Departure Mono', ui-monospace, monospace;
+				color-scheme: dark;
+			}
+			/* Chiaro: la lavanda fumé. */
+			:root[data-theme='light'] {
+				--desk: #bcb2dc;
+				--wall-a: rgb(157 133 255 / 0.32);
+				--wall-b: rgb(110 80 255 / 0.18);
+				--glass: rgb(236 232 244 / 0.66);
+				--sheet: rgb(240 237 248 / 0.9);
+				--edge: rgb(255 255 255 / 0.55);
+				--shadow: 0 1px 2px rgb(40 25 90 / 0.08), 0 14px 36px rgb(40 25 90 / 0.16);
+				--surface: rgb(40 25 90 / 0.07);
+				--hover: rgb(40 25 90 / 0.1);
+				--line: #cfc9de;
+				--fg: #17141f;
+				--text: #312d3c;
+				--muted: #504b60;
+				--subtle: #57526a;
+				--accent: #5f40d6;
+				--on-accent: #ffffff;
+				--live: #179a4c;
+				--glow: 2px;
+				--scan: rgb(40 25 90 / 0.03);
+				--scrim: rgb(40 24 90 / 0.25);
+				--stack: drop-shadow(-1.5px 0 2px rgb(40 24 90 / 0.24)) drop-shadow(0 1px 1.5px rgb(40 24 90 / 0.16));
+				--device: #1b1823;
+				color-scheme: light;
+			}
+
+			* { box-sizing: border-box; }
+			html, body { margin: 0; height: 100%; }
+			body { font-family: var(--sans); font-weight: 380; color: var(--fg); background: #0d0c12; -webkit-font-smoothing: antialiased; display: flex; flex-direction: column; align-items: center; }
+			:root[data-theme='light'] body { background: #d9d4ea; }
+			a { color: inherit; text-decoration: none; }
+			p { margin: 0; }
+			button { font: inherit; color: inherit; border: 0; background: none; padding: 0; cursor: pointer; }
+			svg.i { width: 20px; height: 20px; flex: none; }
+
+			/* Il selettore delle varianti, fuori dal telefono. */
+			.switch { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; justify-content: center; padding: 14px; font-family: var(--mono); font-size: 12px; color: var(--muted); max-width: 640px; }
+			.switch button { padding: 6px 10px; border-radius: 6px; background: var(--surface); color: var(--text); }
+			.switch button[aria-pressed='true'] { background: var(--fg); color: var(--desk); }
+			.switch p { flex-basis: 100%; text-align: center; margin-top: 4px; min-height: 1.4em; }
+
+			/* Il telefono: 390 x 844, a tutto schermo se lo apri da un telefono. */
+			.device { width: 390px; height: 844px; border-radius: 56px; padding: 10px; background: var(--device); box-shadow: 0 30px 80px rgb(0 0 0 / 0.45); flex: none; margin-bottom: 24px; }
+			.screen { position: relative; width: 100%; height: 100%; border-radius: 46px; overflow: hidden; isolation: isolate;
+				background: linear-gradient(180deg, var(--wall-a), var(--wall-b) 55%, transparent), var(--desk); }
+			.screen::after { content: ''; position: absolute; inset: 0; pointer-events: none; z-index: 60; background: repeating-linear-gradient(to bottom, var(--scan) 0 1px, transparent 1px 3px); }
+			.island { position: absolute; top: 11px; left: 50%; translate: -50% 0; width: 120px; height: 34px; border-radius: 20px; background: #000; z-index: 70; }
+			.status { position: absolute; top: 0; left: 0; right: 0; height: 54px; display: flex; align-items: center; justify-content: space-between; padding: 6px 34px 0 40px; font-size: 15px; font-weight: 500; z-index: 65; color: var(--fg); }
+			.homebar { position: absolute; bottom: 8px; left: 50%; translate: -50% 0; width: 134px; height: 5px; border-radius: 3px; background: var(--fg); opacity: 0.85; z-index: 70; }
+			@media (width < 500px) {
+				body { background: var(--desk); }
+				.switch { display: none; }
+				.device { width: 100vw; height: 100dvh; border-radius: 0; padding: 0; margin: 0; box-shadow: none; }
+				.screen { border-radius: 0; }
+				.island, .status, .homebar { display: none; }
+			}
+
+			/* La finestra: sotto la barra di stato, sopra l'indicatore home. */
+			.win { position: absolute; inset: 54px 6px 22px; display: flex; flex-direction: column; gap: 6px; }
+			@media (width < 500px) { .win { inset: max(6px, env(safe-area-inset-top)) 6px max(6px, env(safe-area-inset-bottom)); } }
+			.card { position: relative; border-radius: 24px; overflow: hidden; background: var(--glass); -webkit-backdrop-filter: blur(32px) saturate(120%); backdrop-filter: blur(32px) saturate(120%); box-shadow: inset 0 1px 0 var(--edge), var(--shadow); }
+			.pane { flex: 1; min-height: 0; display: flex; flex-direction: column; }
+			.bar { height: 52px; flex: none; display: flex; align-items: center; gap: 4px; padding: 0 10px 0 12px; font-family: var(--mono); font-size: 13px; color: var(--subtle); }
+			.bar .logo { color: var(--fg); padding: 0 4px; text-shadow: 0 0 var(--glow) color-mix(in srgb, var(--accent) 55%, transparent); }
+			.caret { display: inline-block; width: 0.5em; height: 1.05em; vertical-align: -0.15em; margin-left: 0.15em; background: var(--accent); box-shadow: 0 0 4px var(--accent); animation: blink 1.1s steps(1) infinite; }
+			@keyframes blink { 50% { opacity: 0; } }
+			.bar .end { margin-left: auto; display: flex; align-items: center; gap: 2px; }
+			.bar .btn { width: 36px; height: 36px; display: grid; place-items: center; border-radius: 6px; color: var(--muted); }
+			.bar .btn svg { width: 18px; height: 18px; }
+			.bar .lang { padding: 0 6px; }
+			.bar .lang b { font-weight: 400; color: var(--fg); }
+			.scroll { flex: 1; min-height: 0; overflow: auto; overscroll-behavior: none; padding: 20px 20px 40px; }
+			body[data-v='b'] .scroll { padding-bottom: 104px; }
+
+			/* La home di concept L (G), a larghezza telefono. */
+			.who { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; font-family: var(--mono); font-size: 12px; color: var(--muted); }
+			.who b { font-weight: 400; color: var(--fg); font-size: 14px; flex-basis: calc(100% - 20px); }
+			.led { display: inline-block; flex: none; width: 7px; height: 7px; border-radius: 9px; background: var(--live); box-shadow: 0 0 5px color-mix(in srgb, var(--live) 75%, transparent); }
+			.title { margin-top: 22px; font-size: 32px; line-height: 1.08; font-weight: 500; letter-spacing: -0.03em; text-shadow: 0 0 var(--glow) color-mix(in srgb, var(--accent) 45%, transparent); }
+			.title em { font-style: normal; color: var(--accent); }
+			.intro { margin-top: 22px; font-size: 17px; line-height: 1.65; color: var(--text); }
+			.stack { display: inline-flex; vertical-align: -0.35em; margin: 0 2px; }
+			.stack img { width: 24px; height: 24px; filter: var(--stack); }
+			.stack img + img { margin-left: -7px; }
+			.facts { margin: 30px 0 0; display: grid; grid-template-columns: auto 1fr; gap: 14px 22px; font-size: 15px; align-items: baseline; }
+			.facts dt { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--subtle); }
+			.facts dd { margin: 0; color: var(--text); }
+			.label { margin-top: 40px; font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--subtle); }
+			.tile { margin-top: 12px; border-radius: 11px; background: color-mix(in srgb, var(--surface) 60%, transparent); overflow: hidden; }
+			.tile .vis { height: 150px; position: relative; overflow: hidden; }
+			.tile .vis img { width: 100%; height: 100%; object-fit: cover; object-position: top; }
+			.tile .txt { padding: 14px 16px 16px; }
+			.tile b { font-weight: 500; font-size: 17px; display: flex; align-items: center; gap: 8px; }
+			.tile small { display: block; margin-top: 4px; color: var(--muted); font-size: 14px; }
+			.bubble { margin: 16px 16px 0 auto; max-width: 80%; padding: 8px 12px; border-radius: 10px 10px 3px 10px; background: color-mix(in srgb, var(--accent) 18%, transparent); font-size: 13px; }
+
+			/* X, oggi: il cassetto da sinistra. */
+			.drawer { position: absolute; top: 54px; bottom: 22px; left: 6px; width: 300px; z-index: 40; border-radius: 24px; background: var(--sheet); -webkit-backdrop-filter: blur(32px); backdrop-filter: blur(32px); box-shadow: inset 0 1px 0 var(--edge), var(--shadow); translate: calc(-100% - 20px) 0; transition: translate 0.35s cubic-bezier(0.16, 1, 0.3, 1); overflow: auto; padding: 14px 12px; }
+			@media (width < 500px) { .drawer { top: 6px; bottom: 6px; } }
+			body[data-drawer] .drawer { translate: 0 0; }
+
+			/* La barra delle voci: A e C. */
+			.tabs { flex: none; height: 64px; display: none; align-items: stretch; padding: 6px; gap: 2px; }
+			body[data-v='a'] .tabs, body[data-v='c'] .tabs { display: flex; }
+			.tab { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; border-radius: 16px; font-family: var(--mono); font-size: 10.5px; color: var(--subtle); transition: background 0.15s, color 0.15s; }
+			.tab[aria-current='page'] { background: var(--surface); color: var(--fg); }
+			.tab.agent svg { color: var(--accent); filter: drop-shadow(0 0 3px color-mix(in srgb, var(--accent) 55%, transparent)); }
+			/* C: l'Agente in un cerchio lavanda che esce dal bordo della barra. */
+			body[data-v='c'] .tabs { overflow: visible; }
+			body[data-v='c'] .tab.agent { position: relative; justify-content: flex-end; padding-bottom: 6px; background: none; }
+			body[data-v='c'] .tab.agent .disc { position: absolute; top: -18px; width: 50px; height: 50px; border-radius: 999px; display: grid; place-items: center; background: var(--accent); color: var(--on-accent); box-shadow: 0 6px 18px color-mix(in srgb, var(--accent) 45%, transparent), 0 0 0 4px var(--desk); }
+			body[data-v='c'] .tab.agent .disc svg { color: var(--on-accent); filter: none; }
+			body[data-v='c'] .tab.agent { color: var(--accent); }
+			.disc { display: contents; }
+			body[data-v='c'] .card.tabs { overflow: visible; }
+
+			/* B: la pillola che galleggia, e il Menu tondo a parte. */
+			.float { position: absolute; left: 14px; right: 14px; bottom: 32px; z-index: 30; display: none; align-items: center; gap: 10px; transition: translate 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s; }
+			@media (width < 500px) { .float { bottom: max(14px, calc(env(safe-area-inset-bottom) + 8px)); } }
+			body[data-v='b'] .float { display: flex; }
+			body[data-hide] .float { translate: 0 calc(100% + 40px); opacity: 0; }
+			.pill { flex: 1; height: 62px; border-radius: 999px; display: flex; padding: 5px; gap: 2px; background: var(--glass); -webkit-backdrop-filter: blur(24px) saturate(140%); backdrop-filter: blur(24px) saturate(140%); box-shadow: inset 0 1px 0 var(--edge), 0 10px 30px rgb(0 0 0 / 0.3); }
+			.pill .tab { border-radius: 999px; }
+			.round { width: 62px; height: 62px; flex: none; border-radius: 999px; display: grid; place-items: center; color: var(--fg); background: var(--glass); -webkit-backdrop-filter: blur(24px) saturate(140%); backdrop-filter: blur(24px) saturate(140%); box-shadow: inset 0 1px 0 var(--edge), 0 10px 30px rgb(0 0 0 / 0.3); }
+
+			/* Il Menu: un pannello che sale dal basso. */
+			.scrim { position: absolute; inset: 0; z-index: 45; background: var(--scrim); opacity: 0; pointer-events: none; transition: opacity 0.25s; }
+			body[data-menu] .scrim, body[data-drawer] .scrim { opacity: 1; pointer-events: auto; }
+			.sheet { position: absolute; left: 6px; right: 6px; bottom: 22px; top: 120px; z-index: 50; border-radius: 26px; background: var(--sheet); -webkit-backdrop-filter: blur(32px) saturate(120%); backdrop-filter: blur(32px) saturate(120%); box-shadow: inset 0 1px 0 var(--edge), 0 -10px 40px rgb(0 0 0 / 0.35); translate: 0 calc(100% + 140px); visibility: hidden; transition: translate 0.4s cubic-bezier(0.16, 1, 0.3, 1), visibility 0s 0.4s; display: flex; flex-direction: column; }
+			@media (width < 500px) { .sheet { bottom: max(6px, env(safe-area-inset-bottom)); top: 70px; } }
+			/* Closed, the sheet leaves the screen and hides at the end of the slide: parked below,
+			   it showed through the translucent bar. */
+			body[data-menu] .sheet { translate: 0 0; visibility: visible; transition: translate 0.4s cubic-bezier(0.16, 1, 0.3, 1), visibility 0s; }
+			/* The bar stays above the menu, as in an app: Menu lights up and closes it again. */
+			.tabs { z-index: 55; }
+			.float { z-index: 55; }
+			body[data-v='a'] .sheet, body[data-v='c'] .sheet { bottom: 92px; }
+			body[data-v='b'] .sheet { bottom: 104px; }
+			body[data-menu] [data-menu-toggle].tab, body[data-menu] .round { background: var(--surface); color: var(--fg); }
+			body[data-menu] .tab[aria-current] { background: none; color: var(--subtle); }
+			@media (width < 500px) {
+				body[data-v='a'] .sheet, body[data-v='c'] .sheet { bottom: calc(max(6px, env(safe-area-inset-bottom)) + 70px); }
+				body[data-v='b'] .sheet { bottom: calc(max(14px, env(safe-area-inset-bottom) + 8px) + 72px); }
+			}
+			.grab { flex: none; height: 26px; display: grid; place-items: center; cursor: grab; }
+			.grab span { width: 40px; height: 5px; border-radius: 3px; background: var(--hover); }
+			.sheet .body { flex: 1; min-height: 0; overflow: auto; padding: 0 14px 20px; }
+			.field { display: flex; align-items: center; gap: 10px; height: 44px; padding: 0 12px; border-radius: 12px; background: var(--surface); font-family: var(--mono); font-size: 13px; color: var(--subtle); }
+			.field svg { width: 16px; height: 16px; }
+			.group { margin: 18px 6px 6px; font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--subtle); display: flex; justify-content: space-between; }
+			.row { display: flex; align-items: center; gap: 12px; padding: 10px 8px; border-radius: 8px; font-size: 15.5px; }
+			.row:active { background: var(--surface); }
+			.row svg { width: 17px; height: 17px; color: var(--muted); }
+			.row img { width: 22px; height: 22px; border-radius: 5px; }
+			.row .meta { margin-left: auto; font-family: var(--mono); font-size: 11px; color: var(--subtle); }
+			.row .n { font-family: var(--mono); font-size: 11px; color: var(--subtle); width: 18px; }
+			.grid2 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+			.grid2 .row { background: var(--surface); flex-direction: column; align-items: flex-start; gap: 8px; padding: 12px; font-size: 14.5px; }
+			.links { display: flex; flex-wrap: wrap; gap: 8px 16px; padding: 8px; font-family: var(--mono); font-size: 12.5px; color: var(--text); }
+			.links span::after { content: ' ↗'; color: var(--subtle); }
+			.bar .x-only { display: none; }
+			body[data-v='x'] .bar .x-only { display: grid; }
+		</style>
+	</head>
+	<body data-v="a">
+		<svg width="0" height="0" style="position: absolute">
+			<symbol id="house" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8" /><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /></symbol>
+			<symbol id="folder" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z" /></symbol>
+			<symbol id="bot" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6V2H8" /><path d="m8 18-4 4V8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2Z" /><path d="M2 12h2" /><path d="M9 11v2" /><path d="M15 11v2" /><path d="M20 12h2" /></symbol>
+			<symbol id="book" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 7v14" /><path d="M3 18a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h5a4 4 0 0 1 4 4 4 4 0 0 1 4-4h5a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1h-6a3 3 0 0 0-3 3 3 3 0 0 0-3-3z" /></symbol>
+			<symbol id="menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16" /><path d="M4 12h16" /><path d="M4 19h16" /></symbol>
+			<symbol id="panel" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" /><path d="M9 3v18" /></symbol>
+			<symbol id="search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21 21-4.34-4.34" /><circle cx="11" cy="11" r="8" /></symbol>
+			<symbol id="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401" /></symbol>
+			<symbol id="user" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></symbol>
+			<symbol id="activity" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2" /></symbol>
+			<symbol id="pen" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9" /><path d="M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.854z" /></symbol>
+		</svg>
+
+		<div class="switch">
+			<button data-v="x">X oggi</button>
+			<button data-v="a">A barra</button>
+			<button data-v="b">B pillola</button>
+			<button data-v="c">C agente al centro</button>
+			<button data-menu-toggle>m menu</button>
+			<button data-theme-toggle>t tema</button>
+			<p data-desc></p>
+		</div>
+
+		<div class="device">
+			<div class="screen">
+				<div class="island"></div>
+				<div class="status"><span>9:41</span><span>●●● 5G ▮</span></div>
+
+				<div class="win">
+					<main class="card pane">
+						<div class="bar">
+							<button class="btn x-only" data-drawer-open aria-label="Indice"><svg><use href="#panel" /></svg></button>
+							<span class="logo">esse.dev<span class="caret"></span></span>
+							<span class="end">
+								<button class="btn x-only" aria-label="Cerca" data-drawer-open><svg><use href="#search" /></svg></button>
+								<span class="btn"><svg><use href="#moon" /></svg></span>
+								<span class="lang">en <b>it</b></span>
+							</span>
+						</div>
+						<div class="scroll" data-scroll>
+							<p class="who"><span class="led"></span><b>Simone Salerno</b>Lead AI Engineer in Yellow Tech · Milano</p>
+							<p class="title">Porto l'AI generativa dentro aziende vere e la <em>tengo in produzione</em>.</p>
+							<p class="intro">Per conto mio costruisco strumenti per sviluppatori <span class="stack"><img src="../../src/content/projects/relay/logo.png" alt="" /><img src="../../src/content/projects/portsage/logo.png" alt="" /><img data-logo="mcpbelt" alt="" /><img data-logo="pgbee" alt="" /></span>, quasi tutti open source, e app mie. Progetto l'architettura, l'AI scrive il codice, io verifico e rilascio.</p>
+							<dl class="facts">
+								<dt>programmo con</dt><dd>Claude Code e Codex, con un solo contesto condiviso</dd>
+								<dt>nei prodotti</dt><dd>agenti su harness su misura, come quello di questo sito</dd>
+							</dl>
+							<p class="label">Da dove iniziare</p>
+							<div class="tile"><div class="vis"><p class="bubble">Come lavora Simone con i coding agent?</p></div><div class="txt"><b>Chiedi all'agente</b><small>Risponde su progetti, codice e metodo, leggendo i repo.</small></div></div>
+							<div class="tile"><div class="vis"><img src="../../src/content/projects/relay/cover.webp" alt="" /></div><div class="txt"><b><span class="led"></span>Relay</b><small>Terminale nativo per macOS pensato per far girare tanti coding agent in parallelo.</small></div></div>
+						</div>
+					</main>
+
+					<nav class="card tabs" aria-label="Sezioni">
+						<a class="tab" href="#" aria-current="page"><svg class="i"><use href="#house" /></svg>Home</a>
+						<a class="tab" href="#"><svg class="i"><use href="#folder" /></svg>Progetti</a>
+						<a class="tab agent" href="#"><span class="disc"><svg class="i"><use href="#bot" /></svg></span>Agente</a>
+						<a class="tab" href="#"><svg class="i"><use href="#book" /></svg>Metodo</a>
+						<button class="tab" data-menu-toggle><svg class="i"><use href="#menu" /></svg>Menu</button>
+					</nav>
+				</div>
+
+				<div class="float">
+					<nav class="pill" aria-label="Sezioni">
+						<a class="tab" href="#" aria-current="page"><svg class="i"><use href="#house" /></svg>Home</a>
+						<a class="tab" href="#"><svg class="i"><use href="#folder" /></svg>Progetti</a>
+						<a class="tab agent" href="#"><svg class="i"><use href="#bot" /></svg>Agente</a>
+						<a class="tab" href="#"><svg class="i"><use href="#book" /></svg>Metodo</a>
+					</nav>
+					<button class="round" data-menu-toggle aria-label="Menu"><svg class="i"><use href="#menu" /></svg></button>
+				</div>
+
+				<div class="scrim" data-close></div>
+
+				<aside class="drawer" aria-label="Indice">
+					<div class="field"><svg><use href="#search" /></svg>Cerca</div>
+					<div class="row"><svg><use href="#house" /></svg>Benvenuto</div>
+					<div class="row"><svg><use href="#user" /></svg>Chi sono</div>
+					<div class="row"><svg><use href="#activity" /></svg>Adesso<span class="meta">set 2026</span></div>
+					<div class="row"><svg style="color: var(--accent)"><use href="#bot" /></svg>Agente</div>
+					<div class="group">Progetti <span>23</span></div>
+					<div class="row"><img src="../../src/content/projects/relay/logo.png" alt="" />Relay<span class="meta">2026</span></div>
+					<div class="row"><img data-logo="nexus" alt="" />Nexus<span class="meta">2026</span></div>
+					<div class="row"><img data-logo="pgbee" alt="" />pgbee<span class="meta">2026</span></div>
+					<div class="group">Metodo <span>4</span></div>
+					<div class="row"><span class="n">01</span>Architettura prima del codice</div>
+					<div class="row"><span class="n">02</span>Il contesto è il lavoro</div>
+				</aside>
+
+				<section class="sheet" aria-label="Menu">
+					<div class="grab" data-close><span></span></div>
+					<div class="body">
+						<div class="field"><svg><use href="#search" /></svg>Cerca progetti, note, pagine</div>
+						<div class="group">Pagine</div>
+						<div class="grid2">
+							<a class="row" href="#"><svg><use href="#user" /></svg>Chi sono</a>
+							<a class="row" href="#"><svg><use href="#activity" /></svg>Adesso</a>
+							<a class="row" href="#"><svg><use href="#pen" /></svg>Writing</a>
+						</div>
+						<div class="group">Progetti <span>23</span></div>
+						<a class="row" href="#"><img src="../../src/content/projects/relay/logo.png" alt="" />Relay<span class="meta">2026</span></a>
+						<a class="row" href="#"><img data-logo="nexus" alt="" />Nexus<span class="meta">2026</span></a>
+						<a class="row" href="#"><img data-logo="pgbee" alt="" />pgbee<span class="meta">2026</span></a>
+						<a class="row" href="#"><img data-logo="zeno" alt="" />Zeno<span class="meta">2026</span></a>
+						<a class="row" href="#"><img data-logo="mcpbelt" alt="" />mcpbelt<span class="meta">2026</span></a>
+						<a class="row" href="#"><img src="../../src/content/projects/portsage/logo.png" alt="" />Portsage<span class="meta">2026</span></a>
+						<a class="row" href="#" style="color: var(--muted)"><span class="n">→</span>tutti i 23</a>
+						<div class="group">Metodo <span>4</span></div>
+						<a class="row" href="#"><span class="n">01</span>Architettura prima del codice</a>
+						<a class="row" href="#"><span class="n">02</span>Il contesto è il lavoro</a>
+						<a class="row" href="#"><span class="n">03</span>Misurare invece di fidarsi</a>
+						<a class="row" href="#"><span class="n">04</span>Il mio setup</a>
+						<div class="group">Altrove</div>
+						<div class="links"><span>linkedin</span><span>github</span><span>instagram</span><span>x</span><span style="color: var(--muted)">privacy</span></div>
+					</div>
+				</section>
+
+				<div class="homebar"></div>
+			</div>
+		</div>
+
+		<script>
+			const DESC = {
+				x: 'oggi: indice in un cassetto da sinistra, dal pulsante in alto o dalla lente',
+				a: 'barra sotto la pagina, dentro la finestra; Menu apre l\'indice dal basso',
+				b: 'pillola che galleggia e si nasconde scorrendo giù; Menu tondo a parte',
+				c: 'come A, con l\'Agente in un cerchio lavanda rialzato'
+			};
+			const root = document.documentElement;
+			const body = document.body;
+			// Logos with a light variant follow the theme, like logoLight in the site.
+			const setLogos = () => {
+				const light = root.dataset.theme === 'light';
+				document.querySelectorAll('[data-logo]').forEach((img) => {
+					img.src = `../../src/content/projects/${img.dataset.logo}/logo${light ? '-light' : ''}.svg`;
+				});
+			};
+			const close = () => {
+				delete body.dataset.menu;
+				delete body.dataset.drawer;
+			};
+			const pick = (v) => {
+				close();
+				delete body.dataset.hide;
+				body.dataset.v = v;
+				document.querySelectorAll('.switch [data-v]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.v === v)));
+				document.querySelector('[data-desc]').textContent = DESC[v];
+				history.replaceState(null, '', `#${v}`);
+			};
+			const toggleMenu = () => {
+				if (body.dataset.v === 'x') {
+					if (body.dataset.drawer) close();
+					else body.dataset.drawer = '';
+					return;
+				}
+				if (body.dataset.menu) close();
+				else body.dataset.menu = '';
+			};
+			const toggleTheme = () => {
+				root.dataset.theme = root.dataset.theme === 'light' ? 'dark' : 'light';
+				setLogos();
+			};
+			root.dataset.theme = matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+			setLogos();
+			document.querySelectorAll('.switch [data-v]').forEach((b) => b.addEventListener('click', () => pick(b.dataset.v)));
+			document.querySelectorAll('[data-menu-toggle]').forEach((b) => b.addEventListener('click', toggleMenu));
+			document.querySelectorAll('[data-drawer-open]').forEach((b) => b.addEventListener('click', () => (body.dataset.drawer = '')));
+			document.querySelectorAll('[data-close]').forEach((b) => b.addEventListener('click', close));
+			document.querySelector('[data-theme-toggle]').addEventListener('click', toggleTheme);
+			// The tabs only move the selection here: the pages are not part of the mock.
+			document.querySelectorAll('.tab[href]').forEach((tab) =>
+				tab.addEventListener('click', (e) => {
+					e.preventDefault();
+					const i = [...tab.parentElement.children].indexOf(tab);
+					document.querySelectorAll('.tabs, .pill').forEach((nav) =>
+						[...nav.children].forEach((t, j) => (j === i ? t.setAttribute('aria-current', 'page') : t.removeAttribute('aria-current')))
+					);
+				})
+			);
+			// B: the pill leaves while scrolling down and comes back on the way up.
+			const scroller = document.querySelector('[data-scroll]');
+			let last = 0;
+			scroller.addEventListener('scroll', () => {
+				const y = scroller.scrollTop;
+				if (y > last + 4 && y > 40) body.dataset.hide = '';
+				else if (y < last - 4) delete body.dataset.hide;
+				last = y;
+			});
+			addEventListener('keydown', (e) => {
+				if (DESC[e.key]) pick(e.key);
+				if (e.key === 'm') toggleMenu();
+				if (e.key === 't') toggleTheme();
+				if (e.key === 'Escape') close();
+			});
+			pick(DESC[location.hash.slice(1)] ? location.hash.slice(1) : 'a');
+		</script>
+	</body>
+</html>
