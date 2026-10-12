@@ -39,7 +39,7 @@ test.describe('i18n routing & redirects', () => {
 
 	test('wrong-language route redirects once, without trailing slash', async ({ request }) => {
 		const res = await request.get('/en/progetti', { maxRedirects: 0 });
-		expect(res.status()).toBe(302);
+		expect(res.status()).toBe(301);
 		// a single hop to the canonical, no /en/projects/ with a trailing slash
 		expect(res.headers()['location']).toMatch(/\/en\/projects$/);
 	});
@@ -74,13 +74,13 @@ test.describe('i18n routing & redirects', () => {
 	}) => {
 		// /xx/projects -> /en/projects (the route 'projects' belongs to en)
 		const res = await request.get('/xx/projects', { maxRedirects: 0 });
-		expect(res.status()).toBe(302);
+		expect(res.status()).toBe(301);
 		expect(res.headers()['location']).toMatch(/\/en\/projects$/);
 	});
 
 	test('invalid language carries the slug to the canonical language', async ({ request }) => {
 		const res = await request.get('/xx/projects/budokan', { maxRedirects: 0 });
-		expect(res.status()).toBe(302);
+		expect(res.status()).toBe(301);
 		expect(res.headers()['location']).toMatch(/\/en\/projects\/budokan$/);
 	});
 
@@ -89,7 +89,7 @@ test.describe('i18n routing & redirects', () => {
 	}) => {
 		// /en/progetti/budokan -> /en/projects/budokan (slug shared across languages)
 		const res = await request.get('/en/progetti/budokan', { maxRedirects: 0 });
-		expect(res.status()).toBe(302);
+		expect(res.status()).toBe(301);
 		expect(res.headers()['location']).toMatch(/\/en\/projects\/budokan$/);
 	});
 
@@ -105,13 +105,13 @@ test.describe('article slug translation (cross-language)', () => {
 	// projects because their slugs are the same in en and it.
 	test('italian article slug under /en redirects to the english slug', async ({ request }) => {
 		const res = await request.get('/en/writing/il-mio-nuovo-laboratorio', { maxRedirects: 0 });
-		expect(res.status()).toBe(302);
+		expect(res.status()).toBe(301);
 		expect(res.headers()['location']).toMatch(/\/en\/writing\/my-new-laboratory$/);
 	});
 
 	test('english article slug under /it redirects to the italian slug', async ({ request }) => {
 		const res = await request.get('/it/scritti/my-new-laboratory', { maxRedirects: 0 });
-		expect(res.status()).toBe(302);
+		expect(res.status()).toBe(301);
 		expect(res.headers()['location']).toMatch(/\/it\/scritti\/il-mio-nuovo-laboratorio$/);
 	});
 

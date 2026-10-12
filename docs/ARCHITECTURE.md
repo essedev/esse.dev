@@ -17,7 +17,7 @@ only receives what is not a file:
 
 - the root `/` (`src/pages/index.ts`), which picks the language from `Accept-Language`;
 - the catch-all `src/pages/[...path].astro`, which for a URL with the wrong language,
-  route or slug makes a single redirect to the canonical one (`resolveRedirect` in
+  route or slug makes a single permanent (301) redirect to the canonical one (`resolveRedirect` in
   `src/lib/i18n.ts`) and otherwise answers 404 with the localized page, which suggests
   the pages closest to the wrong path (`src/lib/suggest.ts`), the list search and the agent;
 - `/agents/site-agent/*`, the agent's WebSocket (below).

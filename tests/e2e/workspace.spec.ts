@@ -150,7 +150,7 @@ test.describe('sections and legacy routes', () => {
 
 	test('the old blog route redirects to writing, slug included', async ({ request }) => {
 		const res = await request.get('/en/blog/my-new-laboratory', { maxRedirects: 0 });
-		expect(res.status()).toBe(302);
+		expect(res.status()).toBe(301);
 		expect(res.headers()['location']).toMatch(/\/en\/writing\/my-new-laboratory$/);
 	});
 });

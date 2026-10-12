@@ -7,7 +7,9 @@ import { getSite } from '../lib/site';
 import { searchWords, suggestPages, type PageRef } from '../lib/suggest';
 
 // Only what is not a static page arrives here: a URL with a wrong language, route or slug
-// goes to the canonical with a single redirect, the rest is a real 404.
+// goes to the canonical with a single redirect, the rest is a real 404. The redirect is a 301:
+// the target depends only on the path, and old URLs (also from simonesalerno.it, which Cloudflare
+// sends here with the path) must pass their ranking to the canonical.
 export const prerender = false;
 
 const pathname = Astro.url.pathname.replace(/\/+$/, '') || '/';
@@ -17,7 +19,7 @@ const target = resolveRedirect(pathname, {
 	slugMap: await getSlugMap(),
 	defaultLang
 });
-if (target) return Astro.redirect(target, 302);
+if (target) return Astro.redirect(target, 301);
 
 const segments = pathname.split('/').filter(Boolean);
 const lang = languageCodes.includes(segments[0]) ? segments[0] : defaultLang;
