@@ -23,7 +23,8 @@ test.describe('agent', () => {
 			'render',
 			'run_code',
 			'delegate',
-			'draft_message'
+			'draft_message',
+			'get_budget'
 		]) {
 			await expect(page.getByText(tool, { exact: true })).toBeVisible();
 		}

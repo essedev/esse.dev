@@ -360,6 +360,7 @@ const site = defineCollection({
 					agentSubagents: text,
 					agentAnswer: text,
 					agentToolDraft: text,
+					agentToolBudget: text,
 					agentDraft: text,
 					agentDraftSubject: text,
 					agentDraftContact: text,

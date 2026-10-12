@@ -158,6 +158,7 @@
 		"agentSubagents": "sub-agents in parallel",
 		"agentAnswer": "answer",
 		"agentToolDraft": "drafts a message to Simone that you send",
+		"agentToolBudget": "tells you how many credits you have left today",
 		"agentDraft": "draft to Simone, you send it",
 		"agentDraftSubject": "subject",
 		"agentDraftContact": "your email or a contact, if you want a reply",

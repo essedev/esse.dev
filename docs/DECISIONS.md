@@ -85,7 +85,7 @@ reaches 0.65, or that of abuse 0.5: thresholds fixed on the labeled messages
 (`pnpm eval:jev`). Since Cycle 19 the `chat` intent (greetings, jokes, questions about
 the agent) goes to the model and is not off-topic; the short answer with no tools
 triggers only with `chat` at least 0.7, because a real question read half as chat must
-search the site. The set is 76 messages with 10 attacks: 72 right decisions. If Jev does
+search the site. The set is 79 messages with 10 attacks: 75 right decisions. If Jev does
 not answer the request goes through: the cap in real cost remains the guarantee. Jev
 goes through OpenRouter with the same key as the model; TypeSafe direct and Workers AI
 remain as alternative transports (`JEV_TRANSPORT` in `src/agent/site-agent.ts`).

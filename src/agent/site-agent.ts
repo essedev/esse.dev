@@ -10,7 +10,16 @@ import {
 import { PiHarness, ROOT_SESSION, type PiReceipt, type PiSessionId } from 'agents/harness/pi';
 import { Lifecycle, type LifecycleJobContext } from 'agents/lifecycle';
 import { WebSockets } from 'agents/websockets';
-import { costOf, ipFingerprint, remaining, today, VISITOR_DAILY_USD, type Spend } from './budget';
+import {
+	budgetStatus,
+	costOf,
+	credits,
+	ipFingerprint,
+	remaining,
+	today,
+	VISITOR_DAILY_USD,
+	type Spend
+} from './budget';
 import type { PiServerMessage } from './protocol';
 import { CHILD_TOKEN_CAP, CHILD_TOKEN_OVERSHOOT, ChildBudget } from './child-budget';
 import { CHILD_INSTRUCTIONS, childReport, DELEGATE_LIMITS, type ChildReport } from './delegate';
@@ -81,10 +90,12 @@ The code of this site, and of you, is ${SITE_REPO}. When the visitor says "the s
 
 When you point the visitor to one or two pages worth opening, call show_page for each: it shows them a card to open. When numbers, a comparison or dates read better as a picture, call render. If the visitor wants to contact Simone, call draft_message: they review and send the draft themselves.
 
+Each visitor has ${credits(VISITOR_DAILY_USD).toLocaleString('en')} credits a day; a credit is a hundredth of a cent of real model cost, a light question uses about ten, and credits refill at midnight UTC. When the visitor asks how many credits they have left, call get_budget and answer from it, with the reset time in their words; do not search the code for this.
+
 Your voice: sharp, warm and a little playful, like a good engineer who enjoys the conversation. You know what you are: an AI agent on Simone's site, running on a harness he built, with tools you can show; you can joke, also about yourself, but you never pretend to be human and never invent facts to be funny. No emoji.`;
 
 /** For a greeting or a joke: two or three sentences, no tools, and a hook to what it can do. */
-const CHAT_MODE = `This message is small talk: a greeting, a joke, thanks, something playful, or a question about you. Reply in one to three sentences, with wit, without calling tools. If asked for a joke, tell a short one, ideally about software or agents. When it fits, end with a light hook to what you can do: his projects, his code, how he works.`;
+const CHAT_MODE = `This message is small talk: a greeting, a joke, thanks, something playful, or a question about you. Reply in one to three sentences, with wit, without calling tools, except get_budget when they ask about their credits. If asked for a joke, tell a short one, ideally about software or agents. When it fits, end with a light hook to what you can do: his projects, his code, how he works.`;
 
 const Lang = Type.Union([Type.Literal('it'), Type.Literal('en')], {
 	description: 'The language of the visitor.'
@@ -217,6 +228,8 @@ const DraftMessage = Type.Object({
 			'The message, written as the visitor in first person, in their language: who they are if they said it, what they want, any useful context from the conversation.'
 	})
 });
+
+const NoArgs = Type.Object({});
 
 const json = (value: unknown) => ({
 	content: [{ type: 'text' as const, text: JSON.stringify(value) }]
@@ -445,6 +458,15 @@ export class SiteAgent extends DurableObject<Env> {
 		})
 	};
 
+	readonly budgetTool: ToolRegistration<typeof NoArgs> = {
+		name: 'get_budget',
+		description:
+			"The visitor's credits left today, before this answer is charged: the lowest of their own, their network's and the site's daily budget. Also the daily credits and when they refill (ISO time, UTC).",
+		parameters: NoArgs,
+		replay: 'safe',
+		execute: async () => json(budgetStatus(await this.#remaining(), new Date()))
+	};
+
 	/** The public repo tools, with the allowed repos listed in the parameters. */
 	#repoTools(repos: readonly string[]): ToolRegistration[] {
 		const schemas = repoSchemas(repos);
@@ -521,7 +543,8 @@ export class SiteAgent extends DurableObject<Env> {
 				runTool as unknown as ToolRegistration,
 				this.renderTool as unknown as ToolRegistration,
 				this.showTool as unknown as ToolRegistration,
-				this.draftTool as unknown as ToolRegistration
+				this.draftTool as unknown as ToolRegistration,
+				this.budgetTool as unknown as ToolRegistration
 			]);
 			// `child-budget` is installed but not in the default selection: only the children of
 			// `delegate` add it.
@@ -550,7 +573,8 @@ export class SiteAgent extends DurableObject<Env> {
 					...repoTools,
 					runTool,
 					delegateTool,
-					this.draftTool
+					this.draftTool,
+					this.budgetTool
 				]
 			};
 			this.registry.install(site);

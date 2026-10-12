@@ -41,6 +41,18 @@ export function credits(usd: number): number {
 	return Math.max(1, Math.round(usd / CREDIT_USD));
 }
 
+/**
+ * What `get_budget` tells the model: the credits left today, in the same rounding as the
+ * page's counter so the two never disagree, the daily allowance and the reset time.
+ */
+export function budgetStatus(remainingUsd: number, now: Date) {
+	return {
+		credits_left: credits(remainingUsd),
+		daily_credits: credits(VISITOR_DAILY_USD),
+		resets_at: nextReset(now).toISOString()
+	};
+}
+
 /** Below this share of the budget the page shows how many credits are left. */
 export const SHOW_BUDGET_BELOW = 0.3;
 

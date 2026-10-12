@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import {
+	budgetStatus,
 	costOf,
 	credits,
 	dayKey,
@@ -165,5 +166,14 @@ describe('credits', () => {
 		expect(nextReset(new Date('2026-10-03T23:59:00Z')).toISOString()).toBe(
 			'2026-10-04T00:00:00.000Z'
 		);
+	});
+
+	it('tells the model the credits left like the page counter, with the reset', () => {
+		expect(budgetStatus(0.0423, new Date('2026-10-12T09:30:00Z'))).toEqual({
+			credits_left: 423,
+			daily_credits: 1000,
+			resets_at: '2026-10-13T00:00:00.000Z'
+		});
+		expect(budgetStatus(0, new Date('2026-10-12T09:30:00Z')).credits_left).toBe(0);
 	});
 });

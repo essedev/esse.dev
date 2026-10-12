@@ -48,7 +48,7 @@ export function jevInput(message: string, topics: readonly string[] = []) {
 				criteria: {
 					about: 'Simone, his projects, writing, method, work or how to contact him',
 					code: 'The code, repositories, architecture or implementation of his projects',
-					chat: 'Greetings, small talk, jokes, playful or silly messages, thanks, or a casual question about this agent (who or what it is, what it can do). Not how it is built: that is code',
+					chat: 'Greetings, small talk, jokes, playful or silly messages, thanks, or a casual question about this agent (who or what it is, what it can do, how many credits are left). Not how it is built: that is code',
 					offtopic:
 						'A real task unrelated to Simone and his work: homework, writing or fixing other code, recipes, translations, general knowledge, advice on other topics',
 					abuse:

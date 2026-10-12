@@ -264,6 +264,11 @@ sides.
   `esse.dev`, the test one on localhost, where the real widget does not load. After a send
   or a failure the server writes a note for the model into the conversation, without a run,
   with the outcome and never the draft's text, so the agent knows how it went (#29).
+- **`get_budget`:** the visitor's credits left today (the lowest of their own, their IP's
+  and the site's budget, rounded like the page's counter), the daily credits and the
+  reset time. The rules of the credits are in the prompt, so a question about them costs
+  one call instead of a search in the site's code; it is the only tool allowed in the
+  short chat mode, where Jev puts these questions.
 - **Link to the agent:** `?ask=` writes a question into the input without sending it
   (the home uses it). Not `?q=`, which is the list's search.
 - **Page with a conversation started:** `data-agent-started` on `[data-workspace]` hides

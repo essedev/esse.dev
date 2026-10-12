@@ -158,6 +158,7 @@
 		"agentSubagents": "sotto-agenti in parallelo",
 		"agentAnswer": "risposta",
 		"agentToolDraft": "prepara un messaggio per Simone, che mandi tu",
+		"agentToolBudget": "ti dice quanti crediti ti restano oggi",
 		"agentDraft": "bozza per Simone, la mandi tu",
 		"agentDraftSubject": "oggetto",
 		"agentDraftContact": "la tua email o un contatto, se vuoi una risposta",
