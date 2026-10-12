@@ -85,9 +85,11 @@ of the earlier idea (the site redesigned live by a model). Choices in
   about 1,000 and on short screens it scrolls. Left like this by Simone at the close of
   M15; to be picked up again if the showcase or the single pages grow.
 
-- Domain: `esse.dev` is the main one. To do in the Cloudflare panel: 301 Redirect Rule
-  from `simonesalerno.it` and `www.simonesalerno.it` to `https://esse.dev` with the path
-  preserved. `essedev.it` is not renewed: no redirect to maintain.
+- Domain: `esse.dev` is the main one; `simonesalerno.it` and `www` redirect to it with a 301
+  that keeps the path (Cloudflare Redirect Rule, live). To do in Search Console: property
+  `esse.dev` with its sitemap, then Change of address from the `simonesalerno.it` property
+  and removal of the old sitemap there. Keep the redirect and the domain for at least a
+  year. `essedev.it` is not renewed: no redirect to maintain.
 
 ## Deploy state
 

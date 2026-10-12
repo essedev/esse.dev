@@ -3,8 +3,10 @@
 Personal portfolio, main domain `esse.dev` (`site` in `astro.config.mjs`), repo
 `essedev/esse.dev` (it was `simonesalerno.it`). Worker and package stay `simonesalerno`:
 renaming the Worker creates a new one, without Durable Object, secrets and domain.
-`simonesalerno.it` will point to `esse.dev` with a Cloudflare Redirect Rule, never in the
-code (still to do: Open in the ROADMAP). Astro 7 + strict TS + Tailwind 4, Svelte 5
+`simonesalerno.it` and `www` point to `esse.dev` with a 301 Redirect Rule in the Cloudflare
+panel (zone `simonesalerno.it`, path and query string kept), never in the code. The domain
+stays attached to the Worker: its proxied record is what the rule acts on. The mail (MX) on
+`simonesalerno.it` is not affected. Astro 7 + strict TS + Tailwind 4, Svelte 5
 islands, deployed on Cloudflare Workers; a page is an agent (Durable Object with
 pi-durable, models from OpenRouter). The why of the choices is in `docs/ARCHITECTURE.md`
 and `docs/DECISIONS.md`; state and log in `docs/ROADMAP.md` and `docs/CYCLES.md`.
