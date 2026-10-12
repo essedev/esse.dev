@@ -466,3 +466,26 @@ The site in two themes, then the project images and the dark theme to match (`90
   (`emphasis.test.ts`); E2E on the tab bar and the sheet in `navigation.spec.ts`.
 - **Next step:** the Open items of the ROADMAP; the tab bar and Safari's bar colors on a
   real iPhone.
+
+## Cycle 28 - The domain move, a readable sitemap, the agent reads its credits (2026-10-12)
+
+Finishing touches after the move to `esse.dev` and one agent gap (`88cccde` .. `bed0389`).
+
+- **Redirects:** `simonesalerno.it` and `www` go to `esse.dev` with a Cloudflare Redirect
+  Rule that keeps path and query string. The catch-all's redirect to the canonical URL
+  becomes a 301 (it was a 302): the target depends only on the path, and the old URLs,
+  those from `simonesalerno.it` included, pass their ranking on (#10). Search Console
+  stays to do (ROADMAP, Open).
+- **Sitemap in a browser (#32):** it opened as raw XML. An `xml-stylesheet` instruction
+  points to `/sitemap.css` (`src/pages/sitemap.css.ts`), CSS on the XML and not XSLT, which
+  Chrome removes from stable on 2026-11-17. The stylesheet is generated at build from the
+  color tokens of both themes in `global.css` (`src/lib/css-tokens.ts`) and Departure
+  Mono's URL from the Fonts API: a renamed token fails the build instead of drifting.
+- **`get_budget`:** asked for its credits, the agent searched the site's code twice and
+  still could not tell the balance. The prompt now states the credit rules, `get_budget`
+  returns the credits left like the page's counter (the lowest of visitor, IP and site),
+  and Jev puts these questions in `chat`, whose short mode allows only this tool (#12).
+  Three new cases in Jev's set.
+- **Tests:** unit on reading the tokens (`css-tokens.test.ts`) and on `get_budget`; E2E on
+  the 301s and on the styled sitemap.
+- **Next step:** Search Console for `esse.dev`; the Open items of the ROADMAP.

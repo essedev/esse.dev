@@ -45,7 +45,7 @@ the table says so.
 | spazio di lavoro                        | workspace    | `Workspace.astro`                                                            |
 | riquadro                                | pane         | The content pane next to the list, `data-pane-glass`                         |
 | lista                                   | list         | The left column of the workspace                                             |
-| telaio                                  | chassis      | `Chassis.svelte`, from the discarded restyle                                 |
+| telaio                                  | chassis      | From the discarded restyle, only in the archive (`decisions-archive.md`)     |
 | cassetto                                | drawer       | The mobile list, a sheet from below since Cycle 27 (`data-drawer`)           |
 | barra delle schede                      | tab bar      | The mobile bar under the pane, `TabBar.astro`                                |
 | vetro                                   | glass        | `glass` utility, `--glass-*`                                                 |

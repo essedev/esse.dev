@@ -2,7 +2,7 @@
 
 Current state of the project. Real milestones, not a wishlist. Updated together with the code.
 
-Last update: 2026-10-12 (Cycle 27: agent mail live, new home, tab bar on phones)
+Last update: 2026-10-12 (Cycle 28: 301 redirects, styled sitemap, `get_budget`)
 
 ## Context
 
@@ -63,6 +63,8 @@ of the earlier idea (the site redesigned live by a model). Choices in
   language each have a state (per DECISIONS #24).
 - Done (Cycle 27): `draft_message` live on `hello@esse.dev` with the real Turnstile key;
   the agent learns how a draft's sending went (#29).
+- Done (Cycle 28): `get_budget`, the visitor's credits left, the only tool of the short
+  chat mode (#12).
 - Read-only tools on already public data. No writes, no fetch of arbitrary URLs, no
   private repos, no memory between visits. The only effect outside the site is the
   `draft_message` email, and it goes out only from a visitor's click.

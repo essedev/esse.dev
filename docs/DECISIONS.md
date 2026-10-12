@@ -47,7 +47,9 @@ neutral, ordered by date and filterable.
 
 The site is content, not an application: every page is prerendered and the Worker runs
 only for the root (language from `Accept-Language`) and for a catch-all that makes a
-single redirect to the canonical URL or answers 404. Each item is a shared `meta.json`
+single redirect to the canonical URL or answers 404. The redirect is permanent (301, a 302
+until Cycle 28): its target depends only on the path, and old URLs, those of
+`simonesalerno.it` included, must pass their ranking to the canonical. Each item is a shared `meta.json`
 plus one Markdown per language, in two content collections joined by
 `src/lib/content.ts`. Rejected: SSR of every page as in SvelteKit (compute and latency
 for pages that do not change), Astro's i18n (it does not translate segments or slugs),
@@ -85,7 +87,8 @@ reaches 0.65, or that of abuse 0.5: thresholds fixed on the labeled messages
 (`pnpm eval:jev`). Since Cycle 19 the `chat` intent (greetings, jokes, questions about
 the agent) goes to the model and is not off-topic; the short answer with no tools
 triggers only with `chat` at least 0.7, because a real question read half as chat must
-search the site. The set is 79 messages with 10 attacks: 75 right decisions. If Jev does
+search the site. Since Cycle 28 a question about the credits left is `chat` too, and
+`get_budget` is the one tool the short mode allows. The set is 79 messages with 10 attacks: 75 right decisions. If Jev does
 not answer the request goes through: the cap in real cost remains the guarantee. Jev
 goes through OpenRouter with the same key as the model; TypeSafe direct and Workers AI
 remain as alternative transports (`JEV_TRANSPORT` in `src/agent/site-agent.ts`).
@@ -410,3 +413,14 @@ inside another (#16). A tap plays the gesture the desktop list makes on hover; w
 reduced motion it glows and the sheet fades (#25). It replaces the drawer from the left
 of #15, where the main places stayed out of sight until it opened. Rejected: the bar without the
 raised agent (A) and a floating pill that hides on scroll (B).
+
+## #32 - The sitemap styled with CSS built from the tokens, not XSLT
+
+**Status:** active (Cycle 28)
+
+Opened in a browser, `sitemap.xml` reads as a page: an `xml-stylesheet` instruction points
+to `/sitemap.css`, a prerendered endpoint (`src/pages/sitemap.css.ts`) that reads the color
+tokens of both themes out of `global.css` (`src/lib/css-tokens.ts`) and Departure Mono's URL
+from the Fonts API. A renamed token fails the build instead of drifting. Rejected: XSLT,
+the usual way, which Chrome removes from stable on 2026-11-17; colors and font copied into
+a static file (they would drift from the themes).
