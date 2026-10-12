@@ -6,7 +6,8 @@ import { escapeXml } from '../lib/xml';
 
 // Sitemap with hreflang alternates for each language plus x-default, like the HTML: if the
 // two annotations diverge Google may ignore them. lastmod comes from the content, not from
-// the build.
+// the build. The stylesheet (sitemap.css.ts) is for people opening it in a browser; crawlers
+// ignore it.
 export const GET: APIRoute = async ({ site }) => {
 	const origin = site!.origin;
 	const slugMap = await getSlugMap();
@@ -64,6 +65,7 @@ export const GET: APIRoute = async ({ site }) => {
 		.join('\n');
 
 	const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet type="text/css" href="/sitemap.css"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
 ${urls}
 </urlset>

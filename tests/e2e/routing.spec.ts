@@ -142,6 +142,29 @@ test.describe('sitemap', () => {
 		expect(body).toContain('hreflang');
 		expect(body).toContain('x-default');
 	});
+
+	test('sitemap.xml links a stylesheet built from the tokens, with a font that loads', async ({
+		request
+	}) => {
+		const xml = await (await request.get('/sitemap.xml')).text();
+		expect(xml).toMatch(
+			/^<\?xml version="1\.0" encoding="UTF-8"\?>\n<\?xml-stylesheet type="text\/css" href="\/sitemap\.css"\?>\n<urlset/
+		);
+
+		const res = await request.get('/sitemap.css');
+		expect(res.status()).toBe(200);
+		expect(res.headers()['content-type']).toContain('text/css');
+		const css = await res.text();
+		expect(css).toMatch(/--color-accent: #[0-9a-f]{6};/);
+		expect(css).toContain('@media (prefers-color-scheme: light)');
+		expect(css).not.toMatch(/\$\{|undefined|NaN/);
+
+		const font = /src: url\('([^']+\.woff2)'\)/.exec(css)?.[1];
+		expect(font).toBeTruthy();
+		const fontRes = await request.get(font!);
+		expect(fontRes.status()).toBe(200);
+		expect(fontRes.headers()['content-type']).toContain('font/woff2');
+	});
 });
 
 test.describe('rss', () => {

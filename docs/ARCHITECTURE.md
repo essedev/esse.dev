@@ -66,7 +66,12 @@ because it is configuration and not content.
 Where Astro has a standard, that is used: content collections, `@astrojs/rss`, the Fonts
 API for self-hosted fonts with preload and tuned fallbacks. The sitemap is not:
 `@astrojs/sitemap` derives the alternates by replacing the language prefix and with
-translated slugs it would get the hreflang wrong.
+translated slugs it would get the hreflang wrong. Opened in a browser it reads as a page:
+an `xml-stylesheet` instruction points to `/sitemap.css`, CSS applied to the XML and not
+XSLT, which Chrome removes. That stylesheet is a prerendered endpoint that reads the color
+tokens of both themes out of `global.css` (light from the system's preference, since the
+toggle cannot reach an XML document) and takes Departure Mono's URL from the Fonts API, so
+no color is copied and no font file is duplicated.
 
 ## i18n: translated routes and slugs, pure logic
 
