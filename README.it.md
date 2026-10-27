@@ -23,6 +23,7 @@ Portfolio personale di Simone Salerno, online su [esse.dev](https://esse.dev). F
 - Feed RSS per lingua, sitemap con alternate, JSON-LD, `llms.txt`
 - Immagini Open Graph generate alla build, una per pagina
 - Tema scuro e chiaro: segue il sistema finché il visitatore non ne sceglie uno dal pulsante nella toolbar
+- Una pagina delle modifiche per chi visita, e un avvio come quello di un computer alla prima visita e alle nuove versioni
 - Un agente che risponde dalle pagine del sito e dal codice pubblico dei progetti e mostra chiamate ai tool, token e costo, dietro un triage e un budget giornaliero in costo reale
 
 ## Sviluppo
@@ -49,8 +50,8 @@ pnpm lint && pnpm check && pnpm build && pnpm test:ci
 ## Struttura
 
 - `src/pages/` - le route: `[lang]/` per le pagine statiche, più le poche che girano sul Worker
-- `src/content/` - progetti, articoli, metodo, adesso e pagine singole, una cartella per voce
-  con `meta.json` e un file Markdown per lingua
+- `src/content/` - progetti, articoli, metodo, adesso, modifiche e pagine singole, una cartella
+  per voce con `meta.json` e un file Markdown per lingua
 - `src/agent/` - l'agente del sito: Durable Object, tool, budget e triage
 - `src/lib/` - logica pura (contenuti, i18n, SEO, filtri degli elenchi, layout delle OG)
 - `src/components/`, `src/layouts/`, `src/scripts/` - UI: componenti Astro e Svelte, la shell

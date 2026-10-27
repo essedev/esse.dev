@@ -2,7 +2,7 @@
 
 Current state of the project. Real milestones, not a wishlist. Updated together with the code.
 
-Last update: 2026-10-27 (Cycle 29: `delegate` in the background, sub-agents on the field)
+Last update: 2026-10-27 (Cycle 30: projects refreshed, changelog, boot, the chat by turn)
 
 ## Context
 
@@ -10,7 +10,8 @@ The Astro site is on `main` and in production, and replaced the SvelteKit site (
 history in `docs/CYCLES.md`). Closed: M14, the migration to Astro (Cycle 11, DECISIONS
 #10), and M15, structure and style (Cycles 12-20, DECISIONS #15, #16, #19); the light
 theme came after it (Cycle 26, DECISIONS #27), the new home and the tab bar on phones
-after that (Cycle 27, #30, #31). The "Laboratorio" restyle (M11) is paused: its motifs are
+after that (Cycle 27, #30, #31), a changelog for visitors
+and a boot on the first visit in Cycle 30 (#35, #37). The "Laboratorio" restyle (M11) is paused: its motifs are
 in `docs/archive/RESTYLE.md`, and its branches (`restyle/laboratory`, `restyle/base`) and
 the `astro` working branch were retired when `astro` reached `main`. Their full history is
 kept in a git bundle outside the repo; the discarded pixel-art PNGs were dropped from the
@@ -32,6 +33,8 @@ Principles, voice and sorting in `docs/features/progetti.md`.
   sources, the text is written by hand, including the "Why" box.
 - Done (Cycle 23): a cover and a logo for every published project (per DECISIONS #22);
   light variants of the rendered logos and designed covers in Cycle 26 (#28).
+- Done (Cycle 30): Relay, Media Hub, Nexus and Watch OS brought up to date; Varco and
+  Floppy in the showcase in place of Portsage and mcpbelt.
 - To do: tags cleaned up.
 - To do: a skill that proposes the new or updated items from the repos; it proposes, it
   does not publish.
@@ -52,6 +55,9 @@ of the earlier idea (the site redesigned live by a model). Choices in
   90-day retention (#23); the states of the work and of errors (#24).
 - Done (Cycle 29): sub-agents in the background (#33), on the page as chips on the field
   with the live transcript in a sheet (#34).
+- Done (Cycle 30): the empty page says what the agent does (#38), the chat reads by turn
+  with the work as tokens, the same in a sub-agent's sheet (#39); sub-agents talking to
+  each other tried and left out (#36).
 - To do: the sub-agents' sheet on phones, where chips and field leave it about half the
   screen (#34).
 - Read-only tools on already public data. No writes, no fetch of arbitrary URLs, no

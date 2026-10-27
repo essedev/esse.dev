@@ -23,6 +23,7 @@ Personal portfolio of Simone Salerno, online at [esse.dev](https://esse.dev). Bu
 - Per-language RSS feed, sitemap with alternates, JSON-LD, `llms.txt`
 - Open Graph images generated at build time, one per page
 - Dark and light theme: it follows the system until the visitor picks one with the toggle in the toolbar
+- A changelog page for visitors, and a computer-style boot on the first visit and on new releases
 - A site agent that answers from the site's own pages and the public code of the projects, and shows its tool calls, tokens and cost, behind a triage step and a real-cost daily budget
 
 ## Development
@@ -49,8 +50,8 @@ pnpm lint && pnpm check && pnpm build && pnpm test:ci
 ## Structure
 
 - `src/pages/` - routes: `[lang]/` for the static pages, plus the few that run on the Worker
-- `src/content/` - projects, articles, method, now and single pages, one folder per item
-  with `meta.json` and one Markdown file per language
+- `src/content/` - projects, articles, method, now, changelog and single pages, one folder per
+  item with `meta.json` and one Markdown file per language
 - `src/agent/` - the site agent: Durable Objects, tools, budget and triage
 - `src/lib/` - pure logic (content, i18n, SEO, listing filters, Open Graph layout)
 - `src/components/`, `src/layouts/`, `src/scripts/` - UI: Astro and Svelte components, the

@@ -6,65 +6,9 @@ session and the next. High-level planning lives in `docs/ROADMAP.md`.
 
 Older cycles are in `docs/archive/` (Cycles 1-6 in `CYCLES-1-6.md`, 7-8 in
 `CYCLES-7-8.md`, 9-10 in `CYCLES-9-10.md`, 11-12 in `CYCLES-11-12.md`, 13-14 in
-`CYCLES-13-14.md`).
+`CYCLES-13-14.md`, 15-16 in `CYCLES-15-16.md`).
 
 ---
-
-## Cycle 15 - The agent reads the projects and their code (2026-10-03)
-
-Second cut of M17: from 2 to 9 tools, split in the page between "on the site" and "on the
-code".
-
-- **Site:** `list_projects` (filters by status and tag, showcase first; the index now marks
-  the projects in the showcase) and `show_page`, which becomes a card to open in the
-  transcript instead of navigating (DECISIONS #13).
-- **Code:** `repo_overview`, `list_files`, `read_file`, `search_code`, `recent_commits` on
-  the GitHub REST API, only on the repos of the published projects plus the site's.
-  `read_file` numbers the lines, gives the GitHub link and reads long files in pieces;
-  answers cached for 5 minutes; `GITHUB_TOKEN` optional.
-- **Real trials:** the first call on the Worker failed with "Illegal invocation" (`fetch`
-  saved in a field loses its `this`; in Node and in tests it does not happen). On the
-  question "how does Portsage know which ports are busy" the agent finds `scanner.rs` in 7
-  calls, for about 0.2 cents; the prompt now asks to copy the code without invented
-  comments and to cite the lines with the link.
-- **Agent page** (afa1abe): it read like a document, with the input where a 55vh minimum
-  ended and an empty conversation with nothing. Now the input stays fixed at the bottom of
-  the pane and the page fills it (on mobile the content column grows too). With an empty
-  conversation: the tools announced by the server, how triage and costs work, three
-  suggested questions that start immediately. The transcript follows the answer only if
-  the reader is already at the bottom.
-- **Transcript:** answers use the same prose styles as the site (lists, code blocks,
-  links).
-- **Tests:** 87 unit and 54 E2E.
-- **Next step:** `GITHUB_TOKEN` to create; then `render` and `run_code`, together with the
-  evaluation of `@cloudflare/computer`.
-
-## Cycle 16 - The agent's demo tools (2026-10-03)
-
-Third cut of M17 (`14bc4be` .. `871d7eb`): from 9 to 13 tools, with a "Capabilities" group
-in the page.
-
-- **`render`:** bars, tables and timelines from data, never HTML; same validation on the
-  server and in the browser, bars in SVG for the CSP.
-- **`run_code`:** Cloudflare's Code Mode (`@cloudflare/codemode`) in a Dynamic Worker with
-  no network; the read-only tools inside the sandbox, with types generated from the
-  schemas. JavaScript and not Python, chosen with Simone (#14). Trial: 12 parallel calls on
-  the 6 repos in one execution, then a table with `render`, about 0.14 cents.
-- **`delegate`:** 2-3 sub-agents as pi-durable conversations owned by the call, with only
-  the read-only tools; their cost is deducted by the tool. Trial on the Relay, Portsage,
-  Templator comparison: 3 children of 6-7 calls, about 1.4 cents and 50 s.
-- **`draft_message`:** editable draft, sending by the visitor after Turnstile, caps of 3 a
-  day per visitor and 30 for the site, email via `send_email` to `MAIL_TO`. A draft
-  invented on the socket is rejected.
-- **Bugs found in the trials:** a Svelte prop called `state` broke `$state` at runtime
-  with no check error; Markdown headings in the answers came out huge.
-- **Tests:** 99 unit and 54 E2E.
-- **Next step:** tuning of secrets and Email Routing for production (in ROADMAP),
-  sub-agent events live.
-- **Credits and caps (after):** budget per visitor at 10 cents, shown in credits (1,000 a
-  day) and only below 30%; cap of 12,000 tokens per `delegate` child and no children
-  without credits for the worst case. Same question on three repos: from about 140 to 93
-  credits, from 50 to 29 s.
 
 ## Cycle 17 - Concept B's style and the slimmer home (2026-10-04)
 
@@ -461,3 +405,39 @@ Finishing touches after the move to `esse.dev` and one agent gap (`88cccde` .. `
   with chips, live sheet and report line on the fake socket.
 - **Next step:** the sheet's height on phones (chips and field leave it about half the
   screen); the Open items of the ROADMAP.
+
+## Cycle 30 - Projects refreshed, a changelog, the boot, the chat by turn (2026-10-27)
+
+Projects, a page for visitors, the first visit and the agent page, after the sub-agents of
+Cycle 29 (`be295b9` .. `f247b2f`).
+
+- **Projects (M16):** Relay, Media Hub and Nexus brought up to date with new covers; Watch
+  OS retold on ESP-Brookesia, in progress again, the C version in `previously`. Varco joins
+  the showcase in Portsage's place, with its map and share image as cover, and the Milan
+  entry folds into it as its `previously`; Floppy enters the registry, then the showcase in
+  mcpbelt's place, covered with its landing hero. pgbee's cover is a frame of its video.
+- **Changelog (#35):** a hand-written `changelog` collection, one entry per release, at
+  `/en/changelog` and `/it/modifiche`, linked in the status line and in the agent's index;
+  the history rebuilt from git and the cycles.
+- **Sub-agents that talk (#36):** a `tell` tool tried on `spike/subagent-tell` and kept off
+  main: no child called it on its own, and a late message replaced the findings.
+- **Boot (#37):** concept O (`docs/concepts/concept-o-avvio.html`), variant D with D1. The
+  first visit boots the site like a computer (about 6 s of log with the site's real data,
+  then the interface loading as a skeleton); a new release or a week away gets the short
+  boot naming the changelog entries not seen; any input skips it. Decided inline before the
+  first paint, so the headline stays the LCP.
+- **Home:** "Where to start" pinned to the bottom of the pane on tall screens.
+- **Agent page (#38, #39):** concepts P and Q. The empty page shows three abilities with
+  the token each becomes, in place of the tools by name; the chat reads by turn, the
+  question in a lilac bubble, the work under one header as tokens with a sentence and what
+  came back. A sub-agent's sheet uses the same tokens (`StepToken.svelte`,
+  `StepDetail.svelte`) on a lighter veil. Fixes: the sheet takes the answers' typography,
+  `delegate`'s arguments are read through `delegateArgs` as the server does (no more
+  "affida 0 lavori"), short status labels, and the children numbered 1, 2, 3 in the
+  conversation instead of by the object's id.
+- **Dev:** Cloudflare quick tunnels allowed as dev server hosts.
+- **Tests:** unit on the step sentences (`steps.test.ts`); E2E on the boot
+  (`boot.spec.ts`), the turn view and the sub-agent tokens (`agent-states.spec.ts`) and the
+  changelog page (`workspace.spec.ts`).
+- **Next step:** the sub-agents' sheet on phones; rereading the project entries with Simone;
+  Search Console for `esse.dev`.

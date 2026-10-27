@@ -58,6 +58,12 @@ The single pages (welcome, about, contacts, privacy) are Markdown per language i
 the headline (`*...*` marks the accent) and the introduction, where `{tools}` places the
 logos of the projects listed in `tools`, are composed with components, which Markdown
 cannot do. The home's method card shows the `quote` of the first note that has one (#30).
+
+The changelog (#35) is a collection too, one folder per release in
+`src/content/changelog/` with `date` and `area` in `meta.json` and a title and a few
+sentences per language: written by hand for visitors, the commits and `docs/CYCLES.md`
+stay the technical record. The agent's index carries the entries, the boot their ids.
+
 The site title, section names and UI strings are the `site` collection, with a strict
 schema: every language has all the keys and none extra, and the keys are a type. Config
 (languages, routes, showcase) stays JSON, imported and validated by `src/lib/config.ts`,
@@ -276,8 +282,9 @@ sides.
   child in the turn's work (`DelegateView.svelte` still reads the reports of calls from
   before #33), the live transcript in `ChildSheet.svelte` on the child's own socket, its
   calls as the same tokens (`StepToken.svelte`, `StepDetail.svelte`), and the
-  report as its own line, recognized by `parseReport`. The page numbers the children 1, 2, 3 in the order the conversation
-  started them: their id is the object's own counter, shared by everything it creates.
+  report as its own line, recognized by `parseReport`. The page numbers the children 1, 2, 3
+  in the order the conversation started them: their id is the object's own counter, shared
+  by everything it creates.
 - **`draft_message`:** the model writes only a draft; the page shows it in an editable
   card with Turnstile and the visitor sends it. The server (`sendDraft`) checks that the
   draft is a call of the agent in this conversation and has not already gone out,

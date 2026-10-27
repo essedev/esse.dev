@@ -452,8 +452,8 @@ sit as chips on the glass panel of the field, with their state; a chip, or a row
 `delegate` card, opens the child's transcript live in a sheet above the field, on a socket
 of its own on the child's session (read-only, Stop sends `abort`). The field stays usable
 under the sheet: the visitor watches a sub-agent and talks to the agent at once. A report
-reads as its own line ("sotto-agente #7 · finito") with the findings folded, never as the
-visitor's message. Sheet and panel are two glasses side by side in the anchored block, not
+reads as its own line ("sotto-agente 2 · <title>", numbered in the order the conversation
+started them, not by id) with the findings folded, never as the visitor's message. Sheet and panel are two glasses side by side in the anchored block, not
 one inside the other (#16). Rejected: tabs that swap the whole conversation (A, watching
 stops the talking) and a live `delegate` card in the thread (C, it scrolls away, on phones
 first). Open: on phones chips and field leave the sheet about half the screen.
@@ -519,7 +519,7 @@ page change stays instant): it holds only because the boot is rare and skippable
 **Status:** active
 
 Chosen with Simone on `docs/concepts/concept-p-agente-ingresso.html`, variant D. The page
-keeps today's quiet: title, introduction, the four example questions; in place of the 15
+keeps today's quiet: title, introduction, the four example questions; in place of the
 tools listed by name, three lines on what the agent does (searches the site, reads the
 code, starts sub-agents), each with the token it becomes in a conversation, and one
 sentence on Jev and the daily credits. The visitor learns how to read the work before
