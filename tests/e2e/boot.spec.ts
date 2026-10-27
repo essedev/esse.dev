@@ -50,7 +50,7 @@ test('the first visit boots in full, then the window opens and the visit is reco
 	await expect(log(page)).toContainText('Memory test: projects');
 	await expect(log(page)).toContainText('Reached workspace.target');
 	await expect(log(page)).toContainText('esse.dev login: guest');
-	await expect(html(page)).not.toHaveAttribute('data-boot', { timeout: 10_000 });
+	await expect(html(page)).not.toHaveAttribute('data-boot', { timeout: 20_000 });
 	await expect(page.locator('[data-boot-screen]')).toBeHidden();
 
 	const stored = await page.evaluate(() => JSON.parse(localStorage.getItem('boot')!));
@@ -86,7 +86,7 @@ test('a new release since the last visit gets the short boot, with what changed'
 	await expect(log(page)).toContainText('Quick boot: 1 new since the last boot');
 	await expect(log(page)).toContainText(`New: ${news[0].title}`);
 	await expect(log(page)).not.toContainText('Memory test');
-	await expect(html(page)).not.toHaveAttribute('data-boot', { timeout: 10_000 });
+	await expect(html(page)).not.toHaveAttribute('data-boot', { timeout: 20_000 });
 });
 
 test('a week after the last visit, with nothing new, the short boot says so', async ({ page }) => {
@@ -134,14 +134,14 @@ test('after the login the interface is a skeleton whose pieces load one by one',
 			};
 		},
 		null,
-		{ timeout: 10_000, polling: 'raf' }
+		{ timeout: 20_000, polling: 'raf' }
 	);
 	const frame = (await skeleton.jsonValue()) as { waiting: number; screen: string; ink: string };
 	expect(frame.waiting).toBeGreaterThan(20);
 	expect(frame.screen).toBe('none');
 	expect(frame.ink).toBe('rgba(0, 0, 0, 0)');
 
-	await expect(html(page)).not.toHaveAttribute('data-boot', { timeout: 10_000 });
+	await expect(html(page)).not.toHaveAttribute('data-boot', { timeout: 20_000 });
 	await expect(page.locator('[data-skel]')).toHaveCount(0);
 });
 
@@ -149,7 +149,7 @@ test('a skip during the loading shows the whole interface at once', async ({ pag
 	await asPerson(page);
 	await visit(page, '/en');
 	await page.waitForFunction(() => document.documentElement.dataset.boot === 'load', null, {
-		timeout: 10_000,
+		timeout: 20_000,
 		polling: 'raf'
 	});
 	await page.keyboard.press('Escape');

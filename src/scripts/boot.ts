@@ -9,8 +9,10 @@
  */
 import type { BootData } from '../lib/boot';
 
-/** Scales every wait: the one knob for the boot's length. */
-const PACE = 0.72;
+/** Scales the waits of the log: slow enough to read it as it runs. */
+const LOG_PACE = 1.4;
+/** Scales the waits of the skeleton's loading. */
+const LOAD_PACE = 0.72;
 /** How long a loaded piece glows, as `[data-loaded]` in global.css. */
 const GLOW_MS = 700;
 /** The systemd spinner: three stars bouncing in the status box. */
@@ -74,12 +76,12 @@ function start(screen: HTMLElement, mode: 'full' | 'short') {
 		// boot-init.js checked the storage before marking the page: nothing to recover here.
 	}
 
-	const sleep = (ms: number) =>
+	const sleep = (ms: number, pace = LOG_PACE) =>
 		new Promise<void>((resolve) => {
 			const id = window.setTimeout(() => {
 				timers.delete(id);
 				resolve();
-			}, ms * PACE);
+			}, ms * pace);
 			timers.add(id);
 		});
 
@@ -120,7 +122,7 @@ function start(screen: HTMLElement, mode: 'full' | 'short') {
 		until.finally(() => (ready = true));
 		const from = performance.now();
 		box.className = 'boot-wait';
-		for (let i = 0; !ready || performance.now() - from < min * PACE; i++) {
+		for (let i = 0; !ready || performance.now() - from < min * LOG_PACE; i++) {
 			box.textContent = SPIN[i % SPIN.length];
 			await sleep(80);
 		}
@@ -247,13 +249,24 @@ function start(screen: HTMLElement, mode: 'full' | 'short') {
 		window.setTimeout(() => el.removeAttribute('data-loaded'), GLOW_MS);
 	};
 	// One stream per column, in reading order: a few pieces at a time, now and then a stall,
-	// as a page that arrives over the network.
+	// as a page that arrives over the network. Images do not hold the stream: each decodes on
+	// its own a moment after its turn, and the loading ends when the last one is in.
+	const decoding: Promise<void>[] = [];
 	const stream = async (pieces: Element[], speed: number) => {
 		for (let i = 0; i < pieces.length;) {
 			const batch = 1 + Math.floor(Math.random() * 3);
-			pieces.slice(i, i + batch).forEach(reveal);
+			for (const el of pieces.slice(i, i + batch)) {
+				if (el instanceof HTMLImageElement)
+					decoding.push(
+						sleep((250 + Math.random() * 450) * speed, LOAD_PACE).then(() => reveal(el))
+					);
+				else reveal(el);
+			}
 			i += batch;
-			await sleep((Math.random() < 0.06 ? 140 : 18 + Math.random() * 22) * speed);
+			await sleep(
+				(Math.random() < 0.12 ? 260 + Math.random() * 200 : 45 + Math.random() * 50) * speed,
+				LOAD_PACE
+			);
 		}
 	};
 	const load = async () => {
@@ -263,8 +276,9 @@ function start(screen: HTMLElement, mode: 'full' | 'short') {
 		const all = pieces(workspace);
 		all.forEach((el) => el.setAttribute('data-skel', ''));
 		root.dataset.boot = 'load';
-		await sleep(mode === 'full' ? 320 : 180);
-		const speed = mode === 'full' ? 1 : 0.6;
+		// The skeleton holds for a beat: it is a state to see, not a flash.
+		await sleep(mode === 'full' ? 750 : 350, LOAD_PACE);
+		const speed = mode === 'full' ? 1 : 0.5;
 		await Promise.all([
 			stream(
 				all.filter((el) => list?.contains(el)),
@@ -275,6 +289,7 @@ function start(screen: HTMLElement, mode: 'full' | 'short') {
 				speed
 			)
 		]);
+		await Promise.all(decoding);
 	};
 
 	(async () => {

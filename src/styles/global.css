@@ -1045,7 +1045,7 @@ body::after,
    under it from the first paint, with the log in the interface mono. It sits above the strips
    that color Safari's bars, so during the boot the bars take the desk; when it ends it leaves
    the page (a fixed layer is sampled even when transparent). If src/scripts/boot.ts never
-   runs, the screen hides itself after 9 s. `load`: the screen is off and the interface is a
+   runs, the screen hides itself after 15 s. `load`: the screen is off and the interface is a
    skeleton, its pieces (`data-skel`, set by the script) loading one after the other. */
 .boot-screen {
 	display: none;
@@ -1059,7 +1059,7 @@ body::after,
 [data-boot='full'] .boot-screen,
 [data-boot='short'] .boot-screen {
 	display: block;
-	animation: boot-failsafe 0s 9s forwards;
+	animation: boot-failsafe 0s 15s forwards;
 }
 /* A text waiting is a bar the shape of its lines: transparent ink, and a thick underline drawn
    through it, which follows each line's length and needs no change to the DOM. Icons, LEDs,
