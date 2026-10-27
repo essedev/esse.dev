@@ -89,6 +89,8 @@ export default defineConfig({
 		// In `pnpm dev` the agent reads the site index with `env.ASSETS.fetch` on
 		// `https://assets.local/...`, which goes through Vite: without this host it answers 403
 		// and the chat stays offline. Deploy and `wrangler dev` do not go through here.
-		server: { allowedHosts: ['assets.local'] }
+		// `.trycloudflare.com`: the dev server opened on a phone through a Cloudflare quick tunnel
+		// (ngrok's free plan answers the fonts with its warning page).
+		server: { allowedHosts: ['assets.local', '.trycloudflare.com'] }
 	}
 });
