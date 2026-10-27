@@ -41,6 +41,10 @@ The assistant does more than read the data. It manages it while I talk to it, an
 - Automations on a cron or on an event, including agents that run on a prompt.
 - Meeting transcription with separate speakers, OCR, web search and vision as generic capabilities.
 - An MCP server with OAuth, so any coding agent can read and write my data.
-- Claude Code chats synced from the laptop and linked to the right project: a project's activity is derived from there, not written by hand.
+- Claude Code chats synced from the laptop and the commits of active projects, linked to the right project: a project's activity is derived from there, and a commit is the proof to close a task.
+- Areas split the navigation by scope, each with its own items, and a launcher moves between them.
+- Fields that fill themselves in from the history, with a manual correction always winning: the same idea as [pgbee](/en/projects/pgbee), brought inside the engine.
+- Tabular files, like bank statements, imported with formats that are data rather than code: a new bank is a row, not a function.
+- A message dashed off as a draft comes back ready in the chosen style, and can be touched up ("shorter") without rewriting it.
 
 Python backend with FastAPI, async SQLAlchemy and PostgreSQL with pgvector, React frontend. It is self-hosted and single-user, with blue-green deploys. It is where a series of personal assistants ended up, each different from the last: they are listed below, from the first.

@@ -41,6 +41,10 @@ L'assistente non si limita a leggere i dati. Li gestisce mentre ci parlo, e fa e
 - Automazioni a cron o a evento, compresi agenti che girano su un prompt.
 - Trascrizione delle riunioni con i parlanti separati, OCR, ricerca web e vision come capability generiche.
 - Un server MCP con OAuth, così qualunque coding agent può leggere e scrivere nei miei dati.
-- Le chat di Claude Code sincronizzate dal laptop e collegate al progetto giusto: l'attività di un progetto la ricava da lì, non la scrivo a mano.
+- Le chat di Claude Code sincronizzate dal laptop e i commit dei progetti attivi, collegati al progetto giusto: l'attività di un progetto la ricava da lì, e un commit è la prova per chiudere un task.
+- Le Aree dividono la navigazione per ambito, ognuna con le sue voci, e un launcher passa dall'una all'altra.
+- Campi che si compilano da soli dallo storico, con la correzione a mano che vince sempre: la stessa idea di [pgbee](/it/progetti/pgbee), portata dentro il motore.
+- File tabellari, come gli estratti conto, importati con formati che sono dati e non codice: una banca nuova è una riga, non una funzione.
+- Da una bozza scritta di fretta esce un messaggio pronto nello stile scelto, e si ritocca ("più corto") senza riscriverlo.
 
 Backend Python con FastAPI, SQLAlchemy async e PostgreSQL con pgvector, frontend React. È self-hosted e single-user, con deploy blue-green. È il punto d'arrivo di una serie di assistenti personali, uno diverso dall'altro: sono qui sotto, dal primo.
