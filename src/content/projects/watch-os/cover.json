@@ -1,15 +1,8 @@
 {
-	"accent": "#e879f9",
-	"prompt": "hold button, speak",
+	"accent": "#de3163",
 	"panel": {
-		"kind": "list",
-		"lines": [
-			"ESP32-S3, 2-inch AMOLED",
-			"firmware in C on ESP-IDF",
-			"push-to-talk, no wake word",
-			"full-duplex WebSocket audio",
-			"STT, model, tools, voice on the server"
-		]
+		"kind": "image",
+		"image": "cover-panel.png"
 	},
 	"out": "cover.webp"
 }
