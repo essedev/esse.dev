@@ -10,10 +10,18 @@ tags:
   - "Python"
   - "Valhalla"
   - "PWA"
+  - "Open Data"
 why: "Nel dubbio una zona è vietata: una regola non trascritta, un orario non trovato o un calendario scaduto danno \"non puoi entrare\", mai \"libero\". L'unico errore che costa una multa è dire che si entra quando non si può."
+previously:
+  - name: "based-routing"
+    year: 2026
+    note: "Un trip planner per i mezzi che considera tutte le stazioni raggiungibili a piedi e sceglie quella che ti fa arrivare prima: orari di Trenord, ATM e due reti extraurbane, circa 5 milioni di passaggi, e i ritardi di Trenord in tempo reale. Una PWA con 176 test, ferma in attesa dei dati ufficiali."
+  - name: "Milanoz"
+    year: 2026
+    note: "Una mappa degli 88 quartieri ufficiali di Milano con abitanti, redditi, prezzi delle case, verde e isole di calore, più i luoghi con la loro storia. Statica: una pipeline in Python prepara i dati, senza backend."
 ---
 
-A Milano in auto la domanda non è solo come arrivo, ma se posso entrare: ZTL con orari diversi, aree pedonali, Area B e Area C con regole che dipendono da alimentazione, classe Euro e deroghe. Il navigatore ti porta dentro senza chiederti che auto guidi. Varco parte da lì: dice per ogni zona se puoi entrare, a quali condizioni e fino a quando, e ti guida evitando quelle vietate.
+Da quando mi sono trasferito a Milano, nel 2026, la città mi ha dato tre progetti: Varco è il terzo, i primi due sono qui sotto. In auto la domanda non è solo come arrivo, ma se posso entrare: ZTL con orari diversi, aree pedonali, Area B e Area C con regole che dipendono da alimentazione, classe Euro e deroghe. Il navigatore ti porta dentro senza chiederti che auto guidi. Varco parte da lì: dice per ogni zona se puoi entrare, a quali condizioni e fino a quando, e ti guida evitando quelle vietate.
 
 ## Come funziona
 
