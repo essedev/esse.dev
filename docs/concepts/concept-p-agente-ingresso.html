@@ -1,0 +1,442 @@
+<!doctype html>
+<html lang="it">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Concept P - Ingresso dell'agente</title>
+		<!--
+			Concept P: cosa trova chi apre la pagina dell'agente senza una conversazione, perché
+			capisca cosa fa e come leggerlo prima di scrivere.
+			Tasti: x a b c d per la variante, 1 2 per le sottovarianti di D, r riavvia
+			l'animazione, t tema, m larghezza telefono (390), p nasconde la barra.
+
+			Il problema: oggi la pagina vuota è un titolo, una frase, quattro domande e l'elenco dei
+			15 tool per nome (search_site, repo_overview...). Dice cosa c'è, non come funziona né
+			cosa si vedrà: tool call, sotto-agenti, token e crediti arrivano senza preavviso alla
+			prima risposta.
+
+			X  oggi: titolo, intro, "Prova a chiedere", "Strumenti" per gruppo, la nota su Jev.
+			A  dimostrazione: una conversazione registrata si rigioca da sola (domanda, Jev, due
+			   tool, risposta che arriva, token e crediti), etichettata come registrazione e senza
+			   costi; poi "Ora chiedi tu". Insegna mostrando, con la UI vera.
+			B  presentazione: il primo messaggio è dell'agente, scritto e non generato: cosa sa fare
+			   in tre righe, ognuna con un esempio della riga che vedrai, e le domande come risposte
+			   da toccare. La pagina comincia come una conversazione.
+			C  anatomia: un turno disegnato come una catena (tu, Jev, modello, tool, risposta,
+			   costo); un segnale la percorre una volta, ogni anello si apre con una frase. Spiega la
+			   trasparenza, che è la firma del sito, prima ancora di usarlo.
+
+			D  sintesi (giro 2): la pagina pulita di oggi; al posto dell'elenco dei 15 tool per nome,
+			   le tre capacità di B in tre righe, ognuna con l'esempio della riga che vedrai, e una
+			   frase su Jev e i crediti. Stessa altezza del blocco "Strumenti" di oggi.
+			   D1 le tre capacità come tre schede piccole in fila. D2 solo le tre frasi, l'esempio
+			   compare passandoci sopra.
+
+			Uguale in A, B, C e D: il campo in basso, le quattro domande vere, nessuna chiamata al
+			modello. L'ingresso c'è solo a conversazione vuota; chi torna con una conversazione la
+			ritrova com'è.
+			Mappatura sul codice di oggi (fattibilità, non piano): tutto sta nel ramo "vuoto" di
+			AgentChat.svelte (oggi `tryAsking` e `tools`). A rigioca eventi di pi registrati, gli
+			stessi che agent-states.spec.ts manda al socket finto: nel codice passerebbero dal
+			reducer che la chat ha già (view.ts), senza socket. B è markup e testi nel `site`.
+			C è markup con un'animazione di opacità (#25 regge con reduced motion).
+			Giro 2: "oggi è così clean; le info come le mostri in B mi piacciono, ma occupano troppo".
+			Aggiunta D con D1 e D2; A, B e C restano per il confronto.
+			Scelta: D, le tre righe al posto dell'elenco dei tool. Aperto: la frase su Jev e i crediti
+			resta sotto, come la nota di oggi.
+			Dati: domande, testi dei tool e nota su Jev sono quelli di src/content/site/it.json; il
+			modello è src/agent/models.ts. La conversazione registrata di A e i file di esempio di B
+			sono inventati ma plausibili (file veri di questo repo).
+		-->
+		<style>
+			@font-face { font-family: 'Geist'; font-weight: 400; src: url(https://cdn.jsdelivr.net/fontsource/fonts/geist@latest/latin-400-normal.woff2) format('woff2'); }
+			@font-face { font-family: 'Geist'; font-weight: 500; src: url(https://cdn.jsdelivr.net/fontsource/fonts/geist@latest/latin-500-normal.woff2) format('woff2'); }
+			@font-face { font-family: 'Geist Mono'; src: url(https://cdn.jsdelivr.net/fontsource/fonts/geist-mono@latest/latin-400-normal.woff2) format('woff2'); }
+			@font-face { font-family: 'Departure Mono'; src: url(../../src/assets/fonts/DepartureMono-Regular.woff2) format('woff2'); }
+
+			/* Tokens copied from src/styles/global.css, as concept N. */
+			:root {
+				--desk: #0a0912;
+				--panel: #0e0e12;
+				--surface: rgb(255 255 255 / 0.05);
+				--surface-60: rgb(255 255 255 / 0.03);
+				--hover: rgb(255 255 255 / 0.08);
+				--line: #23232b;
+				--fg: #efedf5;
+				--text: #cbc9d4;
+				--muted: #9c9aa8;
+				--subtle: #908e9b;
+				--accent: #b59cff;
+				--live: #7dff9b;
+				--completed: #efedf5;
+				--archived: #4d4d58;
+				--radius-control: 6px;
+				--radius-panel: 10px;
+				--radius-window: 18px;
+				--glass-rim: 0.12;
+				--glass-tint: 0;
+				--glass-shadow: 0 12px 32px rgb(0 0 0 / 0.35);
+				--crt-accent-glow: 5px;
+				--veil-rgb: 255 255 255;
+				--wall: radial-gradient(40% 40% at 12% 0%, rgb(110 80 255 / 0.32), transparent 70%), linear-gradient(160deg, #1a1530, #0a0912 60%);
+				--sans: 'Geist', ui-sans-serif, system-ui, sans-serif;
+				--mono: 'Departure Mono', ui-monospace, monospace;
+				--code: 'Geist Mono', ui-monospace, monospace;
+				--ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+				color-scheme: dark;
+			}
+			:root[data-theme='light'] {
+				--desk: #bcb2dc;
+				--panel: #ece8f4;
+				--surface: rgb(40 25 90 / 0.07);
+				--surface-60: rgb(40 25 90 / 0.042);
+				--hover: rgb(40 25 90 / 0.1);
+				--line: #cfc9de;
+				--fg: #17141f;
+				--text: #312d3c;
+				--muted: #504b60;
+				--subtle: #57526a;
+				--accent: #5f40d6;
+				--live: #179a4c;
+				--completed: #17141f;
+				--archived: #a9a2bd;
+				--glass-rim: 0.55;
+				--glass-tint: 0.3;
+				--glass-shadow: 0 1px 2px rgb(40 25 90 / 0.08), 0 14px 36px rgb(40 25 90 / 0.16);
+				--crt-accent-glow: 4px;
+				--veil-rgb: 40 25 90;
+				--wall: radial-gradient(40% 40% at 12% 0%, rgb(255 255 255 / 0.45), transparent 70%), linear-gradient(160deg, #a99ed6, #bcb2dc 60%);
+				color-scheme: light;
+			}
+
+			* { box-sizing: border-box; }
+			html, body { margin: 0; }
+			body { min-height: 100vh; background: var(--wall), var(--desk); background-attachment: fixed; color: var(--text); font: 15px/1.5 var(--sans); -webkit-font-smoothing: antialiased; overscroll-behavior: none; }
+			[hidden] { display: none !important; }
+			button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+
+			/* Concept chrome: not part of the design. */
+			.switch { position: sticky; top: 0; z-index: 100; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; padding: 8px 12px; background: #111; color: #aaa; font: 12px/1.4 ui-monospace, Menlo, monospace; }
+			.switch button { padding: 5px 9px; border-radius: 6px; background: #262626; color: #eee; }
+			.switch button[aria-pressed='true'] { background: #eee; color: #111; }
+			.switch p { margin: 0 0 0 8px; flex: 1 1 240px; min-width: 0; }
+			body[data-chrome='off'] .switch { display: none; }
+
+			/* The window and its pane: the agent page, without the list. */
+			.stage { display: flex; justify-content: center; padding: 28px 24px 40px; }
+			.window { position: relative; width: min(100%, 980px); height: min(820px, calc(100vh - 110px)); display: flex; flex-direction: column; border-radius: var(--radius-window); box-shadow: inset 0 0 0 1px rgb(var(--veil-rgb) / var(--glass-rim)), var(--glass-shadow); overflow: hidden; }
+			.window::before { content: ''; position: absolute; inset: 0; z-index: -1; border-radius: inherit; background: rgb(var(--veil-rgb) / calc(0.035 + var(--glass-tint) * 0.6)); backdrop-filter: blur(32px) saturate(110%); }
+			body[data-phone='on'] .window { width: 390px; height: min(780px, calc(100vh - 110px)); }
+			.toolbar { flex: none; display: flex; align-items: center; gap: 10px; height: 48px; padding: 0 20px; font: 12px var(--mono); color: var(--subtle); }
+			.toolbar b { font-weight: 400; color: var(--fg); }
+			.scroll { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: none; padding: 28px 40px 0; display: flex; flex-direction: column; }
+			body[data-phone='on'] .scroll { padding: 20px 16px 0; }
+			.body { flex: 1; display: flex; flex-direction: column; gap: 32px; }
+
+			.label { margin: 0; font: 0.7rem var(--mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--subtle); font-weight: 400; }
+			.meta { font: 0.7rem var(--mono); color: var(--subtle); }
+			.glowtext { text-shadow: 0 0 var(--crt-accent-glow) color-mix(in srgb, var(--accent) 90%, transparent); }
+			h1 { margin: 0; font: 500 clamp(2rem, 1.4rem + 2vw, 3rem)/1.1 var(--sans); letter-spacing: -0.03em; color: var(--fg); }
+			.intro { margin: 10px 0 0; font-size: 1.0625rem; line-height: 1.6; color: var(--muted); max-width: 62ch; }
+			.starters { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 0; padding: 0; list-style: none; }
+			.starters button { border-radius: var(--radius-control); background: var(--surface); padding: 8px 12px; text-align: left; font-size: 0.9375rem; color: var(--text); transition: background-color 150ms, color 150ms; }
+			.starters button:hover { background: var(--hover); color: var(--fg); }
+
+			.led { position: relative; display: inline-block; flex: none; width: 7px; height: 7px; border-radius: 999px; background: var(--archived); }
+			.led[data-status='working'] { background: var(--live); box-shadow: 0 0 var(--crt-accent-glow) color-mix(in srgb, var(--live) 75%, transparent); animation: breathe 2.8s var(--ease-out) infinite; }
+			.led[data-status='done'] { background: var(--completed); }
+			@keyframes breathe { 50% { opacity: 0.45; } }
+
+			/* X: the tools list as AgentChat.svelte draws it. */
+			.tools { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 6px 24px; margin: 12px 0 0; align-items: baseline; }
+			.tools dt { font: 0.75rem var(--mono); color: var(--subtle); }
+			.tools dd { margin: 0; display: flex; flex-wrap: wrap; gap: 4px; }
+			.tools dd span { padding: 2px 6px; border-radius: var(--radius-control); font: 0.875rem var(--mono); color: var(--text); }
+			.note { margin: 10px 0 0; font-size: 0.875rem; color: var(--subtle); }
+
+			/* The transcript pieces, as the chat draws them today (A replays them, B shows samples). */
+			.user { display: flex; gap: 12px; font: 0.875rem var(--mono); color: var(--fg); }
+			.user .caret { color: var(--accent); }
+			.answer { padding-left: 24px; display: flex; flex-direction: column; gap: 10px; }
+			.prose { margin: 0; font-size: 1.0625rem; line-height: 1.65; color: var(--text); }
+			.prose strong { font-weight: 500; color: var(--fg); }
+			.tool { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: var(--radius-control); background: var(--surface-60); font: 0.75rem var(--mono); color: var(--muted); min-width: 0; }
+			.tool .name { color: var(--fg); }
+			.tool .arg { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+			.status { display: flex; align-items: center; gap: 8px; padding-left: 24px; font: 0.75rem var(--mono); color: var(--subtle); }
+			.triage { padding-left: 24px; font: 0.7rem var(--mono); color: var(--subtle); }
+			.triage b { font-weight: 400; color: var(--accent); }
+			.word { animation: phosphor 1.1s var(--ease-out) both; }
+			@keyframes phosphor { from { color: var(--accent); text-shadow: 0 0 var(--crt-accent-glow) color-mix(in srgb, var(--accent) 90%, transparent); } }
+			.in { animation: rise 450ms var(--ease-out) both; }
+			@keyframes rise { from { opacity: 0; } }
+
+			/* A: the recording. */
+			.rec { display: flex; flex-direction: column; gap: 14px; padding: 18px 20px 20px; border-radius: var(--radius-panel); background: var(--surface-60); box-shadow: inset 0 0 0 1px rgb(var(--veil-rgb) / 0.06); }
+			.rec-head { display: flex; align-items: center; gap: 10px; font: 0.7rem var(--mono); color: var(--subtle); }
+			.rec-head .dot { width: 7px; height: 7px; border-radius: 999px; background: var(--accent); box-shadow: 0 0 var(--crt-accent-glow) var(--accent); }
+			.rec-head .again { margin-left: auto; color: var(--subtle); }
+			.rec-head .again:hover { color: var(--fg); }
+			.rec-log { display: flex; flex-direction: column; gap: 12px; min-height: 260px; }
+
+			/* B: the agent's first message. */
+			.hello { display: flex; flex-direction: column; gap: 18px; padding-left: 24px; }
+			.hello .who { font: 0.7rem var(--mono); color: var(--subtle); display: flex; align-items: center; gap: 8px; margin-left: -24px; }
+			.hello .who b { font-weight: 400; color: var(--accent); }
+			.cap { display: flex; flex-direction: column; gap: 8px; }
+			.cap .tool { opacity: 0.85; }
+			.cap .tool .eg { margin-left: auto; color: var(--subtle); flex: none; }
+
+			/* C: the chain of a turn. */
+			.chain { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 0; margin-top: 14px; position: relative; }
+			body[data-phone='on'] .chain { grid-template-columns: 1fr; }
+			.link { position: relative; display: flex; flex-direction: column; gap: 6px; padding: 14px 12px; text-align: left; border-radius: var(--radius-control); transition: background-color 150ms; }
+			.link:hover, .link[aria-pressed='true'] { background: var(--surface); }
+			.link .k { font: 0.7rem var(--mono); color: var(--subtle); }
+			.link .v { font: 0.9375rem var(--sans); color: var(--fg); }
+			.link .s { font: 0.7rem var(--mono); color: var(--muted); }
+			.link::after { content: '→'; position: absolute; right: -6px; top: 14px; font: 0.75rem var(--mono); color: var(--subtle); }
+			.link:last-child::after { content: none; }
+			body[data-phone='on'] .link::after { content: '↓'; right: auto; left: 14px; top: auto; bottom: -10px; }
+			.link.lit .v { color: var(--accent); text-shadow: 0 0 var(--crt-accent-glow) color-mix(in srgb, var(--accent) 70%, transparent); }
+			.link.lit .k { color: var(--accent); }
+			.chain-say { margin: 10px 0 0; min-height: 3.2em; font-size: 0.9375rem; color: var(--muted); max-width: 70ch; }
+
+			/* D: the three abilities, compact. */
+			.abil { display: flex; flex-direction: column; margin: 12px 0 0; }
+			.ab { display: grid; grid-template-columns: 9.5rem minmax(0, 1fr) minmax(0, 17rem); align-items: center; gap: 16px; padding: 7px 0; }
+			.ab + .ab { box-shadow: inset 0 1px 0 rgb(var(--veil-rgb) / 0.06); }
+			.ab b { font-weight: 500; font-size: 0.9375rem; color: var(--fg); }
+			.ab .d { font-size: 0.9375rem; color: var(--muted); min-width: 0; }
+			.ab .tool { padding: 5px 10px; }
+			.ab .tool .eg { display: none; }
+			/* On a phone the example row would double the block: the sentences only. */
+			body[data-phone='on'] .ab { grid-template-columns: 1fr; gap: 2px; }
+			body[data-phone='on'] .ab .tool { display: none; }
+			/* D1: three small cards in a row. */
+			body[data-v='d1'] .abil { flex-direction: row; gap: 10px; }
+			body[data-v='d1'] .ab { flex: 1; min-width: 0; grid-template-columns: 1fr; gap: 6px; padding: 12px; border-radius: var(--radius-panel); background: var(--surface-60); box-shadow: none; align-content: start; }
+			body[data-v='d1'] .ab .d { font-size: 0.875rem; }
+			body[data-v='d1'] .ab { display: flex; flex-direction: column; }
+			body[data-v='d1'] .ab .tool { margin-top: auto; }
+			body[data-phone='on'][data-v='d1'] .abil { flex-direction: column; }
+			/* D2: the sentences only; the example shows on hover or focus. */
+			body[data-v='d2'] .ab { grid-template-columns: 9.5rem minmax(0, 1fr) minmax(0, 17rem); }
+			body[data-v='d2'] .ab .tool { opacity: 0; transition: opacity 200ms; }
+			body[data-v='d2'] .ab:is(:hover, :focus-within) .tool { opacity: 1; }
+
+			/* The composer, as in concept N. */
+			.dock { position: sticky; bottom: 12px; z-index: 10; margin: 32px 0 12px; }
+			.composer { border-radius: var(--radius-panel); padding: 12px 12px 10px; background: color-mix(in srgb, var(--panel) 60%, transparent); box-shadow: inset 0 0 0 1px rgb(var(--veil-rgb) / var(--glass-rim)), var(--glass-shadow); backdrop-filter: blur(32px) saturate(110%); }
+			.field { display: flex; align-items: flex-end; gap: 12px; }
+			.field .caret { padding-bottom: 6px; color: var(--accent); font: 0.875rem var(--mono); }
+			.field input { flex: 1; min-width: 0; height: 32px; background: transparent; border: 0; outline: 0; font: 0.875rem var(--mono); color: var(--fg); }
+			.field input::placeholder { color: var(--subtle); }
+			.chip { display: inline-flex; align-items: center; gap: 0.4rem; height: 1.75rem; padding: 0 0.6rem; border-radius: var(--radius-control); background: var(--surface); color: var(--muted); font: 0.75rem var(--mono); }
+			.foot { margin-top: 8px; display: flex; gap: 16px; align-items: center; padding: 0 4px; font: 0.7rem var(--mono); color: var(--subtle); }
+			.foot .r { margin-left: auto; }
+
+			@media (prefers-reduced-motion: reduce) { .in { animation: none; } }
+		</style>
+	</head>
+	<body data-v="x">
+		<div class="switch">
+			<span data-buttons></span>
+			<p data-desc></p>
+			<button data-key="r">r riavvia</button>
+			<button data-key="m">m telefono</button>
+			<button data-key="t">t tema</button>
+		</div>
+
+		<div class="stage">
+			<div class="window">
+				<div class="toolbar"><span>~ /</span><b>agente</b></div>
+				<div class="scroll">
+					<div class="body">
+						<header>
+							<h1>Agente</h1>
+							<p class="intro">Un agente con tool veri che lavora sui miei progetti e mostra come lo fa: ogni chiamata, i token e il costo.</p>
+						</header>
+
+						<!-- X: today. -->
+						<section data-only="x">
+							<h2 class="label">Prova a chiedere</h2>
+							<ul class="starters" data-starters></ul>
+						</section>
+						<section data-only="x">
+							<h2 class="label">Strumenti</h2>
+							<dl class="tools">
+								<dt>Sul sito</dt><dd><span>search_site</span><span>read_page</span><span>list_projects</span><span>show_page</span></dd>
+								<dt>Sul codice</dt><dd><span>repo_overview</span><span>list_files</span><span>read_file</span><span>search_code</span><span>recent_commits</span></dd>
+								<dt>Capacità</dt><dd><span>render</span><span>run_code</span><span>delegate</span><span>draft_message</span><span>get_budget</span></dd>
+							</dl>
+							<p class="note">Prima di ogni messaggio Jev decide se è in tema, in circa 300 ms. Sotto ogni risposta: token e crediti usati.</p>
+						</section>
+
+						<!-- A: a recorded run replays itself. -->
+						<section data-only="a" class="rec">
+							<div class="rec-head"><span class="dot"></span>registrazione di una conversazione vera · non usa i tuoi crediti<button class="again" data-key="r">rivedi ↺</button></div>
+							<div class="rec-log" data-rec></div>
+						</section>
+						<section data-only="a">
+							<h2 class="label">Ora chiedi tu</h2>
+							<ul class="starters" data-starters></ul>
+						</section>
+
+						<!-- B: the agent introduces itself. -->
+						<section data-only="b" class="hello" data-hello>
+							<div class="who"><span class="caret glowtext" style="color: var(--accent)">‹</span><b>agente</b> · messaggio di benvenuto, non generato</div>
+							<p class="prose">Ciao. Rispondo su Simone, sui suoi progetti e sul suo codice, con strumenti veri. Ogni cosa che faccio la vedi qui sotto, mentre la faccio.</p>
+							<div class="cap">
+								<p class="prose"><strong>Cerco nel sito</strong>: progetti, metodo, scritti, cosa sta facendo adesso.</p>
+								<div class="tool"><span class="led" data-status="done"></span><span class="name">search_site</span><span class="arg">{"query":"relay"}</span><span class="eg">esempio</span></div>
+							</div>
+							<div class="cap">
+								<p class="prose"><strong>Leggo il codice</strong> dei suoi repo pubblici, riga per riga.</p>
+								<div class="tool"><span class="led" data-status="done"></span><span class="name">read_file</span><span class="arg">{"repo":"essedev/esse.dev","path":"src/agent/triage.ts"}</span><span class="eg">esempio</span></div>
+							</div>
+							<div class="cap">
+								<p class="prose"><strong>Affido i lavori lunghi</strong> a sotto-agenti, e intanto continuiamo a parlare.</p>
+								<div class="tool"><span class="led" data-status="working"></span><span class="name">delegate</span><span class="arg">2 sotto-agenti al lavoro</span><span class="eg">esempio</span></div>
+							</div>
+							<p class="prose">Sotto ogni risposta trovi token e crediti usati: ne hai 1.000 al giorno. Da dove cominciamo?</p>
+							<ul class="starters" data-starters style="margin-top: 0"></ul>
+						</section>
+
+						<!-- C: the chain of a turn. -->
+						<section data-only="c">
+							<h2 class="label">Come funziona un turno</h2>
+							<div class="chain" data-chain>
+								<button class="link" data-say="Scrivi nel campo in basso. Qui sotto vedrai la tua domanda come una riga col prompt."><span class="k">01</span><span class="v">tu</span><span class="s">una domanda</span></button>
+								<button class="link" data-say="Jev, un classificatore piccolo, decide in circa 300 ms se la domanda è in tema e quanto pesa. Se non lo è, rispondo io senza chiamare il modello."><span class="k">02</span><span class="v">Jev</span><span class="s">in tema? 300 ms</span></button>
+								<button class="link" data-say="Il modello è z-ai/glm-5.3-flash, via OpenRouter. Ragiona e decide quali strumenti usare."><span class="k">03</span><span class="v">modello</span><span class="s">glm-5.3-flash</span></button>
+								<button class="link" data-say="Cerca nel sito, legge il codice dei repo pubblici, lancia fino a tre sotto-agenti. Ogni chiamata compare come una riga che puoi aprire."><span class="k">04</span><span class="v">strumenti</span><span class="s">sito · codice · sotto-agenti</span></button>
+								<button class="link" data-say="La risposta arriva parola per parola, con i link alle pagine del sito che cita."><span class="k">05</span><span class="v">risposta</span><span class="s">con le fonti</span></button>
+								<button class="link" data-say="Sotto ogni risposta: token e crediti usati. 1 credito vale 0,01 centesimi, ne hai 1.000 al giorno."><span class="k">06</span><span class="v">costo</span><span class="s">token · crediti</span></button>
+							</div>
+							<p class="chain-say" data-chain-say></p>
+						</section>
+						<section data-only="c">
+							<h2 class="label">Prova a chiedere</h2>
+							<ul class="starters" data-starters></ul>
+						</section>
+
+						<!-- D: today's page, B's abilities in the space of the tools list. -->
+						<section data-only="d">
+							<h2 class="label">Prova a chiedere</h2>
+							<ul class="starters" data-starters></ul>
+						</section>
+						<section data-only="d">
+							<h2 class="label">Cosa sa fare</h2>
+							<div class="abil">
+								<div class="ab" tabindex="0"><b>Cerca nel sito</b><span class="d">progetti, metodo, scritti, cosa sta facendo adesso</span><span class="tool"><span class="led" data-status="done"></span><span class="name">search_site</span><span class="arg">{"query":"relay"}</span></span></div>
+								<div class="ab" tabindex="0"><b>Legge il codice</b><span class="d">dei repo pubblici, riga per riga</span><span class="tool"><span class="led" data-status="done"></span><span class="name">read_file</span><span class="arg">src/agent/triage.ts</span></span></div>
+								<div class="ab" tabindex="0"><b>Lancia sotto-agenti</b><span class="d">sui lavori lunghi, e intanto parlate</span><span class="tool"><span class="led" data-status="working"></span><span class="name">delegate</span><span class="arg">2 al lavoro</span></span></div>
+							</div>
+							<p class="note">Prima di ogni messaggio Jev decide se è in tema, in circa 300 ms. Sotto ogni risposta vedi token e crediti usati: ne hai 1.000 al giorno.</p>
+						</section>
+					</div>
+
+					<div class="dock">
+						<div class="composer">
+							<div class="field"><span class="caret glowtext">›</span><input placeholder="Chiedimi qualcosa" /><span class="chip">invia</span></div>
+							<div class="foot"><span class="led" data-status="working"></span>z-ai/glm-5.3-flash<span class="r">salvate 90 giorni</span></div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<script>
+			const DESC = {
+				x: 'oggi: titolo, domande, elenco dei tool per nome, la nota su Jev',
+				a: 'dimostrazione: una conversazione registrata si rigioca da sola, poi "ora chiedi tu"',
+				b: "presentazione: il primo messaggio è dell'agente, tre capacità con l'esempio della riga che vedrai",
+				c: 'anatomia: un turno come catena (tu, Jev, modello, tool, risposta, costo), un segnale la percorre',
+				d: "sintesi: la pagina di oggi, con le tre capacità di B in tre righe al posto dell'elenco dei tool",
+				d1: 'schede: D con le tre capacità come tre schede piccole in fila',
+				d2: "al passaggio: D con le sole frasi, l'esempio compare passandoci sopra"
+			};
+			const STARTERS = ["Che differenza c'è tra Relay e Portsage?", 'Come lavora Simone con i coding agent?', 'Su cosa sta lavorando adesso?', 'Come fa Portsage a sapere quali porte sono occupate? Mostrami il codice'];
+			const KEY = `concept:${location.pathname}`;
+			const root = document.documentElement;
+			const body = document.body;
+			const load = () => { try { return JSON.parse(localStorage.getItem(KEY) || '{}'); } catch { return {}; } };
+			const save = (s) => { try { localStorage.setItem(KEY, JSON.stringify(s)); } catch {} };
+
+			document.querySelectorAll('[data-starters]').forEach((ul) => (ul.innerHTML = STARTERS.map((q) => `<li><button>${q}</button></li>`).join('')));
+			const base = (v) => v.replace(/\d+$/, '');
+			const label = (v) => (/\d$/.test(v) ? `${v.slice(-1)} ${base(v).toUpperCase()} ${DESC[v].split(':')[0]}` : `${v.toUpperCase()} ${DESC[v].split(':')[0]}`);
+			document.querySelector('[data-buttons]').innerHTML = Object.keys(DESC).map((v) => `<button data-v="${v}">${label(v)}</button>`).join(' ');
+
+			let timers = [];
+			const later = (ms, fn) => timers.push(setTimeout(fn, ms));
+			const stop = () => { timers.forEach(clearTimeout); timers = []; };
+
+			// A: the recording, a whole run in about 9 s.
+			const rec = document.querySelector('[data-rec]');
+			const add = (html) => { const d = document.createElement('div'); d.className = 'in'; d.innerHTML = html; rec.append(d); return d; };
+			const ANSWER = 'Relay è il terminale dove fa girare più coding agent in parallelo; Portsage è il registro delle porte che quei progetti usano. Uno fa lavorare gli agenti, l\'altro evita che si pestino i piedi.'.split(' ');
+			const playA = () => {
+				rec.innerHTML = '';
+				const q = add('<p class="user"><span class="caret glowtext">›</span><span data-q></span></p>');
+				const text = "Che differenza c'è tra Relay e Portsage?";
+				[...text].forEach((ch, i) => later(300 + i * 35, () => (q.querySelector('[data-q]').textContent += ch)));
+				let t = 300 + text.length * 35 + 300;
+				let status;
+				later(t, () => (status = add('<p class="status"><span class="led" data-status="working"></span><span data-s>jev valuta la domanda</span></p>')));
+				later((t += 700), () => { status.remove(); add('<p class="triage">jev · <b>su Simone</b> · media · 312 ms</p>'); status = add('<p class="status"><span class="led" data-status="working"></span><span>pensa</span></p>'); });
+				later((t += 800), () => { status.remove(); add('<div class="answer"><div class="tool"><span class="led" data-status="working" data-l1></span><span class="name">search_site</span><span class="arg">{"query":"relay portsage"}</span></div></div>'); });
+				later((t += 900), () => { rec.querySelector('[data-l1]').dataset.status = 'done'; add('<div class="answer"><div class="tool"><span class="led" data-status="working" data-l2></span><span class="name">read_page</span><span class="arg">{"page":"projects/portsage"}</span></div></div>'); });
+				later((t += 900), () => {
+					rec.querySelector('[data-l2]').dataset.status = 'done';
+					const a = add('<div class="answer"><p class="prose" data-a></p></div>');
+					ANSWER.forEach((w, i) => later(i * 70, () => { const s = document.createElement('span'); s.className = 'word'; s.textContent = w + ' '; a.querySelector('[data-a]').append(s); }));
+					later(ANSWER.length * 70 + 300, () => add('<p class="meta" style="padding-left:24px">4,1k token · 18 crediti</p>'));
+				});
+			};
+
+			// C: the signal runs along the chain once, then the first link stays open.
+			const links = [...document.querySelectorAll('[data-chain] .link')];
+			const say = document.querySelector('[data-chain-say]');
+			const open = (l) => { links.forEach((x) => x.setAttribute('aria-pressed', String(x === l))); say.textContent = l.dataset.say; };
+			links.forEach((l) => l.addEventListener('click', () => open(l)));
+			const playC = () => {
+				links.forEach((l) => l.classList.remove('lit'));
+				say.textContent = '';
+				links.forEach((l, i) => { later(400 + i * 450, () => l.classList.add('lit')); later(400 + i * 450 + 700, () => l.classList.remove('lit')); });
+				later(400 + links.length * 450 + 700, () => open(links[3]));
+			};
+			// B: the welcome arrives once, piece by piece.
+			const playB = () => {
+				const parts = [...document.querySelectorAll('[data-hello] > *')];
+				parts.forEach((p) => (p.style.visibility = 'hidden'));
+				parts.forEach((p, i) => later(200 + i * 380, () => { p.style.visibility = ''; p.classList.remove('in'); void p.offsetWidth; p.classList.add('in'); }));
+			};
+			const play = () => { stop(); const v = body.dataset.v; if (v === 'a') playA(); if (v === 'b') playB(); if (v === 'c') playC(); };
+
+			const pick = (v) => {
+				if (!DESC[v]) return;
+				body.dataset.v = v;
+				document.querySelectorAll('.switch [data-v]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.v === v)));
+				document.querySelector('[data-desc]').textContent = DESC[v];
+				document.querySelectorAll('[data-only]').forEach((el) => { const l = el.dataset.only.split(' '); el.hidden = !l.includes(v) && !l.includes(base(v)); });
+				history.replaceState(null, '', `${location.search}#${v}`);
+				play();
+			};
+			const setTheme = (t) => { root.dataset.theme = t; save({ ...load(), theme: t }); };
+			const key = (k) => {
+				if (k === 't') setTheme(root.dataset.theme === 'dark' ? 'light' : 'dark');
+				else if (k === 'm') body.dataset.phone = body.dataset.phone === 'on' ? 'off' : 'on';
+				else if (k === 'p') body.dataset.chrome = body.dataset.chrome === 'off' ? 'on' : 'off';
+				else if (k === 'r') play();
+				else if (/^\d$/.test(k)) pick(`${base(body.dataset.v)}${k}`);
+				else pick(k);
+			};
+			document.addEventListener('click', (e) => { const b = e.target.closest('.switch [data-v]'); if (b) pick(b.dataset.v); const k = e.target.closest('[data-key]'); if (k) key(k.dataset.key); });
+			addEventListener('keydown', (e) => { if (e.metaKey || e.ctrlKey || e.altKey || e.target.closest('input, textarea')) return; key(e.key.toLowerCase()); });
+			setTheme(load().theme || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'));
+			pick(DESC[location.hash.slice(1)] ? location.hash.slice(1) : 'x');
+		</script>
+	</body>
+</html>

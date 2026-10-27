@@ -1,0 +1,534 @@
+<!doctype html>
+<html lang="it">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Concept Q - Leggibilità della chat</title>
+		<!--
+			Concept Q: come si distinguono a colpo d'occhio, nella conversazione con l'agente, chi
+			parla, il lavoro che fa (ragionamento, tool, sotto-agenti) e la risposta.
+			Tasti: x a b c d per la variante, 1-4 per le sottovarianti di D, t tema, m larghezza telefono (390), p nasconde la barra.
+
+			Il problema, misurato sulla pagina vera (socket finto, 27/10): la domanda e la risposta
+			si distinguono solo per il font, mono contro sans, e nessun segno separa i turni. Ogni
+			chiamata è la stessa riga (punto, nome, JSON grezzo) sullo stesso velo `surface/60`:
+			non dice se cerca nel sito, legge codice o lancia sotto-agenti, e nel tema chiaro il velo
+			quasi sparisce. "2,4k token · 10 crediti" torna dopo ogni passo, tre volte per risposta.
+
+			X  oggi: la replica di AgentChat.svelte e DelegateView.svelte.
+			A  ruoli: ogni cosa ha un materiale suo. La domanda è una nuvola lilla a destra (come
+			   la card "Chiedi all'agente" della home), il lavoro è un elenco unico con un'icona per
+			   famiglia e frasi leggibili al posto del JSON, la risposta resta prosa piena; token e
+			   crediti una volta sola, in fondo al turno.
+			B  traccia: il lavoro di un turno sta in un pannello solo, aperto mentre lavora e chiuso
+			   in una riga quando ha finito ("3 passi · 7,2k token · 30 crediti"), con i passi
+			   numerati e il tempo di ciascuno. La domanda resta una riga col prompt, più grande, e
+			   un filo separa i turni. La risposta è la cosa più visibile della pagina.
+			C  tinte: A con un colore per famiglia di tool (sito lilla, codice ciano, sotto-agenti
+			   ambra) su icone ed etichette, mai sul testo. Rompe la regola dei due colori di #15
+			   (lilla per l'identità, verde per ciò che è vivo): è qui perché la richiesta è
+			   "chiarezza di colore", e si sceglie sapendolo.
+
+			Uguale in A, B e C: il verde solo sui LED vivi, il fosforo sulle parole che arrivano,
+			nessun dato nuovo dal server.
+			Mappatura sul codice di oggi (fattibilità, non piano): tutto è AgentChat.svelte e
+			DelegateView.svelte, coi dati che il transcript ha già (nome del tool, argomenti,
+			risultato, `usage` di ogni messaggio). Le frasi leggibili sono una mappa nome del tool →
+			verbo nel `site` (oggi ci sono già le descrizioni `agentTool*`); i conteggi del risultato
+			(3 risultati, 212 righe) vanno letti dal testo del risultato o dai `details`, tool per
+			tool. Il pannello di B somma `usage` dei messaggi del turno. Le tinte di C sono token
+			nuovi in @theme, coi valori del chiaro.
+			D  sintesi (giro 2): la domanda nella nuvola di A, il lavoro raggruppato nel pannello di
+			   B, e dentro le righe di A (icona e famiglia, frase leggibile, risultato). La nuvola
+			   separa già i turni: il filo di B non serve.
+
+			   D1 filo: niente scatola; i passi sono nodi su un filo sottile, l'icona è il nodo.
+			   D2 gettoni: ogni passo è un gettone (icona, cosa, risultato) su una riga che va a
+			   capo; si legge tutto senza aprire niente.
+			   D3 terminale: il pannello è un piccolo log in mono, più scuro, `› search_site
+			   «...»  → 3 risultati  0,4 s`: il lavoro si legge come una sessione.
+			   D4 cascata: come D, ma nell'intestazione una barra divisa per passi e in ogni riga
+			   la sua barra nel tempo, come la scheda di rete degli strumenti per sviluppatori.
+
+			Giro 2: "un mix tra A, la separazione dei ruoli, e B, mi piace come raggruppiamo".
+			Aggiunta D.
+			Giro 3: "mi piace D, fammi altre versioni delle card di raggruppamento". Aggiunte D1-D4,
+			disegnate dallo stesso modello dei dati dei due turni.
+			Scelta: D2, la domanda nella nuvola e il lavoro come gettoni sotto una riga di
+			intestazione (stato, passi, tempo, token, crediti). Aperti: un gettone si apre su
+			chiamata e risultato come la riga di oggi, per non perdere la trasparenza; il
+			ragionamento, che in D2 non ha gettone, resta raggiungibile dall'intestazione.
+			Dati: la conversazione è quella del socket finto, con i tool e i testi veri; durate e
+			conteggi dei risultati sono inventati ma plausibili.
+		-->
+		<style>
+			@font-face { font-family: 'Geist'; font-weight: 400; src: url(https://cdn.jsdelivr.net/fontsource/fonts/geist@latest/latin-400-normal.woff2) format('woff2'); }
+			@font-face { font-family: 'Geist'; font-weight: 500; src: url(https://cdn.jsdelivr.net/fontsource/fonts/geist@latest/latin-500-normal.woff2) format('woff2'); }
+			@font-face { font-family: 'Geist Mono'; src: url(https://cdn.jsdelivr.net/fontsource/fonts/geist-mono@latest/latin-400-normal.woff2) format('woff2'); }
+			@font-face { font-family: 'Departure Mono'; src: url(../../src/assets/fonts/DepartureMono-Regular.woff2) format('woff2'); }
+
+			/* Tokens copied from src/styles/global.css, as concept N; C adds the family tints. */
+			:root {
+				--desk: #0a0912;
+				--panel: #0e0e12;
+				--surface: rgb(255 255 255 / 0.05);
+				--surface-60: rgb(255 255 255 / 0.03);
+				--hover: rgb(255 255 255 / 0.08);
+				--line: #23232b;
+				--fg: #efedf5;
+				--text: #cbc9d4;
+				--muted: #9c9aa8;
+				--subtle: #908e9b;
+				--accent: #b59cff;
+				--live: #7dff9b;
+				--completed: #efedf5;
+				--archived: #4d4d58;
+				--tint-site: #b59cff;
+				--tint-code: #7fd6ff;
+				--tint-agents: #ffc56e;
+				--radius-control: 6px;
+				--radius-panel: 10px;
+				--radius-window: 18px;
+				--glass-rim: 0.12;
+				--glass-tint: 0;
+				--glass-shadow: 0 12px 32px rgb(0 0 0 / 0.35);
+				--crt-accent-glow: 5px;
+				--veil-rgb: 255 255 255;
+				--wall: radial-gradient(40% 40% at 12% 0%, rgb(110 80 255 / 0.32), transparent 70%), linear-gradient(160deg, #1a1530, #0a0912 60%);
+				--sans: 'Geist', ui-sans-serif, system-ui, sans-serif;
+				--mono: 'Departure Mono', ui-monospace, monospace;
+				--code: 'Geist Mono', ui-monospace, monospace;
+				--ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+				color-scheme: dark;
+			}
+			:root[data-theme='light'] {
+				--desk: #bcb2dc;
+				--panel: #ece8f4;
+				--surface: rgb(40 25 90 / 0.07);
+				--surface-60: rgb(40 25 90 / 0.042);
+				--hover: rgb(40 25 90 / 0.1);
+				--line: #cfc9de;
+				--fg: #17141f;
+				--text: #312d3c;
+				--muted: #504b60;
+				--subtle: #57526a;
+				--accent: #5f40d6;
+				--live: #179a4c;
+				--completed: #17141f;
+				--archived: #a9a2bd;
+				--tint-site: #5f40d6;
+				--tint-code: #0e7090;
+				--tint-agents: #93590a;
+				--glass-rim: 0.55;
+				--glass-tint: 0.3;
+				--glass-shadow: 0 1px 2px rgb(40 25 90 / 0.08), 0 14px 36px rgb(40 25 90 / 0.16);
+				--crt-accent-glow: 4px;
+				--veil-rgb: 40 25 90;
+				--wall: radial-gradient(40% 40% at 12% 0%, rgb(255 255 255 / 0.45), transparent 70%), linear-gradient(160deg, #a99ed6, #bcb2dc 60%);
+				color-scheme: light;
+			}
+
+			* { box-sizing: border-box; }
+			html, body { margin: 0; }
+			body { min-height: 100vh; background: var(--wall), var(--desk); background-attachment: fixed; color: var(--text); font: 15px/1.5 var(--sans); -webkit-font-smoothing: antialiased; overscroll-behavior: none; }
+			[hidden] { display: none !important; }
+			button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+			p { margin: 0; }
+			svg { flex: none; }
+
+			/* Concept chrome: not part of the design. */
+			.switch { position: sticky; top: 0; z-index: 100; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; padding: 8px 12px; background: #111; color: #aaa; font: 12px/1.4 ui-monospace, Menlo, monospace; }
+			.switch button { padding: 5px 9px; border-radius: 6px; background: #262626; color: #eee; }
+			.switch button[aria-pressed='true'] { background: #eee; color: #111; }
+			.switch p { margin: 0 0 0 8px; flex: 1 1 240px; min-width: 0; }
+			body[data-chrome='off'] .switch { display: none; }
+
+			.stage { display: flex; justify-content: center; padding: 28px 24px 40px; }
+			.window { position: relative; width: min(100%, 980px); height: min(860px, calc(100vh - 110px)); display: flex; flex-direction: column; border-radius: var(--radius-window); box-shadow: inset 0 0 0 1px rgb(var(--veil-rgb) / var(--glass-rim)), var(--glass-shadow); overflow: hidden; }
+			.window::before { content: ''; position: absolute; inset: 0; z-index: -1; border-radius: inherit; background: rgb(var(--veil-rgb) / calc(0.035 + var(--glass-tint) * 0.6)); backdrop-filter: blur(32px) saturate(110%); }
+			body[data-phone='on'] .window { width: 390px; }
+			.toolbar { flex: none; display: flex; align-items: center; gap: 10px; height: 48px; padding: 0 20px; font: 12px var(--mono); color: var(--subtle); }
+			.toolbar b { font-weight: 400; color: var(--fg); }
+			.toolbar .r { margin-left: auto; }
+			.scroll { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: none; padding: 16px 40px 0; display: flex; flex-direction: column; }
+			body[data-phone='on'] .scroll { padding: 12px 16px 0; }
+			.log { flex: 1; display: flex; flex-direction: column; gap: 24px; }
+
+			.mono { font-family: var(--mono); }
+			.meta { font: 0.7rem var(--mono); color: var(--subtle); }
+			.glowtext { text-shadow: 0 0 var(--crt-accent-glow) color-mix(in srgb, var(--accent) 90%, transparent); }
+			.led { position: relative; display: inline-block; flex: none; width: 7px; height: 7px; border-radius: 999px; background: var(--archived); }
+			.led[data-status='working'] { background: var(--live); box-shadow: 0 0 var(--crt-accent-glow) color-mix(in srgb, var(--live) 75%, transparent); animation: breathe 2.8s var(--ease-out) infinite; }
+			.led[data-status='done'] { background: var(--completed); }
+			@keyframes breathe { 50% { opacity: 0.45; } }
+			.prose { font-size: 1.0625rem; line-height: 1.65; color: var(--text); }
+			.prose p + p, .prose p + ol, .prose ol + p { margin-top: 10px; }
+			.prose ol { margin: 0; padding-left: 1.4em; }
+			.prose li + li { margin-top: 6px; }
+			.prose li::marker { color: var(--accent); }
+			.prose code { font: 0.86em var(--code); color: var(--fg); background: var(--surface); padding: 2px 6px; border-radius: 4px; }
+			.prose strong { font-weight: 500; color: var(--fg); }
+			.prose a { color: var(--fg); text-decoration: underline; text-decoration-color: var(--subtle); text-underline-offset: 3px; }
+
+			/* X: the chat as it is. */
+			.x-user { display: flex; gap: 12px; font: 0.875rem var(--mono); color: var(--fg); }
+			.x-user .caret { color: var(--accent); }
+			.x-answer { padding-left: 24px; display: flex; flex-direction: column; gap: 12px; }
+			.x-think { font: 0.7rem var(--mono); color: var(--subtle); }
+			.x-tool { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: var(--radius-control); background: var(--surface-60); font: 0.75rem var(--mono); color: var(--muted); min-width: 0; }
+			.x-tool .name { color: var(--fg); }
+			.x-tool .arg { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+			.x-delegate { display: flex; flex-direction: column; gap: 8px; padding: 12px 16px; border-radius: var(--radius-control); background: var(--surface-60); }
+			.x-delegate h3 { margin: 0; font: 0.75rem var(--mono); color: var(--subtle); font-weight: 400; }
+			.row { display: flex; align-items: center; gap: 10px; font-size: 0.875rem; min-width: 0; }
+			.row .title { color: var(--fg); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+			.row .right { margin-left: auto; flex: none; display: flex; align-items: center; gap: 8px; font: 0.7rem var(--mono); color: var(--subtle); }
+			.x-report { padding-left: 24px; display: flex; align-items: center; gap: 10px; font: 0.75rem var(--mono); color: var(--muted); }
+			.x-report .who { color: var(--fg); }
+
+			/* A and C: roles by material. */
+			.a-user { align-self: flex-end; max-width: min(80%, 34rem); padding: 10px 14px; border-radius: var(--radius-panel) var(--radius-panel) 3px var(--radius-panel); background: color-mix(in srgb, var(--accent) 18%, transparent); font: 0.9375rem/1.5 var(--sans); color: var(--fg); }
+			.a-turn { display: flex; flex-direction: column; gap: 14px; }
+			.work { display: flex; flex-direction: column; border-radius: var(--radius-panel); background: var(--surface); box-shadow: inset 0 0 0 1px rgb(var(--veil-rgb) / 0.06); overflow: hidden; }
+			.step { display: flex; align-items: center; gap: 10px; padding: 9px 14px; min-width: 0; font-size: 0.875rem; color: var(--text); }
+			.step + .step { box-shadow: inset 0 1px 0 rgb(var(--veil-rgb) / 0.06); }
+			.step .ic { width: 15px; height: 15px; color: var(--muted); }
+			.step .fam { font: 0.7rem var(--mono); color: var(--subtle); width: 6.4rem; flex: none; white-space: nowrap; }
+			body[data-phone='on'] .step .fam { display: none; }
+			body[data-phone='on'] .kids { padding-left: 14px; }
+			.step .what { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+			.step .what b { font-weight: 400; color: var(--fg); }
+			.step .what code { font: 0.8125rem var(--code); color: var(--fg); }
+			.step .res { margin-left: auto; flex: none; display: flex; align-items: center; gap: 8px; font: 0.7rem var(--mono); color: var(--subtle); }
+			.step.thinking .what { color: var(--muted); font-style: normal; }
+			.kids { display: flex; flex-direction: column; gap: 2px; padding: 0 14px 10px 39px; }
+			.kids .row { font-size: 0.875rem; padding: 3px 0; }
+			.turn-foot { display: flex; gap: 14px; font: 0.7rem var(--mono); color: var(--subtle); }
+			.a-report { display: flex; align-items: center; gap: 10px; padding: 9px 14px; border-radius: var(--radius-panel); background: var(--surface-60); font-size: 0.875rem; color: var(--text); }
+			.a-report .meta { margin-left: auto; }
+			/* C: the family tints, on icons and labels only. */
+			body[data-v='c'] .step[data-fam='site'] :is(.ic, .fam) { color: var(--tint-site); }
+			body[data-v='c'] .step[data-fam='code'] :is(.ic, .fam) { color: var(--tint-code); }
+			body[data-v='c'] .step[data-fam='agents'] :is(.ic, .fam) { color: var(--tint-agents); }
+			body[data-v='c'] .a-report .ic { color: var(--tint-agents); }
+
+			/* B: one trace per turn. */
+			.b-turn { display: flex; flex-direction: column; gap: 14px; padding-top: 22px; box-shadow: inset 0 1px 0 rgb(var(--veil-rgb) / 0.08); }
+			.b-turn:first-child { padding-top: 4px; box-shadow: none; }
+			.b-user { display: flex; gap: 12px; align-items: baseline; font: 1rem var(--mono); color: var(--fg); }
+			.b-user .caret { color: var(--accent); }
+			.b-user .when { margin-left: auto; font-size: 0.7rem; color: var(--subtle); }
+			.trace { border-radius: var(--radius-panel); background: var(--surface); box-shadow: inset 0 1px 0 rgb(var(--veil-rgb) / 0.06); }
+			.trace summary { list-style: none; display: flex; align-items: center; gap: 10px; padding: 10px 14px; cursor: pointer; font: 0.75rem var(--mono); color: var(--muted); }
+			.trace summary::-webkit-details-marker { display: none; }
+			.trace summary:hover { color: var(--fg); }
+			.trace summary .tw { color: var(--fg); }
+			.trace summary .glyphs { display: flex; gap: 6px; color: var(--subtle); }
+			.trace summary .chev { margin-left: auto; transition: transform 150ms; }
+			.trace[open] summary .chev { transform: rotate(90deg); }
+			.trace ol { list-style: none; margin: 0; padding: 0 14px 12px; display: flex; flex-direction: column; gap: 2px; counter-reset: s; }
+			.trace li { display: flex; align-items: center; gap: 10px; padding: 5px 0; font-size: 0.875rem; color: var(--text); min-width: 0; counter-increment: s; }
+			.trace li::before { content: counter(s, decimal-leading-zero); font: 0.7rem var(--mono); color: var(--subtle); width: 1.4rem; flex: none; }
+			.trace li .what { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+			.trace li .what b { font-weight: 400; color: var(--fg); }
+			.trace li .what code { font: 0.8125rem var(--code); color: var(--fg); }
+			.trace li .t { margin-left: auto; flex: none; font: 0.7rem var(--mono); color: var(--subtle); }
+			.trace .kids { padding: 0 0 6px 2.6rem; }
+			.b-answer .prose { font-size: 1.125rem; color: var(--fg); }
+
+			/* D: A's roles, B's grouping. */
+			.d-turn { display: flex; flex-direction: column; gap: 14px; }
+			.d-trace { border-radius: var(--radius-panel); background: var(--surface); box-shadow: inset 0 0 0 1px rgb(var(--veil-rgb) / 0.06); overflow: hidden; }
+			.d-trace summary { list-style: none; display: flex; align-items: center; gap: 10px; padding: 10px 14px; cursor: pointer; font: 0.75rem var(--mono); color: var(--muted); }
+			.d-trace summary::-webkit-details-marker { display: none; }
+			.d-trace summary:hover { color: var(--fg); }
+			.d-trace summary .tw { color: var(--fg); }
+			.d-trace summary .glyphs { display: flex; gap: 6px; color: var(--subtle); }
+			.d-trace summary .chev { margin-left: auto; transition: transform 150ms; }
+			.d-trace[open] summary .chev { transform: rotate(90deg); }
+			.d-trace[open] summary { box-shadow: inset 0 -1px 0 rgb(var(--veil-rgb) / 0.06); }
+			.d-trace .step .res .t { color: var(--subtle); }
+			.d-answer .prose { color: var(--fg); }
+			.d-answer .prose ol, .d-answer .prose p { color: var(--text); }
+			.d-answer .prose strong { color: var(--fg); }
+
+			/* D1: a thread of nodes, no box. */
+			.d1-head { display: flex; align-items: center; gap: 10px; font: 0.75rem var(--mono); color: var(--muted); cursor: pointer; }
+			.d1-head .tw { color: var(--fg); }
+			.d1-list { display: flex; flex-direction: column; margin: 8px 0 0 3px; }
+			.d1-step { position: relative; display: flex; align-items: center; gap: 12px; padding: 6px 0; font-size: 0.875rem; color: var(--text); min-width: 0; }
+			.d1-step .node { position: relative; z-index: 1; display: grid; place-items: center; width: 24px; height: 24px; flex: none; border-radius: 999px; background: var(--surface); box-shadow: 0 0 0 4px color-mix(in srgb, var(--panel) 0%, transparent); }
+			.d1-step .node svg { width: 13px; height: 13px; color: var(--muted); }
+			.d1-step:not(:last-child)::after { content: ''; position: absolute; left: 11.5px; top: 30px; bottom: -6px; width: 1px; background: rgb(var(--veil-rgb) / 0.12); }
+			.d1-step .what { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+			.d1-step .what b { font-weight: 400; color: var(--fg); }
+			.d1-step .what code { font: 0.8125rem var(--code); color: var(--fg); }
+			.d1-step .res { margin-left: auto; flex: none; font: 0.7rem var(--mono); color: var(--subtle); display: flex; gap: 8px; align-items: center; }
+			.d1-kids { padding: 0 0 4px 36px; display: flex; flex-direction: column; gap: 2px; }
+
+			/* D2: tokens on a line that wraps. */
+			.d2-box { display: flex; flex-direction: column; gap: 8px; }
+			.d2-head { display: flex; align-items: center; gap: 10px; font: 0.75rem var(--mono); color: var(--muted); }
+			.d2-head .tw { color: var(--fg); }
+			.d2-row { display: flex; flex-wrap: wrap; gap: 6px; }
+			.tok { display: inline-flex; align-items: center; gap: 8px; max-width: 100%; padding: 6px 10px; border-radius: var(--radius-control); background: var(--surface); font-size: 0.8125rem; color: var(--text); min-width: 0; }
+			.tok svg { width: 13px; height: 13px; color: var(--muted); }
+			.tok b { font-weight: 400; color: var(--fg); }
+			.tok code { font: 0.78rem var(--code); color: var(--fg); }
+			.tok .r { font: 0.7rem var(--mono); color: var(--subtle); white-space: nowrap; }
+			.tok .w { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+			/* D3: a small log in mono. */
+			.d3-box { border-radius: var(--radius-panel); background: color-mix(in srgb, var(--desk) 55%, transparent); box-shadow: inset 0 0 0 1px rgb(var(--veil-rgb) / 0.08); font: 0.75rem/1.9 var(--mono); color: var(--muted); overflow: hidden; }
+			:root[data-theme='light'] .d3-box { background: color-mix(in srgb, var(--panel) 70%, transparent); }
+			.d3-box summary { list-style: none; display: flex; gap: 10px; align-items: center; padding: 8px 14px; cursor: pointer; }
+			.d3-box summary::-webkit-details-marker { display: none; }
+			.d3-box summary .tw { color: var(--fg); }
+			.d3-box summary .chev { margin-left: auto; }
+			.d3-lines { padding: 0 14px 10px; }
+			.d3-line { display: grid; grid-template-columns: 1.2em minmax(0, 1fr) auto auto; gap: 10px; align-items: baseline; }
+			.d3-line .p { color: var(--accent); }
+			.d3-line .c { color: var(--fg); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+			.d3-line .c i { font-style: normal; color: var(--muted); }
+			.d3-line .r { color: var(--text); }
+			.d3-line .t { color: var(--subtle); min-width: 3.4em; text-align: right; }
+			.d3-kid { display: grid; grid-template-columns: 2.6em minmax(0, 1fr) auto; gap: 10px; align-items: center; }
+			.d3-kid .c { color: var(--text); }
+
+			/* D4: a waterfall in time. */
+			.wf { position: relative; height: 6px; flex: 1; min-width: 80px; max-width: 220px; border-radius: 3px; background: rgb(var(--veil-rgb) / 0.06); overflow: hidden; }
+			.wf i { position: absolute; top: 0; bottom: 0; border-radius: 3px; background: var(--muted); }
+			.wf i[data-fam='think'] { background: rgb(var(--veil-rgb) / 0.3); }
+			.wf i.live { background: var(--live); box-shadow: 0 0 var(--crt-accent-glow) color-mix(in srgb, var(--live) 70%, transparent); }
+			.d4 .step .res { gap: 10px; }
+			.d4 .step .wf { width: 160px; flex: none; }
+			.d4 summary .wf { max-width: 180px; }
+			body[data-phone='on'] .d4 .step .wf { display: none; }
+
+			/* The composer. */
+			.dock { position: sticky; bottom: 12px; z-index: 10; margin: 28px 0 12px; }
+			.composer { border-radius: var(--radius-panel); padding: 12px 12px 10px; background: color-mix(in srgb, var(--panel) 60%, transparent); box-shadow: inset 0 0 0 1px rgb(var(--veil-rgb) / var(--glass-rim)), var(--glass-shadow); backdrop-filter: blur(32px) saturate(110%); }
+			.chip { display: inline-flex; align-items: center; gap: 0.4rem; height: 1.75rem; padding: 0 0.6rem; border-radius: var(--radius-control); background: var(--surface); color: var(--muted); font: 0.75rem var(--mono); white-space: nowrap; }
+			.rail { display: flex; flex-wrap: wrap; gap: 6px; padding-bottom: 10px; margin-bottom: 10px; box-shadow: inset 0 -1px 0 rgb(var(--veil-rgb) / 0.08); }
+			.field { display: flex; align-items: center; gap: 12px; font: 0.875rem var(--mono); }
+			.field .caret { color: var(--accent); }
+			.field .ph { flex: 1; color: var(--subtle); }
+			.foot { margin-top: 8px; display: flex; gap: 16px; align-items: center; padding: 0 4px; font: 0.7rem var(--mono); color: var(--subtle); }
+			.foot .r { margin-left: auto; }
+		</style>
+	</head>
+	<body data-v="x">
+		<div class="switch">
+			<span data-buttons></span>
+			<p data-desc></p>
+			<button data-key="m">m telefono</button>
+			<button data-key="t">t tema</button>
+		</div>
+
+		<!-- Lucide icons, drawn once and reused. -->
+		<svg width="0" height="0" style="position: absolute">
+			<symbol id="i-search" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21 21-4.34-4.34" /><circle cx="11" cy="11" r="8" /></symbol>
+			<symbol id="i-file" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 12.5 8 15l2 2.5" /><path d="m14 12.5 2 2.5-2 2.5" /><path d="M14 2v4a2 2 0 0 0 2 2h4" /><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7z" /></symbol>
+			<symbol id="i-agents" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8" /><rect width="16" height="12" x="4" y="8" rx="2" /><path d="M2 14h2" /><path d="M20 14h2" /><path d="M15 13v2" /><path d="M9 13v2" /></symbol>
+			<symbol id="i-think" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 18V5" /><path d="M15 13a4.17 4.17 0 0 1-3-4 4.17 4.17 0 0 1-3 4" /><path d="M17.598 6.5A3 3 0 1 0 12 5a3 3 0 1 0-5.598 1.5" /><path d="M17.997 5.125a4 4 0 0 1 2.526 5.77" /><path d="M18 18a4 4 0 0 0 2-7.464" /><path d="M19.967 17.483A4 4 0 1 1 12 18a4 4 0 1 1-7.967-.517" /><path d="M6 18a4 4 0 0 1-2-7.464" /><path d="M6.003 5.125a4 4 0 0 0-2.526 5.77" /></symbol>
+		</svg>
+
+		<div class="stage">
+			<div class="window">
+				<div class="toolbar"><span>~ /</span><b>agente</b><span class="r">nuova conversazione</span></div>
+				<div class="scroll">
+					<!-- X: today. -->
+					<div class="log" data-only="x">
+						<p class="x-user"><span class="caret glowtext">›</span><span>Come lavora Simone con i coding agent?</span></p>
+						<div class="x-answer">
+							<p class="x-think">▸ ragionamento del modello</p>
+							<div class="x-tool"><span class="led" data-status="done"></span><span class="name">search_site</span><span class="arg">{"query":"coding agent metodo"}</span></div>
+							<p class="meta">2,4k token · 10 crediti</p>
+							<div class="x-tool"><span class="led" data-status="done"></span><span class="name">read_file</span><span class="arg">{"repo":"essedev/esse.dev","path":"CLAUDE.md"}</span></div>
+							<p class="meta">2,4k token · 10 crediti</p>
+							<div class="prose" data-answer1></div>
+							<p class="meta">2,4k token · 10 crediti</p>
+						</div>
+						<p class="x-user"><span class="caret glowtext">›</span><span>E il triage del sito come funziona? Guarda il codice.</span></p>
+						<div class="x-answer">
+							<div class="prose"><p>Avvio due sotto-agenti sul codice.</p></div>
+							<div class="x-delegate">
+								<h3>delegate · 2 sotto-agenti</h3>
+								<div class="row"><span class="led" data-status="done"></span><span class="title">Legge triage.ts</span><span class="right">finito · 8,5k token · 15 crediti</span></div>
+								<div class="row"><span class="led" data-status="working"></span><span class="title">Legge budget.ts</span><span class="right">al lavoro</span></div>
+							</div>
+							<p class="meta">2,4k token · 10 crediti</p>
+						</div>
+						<p class="x-report"><span class="led" data-status="done"></span><span class="who">sotto-agente #7 · Legge triage.ts</span>finito ▸</p>
+					</div>
+
+					<!-- A and C: roles by material (C adds the tints). -->
+					<div class="log" data-only="a c">
+						<p class="a-user">Come lavora Simone con i coding agent?</p>
+						<div class="a-turn">
+							<div class="work">
+								<div class="step thinking" data-fam="think"><svg class="ic"><use href="#i-think" /></svg><span class="fam">ragiona</span><span class="what">Cerco nel metodo e nei progetti.</span><span class="res">▸</span></div>
+								<div class="step" data-fam="site"><svg class="ic"><use href="#i-search" /></svg><span class="fam">sito</span><span class="what">cerca <b>«coding agent metodo»</b></span><span class="res">3 risultati<span class="led" data-status="done"></span></span></div>
+								<div class="step" data-fam="code"><svg class="ic"><use href="#i-file" /></svg><span class="fam">codice</span><span class="what">legge <code>CLAUDE.md</code> · essedev/esse.dev</span><span class="res">212 righe<span class="led" data-status="done"></span></span></div>
+							</div>
+							<div class="prose" data-answer1></div>
+							<p class="turn-foot"><span>2 strumenti</span><span>7,2k token · 30 crediti</span></p>
+						</div>
+						<p class="a-user">E il triage del sito come funziona? Guarda il codice.</p>
+						<div class="a-turn">
+							<div class="prose"><p>Avvio due sotto-agenti sul codice.</p></div>
+							<div class="work">
+								<div class="step" data-fam="agents"><svg class="ic"><use href="#i-agents" /></svg><span class="fam">sotto-agenti</span><span class="what">affida <b>2 lavori</b> sul codice</span><span class="res">1 di 2 finito</span></div>
+								<div class="kids">
+									<div class="row"><span class="led" data-status="done"></span><span class="title">Legge triage.ts</span><span class="right">finito · 8,5k token · 15 crediti</span></div>
+									<div class="row"><span class="led" data-status="working"></span><span class="title">Legge budget.ts</span><span class="right">al lavoro</span></div>
+								</div>
+							</div>
+							<div class="a-report"><svg class="ic" width="15" height="15" style="color: var(--muted)"><use href="#i-agents" /></svg><span><b style="font-weight: 400; color: var(--fg)">Legge triage.ts</b> ha finito: i risultati sono andati all'agente</span><span class="meta">apri ▸</span></div>
+							<p class="turn-foot"><span>1 strumento · 1 sotto-agente al lavoro</span><span>2,4k token · 10 crediti</span></p>
+						</div>
+					</div>
+
+					<!-- B: one trace per turn. -->
+					<div class="log" data-only="b">
+						<section class="b-turn">
+							<p class="b-user"><span class="caret glowtext">›</span><span>Come lavora Simone con i coding agent?</span><span class="when">14:02</span></p>
+							<details class="trace">
+								<summary><span class="led" data-status="done"></span><span class="tw">lavoro</span><span>3 passi · 4,1 s · 7,2k token · 30 crediti</span><span class="glyphs"><svg width="13" height="13"><use href="#i-think" /></svg><svg width="13" height="13"><use href="#i-search" /></svg><svg width="13" height="13"><use href="#i-file" /></svg></span><span class="chev">▸</span></summary>
+								<ol>
+									<li><span class="what">ragiona: <span style="color: var(--muted)">cerco nel metodo e nei progetti</span></span><span class="t">0,9 s</span></li>
+									<li><span class="what">cerca nel sito <b>«coding agent metodo»</b>, 3 risultati</span><span class="t">0,4 s</span></li>
+									<li><span class="what">legge <code>CLAUDE.md</code> di essedev/esse.dev, 212 righe</span><span class="t">1,1 s</span></li>
+								</ol>
+							</details>
+							<div class="b-answer"><div class="prose" data-answer1></div></div>
+						</section>
+						<section class="b-turn">
+							<p class="b-user"><span class="caret glowtext">›</span><span>E il triage del sito come funziona? Guarda il codice.</span><span class="when">14:04</span></p>
+							<details class="trace" open>
+								<summary><span class="led" data-status="working"></span><span class="tw">lavoro</span><span>2 sotto-agenti · 1 di 2 finito</span><span class="chev">▸</span></summary>
+								<ol>
+									<li><span class="what">affida <b>2 lavori</b> sul codice a sotto-agenti</span><span class="t">0,3 s</span></li>
+								</ol>
+								<div class="kids">
+									<div class="row"><span class="led" data-status="done"></span><span class="title">Legge triage.ts</span><span class="right">finito · 8,5k token · 15 crediti</span></div>
+									<div class="row"><span class="led" data-status="working"></span><span class="title">Legge budget.ts</span><span class="right">al lavoro</span></div>
+								</div>
+							</details>
+							<div class="b-answer"><div class="prose"><p>Avvio due sotto-agenti sul codice: ti scrivo appena tornano.</p></div></div>
+						</section>
+					</div>
+
+					<!-- D and its sub-variants, drawn by the script from the same two turns. -->
+					<div class="log" data-only="d" data-dlog></div>
+
+					<div class="dock">
+						<div class="composer">
+							<div class="rail"><span class="chip"><span class="led" data-status="done"></span>Legge triage.ts finito</span><span class="chip"><span class="led" data-status="working"></span>Legge budget.ts al lavoro</span></div>
+							<div class="field"><span class="caret glowtext">›</span><span class="ph">Chiedimi qualcosa</span><span class="chip">invia</span></div>
+							<div class="foot"><span class="led" data-status="working"></span>z-ai/glm-5.3-flash<span class="r">salvate 90 giorni</span></div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<script>
+			const DESC = {
+				x: 'oggi: domanda e risposta distinte solo dal font, ogni tool la stessa riga, token dopo ogni passo',
+				a: 'ruoli: la domanda in una nuvola, il lavoro in un elenco unico con icone e frasi, il costo una volta per turno',
+				b: 'traccia: il lavoro di un turno in un pannello che si chiude in una riga, la risposta in primo piano',
+				c: 'tinte: A con un colore per famiglia di tool (sito, codice, sotto-agenti), fuori dalla regola dei due colori',
+				d: 'sintesi: la domanda nella nuvola di A, il lavoro nel pannello di B con le righe di A dentro',
+				d1: 'filo: niente scatola, i passi sono nodi su un filo sottile',
+				d2: 'gettoni: ogni passo è un gettone su una riga, si legge senza aprire niente',
+				d3: 'terminale: il lavoro come un piccolo log in mono, comando, risultato e tempo',
+				d4: 'cascata: una barra per passo nel tempo, come la scheda di rete degli strumenti per sviluppatori'
+			};
+			const ICON = { think: 'i-think', site: 'i-search', code: 'i-file', agents: 'i-agents' };
+			const FAM = { think: 'ragiona', site: 'sito', code: 'codice', agents: 'sotto-agenti' };
+			const svg = (fam, size) => `<svg ${size ? `width="${size}" height="${size}"` : 'class="ic"'}><use href="#${ICON[fam]}" /></svg>`;
+			const TURNS = [
+				{
+					q: 'Come lavora Simone con i coding agent?',
+					live: false,
+					sum: '3 passi · 4,1 s · 7,2k token · 30 crediti',
+					total: 2.4,
+					steps: [
+						{ fam: 'think', what: 'Cerco nel metodo e nei progetti.', cmd: 'ragiona', arg: 'cerco nel metodo e nei progetti', res: '', t: 0.9, at: 0 },
+						{ fam: 'site', what: 'cerca <b>«coding agent metodo»</b>', cmd: 'search_site', arg: '«coding agent metodo»', res: '3 risultati', t: 0.4, at: 0.9 },
+						{ fam: 'code', what: 'legge <code>CLAUDE.md</code> · essedev/esse.dev', cmd: 'read_file', arg: 'essedev/esse.dev CLAUDE.md', res: '212 righe', t: 1.1, at: 1.3 }
+					],
+					answer: () => ANSWER1
+				},
+				{
+					q: 'E il triage del sito come funziona? Guarda il codice.',
+					live: true,
+					sum: '2 sotto-agenti · 1 di 2 finito',
+					total: 20,
+					steps: [
+						{
+							fam: 'agents', what: 'affida <b>2 lavori</b> sul codice', cmd: 'delegate', arg: '2 lavori sul codice', res: '1 di 2 finito', t: 0.3, at: 0,
+							kids: [
+								{ title: 'Legge triage.ts', done: true, right: 'finito · 8,5k token · 15 crediti', at: 0.3, t: 14 },
+								{ title: 'Legge budget.ts', done: false, right: 'al lavoro', at: 0.3, t: 19.7 }
+							]
+						}
+					],
+					answer: () => '<p>Avvio due sotto-agenti sul codice: ti scrivo appena tornano.</p>'
+				}
+			];
+			const led = (on) => `<span class="led" data-status="${on ? 'working' : 'done'}"></span>`;
+			const kidRow = (k) => `<div class="row">${led(!k.done)}<span class="title">${k.title}</span><span class="right">${k.right}</span></div>`;
+			const glyphs = (turn) => `<span class="glyphs">${turn.steps.map((st) => svg(st.fam, 13)).join('')}</span>`;
+			const head = (turn) => `${led(turn.live)}<span class="tw">lavoro</span><span>${turn.sum}</span>`;
+			const sec = (n) => String(n).replace('.', ',') + ' s';
+			const bar = (turn, steps, cls = '') => `<span class="wf ${cls}">${steps.map((st) => `<i data-fam="${st.fam}" class="${st.live ? 'live' : ''}" style="left:${(st.at / turn.total) * 100}%;width:${Math.max((st.t / turn.total) * 100, 2)}%"></i>`).join('')}</span>`;
+			const RENDER = {
+				d: (turn) => `<details class="d-trace"${turn.live ? ' open' : ''}><summary>${head(turn)}${glyphs(turn)}<span class="chev">▸</span></summary>${turn.steps.map((st) => `<div class="step${st.fam === 'think' ? ' thinking' : ''}" data-fam="${st.fam}">${svg(st.fam)}<span class="fam">${FAM[st.fam]}</span><span class="what">${st.what}</span><span class="res">${st.res ? st.res + ' · ' : ''}<span class="t">${sec(st.t)}</span>${st.fam !== 'think' && !st.kids ? led(false) : ''}</span></div>${st.kids ? `<div class="kids">${st.kids.map(kidRow).join('')}</div>` : ''}`).join('')}</details>`,
+				d1: (turn) => `<details${turn.live ? ' open' : ''}><summary class="d1-head" style="list-style:none">${head(turn)}<span class="chev" style="margin-left:auto">▸</span></summary><div class="d1-list">${turn.steps.map((st) => `<div class="d1-step"><span class="node">${svg(st.fam, 13)}</span><span class="what">${st.what}</span><span class="res">${st.res ? st.res + ' · ' : ''}${sec(st.t)}</span></div>${st.kids ? `<div class="d1-kids">${st.kids.map(kidRow).join('')}</div>` : ''}`).join('')}</div></details>`,
+				d2: (turn) => `<div class="d2-box"><div class="d2-head">${head(turn)}</div><div class="d2-row">${turn.steps.filter((st) => st.fam !== 'think').map((st) => st.kids ? st.kids.map((k) => `<span class="tok">${led(!k.done)}<span class="w"><b>${k.title}</b></span><span class="r">${k.done ? 'finito' : 'al lavoro'}</span></span>`).join('') : `<span class="tok">${svg(st.fam, 13)}<span class="w">${st.what}</span><span class="r">${st.res}</span></span>`).join('')}</div></div>`,
+				d3: (turn) => `<details class="d3-box"${turn.live ? ' open' : ''}><summary>${head(turn)}<span class="chev">▸</span></summary><div class="d3-lines">${turn.steps.map((st) => `<div class="d3-line"><span class="p">›</span><span class="c">${st.cmd} <i>${st.arg}</i></span><span class="r">${st.res ? '→ ' + st.res : ''}</span><span class="t">${sec(st.t)}</span></div>${st.kids ? st.kids.map((k) => `<div class="d3-kid"><span style="text-align:right">${led(!k.done)}</span><span class="c">${k.title}</span><span class="t">${k.done ? 'finito' : 'al lavoro'}</span></div>`).join('') : ''}`).join('')}</div></details>`,
+				d4: (turn) => {
+					const all = turn.steps.flatMap((st) => (st.kids ? [st, ...st.kids.map((k) => ({ fam: 'agents', at: k.at, t: k.t, live: !k.done }))] : [st]));
+					return `<details class="d-trace d4"${turn.live ? ' open' : ''}><summary>${head(turn)}${bar(turn, all)}<span class="chev">▸</span></summary>${turn.steps.map((st) => `<div class="step${st.fam === 'think' ? ' thinking' : ''}" data-fam="${st.fam}">${svg(st.fam)}<span class="fam">${FAM[st.fam]}</span><span class="what">${st.what}</span><span class="res">${st.res ? st.res + ' · ' : ''}<span class="t">${sec(st.t)}</span>${bar(turn, [st])}</span></div>${st.kids ? `<div class="kids">${st.kids.map((k) => `<div class="row">${led(!k.done)}<span class="title">${k.title}</span><span class="right">${k.right}${bar(turn, [{ fam: 'agents', at: k.at, t: k.t, live: !k.done }])}</span></div>`).join('')}</div>` : ''}`).join('')}</details>`;
+				}
+			};
+			const drawD = (v) => {
+				const out = document.querySelector('[data-dlog]');
+				out.innerHTML = TURNS.map((turn) => `<p class="a-user">${turn.q}</p><div class="d-turn">${RENDER[v](turn)}<div class="d-answer"><div class="prose">${turn.answer()}</div></div></div>`).join('');
+			};
+			const ANSWER1 = '<p>In breve, tre principi:</p><ol><li><strong>Architettura prima del codice</strong>: data model e confini li decide lui, l\'agente esegue.</li><li><strong>Il contesto è il lavoro</strong>: ogni repo ha un <code>CLAUDE.md</code> con convenzioni e gotcha.</li><li><strong>Misurare invece di fidarsi</strong>: un gate locale (<code>pnpm lint && pnpm check</code>) prima di ogni push.</li></ol><p>Lo vedi in <a href="#">Relay</a>, il terminale che usa per far girare più agenti.</p>';
+			document.querySelectorAll('[data-answer1]').forEach((el) => (el.innerHTML = ANSWER1));
+			const KEY = `concept:${location.pathname}`;
+			const root = document.documentElement;
+			const body = document.body;
+			const load = () => { try { return JSON.parse(localStorage.getItem(KEY) || '{}'); } catch { return {}; } };
+			const save = (s) => { try { localStorage.setItem(KEY, JSON.stringify(s)); } catch {} };
+			const base = (v) => v.replace(/\d+$/, '');
+			const label = (v) => (/\d$/.test(v) ? `${v.slice(-1)} ${base(v).toUpperCase()} ${DESC[v].split(':')[0]}` : `${v.toUpperCase()} ${DESC[v].split(':')[0]}`);
+			document.querySelector('[data-buttons]').innerHTML = Object.keys(DESC).map((v) => `<button data-v="${v}">${label(v)}</button>`).join(' ');
+			const pick = (v) => {
+				if (!DESC[v]) return;
+				body.dataset.v = v;
+				document.querySelectorAll('.switch [data-v]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.v === v)));
+				document.querySelector('[data-desc]').textContent = DESC[v];
+				document.querySelectorAll('[data-only]').forEach((el) => { const l = el.dataset.only.split(' '); el.hidden = !l.includes(v) && !l.includes(base(v)); });
+				if (base(v) === 'd') drawD(v);
+				history.replaceState(null, '', `${location.search}#${v}`);
+			};
+			const setTheme = (t) => { root.dataset.theme = t; save({ ...load(), theme: t }); };
+			const key = (k) => {
+				if (k === 't') setTheme(root.dataset.theme === 'dark' ? 'light' : 'dark');
+				else if (k === 'm') body.dataset.phone = body.dataset.phone === 'on' ? 'off' : 'on';
+				else if (k === 'p') body.dataset.chrome = body.dataset.chrome === 'off' ? 'on' : 'off';
+				else if (/^\d$/.test(k)) pick(`${base(document.body.dataset.v)}${k}`);
+				else pick(k);
+			};
+			document.addEventListener('click', (e) => { const b = e.target.closest('.switch [data-v]'); if (b) pick(b.dataset.v); const k = e.target.closest('[data-key]'); if (k) key(k.dataset.key); });
+			addEventListener('keydown', (e) => { if (e.metaKey || e.ctrlKey || e.altKey) return; key(e.key.toLowerCase()); });
+			setTheme(load().theme || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'));
+			pick(DESC[location.hash.slice(1)] ? location.hash.slice(1) : 'x');
+		</script>
+	</body>
+</html>
