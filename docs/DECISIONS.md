@@ -470,3 +470,18 @@ record. The agent finds the entries in its index. Rejected: generating it from t
 (English only, one line per commit, written for whoever reads the code) and a
 `CHANGELOG.md` in the repo (visitors never see it). The cost is a rule: a change a visitor
 notices brings its entry in the same push.
+
+## #36 - Sub-agents do not talk to each other
+
+**Status:** active
+
+Tried as a spike and kept off main: branch `spike/subagent-tell` (`b531e2e`), a `tell` tool
+for the children of one `delegate` call, one message per child to a sibling still at work,
+placed as a steer. Measured in preview on the site's model: in 9 ordinary questions (15
+children, 6 runs with two) no child called it; when the visitor asked for it, 3 calls in 5
+runs and one message delivered. Children finish in 10-15 s, so the message lands after the
+sibling wrote its findings: it starts one more turn, and that reply, being the last text,
+replaces the findings in the report. Rejected for now: shipping it as a demo that never
+fires. Worth another look only with longer-lived children (a higher cap for tasks that
+depend on each other) and a late message turned into a note that leaves the report alone;
+the other route is the main agent forwarding a report to the siblings still at work.
