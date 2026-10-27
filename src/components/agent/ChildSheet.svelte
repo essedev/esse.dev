@@ -7,6 +7,7 @@
 	import type { ServerMessage, TranscriptPart } from '../../agent/protocol';
 	import { EMPTY_VIEW, reduceEvents, type PiSessionView } from '../../agent/view';
 	import AgentStatus from './AgentStatus.svelte';
+	import { ANSWER_PROSE } from './prose';
 
 	/**
 	 * A `delegate` sub-agent's transcript, live, in a sheet above the conversation (concept N,
@@ -144,9 +145,7 @@
 					<span class="truncate">{argLine(step)}</span>
 				</p>
 			{:else}
-				<div
-					class="prose max-w-none text-[0.9375rem] leading-relaxed prose-invert prose-p:my-2 prose-p:text-text prose-a:text-fg prose-a:decoration-subtle prose-strong:font-medium prose-strong:text-fg prose-code:rounded prose-code:bg-surface prose-code:px-1.5 prose-code:py-0.5 prose-code:font-normal prose-code:text-fg prose-code:before:content-none prose-code:after:content-none prose-li:text-text [&>:first-child]:mt-0 [&>:last-child]:mb-0"
-				>
+				<div class="{ANSWER_PROSE} text-[0.9375rem]">
 					<!-- eslint-disable-next-line svelte/no-at-html-tags -- renderMarkdown neutralizes HTML and links (src/agent/markdown.ts, with tests) -->
 					{@html renderMarkdown(step.text)}
 				</div>

@@ -351,6 +351,13 @@ test.describe('agent sub-agents', () => {
 								{ stopReason: 'toolUse' }
 							)
 						]
+					},
+					{
+						id: 12,
+						kind: 'pi.message',
+						model: [
+							assistant([{ type: 'text', text: '# Il triage\n\nJev decide prima del modello.' }])
+						]
 					}
 				];
 				ws.send(JSON.stringify({ type: 'events', events: [{ ...snapshot, entries }] }));
@@ -421,6 +428,8 @@ test.describe('agent sub-agents', () => {
 		const sheet = page.locator('[data-agent-child-sheet]');
 		await expect(sheet).toContainText(TASK);
 		await expect(sheet).toContainText('read_file');
+		// The child's answer reads like the main one: a heading scaled to the text (1.2em of 15px).
+		await expect(sheet.locator('h1')).toHaveCSS('font-size', '18px');
 		await sheet.getByRole('button', { name: 'Ferma' }).click();
 		await expect.poll(() => aborted).toBe(true);
 		const url = page.url();
