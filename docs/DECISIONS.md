@@ -49,8 +49,8 @@ The site is content, not an application: every page is prerendered and the Worke
 only for the root (language from `Accept-Language`) and for a catch-all that makes a
 single redirect to the canonical URL or answers 404. The redirect is permanent (301, a 302
 until Cycle 28): its target depends only on the path, and old URLs, those of
-`simonesalerno.it` included, must pass their ranking to the canonical. Each item is a shared `meta.json`
-plus one Markdown per language, in two content collections joined by
+`simonesalerno.it` included, must pass their ranking to the canonical. Each item is a
+shared `meta.json` plus one Markdown per language, in two content collections joined by
 `src/lib/content.ts`. Rejected: SSR of every page as in SvelteKit (compute and latency
 for pages that do not change), Astro's i18n (it does not translate segments or slugs),
 one JSON per language with the shared fields duplicated (drift between languages), the
@@ -88,10 +88,10 @@ reaches 0.65, or that of abuse 0.5: thresholds fixed on the labeled messages
 the agent) goes to the model and is not off-topic; the short answer with no tools
 triggers only with `chat` at least 0.7, because a real question read half as chat must
 search the site. Since Cycle 28 a question about the credits left is `chat` too, and
-`get_budget` is the one tool the short mode allows. The set is 79 messages with 10 attacks: 75 right decisions. If Jev does
-not answer the request goes through: the cap in real cost remains the guarantee. Jev
-goes through OpenRouter with the same key as the model; TypeSafe direct and Workers AI
-remain as alternative transports (`JEV_TRANSPORT` in `src/agent/site-agent.ts`).
+`get_budget` is the one tool the short mode allows. The set is 79 messages with 10
+attacks: 75 right decisions. If Jev does not answer the request goes through: the cap in
+real cost remains the guarantee. Jev goes through OpenRouter with the same key as the
+model; TypeSafe direct and Workers AI remain as alternative transports (`JEV_TRANSPORT` in `src/agent/site-agent.ts`).
 Rejected: a fixed number of messages per visitor (rigid, ignores how much a question
 costs), triage alone without a cap (a classification can be fooled), chat stopped as
 off-topic (a greeting received a curt notice). The budget per visitor is 10 cents a day

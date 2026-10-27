@@ -2,7 +2,7 @@
 
 Current state of the project. Real milestones, not a wishlist. Updated together with the code.
 
-Last update: 2026-10-12 (Cycle 28: 301 redirects, styled sitemap, `get_budget`)
+Last update: 2026-10-27 (Cycle 29: `delegate` in the background, sub-agents on the field)
 
 ## Context
 
@@ -43,33 +43,20 @@ shows how it works: every tool call, model, tokens and cost per answer. It takes
 of the earlier idea (the site redesigned live by a model). Choices in
 `docs/DECISIONS.md` #11-#14.
 
-- Done (Cycle 14): a Durable Object per visitor with pi-durable, `glm-5.3-flash` from
-  OpenRouter, `search_site` and `read_page`, triage with Jev evaluated on a labeled set,
-  limit in real cost per visitor and for the site, transcript with tokens and cost.
-- Done (Cycle 15): `list_projects`, `show_page` (card to open) and the tools on public
-  repos via the GitHub API (#13). The site repo is read from the `main` branch.
-- Done (Cycle 16): the demo tools, one per capability, with the limits in code: `render`
-  (bars, tables, timelines), `run_code` (Code Mode in a Dynamic Worker), `delegate` (1-3
-  pi-durable sub-agents in the background, #33), `draft_message` (a draft the visitor sends, after Turnstile).
-  Choices in #14.
-- Done (Cycle 19): chat goes to the model, which answers briefly and without tools (#12);
-  per-IP limits, burst of 10 messages a minute and 50 cents a day (#17); red team: 10
-  attacks in Jev's set, passed live too. No allowlist of external links until
-  conversations are shareable (#18).
-- Done (Cycle 24): conversations expire 90 days after the last message, stated in the
-  privacy notice (#23).
-- Done (Cycle 25): the status line follows the real phase of the work, the streamed text
-  glows and cools, resumed conversations, dropped connections and errors in the visitor's
-  language each have a state (per DECISIONS #24).
-- Done (Cycle 27): `draft_message` live on `hello@esse.dev` with the real Turnstile key;
-  the agent learns how a draft's sending went (#29).
-- Done (Cycle 28): `get_budget`, the visitor's credits left, the only tool of the short
-  chat mode (#12).
+- Done (Cycles 14-28, log in `docs/CYCLES.md`): a Durable Object per visitor with
+  pi-durable and `glm-5.3-flash` from OpenRouter (#11); the site tools, `show_page` as a
+  card and the code tools on the public repos (#13); the demo tools `render`, `run_code`,
+  `delegate` and `draft_message` (#14), the latter live on `hello@esse.dev` with a delivery
+  note for the model (#29); triage with Jev, chat to the model and `get_budget` (#12);
+  per-IP limits and a red team in Jev's set (#17); no link allowlist for now (#18);
+  90-day retention (#23); the states of the work and of errors (#24).
+- Done (Cycle 29): sub-agents in the background (#33), on the page as chips on the field
+  with the live transcript in a sheet (#34).
+- To do: the sub-agents' sheet on phones, where chips and field leave it about half the
+  screen (#34).
 - Read-only tools on already public data. No writes, no fetch of arbitrary URLs, no
   private repos, no memory between visits. The only effect outside the site is the
   `draft_message` email, and it goes out only from a visitor's click.
-- Done (Cycle 29): sub-agents in the background (#33), on the page as chips on the field
-  with the live transcript in a sheet (#34). Open: the sheet's height on phones.
 - `@cloudflare/computer` only if running the repos' code became necessary.
 - To measure with real traffic: whether the weight estimated by Jev predicts the real
   cost of the answers (both exist for every message). Only if it predicts it well, use it
@@ -100,7 +87,7 @@ In production: `main` (Astro), deployed by Workers Builds on every push to `main
 24.21.0, build `pnpm run build`, deploy `pnpm exec wrangler deploy`). First Astro deploy on
 2026-10-05. Production secrets: `OPENROUTER_API_KEY`, `MAIL_TO` (`hello@esse.dev`) and
 `TURNSTILE_SECRET`; the Turnstile site key is in the code, chosen by host (`draft.ts`).
-`esse.dev` is a sending domain in Cloudflare Email Service. Not Email Routing: the domain's mail is on
-Qboxmail (MX and SPF), and Email Routing would take the MX; Email Service adds only the
-`cf-bounce` MX, DKIM and DMARC, and its SPF goes into the existing record, never a second
-one. Optional: `GITHUB_TOKEN`.
+`esse.dev` is a sending domain in Cloudflare Email Service. Not Email Routing: the
+domain's mail is on Qboxmail (MX and SPF), and Email Routing would take the MX; Email
+Service adds only the `cf-bounce` MX, DKIM and DMARC, and its SPF goes into the existing
+record, never a second one. Optional: `GITHUB_TOKEN`.

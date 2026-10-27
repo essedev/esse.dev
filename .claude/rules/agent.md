@@ -9,7 +9,7 @@ paths:
 # Agent
 
 - Code in `src/agent/` and `src/components/agent/`; why and how in ARCHITECTURE (Agent),
-  DECISIONS #11-#14, #17-#18, #24.
+  DECISIONS #11-#14, #17-#18, #23-#24, #29, #33-#34.
 - Every message to the agent in preview calls real models on OpenRouter
   (`OPENROUTER_API_KEY`) and the code tools the GitHub API (`GITHUB_TOKEN` optional). The
   E2E tests send no messages to the model: `agent-states.spec.ts` answers the socket itself
