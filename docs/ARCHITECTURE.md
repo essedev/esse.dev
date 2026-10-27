@@ -211,7 +211,9 @@ accent, the mobile menu fades), while color, opacity and redrawn strokes keep ru
   release not seen yet, or after a week, a short boot names what changed. Decided before the
   first paint by `src/scripts/boot-init.js` (inline in `Workspace.astro`, CSP hash in
   `astro.config.mjs`), which marks `<html>` with `data-boot`; played by
-  `src/scripts/boot.ts` on a desk-colored screen over the window, with the data of
+  `src/scripts/boot.ts` on a desk-colored screen over the window, then on the interface itself
+  as a skeleton loading piece by piece (`data-skel`: transparent ink and a thick underline as
+  the bar, so the DOM and the layout do not change), with the data of
   `src/lib/boot.ts` (commit and day of the build from `vite.define`, counts, model,
   changelog ids) and the lines in the `boot` block of the `site` collection. The visit is
   in `localStorage` (`boot`: when, and the changelog ids seen). Automated browsers skip it.

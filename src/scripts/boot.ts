@@ -1,16 +1,18 @@
 /**
  * The boot (concept O, DECISIONS #37). src/scripts/boot-init.js, inline before the first paint,
  * marks <html> with `data-boot` (`full` or `short`) and the desk-colored screen covers the
- * window already drawn under it; this script writes the lines, then sets `open` (the screen
- * fades, the window settles) and finally removes the mark. Any key, click, touch or wheel
- * skips to the end. The lines come from the data that Workspace.astro puts on the screen.
+ * window already drawn under it; this script writes the lines, then sets `load`: the screen
+ * goes off and the interface shows as a skeleton (texts as bars the shape of their lines, no
+ * icons or images) whose pieces load in reading order, list and pane side by side. Then it
+ * removes the mark. Any key, click, touch or wheel skips to the end. The lines come from the
+ * data that Workspace.astro puts on the screen.
  */
 import type { BootData } from '../lib/boot';
 
-/** Scales every wait: the one knob for the boot's length (measured: full 3.7 s, short 1.7 s). */
+/** Scales every wait: the one knob for the boot's length. */
 const PACE = 0.72;
-/** How long the window takes to open, as `boot-open` in global.css. */
-const OPEN_MS = 450;
+/** How long a loaded piece glows, as `[data-loaded]` in global.css. */
+const GLOW_MS = 700;
 /** The systemd spinner: three stars bouncing in the status box. */
 const SPIN = [
 	'*     ',
@@ -88,6 +90,7 @@ function start(screen: HTMLElement, mode: 'full' | 'short') {
 		timers.forEach(clearTimeout);
 		removeEventListener('keydown', onKey, true);
 		SKIPS.forEach((type) => removeEventListener(type, finish, true));
+		document.querySelectorAll('[data-skel]').forEach((el) => el.removeAttribute('data-skel'));
 		delete root.dataset.boot;
 	};
 	// A key only skips: it does not also move the list or open the search.
@@ -236,13 +239,80 @@ function start(screen: HTMLElement, mode: 'full' | 'short') {
 		}
 	};
 
+	const reveal = (el: Element) => {
+		el.removeAttribute('data-skel');
+		// A text glows as it lands, unless it already runs an animation of its own.
+		if (!hasText(el) || getComputedStyle(el).animationName !== 'none') return;
+		el.setAttribute('data-loaded', '');
+		window.setTimeout(() => el.removeAttribute('data-loaded'), GLOW_MS);
+	};
+	// One stream per column, in reading order: a few pieces at a time, now and then a stall,
+	// as a page that arrives over the network.
+	const stream = async (pieces: Element[], speed: number) => {
+		for (let i = 0; i < pieces.length;) {
+			const batch = 1 + Math.floor(Math.random() * 3);
+			pieces.slice(i, i + batch).forEach(reveal);
+			i += batch;
+			await sleep((Math.random() < 0.06 ? 140 : 18 + Math.random() * 22) * speed);
+		}
+	};
+	const load = async () => {
+		const workspace = document.querySelector('[data-workspace]');
+		if (!workspace) return;
+		const list = workspace.querySelector('#sidebar');
+		const all = pieces(workspace);
+		all.forEach((el) => el.setAttribute('data-skel', ''));
+		root.dataset.boot = 'load';
+		await sleep(mode === 'full' ? 320 : 180);
+		const speed = mode === 'full' ? 1 : 0.6;
+		await Promise.all([
+			stream(
+				all.filter((el) => list?.contains(el)),
+				speed
+			),
+			stream(
+				all.filter((el) => !list?.contains(el)),
+				speed
+			)
+		]);
+	};
+
 	(async () => {
-		await (mode === 'full' ? full() : short());
-		line(' ');
-		await type(line(t.login, ' '), t.user, mode === 'full' ? 80 : 70);
-		await sleep(300);
-		if (done) return;
-		root.dataset.boot = 'open';
-		timers.add(window.setTimeout(finish, OPEN_MS));
+		try {
+			await (mode === 'full' ? full() : short());
+			line(' ');
+			await type(line(t.login, ' '), t.user, mode === 'full' ? 80 : 70);
+			await sleep(300);
+			if (!done) await load();
+		} finally {
+			finish();
+		}
 	})();
+}
+
+/** Whether an element has text of its own, not only in its children. */
+function hasText(el: Element) {
+	return [...el.childNodes].some((n) => n.nodeType === Node.TEXT_NODE && n.textContent!.trim());
+}
+
+/**
+ * The pieces of the interface on screen, in reading order: an image, an icon, a LED, a field,
+ * or the outermost element with text of its own, which carries the text inside it (a second
+ * bar under its own would show darker). The rest (frames, glass, cards, chips) is the skeleton.
+ */
+function pieces(scope: Element) {
+	const out: Element[] = [];
+	const visit = (el: Element, inText: boolean) => {
+		const box = el.getBoundingClientRect();
+		if (!el.getClientRects().length || box.top > innerHeight || box.bottom < 0) return;
+		if (el.matches('img, svg, input, .led, .caret')) {
+			out.push(el);
+			return;
+		}
+		const text = !inText && hasText(el);
+		if (text) out.push(el);
+		for (const child of el.children) visit(child, inText || text);
+	};
+	visit(scope, false);
+	return out;
 }

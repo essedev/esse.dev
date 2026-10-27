@@ -1045,7 +1045,8 @@ body::after,
    under it from the first paint, with the log in the interface mono. It sits above the strips
    that color Safari's bars, so during the boot the bars take the desk; when it ends it leaves
    the page (a fixed layer is sampled even when transparent). If src/scripts/boot.ts never
-   runs, the screen hides itself after 9 s. `open`: the screen fades and the window settles. */
+   runs, the screen hides itself after 9 s. `load`: the screen is off and the interface is a
+   skeleton, its pieces (`data-skel`, set by the script) loading one after the other. */
 .boot-screen {
 	display: none;
 	position: fixed;
@@ -1055,16 +1056,50 @@ body::after,
 	color: var(--color-muted);
 	font-family: var(--font-mono);
 }
-[data-boot] .boot-screen {
+[data-boot='full'] .boot-screen,
+[data-boot='short'] .boot-screen {
 	display: block;
 	animation: boot-failsafe 0s 9s forwards;
 }
-[data-boot='open'] .boot-screen {
-	opacity: 0;
-	transition: opacity 260ms ease-out;
+/* A text waiting is a bar the shape of its lines: transparent ink, and a thick underline drawn
+   through it, which follows each line's length and needs no change to the DOM. Icons, LEDs,
+   the caret and images wait hidden; an image arrives blurred and sharpens. */
+/* Into the skeleton at once: a color transition (links, tabs) would fade the ink out instead.
+   On the way out the element's own transition applies again. */
+[data-boot] [data-skel],
+[data-boot] [data-skel] * {
+	transition: none !important;
 }
-[data-boot='open'] [data-workspace] {
-	animation: boot-open 450ms var(--ease-out) both;
+[data-boot] [data-skel] * {
+	color: transparent !important;
+	text-shadow: none !important;
+}
+[data-boot] [data-skel] {
+	color: transparent !important;
+	text-shadow: none !important;
+	text-decoration: underline var(--color-hover) !important;
+	text-decoration-thickness: 0.62em !important;
+	text-decoration-skip-ink: none !important;
+	text-underline-offset: -0.5em !important;
+}
+/* Hidden by visibility: LEDs and the caret animate their opacity, which would win. */
+[data-boot] :is(svg, .led, .caret)[data-skel] {
+	visibility: hidden;
+}
+[data-boot] input[data-skel]::placeholder {
+	color: transparent;
+}
+[data-boot] img {
+	transition:
+		opacity 250ms ease-out,
+		filter 700ms var(--ease-out);
+}
+[data-boot] img[data-skel] {
+	opacity: 0;
+	filter: blur(10px);
+}
+[data-loaded] {
+	animation: phosphor 700ms var(--ease-out);
 }
 .boot-log {
 	position: absolute;
@@ -1109,17 +1144,6 @@ body::after,
 	}
 	.boot-hint {
 		left: 1.25rem;
-	}
-}
-@keyframes boot-open {
-	from {
-		opacity: 0;
-		scale: 0.965;
-	}
-}
-@keyframes boot-fade {
-	from {
-		opacity: 0;
 	}
 }
 @keyframes boot-failsafe {
@@ -1227,12 +1251,8 @@ body::after,
    displacement, so they keep running: phosphor, LEDs, the logo's caret, the decoding labels,
    the hover colors. What translates, rotates or scales becomes an equivalent that stays
    put: an icon's gesture becomes a glow in the accent, the error number keeps its fringe
-   but still, the drawer fades instead of sliding, the window opens after the boot without
-   growing. A new animation picks its side here. */
+   but still, the drawer fades instead of sliding. A new animation picks its side here. */
 @media (prefers-reduced-motion: reduce) {
-	[data-boot='open'] [data-workspace] {
-		animation-name: boot-fade;
-	}
 	@media (hover: hover) {
 		:is(a, button, label):hover
 			:is(

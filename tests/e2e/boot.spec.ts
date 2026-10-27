@@ -117,30 +117,42 @@ test('without storage there is no boot, or it would run on every page', async ({
 	await expect(html(page)).not.toHaveAttribute('data-boot');
 });
 
-test.describe('opening the window', () => {
-	// The animation read in the frame the window starts opening: it lasts 450 ms.
-	const opening = async (page: Page) => {
-		await asPerson(page);
-		await visit(page, '/en');
-		const name = await page.waitForFunction(
-			() =>
-				document.documentElement.dataset.boot === 'open' &&
-				getComputedStyle(document.querySelector('[data-workspace]')!).animationName,
-			null,
-			{ timeout: 10_000, polling: 'raf' }
-		);
-		return name.jsonValue();
-	};
+test('after the login the interface is a skeleton whose pieces load one by one', async ({
+	page
+}) => {
+	await asPerson(page);
+	await visit(page, '/en');
+	// Read in the frame the skeleton shows: the screen is off, every piece on screen waits.
+	const skeleton = await page.waitForFunction(
+		() => {
+			if (document.documentElement.dataset.boot !== 'load') return false;
+			const headline = document.querySelector('main h1 + p, main h1 ~ *');
+			return {
+				waiting: document.querySelectorAll('[data-skel]').length,
+				screen: getComputedStyle(document.querySelector('[data-boot-screen]')!).display,
+				ink: headline ? getComputedStyle(headline).color : null
+			};
+		},
+		null,
+		{ timeout: 10_000, polling: 'raf' }
+	);
+	const frame = (await skeleton.jsonValue()) as { waiting: number; screen: string; ink: string };
+	expect(frame.waiting).toBeGreaterThan(20);
+	expect(frame.screen).toBe('none');
+	expect(frame.ink).toBe('rgba(0, 0, 0, 0)');
 
-	test('the window grows into place', async ({ page }) => {
-		expect(await opening(page)).toBe('boot-open');
+	await expect(html(page)).not.toHaveAttribute('data-boot', { timeout: 10_000 });
+	await expect(page.locator('[data-skel]')).toHaveCount(0);
+});
+
+test('a skip during the loading shows the whole interface at once', async ({ page }) => {
+	await asPerson(page);
+	await visit(page, '/en');
+	await page.waitForFunction(() => document.documentElement.dataset.boot === 'load', null, {
+		timeout: 10_000,
+		polling: 'raf'
 	});
-
-	test.describe('with reduced motion', () => {
-		test.use({ reducedMotion: 'reduce' });
-
-		test('it only fades in', async ({ page }) => {
-			expect(await opening(page)).toBe('boot-fade');
-		});
-	});
+	await page.keyboard.press('Escape');
+	await expect(html(page)).not.toHaveAttribute('data-boot');
+	await expect(page.locator('[data-skel]')).toHaveCount(0);
 });

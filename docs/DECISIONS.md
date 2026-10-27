@@ -494,9 +494,13 @@ Chosen with Simone on `docs/concepts/concept-o-avvio.html`, variant D with D1. T
 visit boots the site in full (about 3.7 s): a BIOS line with the build, a memory test that
 counts the collections, theme and language as detected, systemd `[  OK  ]` lines with the
 site's real parts (collections, CSP, fonts, which the spinner really waits for, CRT veil,
-agent model) and `esse.dev login: guest` typed by hand; then the window opens. A return
-gets the short boot (about 1.7 s): the BIOS line, one `[  OK  ]` line per changelog entry
-not seen yet, the login. It runs on a new release, once, and after 7 days without one;
+agent model) and `esse.dev login: guest` typed by hand. Then the screen goes off on the
+interface as a skeleton (frames, glass and cards in place, texts as bars the shape of their
+lines, no icons or images) whose pieces load in reading order, list and pane side by side,
+a few at a time with an occasional stall, each text glowing as it lands and images
+sharpening from a blur (about 1.1 s); the earlier fade of the window read as a transition,
+not as an app loading. A return gets the short boot (about 2.3 s with its faster loading):
+the BIOS line, one `[  OK  ]` line per changelog entry not seen yet, the login. It runs on a new release, once, and after 7 days without one;
 otherwise nothing. Any key, click, touch or wheel skips it.
 `src/scripts/boot-init.js`, inline before the first paint, decides and marks `<html>`;
 the screen covers the window already drawn, so the headline stays the LCP (264 ms
