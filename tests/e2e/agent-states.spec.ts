@@ -315,6 +315,101 @@ test.describe('agent states', () => {
 	});
 });
 
+test.describe('agent turns', () => {
+	test('a turn reads as one header and its tokens; a token opens its call and result', async ({
+		page
+	}) => {
+		const question = 'Come lavora Simone con i coding agent?';
+		const result = (id: string, name: string, text: string) => ({
+			role: 'toolResult',
+			toolCallId: id,
+			toolName: name,
+			content: [{ type: 'text', text }],
+			isError: false,
+			timestamp: 0
+		});
+		const entries = [
+			{
+				id: 1,
+				kind: 'pi.message',
+				model: [{ role: 'user', content: [{ type: 'text', text: question }], timestamp: 0 }]
+			},
+			{
+				id: 2,
+				kind: 'pi.message',
+				model: [
+					assistant(
+						[
+							{ type: 'thinking', thinking: 'Cerco nel metodo.' },
+							{
+								type: 'toolCall',
+								id: 's1',
+								name: 'search_site',
+								arguments: { query: 'coding agent metodo' }
+							}
+						],
+						{ stopReason: 'toolUse' }
+					)
+				]
+			},
+			{ id: 3, kind: 'pi.message', model: [result('s1', 'search_site', '[{},{},{}]')] },
+			{
+				id: 4,
+				kind: 'pi.message',
+				model: [
+					assistant(
+						[
+							{
+								type: 'toolCall',
+								id: 'r1',
+								name: 'read_file',
+								arguments: { repo: 'essedev/esse.dev', path: 'CLAUDE.md' }
+							}
+						],
+						{ stopReason: 'toolUse' }
+					)
+				]
+			},
+			{
+				id: 5,
+				kind: 'pi.message',
+				model: [result('r1', 'read_file', 'CLAUDE.md\n    1  # CLAUDE.md\n    2  ')]
+			},
+			{
+				id: 6,
+				kind: 'pi.message',
+				model: [assistant([{ type: 'text', text: 'Tre principi.' }])]
+			}
+		];
+		await page.routeWebSocket(/\/agents\/site-agent\//, (ws) => {
+			ws.send(JSON.stringify({ type: 'hello', tools: [] }));
+			ws.send(JSON.stringify({ type: 'events', events: [{ ...snapshot, entries }] }));
+		});
+		await page.goto('/it/agente');
+
+		const work = page.locator('[data-agent-work]');
+		await expect(work).toContainText('lavoro', { timeout: 15_000 });
+		await expect(work).toContainText('2 passi');
+		await expect(page.locator('[data-agent-step="search_site"]')).toContainText(
+			'cerca «coding agent metodo»'
+		);
+		await expect(page.locator('[data-agent-step="search_site"]')).toContainText('3 risultati');
+		await expect(page.locator('[data-agent-step="read_file"]')).toContainText('2 righe');
+		// Tokens and credits once for the turn, in the header, not after every step.
+		await expect(page.locator('[data-agent-turn]')).toHaveCount(1);
+		await expect(page.locator('[data-agent-turn]').getByText(/token/)).toHaveCount(1);
+
+		// A token opens its call and result; the reasoning opens from the header.
+		await page.locator('[data-agent-step="read_file"]').click();
+		const detail = page.locator('[data-agent-step-detail]');
+		await expect(detail).toContainText('read_file');
+		await expect(detail).toContainText('"path": "CLAUDE.md"');
+		await expect(detail).toContainText('# CLAUDE.md');
+		await page.getByRole('button', { name: 'ragionamento del modello' }).click();
+		await expect(work).toContainText('Cerco nel metodo.');
+	});
+});
+
 test.describe('agent sub-agents', () => {
 	test('sub-agents sit on the field, open live in a sheet and report as their own line', async ({
 		page

@@ -9,26 +9,18 @@ test.describe('agent', () => {
 		await expect(page.getByRole('button', { name: 'invia' })).toBeEnabled();
 	});
 
-	test('an empty conversation lists the tools from the server and suggests questions', async ({
+	test('an empty conversation shows what the agent does and suggests questions', async ({
 		page
 	}) => {
 		await page.goto('/en/agent');
-		await expect(page.getByText('search_site')).toBeVisible({ timeout: 15_000 });
-		for (const tool of [
-			'read_page',
-			'list_projects',
-			'show_page',
-			'repo_overview',
-			'read_file',
-			'render',
-			'run_code',
-			'delegate',
-			'draft_message',
-			'get_budget'
-		]) {
-			await expect(page.getByText(tool, { exact: true })).toBeVisible();
+		const abilities = page.locator('[data-agent-abilities] li');
+		await expect(abilities).toHaveCount(3);
+		for (const ability of ['Searches the site', 'Reads the code', 'Starts sub-agents']) {
+			await expect(page.getByText(ability, { exact: true })).toBeVisible();
 		}
-		await expect(page.getByText('On the code', { exact: true })).toBeVisible();
+		// Each ability shows the token it becomes in a conversation.
+		await expect(abilities.first()).toContainText('searches «relay»');
+		await expect(page.getByText('you have 1,000 a day')).toBeVisible();
 		await expect(page.locator('main ul button')).toHaveCount(4);
 	});
 
@@ -38,7 +30,8 @@ test.describe('agent', () => {
 		await page.goto('/en/agent');
 		await page.evaluate(() => localStorage.setItem('agent-started', '1'));
 		await page.reload();
-		await expect(page.getByText('search_site')).toBeVisible({ timeout: 15_000 });
+		await expect(page.getByText('z-ai/glm-5.3-flash')).toBeVisible({ timeout: 15_000 });
+		await expect(page.locator('[data-agent-abilities]')).toBeVisible();
 		await expect(page.locator('[data-workspace]')).not.toHaveAttribute('data-agent-started');
 		await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
 		await expect(page.getByRole('button', { name: 'new conversation' })).toBeHidden();

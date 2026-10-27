@@ -272,8 +272,8 @@ sides.
   that, once at the cap, asks for the final answer and blocks further tools. A child's
   session can be watched on its own socket (`?session=<id>`) and stopped (`abort`), not
   written to (`writable`); a reset stops the children first. Live list on the socket with
-  the `children` message. On the page (#34): chips on the field's panel, a row per child in
-  the `delegate` card (`DelegateView.svelte`, which still reads the reports of calls from
+  the `children` message. On the page (#34, #39): chips on the field's panel, a token per
+  child in the turn's work (`DelegateView.svelte` still reads the reports of calls from
   before #33), the live transcript in `ChildSheet.svelte` on the child's own socket, and the
   report as its own line, recognized by `parseReport`.
 - **`draft_message`:** the model writes only a draft; the page shows it in an editable
@@ -296,8 +296,16 @@ sides.
 - **Page with a conversation started:** `data-agent-started` on `[data-workspace]` hides
   title and introduction (they stay for screen readers) and shows "new conversation" in
   the toolbar. Answers can link to any domain (#18).
-- **The catalog** the page shows with an empty conversation is the one the server
-  announces in `hello`: a new tool appears by itself, the groups in the page order it.
+- **Empty conversation** (#38): the example questions and three abilities (site, code,
+  sub-agents), each with the token it becomes in a conversation, in place of the list of
+  tools by name. The catalog the server announces in `hello` still names the tools in the
+  status line.
+- **The transcript by turn** (#39): the visitor's message is a lilac bubble on the right;
+  the agent's messages between two of the visitor's are one turn, its work under one header
+  (state, steps, tokens and credits once) as tokens with an icon per family and a readable
+  sentence with what came back (`src/agent/steps.ts`, sentences in the `site` texts). A
+  token opens its call and result, the header the reasoning; cards, drafts and views stay
+  in the answer, which follows.
 - **Triage and limits:** first the per-IP burst (binding `AGENT_RATE`, Workers Rate
   Limiting), then the budget, then Jev (`triage.ts`), which stops off-topic and abuse and
   decides the language of the answer and of the notices. A chat message (intent `chat`)

@@ -19,6 +19,7 @@ import {
 import { SECTIONS, type Section } from '../../../lib/i18n';
 import { articleItem, formatDate, projectItem, STATUS_KEY } from '../../../lib/items';
 import { getSite, translator } from '../../../lib/site';
+import { credits, VISITOR_DAILY_USD } from '../../../agent/budget';
 
 export function getStaticPaths() {
 	return languageCodes.flatMap((lang) =>
@@ -263,8 +264,55 @@ const ogSection = section === 'projects' ? 'projects' : section === 'articles' ?
 							internal: { tag: t('agentErrorTagInternal'), text: t('agentErrorInternal') }
 						},
 						errorDetails: t('agentErrorDetails'),
-						tools: t('agentTools'),
-						toolsNote: t('agentToolsNote'),
+						toolsNote: t('agentToolsNote').replace(
+							'{n}',
+							credits(VISITOR_DAILY_USD).toLocaleString(lang)
+						),
+						abilities: {
+							title: t('agentAbilities'),
+							rows: [
+								{
+									title: t('agentAbilitySite'),
+									note: t('agentAbilitySiteNote'),
+									tool: 'search_site',
+									args: { query: 'relay' }
+								},
+								{
+									title: t('agentAbilityCode'),
+									note: t('agentAbilityCodeNote'),
+									tool: 'read_file',
+									args: { repo: 'essedev/esse.dev', path: 'src/agent/triage.ts' }
+								},
+								{
+									title: t('agentAbilityAgents'),
+									note: t('agentAbilityAgentsNote'),
+									tool: 'delegate',
+									args: { tasks: [{}, {}] }
+								}
+							]
+						},
+						work: t('agentWork'),
+						stepUnit: t('agentStepUnit'),
+						steps: {
+							search_site: t('agentStepSearch'),
+							read_page: t('agentStepRead'),
+							list_projects: t('agentStepProjects'),
+							repo_overview: t('agentStepRepo'),
+							list_files: t('agentStepFiles'),
+							read_file: t('agentStepFile'),
+							search_code: t('agentStepCode'),
+							recent_commits: t('agentStepCommits'),
+							run_code: t('agentStepRun'),
+							get_budget: t('agentStepBudget'),
+							delegate: t('agentStepDelegate')
+						},
+						counts: {
+							results: t('agentCountResults'),
+							lines: t('agentCountLines'),
+							files: t('agentCountFiles'),
+							commits: t('agentCountCommits'),
+							projects: t('agentCountProjects')
+						},
 						privacyNote: t('agentPrivacyNote'),
 						privacyHref: `/${lang}/${routes.privacy}`,
 						toolLabels: {
@@ -283,20 +331,6 @@ const ogSection = section === 'projects' ? 'projects' : section === 'articles' ?
 							draft_message: t('agentToolDraft'),
 							get_budget: t('agentToolBudget')
 						},
-						toolGroups: [
-							{
-								label: t('agentToolsSite'),
-								names: ['search_site', 'read_page', 'list_projects', 'show_page']
-							},
-							{
-								label: t('agentToolsCode'),
-								names: ['repo_overview', 'list_files', 'read_file', 'search_code', 'recent_commits']
-							},
-							{
-								label: t('agentToolsMore'),
-								names: ['render', 'run_code', 'delegate', 'draft_message', 'get_budget']
-							}
-						],
 						kinds: {
 							project: site.sections.projects,
 							article: site.sections.articles,

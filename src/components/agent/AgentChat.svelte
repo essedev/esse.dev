@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { AgentClient } from 'agents/client';
-	import { ArrowUpRight } from '@lucide/svelte';
+	import { ArrowUpRight, Bot, FileCode, Search, Wrench } from '@lucide/svelte';
 	import { onMount, tick } from 'svelte';
-	import { fade } from 'svelte/transition';
 	import { credits, nextReset, SHOW_BUDGET_BELOW } from '../../agent/budget';
 	import { renderMarkdown } from '../../agent/markdown';
 	import { parseRender, type RenderView as View } from '../../agent/render';
 	import { parseReport, type ChildRecord, type ChildReport } from '../../agent/delegate';
+	import { describeStep, fillStep, type Step, type StepCount } from '../../agent/steps';
 	import AgentStatus from './AgentStatus.svelte';
 	import ChildSheet from './ChildSheet.svelte';
 	import DelegateView from './DelegateView.svelte';
@@ -28,8 +28,9 @@
 	/**
 	 * The agent's transcript: a WebSocket to the visitor's Durable Object, pi's events folded
 	 * by `reduceEvents` (the same reducer as the server). It shows how the agent works: Jev's
-	 * triage of every message, every tool call (expandable), tokens and cost of every answer,
-	 * the budget that is left. The visitor has an object of their own, remembered in the
+	 * triage of every message and, per turn, the work as tokens under one header (concept Q,
+	 * D2: every tool call readable and expandable, the sub-agents, tokens and cost), then the
+	 * answer; the budget that is left. The visitor has an object of their own, remembered in the
 	 * browser, so they find the conversation again.
 	 */
 
@@ -54,15 +55,24 @@
 		/** Per kind: the short tag and the sentence for the visitor. */
 		errors: Record<ErrorKind, { tag: string; text: string }>;
 		errorDetails: string;
-		tools: string;
 		toolsNote: string;
+		/** The empty page: what the agent does, each with the token it shows (concept P, D). */
+		abilities: {
+			title: string;
+			rows: { title: string; note: string; tool: string; args: Record<string, unknown> }[];
+		};
+		/** The header of a turn's work, and the unit of its steps as `singular|plural`. */
+		work: string;
+		stepUnit: string;
+		/** A tool's sentence on its token, with `{name}` slots (src/agent/steps.ts). */
+		steps: Record<string, string>;
+		/** What a result counts, as `singular|plural`. */
+		counts: Record<StepCount, string>;
 		/** The line under the field on how long conversations are kept, and its link. */
 		privacyNote: string;
 		privacyHref: string;
 		/** Description for the visitor; without it, the one the server gives the model. */
 		toolLabels: Record<string, string>;
-		/** How to group the catalog; a tool outside the groups goes last. */
-		toolGroups: { label: string; names: string[] }[];
 		/** The section name for each kind of page, on the `show_page` cards. */
 		kinds: Record<string, string>;
 		open: string;
@@ -172,21 +182,6 @@
 		}
 	}
 
-	// The catalog is what the server announces: groups order it, they do not decide it.
-	const groups = $derived.by(() => {
-		const known = new Set(labels.toolGroups.flatMap((g) => g.names));
-		const pick = (names: string[]) => catalog.filter((t) => names.includes(t.name));
-		return [
-			...labels.toolGroups.map((g) => ({
-				label: g.label,
-				tools: g.names.flatMap((n) => pick([n]))
-			})),
-			{ label: '', tools: catalog.filter((t) => !known.has(t.name)) }
-		].filter((g) => g.tools.length > 0);
-	});
-
-	/** The tool whose description is shown: the one under the pointer, focused or touched. */
-	let picked: string | null = $state(null);
 	const toolLabel = (name: string) =>
 		labels.toolLabels[name] ?? catalog.find((t) => t.name === name)?.description ?? '';
 
@@ -510,13 +505,6 @@
 			? (args as { code: string }).code
 			: undefined;
 
-	/** In the collapsed row, the first line that says something: not the function signature. */
-	const codeLine = (args: unknown) =>
-		code(args)
-			?.split('\n')
-			.map((l) => l.trim())
-			.find((l) => l && !/^async\s*\(.*\)\s*=>\s*\{$/.test(l));
-
 	/** The `draft_message` draft from the arguments, if the server accepted it. */
 	function drafted(
 		args: unknown,
@@ -619,11 +607,132 @@
 	}
 	const tokens = (n: number) =>
 		n >= 1000 ? `${(n / 1000).toLocaleString(locale, { maximumFractionDigits: 1 })}k` : String(n);
+
+	/** A count with its unit, from `singular|plural`. */
+	function plural(forms: string, n: number) {
+		const [one, many = one] = forms.split('|');
+		return `${n.toLocaleString(locale)} ${n === 1 ? one : many}`;
+	}
+	/** A tool's sentence on its token; a tool without one shows its name. */
+	const sentence = (name: string, step: Step) =>
+		labels.steps[name] ? fillStep(labels.steps[name], step.values) || name : name;
+	const countText = (step: Step) =>
+		step.count ? plural(labels.counts[step.count.kind], step.count.n) : '';
+	const childLed = (child: ChildRecord) =>
+		child.status === 'working' ? 'in-progress' : child.status === 'done' ? 'completed' : 'archived';
+	const TOKEN =
+		'inline-flex max-w-full min-w-0 items-center gap-2 rounded-[var(--radius-control)] bg-surface px-2.5 py-1.5 text-[0.8125rem] text-text';
+
+	/** One token of a turn's work: a tool call, or a sub-agent that `delegate` started. */
+	type Token =
+		| { kind: 'tool'; id: string; name: string; args: unknown; result?: ToolResult; step: Step }
+		| { kind: 'child'; id: string; child: ChildRecord; title: string };
+	type Report = NonNullable<ReturnType<typeof parseReport>>;
+	/**
+	 * The transcript read by turn: a message of the visitor, a sub-agent's report, or the
+	 * agent's messages between two of them, read as one. `start` and `end` are the indexes in
+	 * `shown`, where the notices stopped before the model are anchored.
+	 */
+	type Item = { start: number; end: number } & (
+		| { kind: 'user'; message: TranscriptMessage }
+		| { kind: 'report'; message: TranscriptMessage; report: Report }
+		| { kind: 'turn'; key: string; messages: TranscriptMessage[] }
+	);
+	const items = $derived.by(() => {
+		const out: Item[] = [];
+		shown.forEach((message, index) => {
+			if (message.role === 'user') {
+				const report = parseReport(userText(message));
+				out.push(
+					report
+						? { kind: 'report', message, report, start: index, end: index }
+						: { kind: 'user', message, start: index, end: index }
+				);
+				return;
+			}
+			const last = out.at(-1);
+			if (last?.kind === 'turn') {
+				last.messages = [...last.messages, message];
+				last.end = index;
+			} else
+				out.push({ kind: 'turn', key: message.id, messages: [message], start: index, end: index });
+		});
+		return out;
+	});
+
+	/**
+	 * A turn's work and answer: the tokens (tool calls; a `delegate` that started sub-agents is
+	 * one token per sub-agent), the reasoning, and the content in order. Cards, drafts and
+	 * views are content, not work: they stay in the answer.
+	 */
+	function workOf(messages: TranscriptMessage[]) {
+		const steps: Token[] = [];
+		const thinking: string[] = [];
+		const content: { part: TranscriptPart; live: boolean }[] = [];
+		for (const message of messages) {
+			for (const part of message.parts) {
+				const live = message.id === 'live';
+				if (part.type === 'text') {
+					if (part.text.trim()) content.push({ part, live });
+					continue;
+				}
+				if (part.type === 'thinking') {
+					if (part.text.trim()) thinking.push(part.text);
+					continue;
+				}
+				if (part.type !== 'tool-call') continue;
+				const result = results.get(part.id);
+				const work = part.name === 'delegate' ? delegated(part.arguments, result) : null;
+				if (
+					(part.name === 'draft_message' && drafted(part.arguments, result)) ||
+					(part.name === 'render' && drawn(part.arguments, result)) ||
+					(part.name === 'show_page' && card(result)) ||
+					work?.reports
+				) {
+					content.push({ part, live });
+				} else if (work?.children.length) {
+					work.children.forEach((child, i) =>
+						steps.push({
+							kind: 'child',
+							id: `${part.id}:${child.id}`,
+							child,
+							title: child.title || work.tasks[i]?.title || ''
+						})
+					);
+				} else {
+					steps.push({
+						kind: 'tool',
+						id: part.id,
+						name: part.name,
+						args: part.arguments,
+						result,
+						step: describeStep(
+							part.name,
+							part.arguments,
+							result && { text: resultText(result), error: Boolean(result.error) }
+						)
+					});
+				}
+			}
+		}
+		const done = messages.filter((m) => m.usage && m.id !== 'live');
+		const usage = done.length
+			? {
+					tokens: done.reduce((n, m) => n + (m.usage?.tokens ?? 0), 0),
+					usd: done.reduce((n, m) => n + (m.usage?.usd ?? 0), 0)
+				}
+			: null;
+		const live = steps.some((t) => (t.kind === 'tool' ? !t.result : t.child.status === 'working'));
+		return { steps, thinking, content, usage, live };
+	}
+	/** The open token, whose call and result show under the row, and the open reasoning. */
+	let openStep: string | null = $state(null);
+	let openThinking: string | null = $state(null);
 </script>
 
 {#snippet verdict(triage: Triage | null | undefined)}
 	{#if triage}
-		<p class="pl-6 font-mono text-[0.7rem] text-subtle">
+		<p class="font-mono text-[0.7rem] text-subtle">
 			jev · {labels.intent[triage.intent]}
 			{triage.confidence.toLocaleString(locale, { maximumFractionDigits: 2 })} · {labels.weight[
 				triage.weight
@@ -667,23 +776,45 @@
 		<AgentStatus label={labels.phases.resume} inset={false} />
 	{:else if phase}
 		<div class="flex flex-col gap-2">
-			<AgentStatus label={phaseLabel(phase)} meta={phaseMeta(phase)} />
+			<AgentStatus label={phaseLabel(phase)} meta={phaseMeta(phase)} inset={false} />
 			{#if phase.kind === 'retry' && phase.error}
-				<div class="pl-6">{@render details(phase.error)}</div>
+				{@render details(phase.error)}
 			{/if}
 		</div>
 	{/if}
 {/snippet}
 
-{#snippet localNotice(item: Local)}
-	<div class="flex flex-col gap-1.5">
-		<p class="flex gap-3 font-mono text-[0.875rem] text-fg">
-			<span class="text-accent glow select-none" aria-hidden="true">›</span>
-			<span class="whitespace-pre-wrap">{item.text}</span>
+<!-- The visitor's message: a lilac bubble on the right, as the home's card draws it, with
+     Jev's verdict under it (concept Q, D2). -->
+{#snippet visitorMessage(text: string, queuedNote = false)}
+	<div class="flex flex-col items-end gap-1.5">
+		<p
+			class="max-w-[min(85%,36rem)] rounded-[var(--radius-panel)] rounded-br-[3px] bg-accent/18 px-3.5 py-2.5 text-[0.9375rem] leading-relaxed whitespace-pre-wrap text-fg"
+		>
+			{text}
 		</p>
-		{@render verdict(triages[item.text])}
+		{@render verdict(triages[text])}
+		{#if queuedNote}
+			<p class="font-mono text-[0.7rem] text-subtle">{labels.queued}</p>
+		{/if}
 	</div>
-	<p class="pl-6 text-[0.9375rem] text-muted">{noticeText(item)}</p>
+{/snippet}
+
+{#snippet localNotice(item: Local)}
+	{@render visitorMessage(item.text)}
+	<p class="text-[0.9375rem] text-muted">{noticeText(item)}</p>
+{/snippet}
+
+{#snippet stepIcon(family: Step['family'])}
+	{#if family === 'site'}
+		<Search class="size-3.5 shrink-0 text-muted" aria-hidden="true" />
+	{:else if family === 'code'}
+		<FileCode class="size-3.5 shrink-0 text-muted" aria-hidden="true" />
+	{:else if family === 'agents'}
+		<Bot class="size-3.5 shrink-0 text-muted" aria-hidden="true" />
+	{:else}
+		<Wrench class="size-3.5 shrink-0 text-muted" aria-hidden="true" />
+	{/if}
 {/snippet}
 
 <div class="flex flex-1 flex-col">
@@ -709,66 +840,41 @@
 					{/each}
 				</ul>
 			</section>
-			{#if catalog.length}
-				<!-- Names only, per group; one description at a time in the row below. -->
-				<section
-					class="flex flex-col gap-3"
-					onmouseleave={() => (picked = null)}
-					onfocusout={(e) => {
-						if (!e.currentTarget.contains(e.relatedTarget as Node | null)) picked = null;
-					}}
-				>
-					<h2 class="label">{labels.tools}</h2>
-					<dl class="grid grid-cols-[auto_minmax(0,1fr)] items-baseline gap-x-6 gap-y-1.5">
-						{#each groups as group (group.label)}
-							<dt class="font-mono text-xs text-subtle">{group.label}</dt>
-							<dd class="flex flex-wrap gap-1">
-								{#each group.tools as tool (tool.name)}
-									<button
-										type="button"
-										aria-describedby="agent-tool-detail"
-										data-active={picked === tool.name || undefined}
-										onmouseenter={() => (picked = tool.name)}
-										onfocus={() => (picked = tool.name)}
-										onclick={() => (picked = tool.name)}
-										class="cursor-pointer rounded-[var(--radius-control)] px-1.5 py-0.5 font-mono text-sm text-text transition-colors hover:bg-surface/60 hover:text-fg data-active:bg-surface data-active:text-fg"
-									>
-										{tool.name}
-									</button>
-								{/each}
-							</dd>
-						{/each}
-					</dl>
-					<p
-						id="agent-tool-detail"
-						aria-live="polite"
-						class="min-h-[1.5em] text-sm text-pretty text-subtle"
-					>
-						{#key picked}
-							<span in:fade={{ duration: 140 }}>
-								{#if picked}
-									<span class="font-mono text-fg">{picked}</span>
-									<span class="text-muted">· {toolLabel(picked)}</span>
-								{:else}
-									{labels.toolsNote}
-								{/if}
+			<!-- What the agent does, each with the token it shows in a conversation (concept P,
+			     D): the visitor learns how to read the work before asking. -->
+			<section class="flex flex-col gap-3" data-agent-abilities>
+				<h2 class="label">{labels.abilities.title}</h2>
+				<ul class="flex flex-col">
+					{#each labels.abilities.rows as row (row.tool)}
+						{@const step = describeStep(row.tool, row.args)}
+						<li
+							class="grid gap-x-4 gap-y-0.5 py-2 not-first:border-t not-first:border-line/50 sm:grid-cols-[9.5rem_minmax(0,1fr)_minmax(0,17rem)] sm:items-center"
+						>
+							<span class="text-[0.9375rem] font-medium text-fg">{row.title}</span>
+							<span class="text-[0.9375rem] text-muted">{row.note}</span>
+							<span class="{TOKEN} max-sm:hidden" aria-hidden="true">
+								{@render stepIcon(step.family)}
+								<span class="truncate">{sentence(row.tool, step)}</span>
+								{#if row.tool === 'delegate'}<span class="led" data-status="in-progress"
+									></span>{/if}
 							</span>
-						{/key}
-					</p>
-				</section>
-			{/if}
+						</li>
+					{/each}
+				</ul>
+				<p class="text-sm text-pretty text-subtle">{labels.toolsNote}</p>
+			</section>
 		</div>
 	{/if}
 	<div class="flex flex-1 flex-col gap-6">
 		{#each locals.filter((l) => l.after === 0) as item, i (i)}
 			{@render localNotice(item)}
 		{/each}
-		{#each shown as message, index (message.id)}
-			{#if message.role === 'user' && parseReport(userText(message))}
-				{@const report = parseReport(userText(message))!}
+		{#each items as item (item.kind === 'turn' ? item.key : item.message.id)}
+			{#if item.kind === 'report'}
+				{@const report = item.report}
 				{@const child = children.find((c) => c.id === report.id)}
 				<!-- A sub-agent's findings: they reach the agent as a message, not the visitor's. -->
-				<details class="group pl-6" data-agent-report>
+				<details class="group" data-agent-report>
 					<summary
 						class="flex cursor-pointer list-none flex-wrap items-center gap-x-2.5 gap-y-1 font-mono text-xs text-muted transition-colors hover:text-fg [&::-webkit-details-marker]:hidden"
 					>
@@ -778,8 +884,8 @@
 						<span>
 							{report.status === 'finished'
 								? labels.childDone
-								: labels.childFailed}{#if child?.tokens}<span>
-									· {tokens(child.tokens)} token · {spent(child.usd ?? 0)}</span
+								: labels.childFailed}{#if child?.tokens}<span
+									>{` · ${tokens(child.tokens)} token · ${spent(child.usd ?? 0)}`}</span
 								>{/if}
 						</span>
 						{#if child}
@@ -802,36 +908,112 @@
 						{@html renderMarkdown(report.body)}
 					</div>
 				</details>
-			{:else if message.role === 'user'}
-				{@const text = userText(message)}
-				{@const triage = triages[text]}
-				<div class="flex flex-col gap-1.5">
-					<p class="flex gap-3 font-mono text-[0.875rem] text-fg">
-						<span class="text-accent glow select-none" aria-hidden="true">›</span>
-						<span class="whitespace-pre-wrap">{text}</span>
-					</p>
-					{@render verdict(triage)}
-				</div>
+			{:else if item.kind === 'user'}
+				{@render visitorMessage(userText(item.message))}
 			{:else}
-				<div class="flex flex-col gap-3 pl-6">
-					{#each message.parts as part, i (i)}
-						{#if part.type === 'text' && part.text.trim()}
-							<div
-								use:phosphor={{ text: part.text, live: message.id === 'live' }}
-								class="{ANSWER_PROSE} text-[1.0625rem]"
-							>
+				{@const work = workOf(item.messages)}
+				<div class="flex flex-col gap-3" data-agent-turn>
+					{#if work.steps.length || work.thinking.length}
+						<!-- The work of the turn: one header, then the tokens; a token opens its call and
+						     result under the row, a sub-agent its sheet (concept Q, D2). -->
+						<div class="flex flex-col gap-2" data-agent-work>
+							<p class="flex flex-wrap items-center gap-x-2.5 gap-y-1 font-mono text-xs text-muted">
+								<span class="led" data-status={work.live ? 'in-progress' : 'completed'}></span>
+								<span class="text-fg">{labels.work}</span>
+								<span
+									>{plural(labels.stepUnit, work.steps.length)}{#if work.usage}{` · ${tokens(
+											work.usage.tokens
+										)} token · `}<span title={dollars(work.usage.usd)}>{spent(work.usage.usd)}</span
+										>{/if}</span
+								>
+								{#if work.thinking.length}
+									<button
+										type="button"
+										aria-expanded={openThinking === item.key}
+										onclick={() => (openThinking = openThinking === item.key ? null : item.key)}
+										class="cursor-pointer text-subtle transition-colors hover:text-fg aria-expanded:text-fg"
+									>
+										{labels.reasoning}
+									</button>
+								{/if}
+							</p>
+							{#if openThinking === item.key}
+								<p class="font-mono text-xs whitespace-pre-wrap text-subtle">
+									{work.thinking.join('\n\n')}
+								</p>
+							{/if}
+							{#if work.steps.length}
+								<div class="flex flex-wrap gap-1.5">
+									{#each work.steps as token (token.id)}
+										{#if token.kind === 'child'}
+											<button
+												type="button"
+												onclick={() => (sheet = sheet === token.child.id ? null : token.child.id)}
+												aria-pressed={sheet === token.child.id}
+												class="{TOKEN} cursor-pointer transition-colors hover:bg-hover hover:text-fg aria-pressed:bg-hover"
+											>
+												<span class="led" data-status={childLed(token.child)}></span>
+												<span class="truncate text-fg">{token.title}</span>
+												<span class="font-mono text-[0.7rem] whitespace-nowrap text-subtle"
+													>{statusLabel(token.child.status)}</span
+												>
+											</button>
+										{:else}
+											<button
+												type="button"
+												aria-expanded={openStep === token.id}
+												onclick={() => (openStep = openStep === token.id ? null : token.id)}
+												data-agent-step={token.name}
+												class="{TOKEN} cursor-pointer transition-colors hover:bg-hover hover:text-fg aria-expanded:bg-hover"
+											>
+												{@render stepIcon(token.step.family)}
+												<span class="truncate">{sentence(token.name, token.step)}</span>
+												{#if !token.result}
+													<span class="led" data-status="in-progress"></span>
+												{:else if token.result.error}
+													<span class="led" data-status="archived"></span>
+												{:else if token.step.count}
+													<span class="font-mono text-[0.7rem] whitespace-nowrap text-subtle"
+														>{countText(token.step)}</span
+													>
+												{/if}
+											</button>
+										{/if}
+									{/each}
+								</div>
+							{/if}
+							{#each work.steps as token (token.id)}
+								{#if token.kind === 'tool' && openStep === token.id}
+									<div
+										class="flex flex-col gap-2 rounded-[var(--radius-control)] bg-surface/60 px-3 py-2.5 font-mono text-xs"
+										data-agent-step-detail
+									>
+										<p class="flex items-center gap-2">
+											<span class="text-fg">{token.name}</span>
+											<span class="label">{labels.toolCall}</span>
+										</p>
+										<pre
+											class="overflow-x-auto overscroll-x-none whitespace-pre-wrap text-muted">{code(
+												token.args
+											) ?? JSON.stringify(token.args, null, 2)}</pre>
+										{#if token.result}
+											<p class="label">{labels.result}</p>
+											<pre
+												class="max-h-64 overflow-auto overscroll-x-none whitespace-pre-wrap text-muted">{resultText(
+													token.result
+												)}</pre>
+										{/if}
+									</div>
+								{/if}
+							{/each}
+						</div>
+					{/if}
+					{#each work.content as { part, live }, i (i)}
+						{#if part.type === 'text'}
+							<div use:phosphor={{ text: part.text, live }} class="{ANSWER_PROSE} text-[1.0625rem]">
 								<!-- eslint-disable-next-line svelte/no-at-html-tags -- renderMarkdown neutralizes HTML and links (src/agent/markdown.ts, with tests) -->
 								{@html renderMarkdown(part.text)}
 							</div>
-						{:else if part.type === 'thinking' && part.text.trim()}
-							<details class="group">
-								<summary
-									class="cursor-pointer font-mono text-[0.7rem] text-subtle transition-colors hover:text-muted"
-								>
-									{labels.reasoning}
-								</summary>
-								<p class="mt-2 font-mono text-xs whitespace-pre-wrap text-subtle">{part.text}</p>
-							</details>
 						{:else if part.type === 'tool-call' && part.name === 'draft_message' && drafted(part.arguments, results.get(part.id))}
 							{@const draft = drafted(part.arguments, results.get(part.id))!}
 							<DraftView
@@ -885,70 +1067,35 @@
 									{labels.open}<ArrowUpRight data-motion="external" class="size-3.5" />
 								</span>
 							</a>
-						{:else if part.type === 'tool-call'}
-							{@const result = results.get(part.id)}
-							<details class="rounded-[var(--radius-control)] bg-surface/60">
-								<summary
-									class="flex cursor-pointer items-center gap-2.5 px-3 py-2 font-mono text-xs text-muted transition-colors hover:text-fg"
-								>
-									<span
-										class="led"
-										data-status={result ? (result.error ? 'archived' : 'completed') : 'in-progress'}
-									></span>
-									<span class="text-fg">{part.name}</span>
-									<span class="truncate"
-										>{codeLine(part.arguments) ?? JSON.stringify(part.arguments)}</span
-									>
-								</summary>
-								<div class="flex flex-col gap-2 px-3 pb-3 font-mono text-xs">
-									<p class="label">{labels.toolCall}</p>
-									<pre
-										class="overflow-x-auto overscroll-x-none whitespace-pre-wrap text-muted">{code(
-											part.arguments
-										) ?? JSON.stringify(part.arguments, null, 2)}</pre>
-									{#if result}
-										<p class="label">{labels.result}</p>
-										<pre
-											class="max-h-64 overflow-auto overscroll-x-none whitespace-pre-wrap text-muted">{resultText(
-												result
-											)}</pre>
-									{/if}
-								</div>
-							</details>
 						{/if}
 					{/each}
-					{#if message.error && !(view.error && message.id === shown.at(-1)?.id)}
-						{@render failure(
-							message.error,
-							message.stopReason === 'aborted' ? 'aborted' : errorKind(message.error),
-							false
-						)}
-					{/if}
-					{#if message.usage && message.id !== 'live'}
+					{#each item.messages as message (message.id)}
+						{#if message.error && !(view.error && message.id === shown.at(-1)?.id)}
+							{@render failure(
+								message.error,
+								message.stopReason === 'aborted' ? 'aborted' : errorKind(message.error),
+								false
+							)}
+						{/if}
+					{/each}
+					{#if !work.steps.length && !work.thinking.length && work.usage}
 						<p class="font-mono text-[0.7rem] text-subtle">
-							{tokens(message.usage.tokens)} token ·
-							<span title={dollars(message.usage.usd)}>{spent(message.usage.usd)}</span>
+							{tokens(work.usage.tokens)} token ·
+							<span title={dollars(work.usage.usd)}>{spent(work.usage.usd)}</span>
 						</p>
 					{/if}
 				</div>
 			{/if}
-			{#each locals.filter((l) => l.after === index + 1) as item, i (i)}
-				{@render localNotice(item)}
+			{#each locals.filter((l) => l.after > item.start && l.after <= item.end + 1) as local, i (i)}
+				{@render localNotice(local)}
 			{/each}
 		{/each}
 		{#if queued}
 			{@render progress()}
 		{/if}
 		{#each pending as item, i (i)}
-			<div class="flex flex-col gap-1.5" data-agent-pending>
-				<p class="flex gap-3 font-mono text-[0.875rem] text-fg">
-					<span class="text-accent glow select-none" aria-hidden="true">›</span>
-					<span class="whitespace-pre-wrap">{item.text}</span>
-				</p>
-				{@render verdict(triages[item.text])}
-				{#if queued && triages[item.text] !== undefined}
-					<p class="pl-6 font-mono text-[0.7rem] text-subtle">{labels.queued}</p>
-				{/if}
+			<div data-agent-pending>
+				{@render visitorMessage(item.text, queued && triages[item.text] !== undefined)}
 			</div>
 		{/each}
 		{#if !queued}
@@ -956,13 +1103,11 @@
 		{/if}
 		{#if view.error}
 			{@const kind = errorKind(view.error)}
-			<div class="pl-6">
-				{@render failure(
-					view.error,
-					kind,
-					!view.running && Boolean(lastUserText) && kind !== 'aborted'
-				)}
-			</div>
+			{@render failure(
+				view.error,
+				kind,
+				!view.running && Boolean(lastUserText) && kind !== 'aborted'
+			)}
 		{/if}
 	</div>
 

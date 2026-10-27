@@ -513,3 +513,32 @@ logo flying into the list, C two lines for the return), which read as a loading 
 than as a system; E, an ssh session, close but less of a boot; a boot on every visit or on
 a timer alone, which repeats itself or misses the releases. The cost is against #15 (the
 page change stays instant): it holds only because the boot is rare and skippable.
+
+## #38 - An empty agent page says what it does, not which tools it has
+
+**Status:** active
+
+Chosen with Simone on `docs/concepts/concept-p-agente-ingresso.html`, variant D. The page
+keeps today's quiet: title, introduction, the four example questions; in place of the 15
+tools listed by name, three lines on what the agent does (searches the site, reads the
+code, starts sub-agents), each with the token it becomes in a conversation, and one
+sentence on Jev and the daily credits. The visitor learns how to read the work before
+asking. Rejected: a recorded conversation that replays itself (A, nine seconds before you
+can type), a welcome message from the agent (B, the right content but too much space), a
+turn drawn as a chain (C, explains the plumbing more than the use).
+
+## #39 - The chat by turn: the question in a bubble, the work as tokens
+
+**Status:** active
+
+Chosen with Simone on `docs/concepts/concept-q-agente-chat.html`, variant D2. Before, the
+question and the answer differed only by font, every tool call was the same row of name and
+raw JSON on the same veil, and tokens and credits came after every step, three times an
+answer. Now the visitor's message is a lilac bubble on the right, the same as the home's
+card; the agent's messages between two questions are one turn, its work under one header
+(state, steps, tokens and credits once) as tokens with an icon per family, a readable
+sentence and what came back (3 results, 212 lines), each opening its call and result; a
+sub-agent is a token that opens its sheet; the reasoning opens from the header. Rejected: a
+list with a row per step (A), a panel that folds into one line (B, kept as the header), a
+hue per tool family (C, against the two colors of #15), a thread of nodes, a log in mono
+and a time waterfall (D1, D3, D4).
