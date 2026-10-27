@@ -1006,13 +1006,15 @@
 }
 
 /* CRT over the whole window: a red-cyan fringe on text, and over everything horizontal lines
-   and a vignette. The veil receives no clicks and does not print. */
+   and a vignette, the boot screen included (it sits above the page). The veil receives no
+   clicks and does not print. */
 [data-workspace] {
 	text-shadow:
 		calc(-1 * var(--crt-aberration)) 0 color-mix(in srgb, var(--crt-fringe-red) 45%, transparent),
 		var(--crt-aberration) 0 color-mix(in srgb, var(--crt-fringe-cyan) 45%, transparent);
 }
-body::after {
+body::after,
+.boot-screen::after {
 	content: '';
 	position: fixed;
 	inset: 0;
@@ -1036,6 +1038,93 @@ body::after {
 @media print {
 	body::after {
 		display: none;
+	}
+}
+
+/* The boot (concept O, DECISIONS #37): a desk-colored screen over the window, which is drawn
+   under it from the first paint, with the log in the interface mono. It sits above the strips
+   that color Safari's bars, so during the boot the bars take the desk; when it ends it leaves
+   the page (a fixed layer is sampled even when transparent). If src/scripts/boot.ts never
+   runs, the screen hides itself after 9 s. `open`: the screen fades and the window settles. */
+.boot-screen {
+	display: none;
+	position: fixed;
+	inset: 0;
+	z-index: 2147483001;
+	background: var(--color-desk);
+	color: var(--color-muted);
+	font-family: var(--font-mono);
+}
+[data-boot] .boot-screen {
+	display: block;
+	animation: boot-failsafe 0s 9s forwards;
+}
+[data-boot='open'] .boot-screen {
+	opacity: 0;
+	transition: opacity 260ms ease-out;
+}
+[data-boot='open'] [data-workspace] {
+	animation: boot-open 450ms var(--ease-out) both;
+}
+.boot-log {
+	position: absolute;
+	inset: clamp(4rem, 14vh, 9rem) 1.5rem 5rem clamp(1.5rem, 7vw, 7rem);
+	overflow: hidden;
+	font-size: 0.8125rem;
+	line-height: 1.9;
+	white-space: pre-wrap;
+}
+.boot-log > p {
+	margin: 0;
+	animation: phosphor 450ms var(--ease-out) both;
+}
+.boot-hint {
+	position: absolute;
+	bottom: clamp(1.5rem, 6vh, 3rem);
+	left: clamp(1.5rem, 7vw, 7rem);
+	margin: 0 1.5rem 0 0;
+	color: var(--color-subtle);
+	font-size: 0.75rem;
+}
+.boot-head,
+.boot-typed,
+.boot-count {
+	color: var(--color-fg);
+}
+.boot-accent,
+.boot-wait {
+	color: var(--color-accent);
+}
+.boot-dim {
+	color: var(--color-subtle);
+}
+/* Green for what succeeded, the `OK` of each step: a status, not running text. */
+.boot-ok {
+	color: var(--color-live);
+}
+@media (width < 64rem) {
+	.boot-log {
+		inset: clamp(3rem, 10vh, 6rem) 1.25rem 5rem;
+		font-size: 0.75rem;
+	}
+	.boot-hint {
+		left: 1.25rem;
+	}
+}
+@keyframes boot-open {
+	from {
+		opacity: 0;
+		scale: 0.965;
+	}
+}
+@keyframes boot-fade {
+	from {
+		opacity: 0;
+	}
+}
+@keyframes boot-failsafe {
+	to {
+		visibility: hidden;
 	}
 }
 
@@ -1138,8 +1227,12 @@ body::after {
    displacement, so they keep running: phosphor, LEDs, the logo's caret, the decoding labels,
    the hover colors. What translates, rotates or scales becomes an equivalent that stays
    put: an icon's gesture becomes a glow in the accent, the error number keeps its fringe
-   but still, the drawer fades instead of sliding. A new animation picks its side here. */
+   but still, the drawer fades instead of sliding, the window opens after the boot without
+   growing. A new animation picks its side here. */
 @media (prefers-reduced-motion: reduce) {
+	[data-boot='open'] [data-workspace] {
+		animation-name: boot-fade;
+	}
 	@media (hover: hover) {
 		:is(a, button, label):hover
 			:is(

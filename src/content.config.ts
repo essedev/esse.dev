@@ -228,6 +228,36 @@ const site = defineCollection({
 			sections,
 			/** Description for search engines, for the list pages. */
 			sectionDescriptions: sections,
+			/** The boot's lines (DECISIONS #37); `{name}` is filled by src/scripts/boot.ts. */
+			boot: z
+				.object({
+					bios: text,
+					cpu: text,
+					cores: text,
+					coresNote: text,
+					memory: text,
+					theme: text,
+					dark: text,
+					light: text,
+					saved: text,
+					system: text,
+					language: text,
+					languageNote: text,
+					start: text,
+					mounted: text,
+					csp: text,
+					fonts: text,
+					crt: text,
+					agent: text,
+					target: text,
+					quick: text,
+					quickNone: text,
+					news: text,
+					login: text,
+					user: text,
+					skip: text
+				})
+				.strict(),
 			ui: z
 				.object({
 					skipToContent: text,

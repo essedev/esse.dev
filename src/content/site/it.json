@@ -196,5 +196,32 @@
 		"agent": "Un agente con tool veri che lavora sui miei progetti e mostra come lo fa: ogni chiamata, i token e il costo.",
 		"privacy": "Quali dati raccoglie il sito, perché, dove finiscono e per quanto restano: statistiche senza cookie, conversazioni con l'agente, messaggi a me.",
 		"changelog": "Cosa è cambiato nel sito, versione dopo versione: pagine, agente, progetti. Il diario tecnico è nel repository."
+	},
+	"boot": {
+		"bios": "esse.dev BIOS {version} · build {commit} del {date}",
+		"cpu": "CPU0: Simone Salerno, Milano",
+		"cores": "CPU1: Claude Code   CPU2: Codex",
+		"coresNote": "(un solo contesto condiviso)",
+		"memory": "Test memoria: progetti {projects} · metodo {method} · scritti {articles} · versioni {releases}",
+		"theme": "Rilevo il tema ...... {theme}",
+		"dark": "scuro",
+		"light": "chiaro",
+		"saved": "(scelta salvata)",
+		"system": "(sistema)",
+		"language": "Rilevo la lingua .... {language}",
+		"languageNote": "(browser)",
+		"start": "Avvio esse.dev su Cloudflare Workers...",
+		"mounted": "Montato {path} ({n})",
+		"csp": "Applicata la Content Security Policy",
+		"fonts": "Attendo i font: {fonts}",
+		"crt": "Acceso il velo CRT (righe {gap}, vignetta {vignette})",
+		"agent": "Pronto site-agent · {model} via OpenRouter",
+		"target": "Raggiunto workspace.target",
+		"quick": "Avvio rapido: {n} novità dall'ultimo avvio",
+		"quickNone": "Avvio rapido: nessuna novità dall'ultimo avvio",
+		"news": "Nuovo: {title}",
+		"login": "esse.dev login:",
+		"user": "ospite",
+		"skip": "Premi un tasto o tocca lo schermo per saltare."
 	}
 }

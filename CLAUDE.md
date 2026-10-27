@@ -40,7 +40,9 @@ happens via Cloudflare Workers Builds on push, the gate is local.
 
 The E2E tests run against the build served by `wrangler dev` on :8788, not against the dev
 server: redirects, headers, CSP, 404 and the Durable Object exist only there. Playwright
-rebuilds and starts its own server every time. Every build rewrites `dist/` under a running
+rebuilds and starts its own server every time. Automated browsers skip the boot
+(`navigator.webdriver`, DECISIONS #37): to see it, override that in an init script as
+`tests/e2e/boot.spec.ts` does. Every build rewrites `dist/` under a running
 `wrangler dev`: the preview on :8787 answers 404 until you restart it (also after the E2E
 tests). An orphan `workerd` on one of these ports serves old assets: close it. Likewise
 `pnpm check` rebuilds the Vite cache (`node_modules/.vite`) under a running `pnpm dev`: the

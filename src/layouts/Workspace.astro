@@ -2,10 +2,12 @@
 import Sidebar from '../components/workspace/Sidebar.astro';
 import TabBar from '../components/workspace/TabBar.astro';
 import Toolbar from '../components/workspace/Toolbar.astro';
+import { getBootData } from '../lib/boot';
 import { getPage } from '../lib/content';
 import { translator } from '../lib/site';
 import { getNav } from '../lib/workspace';
 import Layout from './Layout.astro';
+import bootInit from '../scripts/boot-init.js?raw';
 
 interface Props {
 	lang: string;
@@ -30,6 +32,7 @@ const nav = await getNav(lang, t);
 const social = (await getPage('contact', lang)).data.links.filter((l) =>
 	/^https?:\/\//.test(l.url)
 );
+const boot = await getBootData(lang);
 
 // The level up, the single source for Esc, the breadcrumb and the toolbar's "‹" on mobile:
 // the previous entry of the path, or the home for a section.
@@ -49,6 +52,19 @@ const up =
 ---
 
 <Layout lang={lang} path={path} {...head}>
+	{/* The boot (DECISIONS #37): the script decides before the first paint, so it comes before
+	    the window; the screen right after it, so no paint shows the window first. Hashed for
+	    the CSP in astro.config.mjs, like theme-init.js. src/scripts/boot.ts plays it. */}
+	<script is:inline data-releases={boot.ids.join(' ')} set:html={bootInit} />
+	<div
+		data-boot-screen
+		data-boot-data={JSON.stringify(boot)}
+		aria-hidden="true"
+		class="boot-screen"
+	>
+		<div data-boot-log class="boot-log"></div>
+		<p class="boot-hint">{boot.text.skip}</p>
+	</div>
 	<a href="#main-content" class="skip-link">
 		{t('skipToContent')}
 	</a>
@@ -115,5 +131,6 @@ const up =
 </Layout>
 
 <script>
+	import '../scripts/boot';
 	import '../scripts/workspace';
 </script>

@@ -206,6 +206,15 @@ accent, the mobile menu fades), while color, opacity and redrawn strokes keep ru
   `data-theme` before the first paint, and `astro.config.mjs` computes its CSP hash from the
   same file, since Astro does not hash inline scripts. Logos and designed covers have a
   light variant written by the render scripts (#28).
+- **Boot** (`docs/DECISIONS.md` #37): on the first visit the site boots like a computer
+  (BIOS, systemd lines with the site's real data, login) before the window opens; on a
+  release not seen yet, or after a week, a short boot names what changed. Decided before the
+  first paint by `src/scripts/boot-init.js` (inline in `Workspace.astro`, CSP hash in
+  `astro.config.mjs`), which marks `<html>` with `data-boot`; played by
+  `src/scripts/boot.ts` on a desk-colored screen over the window, with the data of
+  `src/lib/boot.ts` (commit and day of the build from `vite.define`, counts, model,
+  changelog ids) and the lines in the `boot` block of the `site` collection. The visit is
+  in `localStorage` (`boot`: when, and the changelog ids seen). Automated browsers skip it.
 - **Measure**: no maximum width on the content, the column and the fluid size set it
   (`Page.astro`, `Prose.astro`). In detail pages, from `xl`, the facts sit in a column on
   the right; the page fills at least the pane and the pager sits at the bottom.

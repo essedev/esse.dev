@@ -196,5 +196,32 @@
 		"agent": "An agent with real tools that works on my projects and shows how: every call, the tokens and the cost.",
 		"privacy": "What data the site collects, why, where it goes and how long it stays: cookieless statistics, conversations with the agent, messages to me.",
 		"changelog": "What changed on the site, release after release: pages, agent, projects. The technical log is in the repository."
+	},
+	"boot": {
+		"bios": "esse.dev BIOS {version} · build {commit}, {date}",
+		"cpu": "CPU0: Simone Salerno, Milan",
+		"cores": "CPU1: Claude Code   CPU2: Codex",
+		"coresNote": "(one shared context)",
+		"memory": "Memory test: projects {projects} · method {method} · writing {articles} · releases {releases}",
+		"theme": "Detecting theme ..... {theme}",
+		"dark": "dark",
+		"light": "light",
+		"saved": "(saved choice)",
+		"system": "(system)",
+		"language": "Detecting language .. {language}",
+		"languageNote": "(browser)",
+		"start": "Starting esse.dev on Cloudflare Workers...",
+		"mounted": "Mounted {path} ({n})",
+		"csp": "Applied the Content Security Policy",
+		"fonts": "Waiting for fonts: {fonts}",
+		"crt": "CRT veil on (lines {gap}, vignette {vignette})",
+		"agent": "site-agent ready · {model} via OpenRouter",
+		"target": "Reached workspace.target",
+		"quick": "Quick boot: {n} new since the last boot",
+		"quickNone": "Quick boot: nothing new since the last boot",
+		"news": "New: {title}",
+		"login": "esse.dev login:",
+		"user": "guest",
+		"skip": "Press any key or tap the screen to skip."
 	}
 }

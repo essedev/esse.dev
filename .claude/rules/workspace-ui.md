@@ -72,7 +72,8 @@ mobile drawer (`data-drawer`) in `src/scripts/workspace.ts`.
   the left of or above an element to indicate selection or state: selection shows from the
   background.
 - No inline styles in attributes: the CSP blocks them. The page change is instant: no view
-  transition.
+  transition. The boot (DECISIONS #37) is the one exception, rare and skippable: its screen
+  sits above everything, Safari's strips included, and leaves the page when it ends.
 - No bounce and no scroll passing underneath: `overscroll-none` on the main containers,
   `overscroll-x-none` on nested blocks that scroll sideways (otherwise the wheel over the
   code does not scroll the page); never a rule on `*`. `touch-action` does not pass inside

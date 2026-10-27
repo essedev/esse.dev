@@ -485,3 +485,26 @@ replaces the findings in the report. Rejected for now: shipping it as a demo tha
 fires. Worth another look only with longer-lived children (a higher cap for tasks that
 depend on each other) and a late message turned into a note that leaves the report alone;
 the other route is the main agent forwarding a report to the siblings still at work.
+
+## #37 - A boot like a computer's, on the first visit and on new releases
+
+**Status:** active
+
+Chosen with Simone on `docs/concepts/concept-o-avvio.html`, variant D with D1. The first
+visit boots the site in full (about 3.7 s): a BIOS line with the build, a memory test that
+counts the collections, theme and language as detected, systemd `[  OK  ]` lines with the
+site's real parts (collections, CSP, fonts, which the spinner really waits for, CRT veil,
+agent model) and `esse.dev login: guest` typed by hand; then the window opens. A return
+gets the short boot (about 1.7 s): the BIOS line, one `[  OK  ]` line per changelog entry
+not seen yet, the login. It runs on a new release, once, and after 7 days without one;
+otherwise nothing. Any key, click, touch or wheel skips it.
+`src/scripts/boot-init.js`, inline before the first paint, decides and marks `<html>`;
+the screen covers the window already drawn, so the headline stays the LCP (264 ms
+measured under the screen). A release is detected by the set of changelog ids seen, not
+the latest one: entries of the same day have no order. No storage, an automated browser
+or a tab opened in the background: no boot. Rejected: the concept's shorter variants (A
+POST, B the logo flying into the list, C two lines for the return), which read as a
+loading screen more than as a system; E, an ssh session, close but less of a boot;
+a boot on every visit or on a timer alone, which repeats itself or misses the releases.
+The cost is against #15 (the page change stays instant): it holds only because the boot
+is rare and skippable.
