@@ -14,7 +14,8 @@ export const SECTIONS = [
 	'now',
 	'about',
 	'agent',
-	'privacy'
+	'privacy',
+	'changelog'
 ] as const;
 /** One of `SECTIONS`. */
 export type Section = (typeof SECTIONS)[number];

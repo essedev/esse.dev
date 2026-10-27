@@ -58,11 +58,22 @@ export interface NowEntry {
 	entry: CollectionEntry<'nowTexts'>;
 }
 
+/** A changelog entry in one language. */
+export interface ChangelogEntry {
+	id: string;
+	lang: string;
+	date: string;
+	area: CollectionEntry<'changelog'>['data']['area'];
+	title: string;
+	entry: CollectionEntry<'changelogTexts'>;
+}
+
 type TextEntry =
 	| CollectionEntry<'projectTexts'>
 	| CollectionEntry<'articleTexts'>
 	| CollectionEntry<'methodTexts'>
-	| CollectionEntry<'nowTexts'>;
+	| CollectionEntry<'nowTexts'>
+	| CollectionEntry<'changelogTexts'>;
 
 function join<M extends object, E extends TextEntry>(
 	kind: string,
@@ -80,7 +91,7 @@ function join<M extends object, E extends TextEntry>(
 			throw new Error(`${kind}/${id}/${lang}.md: lingua sconosciuta`);
 		item.texts[lang] = text;
 	}
-	// Without the `published` field (method, now) an entry is always published.
+	// Without the `published` field (method, now, changelog) an entry is always published.
 	const published = [...byId.values()].filter(
 		(item) => !('published' in item.meta) || item.meta.published !== false
 	);
@@ -107,7 +118,7 @@ function join<M extends object, E extends TextEntry>(
 
 function loadAll() {
 	return (async () => {
-		const [pm, pt, am, at, mm, mt, nm, nt] = await Promise.all([
+		const [pm, pt, am, at, mm, mt, nm, nt, cm, ct] = await Promise.all([
 			getCollection('projects'),
 			getCollection('projectTexts'),
 			getCollection('articles'),
@@ -115,12 +126,15 @@ function loadAll() {
 			getCollection('method'),
 			getCollection('methodTexts'),
 			getCollection('now'),
-			getCollection('nowTexts')
+			getCollection('nowTexts'),
+			getCollection('changelog'),
+			getCollection('changelogTexts')
 		]);
 		const projects = join('projects', pm, pt);
 		const articles = join('articles', am, at);
 		const method = join('method', mm, mt);
 		const now = join('now', nm, nt);
+		const changelog = join('changelog', cm, ct);
 		// The earlier iterations are the same in every language: only the note changes.
 		for (const p of projects) {
 			const shape = (lang: string) =>
@@ -147,7 +161,7 @@ function loadAll() {
 				throw new Error(`now/${item.id}: "${item.meta.project}" non è un progetto pubblicato`);
 			}
 		}
-		return { projects, articles, method, now };
+		return { projects, articles, method, now, changelog };
 	})();
 }
 
@@ -253,4 +267,19 @@ export async function getPage<C extends 'welcome' | 'about' | 'contact' | 'priva
 	const entry = entries.find((e) => e.id === lang);
 	if (!entry) throw new Error(`pages/${collection}/${lang}.md mancante`);
 	return entry as CollectionEntry<C>;
+}
+
+/** The changelog in one language, most recent first. */
+export async function getChangelog(lang: string): Promise<ChangelogEntry[]> {
+	const { changelog } = await load();
+	return changelog
+		.map((c) => ({
+			id: c.id,
+			lang,
+			date: c.meta.date,
+			area: c.meta.area,
+			title: c.texts[lang].data.title,
+			entry: c.texts[lang]
+		}))
+		.sort((a, b) => b.date.localeCompare(a.date) || b.id.localeCompare(a.id));
 }

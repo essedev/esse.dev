@@ -8,7 +8,14 @@ import Page from '../../../components/Page.astro';
 import Prose from '../../../components/Prose.astro';
 import Workspace from '../../../layouts/Workspace.astro';
 import { languageCodes, navigation } from '../../../lib/config';
-import { getArticles, getMethod, getNow, getPage, getProjects } from '../../../lib/content';
+import {
+	getArticles,
+	getChangelog,
+	getMethod,
+	getNow,
+	getPage,
+	getProjects
+} from '../../../lib/content';
 import { SECTIONS, type Section } from '../../../lib/i18n';
 import { articleItem, formatDate, projectItem, STATUS_KEY } from '../../../lib/items';
 import { getSite, translator } from '../../../lib/site';
@@ -65,6 +72,16 @@ const AboutBody = about ? (await render(about)).Content : null;
 const privacy = section === 'privacy' ? await getPage('privacy', lang) : null;
 const PrivacyBody = privacy ? (await render(privacy)).Content : null;
 const nowBodies = await Promise.all(now.map(async (n) => (await render(n.entry)).Content));
+const changelog = section === 'changelog' ? await getChangelog(lang) : [];
+const changelogBodies = await Promise.all(
+	changelog.map(async (c) => (await render(c.entry)).Content)
+);
+const AREA_KEY = {
+	site: 'changelogSite',
+	agent: 'changelogAgent',
+	projects: 'changelogProjects',
+	writing: 'changelogWriting'
+} as const;
 
 const labels = {
 	status: t('status'),
@@ -192,6 +209,28 @@ const ogSection = section === 'projects' ? 'projects' : section === 'articles' ?
 				</ol>
 			)}
 
+			{section === 'changelog' && (
+				<ol class="flex flex-col gap-10">
+					{changelog.map((c, i) => {
+						const Body = changelogBodies[i];
+						return (
+							<li class="grid gap-x-10 gap-y-2 sm:grid-cols-[8rem_minmax(0,1fr)]">
+								<p class="text-subtle flex gap-3 pt-1 font-mono text-xs tabular-nums sm:flex-col sm:gap-1">
+									<time datetime={c.date}>{formatDate(c.date, lang)}</time>
+									<span>{t(AREA_KEY[c.area])}</span>
+								</p>
+								<div class="flex flex-col gap-2">
+									<h2 class="text-fg text-[1.1875rem] font-medium tracking-tight">{c.title}</h2>
+									<div class="text-text [&_a]:text-fg [&_a]:decoration-subtle [&_a:hover]:decoration-fg text-[1.0625rem] leading-relaxed text-pretty [&_a]:underline [&_a]:underline-offset-4">
+										<Body />
+									</div>
+								</div>
+							</li>
+						);
+					})}
+				</ol>
+			)}
+
 			{section === 'agent' && (
 				<AgentChat
 					client:only="svelte"
@@ -264,7 +303,8 @@ const ogSection = section === 'projects' ? 'projects' : section === 'articles' ?
 							method: site.sections.method,
 							now: site.sections.now,
 							about: site.sections.about,
-							privacy: site.sections.privacy
+							privacy: site.sections.privacy,
+							changelog: site.sections.changelog
 						},
 						open: t('agentOpen'),
 						subagents: t('agentSubagents'),

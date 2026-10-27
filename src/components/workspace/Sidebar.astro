@@ -121,6 +121,14 @@ const keys: [string[], string][] = [
 					privacy
 				</a>
 			</li>
+			<li>
+				<a
+					href={`/${lang}/${navigation[lang].changelog}`}
+					class="text-muted hover:text-fg -my-1 inline-flex py-1 transition-colors"
+				>
+					{navigation[lang].changelog}
+				</a>
+			</li>
 		</SocialLinks>
 		{/* The keys matter only with a keyboard: on mobile the row is not there. */}
 		<div class="hidden h-[1.4rem] items-center lg:grid">

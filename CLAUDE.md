@@ -59,7 +59,7 @@ Secrets in `.dev.vars` (excluded from git, template in `.dev.vars.example`), rea
 
 ## Content
 
-- One folder per item in `src/content/{projects,articles,method,now}/`, with `meta.json`
+- One folder per item in `src/content/{projects,articles,method,now,changelog}/`, with `meta.json`
   (shared fields) and `<lang>.md` (translated frontmatter and body). Single pages
   (welcome, about, contact) in `src/content/pages/<page>/<lang>.md`.
 - Schemas in `src/content.config.ts`: a new field is added only there, the types come from
@@ -70,6 +70,10 @@ Secrets in `.dev.vars` (excluded from git, template in `.dev.vars.example`), rea
   be named is deleted, since the files are public (DECISIONS #21). Which projects, how to
   tell them and the site's voice: `docs/features/progetti.md`. The repo is public and the
   agent reads its docs: no client or reserved project names in any file.
+- A change a visitor notices (a page, an agent ability, projects added or reworked) brings
+  its entry in `src/content/changelog/<date>-<slug>/` in the same push, written before
+  proposing it; refactors, tests and docs do not (DECISIONS #35). One entry per release,
+  in the site's voice, links to the pages it touched and never to a private repo.
 - Site texts and UI strings: `site` collection (`src/content/site/<lang>.json`), read with
   `getSite(lang)` and `translator(lang)` from `src/lib/site.ts`. Strict schema: a new key
   goes in the schema and in every language, and becomes a type (`UiKey`).

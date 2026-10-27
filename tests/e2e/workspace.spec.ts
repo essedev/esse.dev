@@ -141,11 +141,26 @@ test.describe('sections and legacy routes', () => {
 			'/it/adesso',
 			'/en/about',
 			'/it/chi-sono',
+			'/en/changelog',
+			'/it/modifiche',
 			'/en/method/context'
 		]) {
 			const res = await request.get(path, { maxRedirects: 0 });
 			expect(res.status(), path).toBe(200);
 		}
+	});
+
+	test('the changelog lists its entries newest first and the status line links it', async ({
+		page
+	}) => {
+		await open(page, '/it/modifiche');
+		const dates = await page
+			.locator('main ol > li time')
+			.evaluateAll((els) => els.map((el) => el.getAttribute('datetime') ?? ''));
+		expect(dates.length).toBeGreaterThan(1);
+		expect(dates).toEqual([...dates].sort().reverse());
+		await page.locator('[data-statusline] a[href="/it/modifiche"]').click();
+		await expect(page).toHaveURL(/\/it\/modifiche$/);
 	});
 
 	test('the old blog route redirects to writing, slug included', async ({ request }) => {

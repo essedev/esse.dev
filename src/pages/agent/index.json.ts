@@ -1,6 +1,13 @@
 import type { APIRoute } from 'astro';
 import { featured, languageCodes, navigation } from '../../lib/config';
-import { getArticles, getMethod, getNow, getPage, getProjects } from '../../lib/content';
+import {
+	getArticles,
+	getChangelog,
+	getMethod,
+	getNow,
+	getPage,
+	getProjects
+} from '../../lib/content';
 import { getSite } from '../../lib/site';
 import type { SiteDoc } from '../../agent/site-index';
 
@@ -62,6 +69,18 @@ export const GET: APIRoute = async () => {
 				tags: [],
 				date: n.date,
 				body: n.entry.body ?? ''
+			});
+		}
+		for (const c of await getChangelog(lang)) {
+			docs.push({
+				path: `/${lang}/${routes.changelog}`,
+				lang,
+				kind: 'changelog',
+				title: c.title,
+				summary: c.area,
+				tags: [],
+				date: c.date,
+				body: c.entry.body ?? ''
 			});
 		}
 		const about = await getPage('about', lang);

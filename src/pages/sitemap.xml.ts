@@ -1,6 +1,6 @@
 import type { APIRoute } from 'astro';
 import { defaultLang, languages, navigation } from '../lib/config';
-import { getArticles, getMethod, getProjects, getSlugMap } from '../lib/content';
+import { getArticles, getChangelog, getMethod, getProjects, getSlugMap } from '../lib/content';
 import { getLanguageUrl } from '../lib/i18n';
 import { escapeXml } from '../lib/xml';
 
@@ -27,6 +27,8 @@ export const GET: APIRoute = async ({ site }) => {
 		for (const section of ['method', 'now', 'about', 'agent', 'privacy'] as const) {
 			paths.push({ path: `/${lang}/${navigation[lang][section]}`, lastmod: lastAny ?? '' });
 		}
+		const lastChange = (await getChangelog(lang))[0]?.date;
+		paths.push({ path: `/${lang}/${navigation[lang].changelog}`, lastmod: lastChange ?? '' });
 		for (const m of await getMethod(lang)) {
 			paths.push({
 				path: `/${lang}/${navigation[lang].method}/${m.text.slug}`,

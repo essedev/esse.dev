@@ -141,6 +141,22 @@ const nowTexts = defineCollection({
 	schema: z.object({ title: z.string().min(1) })
 });
 
+// Changelog: what changed on the site for a visitor, one entry per release, written by hand
+// (DECISIONS #35). The commits and docs/CYCLES.md are the technical record.
+const changelog = defineCollection({
+	loader: glob({ pattern: '*/meta.json', base: './src/content/changelog', generateId: folderId }),
+	schema: z.object({
+		date: isoDate,
+		/** The part of the site the change is about, shown as a label. */
+		area: z.enum(['site', 'agent', 'projects', 'writing'])
+	})
+});
+
+const changelogTexts = defineCollection({
+	loader: glob({ pattern: '*/*.md', base: './src/content/changelog', generateId: textId }),
+	schema: z.object({ title: z.string().min(1) })
+});
+
 // Home pages: one file per language, the id is the language code.
 const langId = ({ entry }: { entry: string }) => entry.replace(/\.md$/, '');
 
@@ -194,7 +210,8 @@ const sections = z
 		now: text,
 		about: text,
 		agent: text,
-		privacy: text
+		privacy: text,
+		changelog: text
 	})
 	.strict();
 
@@ -245,6 +262,10 @@ const site = defineCollection({
 					emailCopied: text,
 					agentPrivacyNote: text,
 					privacyUpdated: text,
+					changelogSite: text,
+					changelogAgent: text,
+					changelogProjects: text,
+					changelogWriting: text,
 					keysMove: text,
 					keysOpen: text,
 					keysBack: text,
@@ -398,6 +419,8 @@ export const collections = {
 	methodTexts,
 	now,
 	nowTexts,
+	changelog,
+	changelogTexts,
 	welcome,
 	about,
 	contact,

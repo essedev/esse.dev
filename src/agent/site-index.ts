@@ -4,7 +4,8 @@
  */
 
 /** The kinds of page the index holds. */
-export type SiteDocKind = 'project' | 'article' | 'method' | 'now' | 'about' | 'privacy';
+export type SiteDocKind =
+	'project' | 'article' | 'method' | 'now' | 'about' | 'privacy' | 'changelog';
 
 /** One page of the site in one language. */
 export interface SiteDoc {

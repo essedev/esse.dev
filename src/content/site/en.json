@@ -8,7 +8,8 @@
 		"now": "Now",
 		"about": "About",
 		"agent": "Agent",
-		"privacy": "Privacy"
+		"privacy": "Privacy",
+		"changelog": "Changelog"
 	},
 	"ui": {
 		"skipToContent": "Skip to content",
@@ -180,7 +181,11 @@
 		"agentOpen": "open",
 		"agentAsk4": "How does Portsage know which ports are taken? Show me the code",
 		"agentPrivacyNote": "kept for 90 days",
-		"privacyUpdated": "updated on"
+		"privacyUpdated": "updated on",
+		"changelogSite": "site",
+		"changelogAgent": "agent",
+		"changelogProjects": "projects",
+		"changelogWriting": "writing"
 	},
 	"sectionDescriptions": {
 		"projects": "Things I built and things I'm building: products, developer tools, AI experiments and a few ideas still on paper.",
@@ -189,6 +194,7 @@
 		"now": "What I'm working on right now, updated from the projects.",
 		"about": "Who I am, where I come from and how to reach me.",
 		"agent": "An agent with real tools that works on my projects and shows how: every call, the tokens and the cost.",
-		"privacy": "What data the site collects, why, where it goes and how long it stays: cookieless statistics, conversations with the agent, messages to me."
+		"privacy": "What data the site collects, why, where it goes and how long it stays: cookieless statistics, conversations with the agent, messages to me.",
+		"changelog": "What changed on the site, release after release: pages, agent, projects. The technical log is in the repository."
 	}
 }

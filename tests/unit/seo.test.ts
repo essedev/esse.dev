@@ -27,7 +27,8 @@ const navigation: NavigationConfig = {
 		now: 'now',
 		about: 'about',
 		agent: 'agent',
-		privacy: 'privacy'
+		privacy: 'privacy',
+		changelog: 'changelog'
 	},
 	it: {
 		projects: 'progetti',
@@ -36,7 +37,8 @@ const navigation: NavigationConfig = {
 		now: 'adesso',
 		about: 'chi-sono',
 		agent: 'agente',
-		privacy: 'privacy'
+		privacy: 'privacy',
+		changelog: 'modifiche'
 	}
 };
 

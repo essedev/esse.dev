@@ -457,3 +457,16 @@ visitor's message. Sheet and panel are two glasses side by side in the anchored 
 one inside the other (#16). Rejected: tabs that swap the whole conversation (A, watching
 stops the talking) and a live `delegate` card in the thread (C, it scrolls away, on phones
 first). Open: on phones chips and field leave the sheet about half the screen.
+
+## #35 - A changelog written by hand, for visitors
+
+**Status:** active
+
+The site has a changelog page (`/en/changelog`, `/it/modifiche`, linked in the status line
+next to privacy): a `changelog` collection, one entry per release with `date`, `area`
+(site, agent, projects, writing) and a title and one to three sentences per language. It
+says what changes for whoever visits; the commits and `docs/CYCLES.md` stay the technical
+record. The agent finds the entries in its index. Rejected: generating it from the commits
+(English only, one line per commit, written for whoever reads the code) and a
+`CHANGELOG.md` in the repo (visitors never see it). The cost is a rule: a change a visitor
+notices brings its entry in the same push.

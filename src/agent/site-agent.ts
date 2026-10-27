@@ -125,7 +125,9 @@ const SearchSite = Type.Object({
 	lang: Lang,
 	kind: Type.Optional(
 		Type.Union(
-			['project', 'article', 'method', 'now', 'about', 'privacy'].map((k) => Type.Literal(k)),
+			['project', 'article', 'method', 'now', 'about', 'privacy', 'changelog'].map((k) =>
+				Type.Literal(k)
+			),
 			{ description: 'Only this kind of page.' }
 		)
 	)
@@ -299,7 +301,7 @@ export class SiteAgent extends DurableObject<Env> {
 	readonly searchTool: ToolRegistration<typeof SearchSite> = {
 		name: 'search_site',
 		description:
-			'Search the pages of esse.dev: projects, writing, method, now, about. Returns path, kind, title and summary of the best matches.',
+			'Search the pages of esse.dev: projects, writing, method, now, about, changelog. Returns path, kind, title and summary of the best matches.',
 		parameters: SearchSite,
 		replay: 'safe',
 		execute: async ({ query, lang, kind }) => {
