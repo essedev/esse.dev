@@ -70,8 +70,9 @@ which stopped the day Nexus restarted.
 - IDKCraft: a voxel game in Kotlin, with IDKCraft Studio generating pixel-art textures
   via image models, with reference images to keep the style.
 - Local LLM Experiments, a single item on local LLMs: Local LLM Eval and LLM Dash.
-- Milan, a single item: based-routing (multi-origin trip planner on the Lombardy network)
-  and Milanoz, with the context of the move to Milan in 2026.
+- Milan: Varco carries based-routing (multi-origin trip planner on the Lombardy network) and
+  Milanoz in `previously`, with the move to Milan in 2026 as its opening; the Milan entry is
+  hidden (2026-10-27).
 - Personal servers, a single item: monitor (`status.esse.dev`) and server-ops.
 - Experiments on Solana, a single item (folder `solplace`): SolPlace by name, the rest
   without.
@@ -133,7 +134,8 @@ Both are files in the project's folder, declared in `meta.json` (`logo`, `cover`
   `render-cover.ts` have a light variant next to them (`logo-light.svg`, `cover-light.webp`),
   written by the same script and declared as `logoLight` and `cover.srcLight`. An app icon
   that is its own tile, a screenshot and the generated cover have one only, unless the project
-  renders the same view in both themes (Varco's map, shot from its `design/og.html`).
+  renders the same view in both themes (Varco's map from its `design/og.html`, Floppy's landing).
 - **Text in a cover**: Varco's cover is its share image, title in Italian included, by
-  Simone's choice (2026-10-27); pgbee's is a frame of its video, with the English caption.
+  Simone's choice (2026-10-27); pgbee's is a frame of its video, with the English caption;
+  Floppy's is the hero of its own landing page (`floppy/site/`), in both themes.
 - **Weight**: no source file over 300 KB. The pixel-art archive cost 80 MB of history.

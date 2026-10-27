@@ -1,8 +1,15 @@
 {
 	"accent": "#de3163",
+	"prompt": "hold button, speak",
 	"panel": {
-		"kind": "image",
-		"image": "cover-panel.png"
+		"kind": "list",
+		"lines": [
+			"ESP32-S3, 2.06-inch AMOLED",
+			"ESP-Brookesia 0.8 on ESP-IDF",
+			"black UI, Inter, one accent",
+			"push-to-talk, no wake word",
+			"the agent lives on Nexus"
+		]
 	},
 	"out": "cover.webp"
 }
