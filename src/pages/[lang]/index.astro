@@ -81,7 +81,9 @@ const cardArrow = 'text-subtle group-hover:text-accent size-4 shrink-0 transitio
 	jsonLd={jsonLd}
 >
 	<Page>
-		<div class="grid gap-y-12">
+		{/* "Where to start" sits at the bottom of the pane on a tall screen, like the pager of the
+		    detail pages (mt-auto inside Page); on a short one it follows the facts, 3rem below. */}
+		<div class="flex grow flex-col">
 			<section class="flex flex-col">
 				<h1 class="text-muted flex flex-wrap items-center gap-x-3 gap-y-2 font-mono text-[0.8125rem] font-normal">
 					<span class="led" data-status="in-progress"></span>
@@ -157,7 +159,7 @@ const cardArrow = 'text-subtle group-hover:text-accent size-4 shrink-0 transitio
 				</dl>
 			</section>
 
-			<section aria-labelledby="start-here">
+			<section aria-labelledby="start-here" class="mt-auto pt-12">
 				<h2 id="start-here" class="label">
 					{t('startHere')}
 				</h2>
