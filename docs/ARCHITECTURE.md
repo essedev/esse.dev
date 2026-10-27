@@ -274,7 +274,8 @@ sides.
   written to (`writable`); a reset stops the children first. Live list on the socket with
   the `children` message. On the page (#34, #39): chips on the field's panel, a token per
   child in the turn's work (`DelegateView.svelte` still reads the reports of calls from
-  before #33), the live transcript in `ChildSheet.svelte` on the child's own socket, and the
+  before #33), the live transcript in `ChildSheet.svelte` on the child's own socket, its
+  calls as the same tokens (`StepToken.svelte`, `StepDetail.svelte`), and the
   report as its own line, recognized by `parseReport`.
 - **`draft_message`:** the model writes only a draft; the page shows it in an editable
   card with Turnstile and the visitor sends it. The server (`sendDraft`) checks that the

@@ -106,3 +106,9 @@ export function fillStep(template: string, values: Record<string, string>): stri
 		.replace(/\s+/g, ' ')
 		.trim();
 }
+
+/** The call as its detail shows it: the code of `run_code` as code, any other call as JSON. */
+export function callText(args: unknown): string {
+	const code = (args as { code?: unknown } | null)?.code;
+	return typeof code === 'string' ? code : JSON.stringify(args, null, 2);
+}

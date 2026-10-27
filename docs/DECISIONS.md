@@ -538,7 +538,10 @@ answer. Now the visitor's message is a lilac bubble on the right, the same as th
 card; the agent's messages between two questions are one turn, its work under one header
 (state, steps, tokens and credits once) as tokens with an icon per family, a readable
 sentence and what came back (3 results, 212 lines), each opening its call and result; a
-sub-agent is a token that opens its sheet; the reasoning opens from the header. Rejected: a
-list with a row per step (A), a panel that folds into one line (B, kept as the header), a
-hue per tool family (C, against the two colors of #15), a thread of nodes, a log in mono
-and a time waterfall (D1, D3, D4).
+sub-agent is a token that opens its sheet; the reasoning opens from the header. A
+sub-agent's sheet shows its calls as the same tokens (`StepToken.svelte`,
+`StepDetail.svelte`, shared so the two never drift). The field's panel and the sheet take a
+light veil, `surface` at 40%: the `panel` at 60% they had dug a darker hole in the glass,
+the full `surface` read as white. Rejected: a list with a row per step (A), a panel that
+folds into one line (B, kept as the header), a hue per tool family (C, against the two
+colors of #15), a thread of nodes, a log in mono and a time waterfall (D1, D3, D4).

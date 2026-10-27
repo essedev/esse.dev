@@ -5,14 +5,18 @@
 	import { renderMarkdown } from '../../agent/markdown';
 	import { phaseOf, type Phase } from '../../agent/phase';
 	import type { ServerMessage, TranscriptPart } from '../../agent/protocol';
+	import { callText, describeStep, type Step } from '../../agent/steps';
 	import { EMPTY_VIEW, reduceEvents, type PiSessionView } from '../../agent/view';
 	import AgentStatus from './AgentStatus.svelte';
 	import { ANSWER_PROSE } from './prose';
+	import StepDetail from './StepDetail.svelte';
+	import StepToken from './StepToken.svelte';
 
 	/**
 	 * A `delegate` sub-agent's transcript, live, in a sheet above the conversation (concept N,
 	 * variant B). It opens a socket of its own on the child's session: read-only, the server
-	 * refuses writes there; Stop sends `abort`. The socket closes with the sheet.
+	 * refuses writes there; Stop sends `abort`. The socket closes with the sheet. Its calls are
+	 * the same tokens as a turn of the main chat (concept Q, D2), above its texts.
 	 */
 	let {
 		child,
@@ -22,6 +26,9 @@
 		phaseLabel,
 		tokens,
 		spent,
+		sentence,
+		countText,
+		stepLabels,
 		onclose
 	}: {
 		child: ChildRecord;
@@ -40,6 +47,10 @@
 		phaseLabel: (phase: Phase) => string;
 		tokens: (n: number) => string;
 		spent: (usd: number) => string;
+		/** A tool's sentence and what came back, as the main chat writes them. */
+		sentence: (name: string, step: Step) => string;
+		countText: (step: Step) => string;
+		stepLabels: { call: string; result: string };
 		onclose: () => void;
 	} = $props();
 
@@ -76,24 +87,45 @@
 			.join('') ?? ''
 	);
 	type Call = Extract<TranscriptPart, { type: 'tool-call' }>;
-	/** The calls and the texts of the child's answers, in order. */
-	const steps = $derived(
-		messages
-			.filter((m) => m.role === 'assistant')
-			.flatMap((m) =>
-				m.parts.filter(
-					(p): p is Call | Extract<TranscriptPart, { type: 'text' }> =>
-						p.type === 'tool-call' || (p.type === 'text' && Boolean(p.text.trim()))
-				)
-			)
+	type Result = Extract<TranscriptPart, { type: 'tool-result' }>;
+	const parts = $derived(messages.filter((m) => m.role === 'assistant').flatMap((m) => m.parts));
+	/** The texts of the child's answers, in order. */
+	const texts = $derived(
+		parts.filter(
+			(p): p is Extract<TranscriptPart, { type: 'text' }> =>
+				p.type === 'text' && Boolean(p.text.trim())
+		)
 	);
-	/** A call as one line: the values of its arguments, the repo first. */
-	const argLine = (call: Call) =>
-		call.arguments && typeof call.arguments === 'object'
-			? Object.values(call.arguments as Record<string, unknown>)
-					.map((v) => (typeof v === 'string' ? v : JSON.stringify(v)))
-					.join(' ')
-			: '';
+	const results = $derived(
+		new Map(
+			view.messages
+				.flatMap((m) => m.parts)
+				.filter((p): p is Result => p.type === 'tool-result')
+				.map((p) => [p.id, p])
+		)
+	);
+	const resultText = (part: Result) =>
+		part.content.map((c) => (c.type === 'text' ? c.text : '[image]')).join('\n');
+	/** The calls as tokens, each with its result once it came back. */
+	const calls = $derived(
+		parts
+			.filter((p): p is Call => p.type === 'tool-call')
+			.map((call) => {
+				const result = results.get(call.id);
+				const text = result && resultText(result);
+				return {
+					call,
+					result,
+					text,
+					step: describeStep(
+						call.name,
+						call.arguments,
+						result && { text: text ?? '', error: Boolean(result.error) }
+					)
+				};
+			})
+	);
+	let open: string | null = $state(null);
 	const working = $derived(child.status === 'working');
 	const phase = $derived(working ? (phaseOf(view, null) ?? { kind: 'think' as const }) : null);
 
@@ -109,7 +141,7 @@
 <svelte:window onkeydowncapture={onKey} />
 
 <section
-	class="glass flex h-[min(30rem,55dvh)] flex-col rounded-[var(--radius-panel)] bg-panel/70"
+	class="glass flex h-[min(30rem,55dvh)] flex-col rounded-[var(--radius-panel)] bg-surface/40"
 	aria-label="{labels.subagent} #{child.id}"
 	data-agent-child-sheet
 >
@@ -137,19 +169,38 @@
 				<span class="label mb-1 block">{labels.task}</span>{task}
 			</p>
 		{/if}
-		{#each steps as step, i (i)}
-			{#if step.type === 'tool-call'}
-				<p class="flex min-w-0 items-center gap-2 font-mono text-xs text-muted">
-					<span class="led" data-status="completed"></span>
-					<span class="shrink-0 text-fg">{step.name}</span>
-					<span class="truncate">{argLine(step)}</span>
-				</p>
-			{:else}
-				<div class="{ANSWER_PROSE} text-[0.9375rem]">
-					<!-- eslint-disable-next-line svelte/no-at-html-tags -- renderMarkdown neutralizes HTML and links (src/agent/markdown.ts, with tests) -->
-					{@html renderMarkdown(step.text)}
+		{#if calls.length}
+			<div class="flex flex-col gap-2">
+				<div class="flex flex-wrap gap-1.5">
+					{#each calls as { call, result, step } (call.id)}
+						<StepToken
+							name={call.name}
+							{step}
+							text={sentence(call.name, step)}
+							count={countText(step)}
+							state={!result ? 'running' : result.error ? 'error' : 'done'}
+							expanded={open === call.id}
+							onclick={() => (open = open === call.id ? null : call.id)}
+						/>
+					{/each}
 				</div>
-			{/if}
+				{#each calls as { call, text } (call.id)}
+					{#if open === call.id}
+						<StepDetail
+							name={call.name}
+							call={callText(call.arguments)}
+							result={text}
+							labels={stepLabels}
+						/>
+					{/if}
+				{/each}
+			</div>
+		{/if}
+		{#each texts as part, i (i)}
+			<div class="{ANSWER_PROSE} text-[0.9375rem]">
+				<!-- eslint-disable-next-line svelte/no-at-html-tags -- renderMarkdown neutralizes HTML and links (src/agent/markdown.ts, with tests) -->
+				{@html renderMarkdown(part.text)}
+			</div>
 		{/each}
 		{#if phase}
 			<AgentStatus label={phaseLabel(phase)} inset={false} />

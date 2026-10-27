@@ -1,19 +1,21 @@
 <script lang="ts">
 	import { AgentClient } from 'agents/client';
-	import { ArrowUpRight, Bot, FileCode, Search, Wrench } from '@lucide/svelte';
+	import { ArrowUpRight } from '@lucide/svelte';
 	import { onMount, tick } from 'svelte';
 	import { credits, nextReset, SHOW_BUDGET_BELOW } from '../../agent/budget';
 	import { renderMarkdown } from '../../agent/markdown';
 	import { parseRender, type RenderView as View } from '../../agent/render';
 	import { parseReport, type ChildRecord, type ChildReport } from '../../agent/delegate';
-	import { describeStep, fillStep, type Step, type StepCount } from '../../agent/steps';
+	import { callText, describeStep, fillStep, type Step, type StepCount } from '../../agent/steps';
 	import AgentStatus from './AgentStatus.svelte';
 	import ChildSheet from './ChildSheet.svelte';
 	import DelegateView from './DelegateView.svelte';
 	import DraftView from './DraftView.svelte';
 	import RenderView from './RenderView.svelte';
+	import StepDetail from './StepDetail.svelte';
+	import StepToken from './StepToken.svelte';
 	import { phosphor } from './phosphor';
-	import { ANSWER_PROSE } from './prose';
+	import { ANSWER_PROSE, TOKEN } from './prose';
 	import { errorKind, phaseOf, type ErrorKind, type Phase } from '../../agent/phase';
 	import type {
 		NoticeReason,
@@ -499,12 +501,6 @@
 	const resultText = (part: ToolResult) =>
 		part.content.map((c) => (c.type === 'text' ? c.text : '[image]')).join('\n');
 
-	/** The code of `run_code`, to show as code and not as a JSON string. */
-	const code = (args: unknown) =>
-		args && typeof args === 'object' && typeof (args as { code?: unknown }).code === 'string'
-			? (args as { code: string }).code
-			: undefined;
-
 	/** The `draft_message` draft from the arguments, if the server accepted it. */
 	function drafted(
 		args: unknown,
@@ -620,8 +616,8 @@
 		step.count ? plural(labels.counts[step.count.kind], step.count.n) : '';
 	const childLed = (child: ChildRecord) =>
 		child.status === 'working' ? 'in-progress' : child.status === 'done' ? 'completed' : 'archived';
-	const TOKEN =
-		'inline-flex max-w-full min-w-0 items-center gap-2 rounded-[var(--radius-control)] bg-surface px-2.5 py-1.5 text-[0.8125rem] text-text';
+	const stepState = (result: ToolResult | undefined) =>
+		!result ? 'running' : result.error ? 'error' : 'done';
 
 	/** One token of a turn's work: a tool call, or a sub-agent that `delegate` started. */
 	type Token =
@@ -805,18 +801,6 @@
 	<p class="text-[0.9375rem] text-muted">{noticeText(item)}</p>
 {/snippet}
 
-{#snippet stepIcon(family: Step['family'])}
-	{#if family === 'site'}
-		<Search class="size-3.5 shrink-0 text-muted" aria-hidden="true" />
-	{:else if family === 'code'}
-		<FileCode class="size-3.5 shrink-0 text-muted" aria-hidden="true" />
-	{:else if family === 'agents'}
-		<Bot class="size-3.5 shrink-0 text-muted" aria-hidden="true" />
-	{:else}
-		<Wrench class="size-3.5 shrink-0 text-muted" aria-hidden="true" />
-	{/if}
-{/snippet}
-
 <div class="flex flex-1 flex-col">
 	{#if unreachable}
 		<div class="mb-8"><AgentStatus label={labels.unreachable} inset={false} /></div>
@@ -852,11 +836,13 @@
 						>
 							<span class="text-[0.9375rem] font-medium text-fg">{row.title}</span>
 							<span class="text-[0.9375rem] text-muted">{row.note}</span>
-							<span class="{TOKEN} max-sm:hidden" aria-hidden="true">
-								{@render stepIcon(step.family)}
-								<span class="truncate">{sentence(row.tool, step)}</span>
-								{#if row.tool === 'delegate'}<span class="led" data-status="in-progress"
-									></span>{/if}
+							<span class="max-sm:hidden">
+								<StepToken
+									name={row.tool}
+									{step}
+									text={sentence(row.tool, step)}
+									state={row.tool === 'delegate' ? 'running' : 'done'}
+								/>
 							</span>
 						</li>
 					{/each}
@@ -959,51 +945,27 @@
 												>
 											</button>
 										{:else}
-											<button
-												type="button"
-												aria-expanded={openStep === token.id}
+											<StepToken
+												name={token.name}
+												step={token.step}
+												text={sentence(token.name, token.step)}
+												count={countText(token.step)}
+												state={stepState(token.result)}
+												expanded={openStep === token.id}
 												onclick={() => (openStep = openStep === token.id ? null : token.id)}
-												data-agent-step={token.name}
-												class="{TOKEN} cursor-pointer transition-colors hover:bg-hover hover:text-fg aria-expanded:bg-hover"
-											>
-												{@render stepIcon(token.step.family)}
-												<span class="truncate">{sentence(token.name, token.step)}</span>
-												{#if !token.result}
-													<span class="led" data-status="in-progress"></span>
-												{:else if token.result.error}
-													<span class="led" data-status="archived"></span>
-												{:else if token.step.count}
-													<span class="font-mono text-[0.7rem] whitespace-nowrap text-subtle"
-														>{countText(token.step)}</span
-													>
-												{/if}
-											</button>
+											/>
 										{/if}
 									{/each}
 								</div>
 							{/if}
 							{#each work.steps as token (token.id)}
 								{#if token.kind === 'tool' && openStep === token.id}
-									<div
-										class="flex flex-col gap-2 rounded-[var(--radius-control)] bg-surface/60 px-3 py-2.5 font-mono text-xs"
-										data-agent-step-detail
-									>
-										<p class="flex items-center gap-2">
-											<span class="text-fg">{token.name}</span>
-											<span class="label">{labels.toolCall}</span>
-										</p>
-										<pre
-											class="overflow-x-auto overscroll-x-none whitespace-pre-wrap text-muted">{code(
-												token.args
-											) ?? JSON.stringify(token.args, null, 2)}</pre>
-										{#if token.result}
-											<p class="label">{labels.result}</p>
-											<pre
-												class="max-h-64 overflow-auto overscroll-x-none whitespace-pre-wrap text-muted">{resultText(
-													token.result
-												)}</pre>
-										{/if}
-									</div>
+									<StepDetail
+										name={token.name}
+										call={callText(token.args)}
+										result={token.result && resultText(token.result)}
+										labels={{ call: labels.toolCall, result: labels.result }}
+									/>
 								{/if}
 							{/each}
 						</div>
@@ -1132,10 +1094,13 @@
 				{phaseLabel}
 				{tokens}
 				{spent}
+				{sentence}
+				{countText}
+				stepLabels={{ call: labels.toolCall, result: labels.result }}
 				onclose={() => (sheet = null)}
 			/>
 		{/if}
-		<div class="glass rounded-[var(--radius-panel)] bg-panel/60 px-3 pt-3 pb-2.5">
+		<div class="glass rounded-[var(--radius-panel)] bg-surface/40 px-3 pt-3 pb-2.5">
 			{#if rail.length}
 				<div class="mb-2.5 flex flex-wrap gap-1.5 border-b border-line/60 pb-2.5" data-agent-rail>
 					{#each rail as child (child.id)}

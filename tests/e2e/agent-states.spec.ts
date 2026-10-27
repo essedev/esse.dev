@@ -522,7 +522,13 @@ test.describe('agent sub-agents', () => {
 		await rail.getByRole('button', { name: new RegExp(TITLE) }).click();
 		const sheet = page.locator('[data-agent-child-sheet]');
 		await expect(sheet).toContainText(TASK);
-		await expect(sheet).toContainText('read_file');
+		// Its calls are the same tokens as the main chat: the sentence, and a click opens the call.
+		const step = sheet.locator('[data-agent-step="read_file"]');
+		await expect(step).toContainText('legge triage.ts in essedev/esse.dev');
+		await step.click();
+		await expect(sheet.locator('[data-agent-step-detail]')).toContainText(
+			'"path": "src/agent/triage.ts"'
+		);
 		// The child's answer reads like the main one: a heading scaled to the text (1.2em of 15px).
 		await expect(sheet.locator('h1')).toHaveCSS('font-size', '18px');
 		await sheet.getByRole('button', { name: 'Ferma' }).click();
