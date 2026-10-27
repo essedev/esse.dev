@@ -10,6 +10,7 @@ import type {
 	UserMessage
 } from '@earendil-works/pi-ai';
 import type { EntryRecord } from '@earendil-works/pi-durable';
+import { CHILD_NOTE_ENTRY } from './delegate';
 import { DELIVERY_ENTRY } from './draft';
 
 /**
@@ -128,8 +129,14 @@ export function projectEntry(entry: EntryRecord): PiMessage | undefined {
 			timestamp: 0
 		};
 	}
-	// A delivery note is for the model only: on the page it would read as the visitor's.
-	if (entry.kind === 'pi.system' || entry.kind === DELIVERY_ENTRY || message === undefined) {
+	// Delivery and child notes are for the model only: on the page they would read as the
+	// visitor's.
+	if (
+		entry.kind === 'pi.system' ||
+		entry.kind === DELIVERY_ENTRY ||
+		entry.kind === CHILD_NOTE_ENTRY ||
+		message === undefined
+	) {
 		return undefined;
 	}
 	return projectMessage(message, String(entry.id));

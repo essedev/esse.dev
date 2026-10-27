@@ -244,16 +244,25 @@ sides.
   tool description. It runs in a Dynamic Worker (binding `LOADER`, paid plan) with no
   network or environment, with caps on time, calls and result size; every call goes
   through the same validation and the same `execute` as the normal tools.
-- **`delegate`:** 2 or 3 sub-agents in parallel, with the sub-agent scheme of
-  pi-durable: each child is a conversation owned by the call (stopping the parent stops
-  the children, a resume finds them again), with only the read-only tools and sub-agent
-  instructions. Each child has a token cap (`child-budget.ts`): an extension selected
-  only on the children that, once at the cap, asks for the final answer before the request
-  and blocks further tools. Without credits for all the children in the worst case, the
-  tool does not create them and the parent answers. The children's cost is not in the
-  main conversation: the tool deducts it, once only (`memo`). The page shows for each
-  child calls, tokens, cost and answer (`delegate.ts`, `DelegateView.svelte`); the
-  children's events do not arrive live.
+- **`delegate`:** 1 to 3 sub-agents in the background (DECISIONS #33), with the
+  persistent sub-agent scheme of pi-durable (its example 23). One commit creates, per
+  call, a background anchor task that owns the children's conversations, the `Children`
+  document of the main conversation (title, state, reserve, tokens, cost) and a background
+  reporter task per child; the tool returns at once and the main agent goes on talking. A
+  background task is a boundary: the main agent's Stop does not reach the children. The
+  reporter hands the child its task, waits, closes its record, charges it (once, `memo`)
+  and posts the findings to the main conversation as a message with a
+  `[sub-agent #id "title" finished]` header, which starts a turn; that turn is charged by
+  the reporter, since no socket waits for it. A stopped child, or a report with no credits
+  left, becomes a model-only note (`app.child-note`, hidden in `projectEntry`). While a
+  child works its worst case is held back from the budget (`#remaining`), at most 3 work
+  at once, and the `sub-agents` prompt section tells the model their real state. Each
+  child has a token cap (`child-budget.ts`): an extension selected only on the children
+  that, once at the cap, asks for the final answer and blocks further tools. A child's
+  session can be watched on its own socket (`?session=<id>`) and stopped (`abort`), not
+  written to (`writable`); a reset stops the children first. Live list on the socket with
+  the `children` message. The page's view of the children is still the old card
+  (`DelegateView.svelte`); its redesign is concept N.
 - **`draft_message`:** the model writes only a draft; the page shows it in an editable
   card with Turnstile and the visitor sends it. The server (`sendDraft`) checks that the
   draft is a call of the agent in this conversation and has not already gone out,

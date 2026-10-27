@@ -49,8 +49,8 @@ of the earlier idea (the site redesigned live by a model). Choices in
 - Done (Cycle 15): `list_projects`, `show_page` (card to open) and the tools on public
   repos via the GitHub API (#13). The site repo is read from the `main` branch.
 - Done (Cycle 16): the demo tools, one per capability, with the limits in code: `render`
-  (bars, tables, timelines), `run_code` (Code Mode in a Dynamic Worker), `delegate` (2-3
-  pi-durable sub-agents), `draft_message` (a draft the visitor sends, after Turnstile).
+  (bars, tables, timelines), `run_code` (Code Mode in a Dynamic Worker), `delegate` (1-3
+  pi-durable sub-agents in the background, #33), `draft_message` (a draft the visitor sends, after Turnstile).
   Choices in #14.
 - Done (Cycle 19): chat goes to the model, which answers briefly and without tools (#12);
   per-IP limits, burst of 10 messages a minute and 50 cents a day (#17); red team: 10
@@ -68,8 +68,10 @@ of the earlier idea (the site redesigned live by a model). Choices in
 - Read-only tools on already public data. No writes, no fetch of arbitrary URLs, no
   private repos, no memory between visits. The only effect outside the site is the
   `draft_message` email, and it goes out only from a visitor's click.
-- To do: the sub-agents' events live in the page (today they show once the work is
-  done); `@cloudflare/computer` only if running the repos' code became necessary.
+- In progress (Cycle 29): sub-agents in the background (#33). Server done; the page still
+  shows the old card and the reports as visitor messages: the chips, the switch to a
+  child's live transcript and the report card follow concept N. Not to push before then.
+- `@cloudflare/computer` only if running the repos' code became necessary.
 - To measure with real traffic: whether the weight estimated by Jev predicts the real
   cost of the answers (both exist for every message). Only if it predicts it well, use it
   to choose which tools to offer; today the weight is shown and that is all.

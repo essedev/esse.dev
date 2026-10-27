@@ -4,6 +4,7 @@
 import type { JsonValue } from '@earendil-works/pi-ai';
 import type { AgentEvent, UserInput } from '@earendil-works/pi-durable';
 import type { PiSessionId, PiWhenBusy } from 'agents/harness/pi';
+import type { ChildRecord } from './delegate';
 import type { Triage } from './triage';
 
 /** Why a message stopped before the model. `rate`: too many messages from the same IP. */
@@ -78,6 +79,8 @@ export type PiServerMessage =
 			readonly status: 'sent' | 'error';
 			readonly message?: string;
 	  }
+	/** The sub-agents of `delegate` in the main conversation, in the order they started. */
+	| { readonly type: 'children'; readonly children: readonly ChildRecord[] }
 	/** What is left of today's budget, in dollars. */
 	| { readonly type: 'budget'; readonly remaining: number; readonly limit: number }
 	| { readonly type: 'result'; readonly id: string; readonly result: JsonValue }

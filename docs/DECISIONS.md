@@ -424,3 +424,21 @@ tokens of both themes out of `global.css` (`src/lib/css-tokens.ts`) and Departur
 from the Fonts API. A renamed token fails the build instead of drifting. Rejected: XSLT,
 the usual way, which Chrome removes from stable on 2026-11-17; colors and font copied into
 a static file (they would drift from the themes).
+
+## #33 - `delegate` in the background: the visitor talks while the sub-agents work
+
+**Status:** active (Cycle 29)
+
+The sub-agents of #14 kept the main agent's turn open until all of them answered, so the
+visitor could only wait. Now they follow pi-durable's persistent scheme (example 23): the
+children belong to a background anchor, a reporter task per child brings the findings
+back as a message that starts a new turn, and the call returns at once. One child is
+allowed (the minimum was 2): a long task alone now has a reason, the background. The cost
+stays bounded by the per-child cap of #14, the worst case of each child held back from
+the budget while it works, and at most 3 at work at once; a report with no credits left
+does not start a turn. A child is read-only for the visitor (watch and stop), so its cost
+has one path. Measured in preview: one child on a file, main answer in 7 s, report in
+14 s, about 15 credits for the child. Rejected: children owned by the call (#14, the turn
+stays open), one report for all the children (with one child it is the same, with three it
+hides the first findings), a stopped child that starts a turn (it costs for nothing: a note
+is enough), letting the visitor write to a child (a second budget path).

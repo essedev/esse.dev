@@ -12,7 +12,8 @@ import type { PiClientMessage, PiServerMessage } from './protocol';
  * The site's hooks around a submit (the example had none): `admit` decides whether the
  * message reaches the model (triage and budget) and tells the client what it decided;
  * `settled` receives the receipt so the real cost is charged when the answer is done;
- * `sendDraft` sends a `draft_message` draft the visitor approved.
+ * `sendDraft` sends a `draft_message` draft the visitor approved; `writable` keeps the
+ * sessions of `delegate`'s children read-only; `beforeReset` stops them before a reset.
  */
 export interface SubmitHooks {
 	/** `ip` is the address of the connection (`CF-Connecting-IP`), if any. */
@@ -21,6 +22,10 @@ export interface SubmitHooks {
 		reply: (message: PiServerMessage) => void,
 		ip: string | null
 	): Promise<boolean>;
+	/** Whether the visitor may submit, reset or send drafts on this session. */
+	writable(session: PiSessionId): Promise<boolean>;
+	/** Runs before a reset of the session. */
+	beforeReset(session: PiSessionId): Promise<void>;
 	/** Called with the receipt of an accepted submit. */
 	settled(session: PiSessionId, receipt: PiReceipt): void;
 	/** Sends the client the current budget. */
@@ -199,6 +204,11 @@ export class PiSessionSockets {
 		message: PiClientMessage
 	): Promise<JsonValue> {
 		const handle = this.#harness.session(session);
+		const writes =
+			message.type === 'submit' || message.type === 'reset' || message.type === 'send-draft';
+		if (writes && this.#hooks && !(await this.#hooks.writable(session))) {
+			throw new Error('This session is read-only');
+		}
 		switch (message.type) {
 			case 'submit': {
 				const text = typeof message.input === 'string' ? message.input : '';
@@ -215,6 +225,7 @@ export class PiSessionSockets {
 			case 'abort':
 				return await handle.abort();
 			case 'reset':
+				await this.#hooks?.beforeReset(session);
 				await handle.reset(message.handoff);
 				return null;
 			case 'send-draft':
