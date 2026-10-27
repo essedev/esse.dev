@@ -11,7 +11,7 @@ tags:
   - "Open Data"
 ---
 
-I moved to Milan in 2026, and two projects came almost right away.
+I moved to Milan in 2026, and two projects came almost right away. The third came later and has its own page: [Varco](/en/projects/varco), the navigator that knows which zones you can enter.
 
 ## based-routing
 

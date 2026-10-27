@@ -11,7 +11,7 @@ tags:
   - "Open Data"
 ---
 
-Mi sono trasferito a Milano nel 2026, e due progetti sono nati quasi subito.
+Mi sono trasferito a Milano nel 2026, e due progetti sono nati quasi subito. Il terzo è arrivato dopo e ha una scheda sua: [Varco](/it/progetti/varco), il navigatore che sa in quali zone puoi entrare.
 
 ## based-routing
 

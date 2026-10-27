@@ -50,13 +50,15 @@ DECISIONS #20.
 Decided with Simone on 2026-10-04 and applied in Cycle 21: every item has its entry, the
 new ones in first draft.
 
-**Showcase** (6): Relay, Nexus, pgbee, Zeno, mcpbelt, Portsage. Zeno is private: entry
-without a link to the repo. The iterations of Nexus (`previously`) are Plannerinator, then
+**Showcase** (6): Relay, Nexus, Varco, pgbee, Zeno, mcpbelt. Varco took Portsage's place
+on 2026-10-27 and Portsage moved to the registry. Zeno and Varco are private: entries without a
+link to the repo (Varco links its site). The iterations of Nexus (`previously`) are Plannerinator, then
 the personal assistants: Verbosa, NanoClaw, Life Terminal, Almanac, Nexus in Elixir, Bob,
 which stopped the day Nexus restarted.
 
 **Registry**:
 
+- Portsage.
 - Copilota: a copilot for sales calls, macOS app in Swift with the backend inside the app,
   transcription of both channels, cards from the knowledge base, Nemotron locally. Private
   repo.
