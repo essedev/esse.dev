@@ -133,5 +133,6 @@ Both are files in the project's folder, declared in `meta.json` (`logo`, `cover`
 - **Two themes** (DECISIONS #28): a logo from `render-logo.ts` and a designed cover from
   `render-cover.ts` have a light variant next to them (`logo-light.svg`, `cover-light.webp`),
   written by the same script and declared as `logoLight` and `cover.srcLight`. An app icon
-  that is its own tile, a screenshot and the generated cover have one only.
+  that is its own tile, a screenshot and the generated cover have one only, unless the project
+  renders the same view in both themes (Varco's map, shot from its `design/og.html`).
 - **Weight**: no source file over 300 KB. The pixel-art archive cost 80 MB of history.

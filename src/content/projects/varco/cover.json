@@ -1,8 +1,0 @@
-{
-	"accent": "#6b9cf6",
-	"panel": {
-		"kind": "image",
-		"image": "cover-panel.webp"
-	},
-	"out": "cover.webp"
-}
