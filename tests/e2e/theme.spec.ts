@@ -42,7 +42,7 @@ test.describe('theme', () => {
 
 	test('a project shows the logo and cover of the theme', async ({ page }) => {
 		await page.emulateMedia({ colorScheme: 'dark' });
-		await page.goto('/en/projects/pgbee');
+		await page.goto('/en/projects/media-hub');
 		const visible = (selector: string) =>
 			page
 				.locator(selector)

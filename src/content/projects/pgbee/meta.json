@@ -9,7 +9,6 @@
 	"logoLight": "./logo-light.svg",
 	"cover": {
 		"src": "./cover.webp",
-		"srcLight": "./cover-light.webp",
-		"focus": "center"
+		"focus": "top"
 	}
 }

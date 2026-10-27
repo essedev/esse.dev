@@ -50,17 +50,16 @@ DECISIONS #20.
 Decided with Simone on 2026-10-04 and applied in Cycle 21: every item has its entry, the
 new ones in first draft.
 
-**Showcase** (6): Relay, Nexus, Varco, pgbee, Zeno, mcpbelt. Varco took Portsage's place
-on 2026-10-27 and Portsage moved to the registry. Zeno and Varco are private: entries without a
+**Showcase** (6): Relay, Nexus, Varco, pgbee, Zeno, Floppy. On 2026-10-27 Varco took
+Portsage's place and Floppy mcpbelt's; both moved to the registry. Floppy comes from what some
+colleagues needed; who they are is not named. Zeno and Varco are private: entries without a
 link to the repo (Varco links its site). The iterations of Nexus (`previously`) are Plannerinator, then
 the personal assistants: Verbosa, NanoClaw, Life Terminal, Almanac, Nexus in Elixir, Bob,
 which stopped the day Nexus restarted.
 
 **Registry**:
 
-- Portsage.
-- Floppy: a shared disk for video teams on Mac (JuiceFS on S3 in a Lima VM), born from what
-  some colleagues needed; who they are is not named.
+- Portsage, mcpbelt.
 - Copilota: a copilot for sales calls, macOS app in Swift with the backend inside the app,
   transcription of both channels, cards from the knowledge base, Nemotron locally. Private
   repo.
@@ -135,4 +134,6 @@ Both are files in the project's folder, declared in `meta.json` (`logo`, `cover`
   written by the same script and declared as `logoLight` and `cover.srcLight`. An app icon
   that is its own tile, a screenshot and the generated cover have one only, unless the project
   renders the same view in both themes (Varco's map, shot from its `design/og.html`).
+- **Text in a cover**: Varco's cover is its share image, title in Italian included, by
+  Simone's choice (2026-10-27); pgbee's is a frame of its video, with the English caption.
 - **Weight**: no source file over 300 KB. The pixel-art archive cost 80 MB of history.
