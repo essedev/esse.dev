@@ -20,6 +20,7 @@
 	 */
 	let {
 		child,
+		name,
 		visitor,
 		labels,
 		statusLabel,
@@ -32,10 +33,11 @@
 		onclose
 	}: {
 		child: ChildRecord;
+		/** How the visitor calls it: "sotto-agente 2", its order in the conversation. */
+		name: string;
 		/** The visitor's object, the same as the main socket's. */
 		visitor: string;
 		labels: {
-			subagent: string;
 			stop: string;
 			close: string;
 			task: string;
@@ -142,7 +144,7 @@
 
 <section
 	class="glass flex h-[min(30rem,55dvh)] flex-col rounded-[var(--radius-panel)] bg-surface/40"
-	aria-label="{labels.subagent} #{child.id}"
+	aria-label={name}
 	data-agent-child-sheet
 >
 	<header class="flex items-center gap-2.5 border-b border-line/60 px-3.5 py-2.5 font-mono text-xs">
@@ -150,7 +152,7 @@
 			class="led"
 			data-status={working ? 'in-progress' : child.status === 'done' ? 'completed' : 'idea'}
 		></span>
-		<span class="min-w-0 truncate text-fg">{labels.subagent} #{child.id} · {child.title}</span>
+		<span class="min-w-0 truncate text-fg">{name} · {child.title}</span>
 		<span class="shrink-0 text-subtle">{statusLabel(child.status)}</span>
 		<span class="ml-auto flex shrink-0 gap-1.5">
 			{#if working}

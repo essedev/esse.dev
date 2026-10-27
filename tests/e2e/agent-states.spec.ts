@@ -643,6 +643,7 @@ test.describe('agent sub-agents', () => {
 		await rail.getByRole('button', { name: new RegExp(TITLE) }).click();
 		const sheet = page.locator('[data-agent-child-sheet]');
 		await expect(sheet).toContainText(TASK);
+		await expect(sheet).toContainText(`sotto-agente 1 · ${TITLE}`);
 		// Its calls are the same tokens as the main chat: the sentence, and a click opens the call.
 		const step = sheet.locator('[data-agent-step="read_file"]');
 		await expect(step).toContainText('legge triage.ts in essedev/esse.dev');
@@ -676,7 +677,8 @@ test.describe('agent sub-agents', () => {
 			}
 		});
 		const report = page.locator('[data-agent-report]');
-		await expect(report).toContainText(`sotto-agente #7 · ${TITLE}`);
+		// The visitor reads its order in the conversation, not the object's id (#7).
+		await expect(report).toContainText(`sotto-agente 1 · ${TITLE}`);
 		await expect(report).toContainText('finito');
 		await expect(page.getByText('[sub-agent #7')).toHaveCount(0);
 		await report.locator('summary').click();

@@ -276,7 +276,8 @@ sides.
   child in the turn's work (`DelegateView.svelte` still reads the reports of calls from
   before #33), the live transcript in `ChildSheet.svelte` on the child's own socket, its
   calls as the same tokens (`StepToken.svelte`, `StepDetail.svelte`), and the
-  report as its own line, recognized by `parseReport`.
+  report as its own line, recognized by `parseReport`. The page numbers the children 1, 2, 3 in the order the conversation
+  started them: their id is the object's own counter, shared by everything it creates.
 - **`draft_message`:** the model writes only a draft; the page shows it in an editable
   card with Turnstile and the visitor sends it. The server (`sendDraft`) checks that the
   draft is a call of the agent in this conversation and has not already gone out,

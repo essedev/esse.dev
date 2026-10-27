@@ -158,6 +158,17 @@
 			.slice(-Math.max(0, 4 - live.length));
 		return children.filter((c) => live.includes(c) || rest.includes(c));
 	});
+	/**
+	 * A sub-agent's number for the visitor: 1, 2, 3 in the order the conversation started them.
+	 * Its id is the object's own counter, shared by everything it creates (hundreds soon): it
+	 * stays for the model and the socket. 0 for a child the list no longer has.
+	 */
+	const ordinal = (id: number) =>
+		[...children].sort((a, b) => a.id - b.id).findIndex((c) => c.id === id) + 1;
+	const childName = (id: number) => {
+		const n = ordinal(id);
+		return n ? `${labels.child} ${n}` : labels.child;
+	};
 	const statusLabel = (status: ChildRecord['status']) =>
 		({
 			working: labels.childWorking,
@@ -889,7 +900,7 @@
 					>
 						<span class="led" data-status={report.status === 'finished' ? 'completed' : 'idea'}
 						></span>
-						<span class="text-fg">{labels.child} #{report.id} · {report.title}</span>
+						<span class="text-fg">{childName(report.id)} · {report.title}</span>
 						<span>
 							{report.status === 'finished'
 								? labels.childDone
@@ -1110,10 +1121,10 @@
 	<div class="sticky bottom-3 z-10 mt-8 mb-3 flex flex-col gap-2">
 		{#if sheetChild}
 			<ChildSheet
+				name={childName(sheetChild.id)}
 				child={sheetChild}
 				{visitor}
 				labels={{
-					subagent: labels.child,
 					stop: labels.childStop,
 					close: labels.childClose,
 					task: labels.childTask,
