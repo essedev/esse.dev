@@ -78,7 +78,7 @@
 		/** The line under the field on how long conversations are kept, and its link. */
 		privacyNote: string;
 		privacyHref: string;
-		/** Description for the visitor; without it, the one the server gives the model. */
+		/** What a tool does, as the status line says it while it runs; without it, its name. */
 		toolLabels: Record<string, string>;
 		/** The section name for each kind of page, on the `show_page` cards. */
 		kinds: Record<string, string>;
@@ -139,7 +139,6 @@
 	let triages: Record<string, Triage | null> = $state({});
 	let locals: Local[] = $state([]);
 	let budget: { remaining: number; limit: number } | null = $state(null);
-	let catalog: { name: string; description: string }[] = $state([]);
 	/** The state of draft sends, by id of the `draft_message` call. */
 	let drafts: Record<string, { status: 'sending' | 'sent' | 'error'; message?: string }> = $state(
 		{}
@@ -189,8 +188,7 @@
 		}
 	}
 
-	const toolLabel = (name: string) =>
-		labels.toolLabels[name] ?? catalog.find((t) => t.name === name)?.description ?? '';
+	const toolLabel = (name: string) => labels.toolLabels[name] ?? name;
 
 	const shown = $derived(
 		[...view.messages, ...(view.live ? [view.live] : [])].filter(
@@ -236,9 +234,6 @@
 				return;
 			}
 			switch (message.type) {
-				case 'hello':
-					catalog = [...message.tools];
-					break;
 				case 'events': {
 					const had = view.messages.length;
 					view = reduceEvents(view, message.events);
@@ -704,9 +699,16 @@
 						})
 					);
 				} else if (work && !result) {
-					// Asked, not started yet: a token per task, by its title.
+					// Asked, not started yet: a token per task, by its title. While the model is still
+					// writing the call a task may lack its title: a placeholder then, not the task's
+					// text, which `delegateArgs` would borrow until the title arrives.
 					work.tasks.forEach((task, i) =>
-						steps.push({ kind: 'task', id: `${part.id}:${i}`, title: task.title })
+						steps.push({
+							kind: 'task',
+							id: `${part.id}:${i}`,
+							title:
+								live && !givenTitle(part.arguments, i) ? `${labels.child} ${i + 1}` : task.title
+						})
 					);
 				} else {
 					steps.push({
@@ -735,6 +737,12 @@
 			t.kind === 'tool' ? !t.result : t.kind === 'task' || t.child.status === 'working'
 		);
 		return { steps, thinking, content, usage, live };
+	}
+	/** The title the model wrote for a task of `delegate`, in either shape it uses. */
+	function givenTitle(args: unknown, index: number): boolean {
+		const a = (args ?? {}) as { tasks?: { title?: unknown }[]; title?: unknown };
+		const title = Array.isArray(a.tasks) ? a.tasks[index]?.title : a.title;
+		return typeof title === 'string' && title.trim() !== '';
 	}
 	/** The open token, whose call and result show under the row, and the open reasoning. */
 	let openStep: string | null = $state(null);

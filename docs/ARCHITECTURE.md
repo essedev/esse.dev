@@ -299,8 +299,8 @@ sides.
   the toolbar. Answers can link to any domain (#18).
 - **Empty conversation** (#38): the example questions and three abilities (site, code,
   sub-agents), each with the token it becomes in a conversation, in place of the list of
-  tools by name. The catalog the server announces in `hello` still names the tools in the
-  status line.
+  tools by name. While a tool runs the status line says what it does in a few words
+  (`agentTool*` in the `site` texts), or its name for a tool without them.
 - **The transcript by turn** (#39): the visitor's message is a lilac bubble on the right;
   the agent's messages between two of the visitor's are one turn, its work under one header
   (state, steps, tokens and credits once) as tokens with an icon per family and a readable

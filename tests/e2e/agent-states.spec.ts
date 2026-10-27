@@ -111,7 +111,7 @@ test.describe('agent states', () => {
 		await expect(status).toContainText('ragiona');
 
 		events(ws, { type: 'tool_execution_start', toolCallId: 'c1', toolName: 'search_site' });
-		await expect(status).toContainText('cerca tra progetti, scritti, metodo e adesso');
+		await expect(status).toContainText('cerca nel sito');
 		await expect(status).toContainText(/\d,\d s/);
 
 		events(
@@ -483,6 +483,51 @@ test.describe('agent delegate tokens', () => {
 		await expect(work).toContainText('Analisi repo Portsage');
 		await expect(work).toContainText('al lavoro');
 		await expect(work).not.toContainText('affida');
+	});
+});
+
+test.describe('agent delegate while it is written', () => {
+	test('a task without its title yet shows a placeholder, never the text of the task', async ({
+		page
+	}) => {
+		const TASK = 'Cerca informazioni sul progetto Portsage di Simone Salerno: cosa fa, stack.';
+		const server = await fakeServer(page);
+		await page.goto('/it/agente');
+		await ask(page, "Che differenza c'è tra Relay e Portsage? fallo con 2 subagents");
+		const { ws } = server();
+		events(ws, { type: 'run_start' }, { type: 'message_start', message: assistant([]) });
+		// The call as the model is writing it: the task is there, the title not yet.
+		events(ws, {
+			type: 'message_update',
+			changes: [
+				{
+					type: 'toolcall_start',
+					contentIndex: 0,
+					block: { type: 'toolCall', id: 'd1', name: 'delegate', arguments: { task: TASK } }
+				}
+			]
+		});
+		const work = page.locator('[data-agent-work]');
+		await expect(work).toContainText('sotto-agente 1');
+		await expect(work).not.toContainText('Cerca informazioni');
+
+		events(ws, {
+			type: 'message_update',
+			changes: [
+				{
+					type: 'block',
+					contentIndex: 0,
+					block: {
+						type: 'toolCall',
+						id: 'd1',
+						name: 'delegate',
+						arguments: { task: TASK, title: 'Indaga Portsage' }
+					}
+				}
+			]
+		});
+		await expect(work).toContainText('Indaga Portsage');
+		await expect(work).not.toContainText('sotto-agente 1');
 	});
 });
 
