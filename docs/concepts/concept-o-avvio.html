@@ -1,0 +1,748 @@
+<!doctype html>
+<html lang="it">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Concept O - Avvio</title>
+		<!--
+			Concept O: come si accende il sito quando un visitatore arriva, prima che la finestra
+			del workspace si apra.
+			Tasti: x a b c per la variante, 1 per la sottovariante di C, r riavvia l'avvio, m simula
+			reduced motion, t tema, p nasconde barra e pannello. Durante l'avvio qualsiasi tasto,
+			click, tocco o rotella lo salta e porta allo stato finale.
+
+			Il problema: il sito si usa come un'app (finestra, velo CRT, Departure Mono) ma si apre
+			come una pagina. Il rischio è quello di DECISIONS #15: la view transition fu tolta perché
+			"sembrava un sito che carica e rallentava la tastiera". Qui l'avvio compare raramente
+			(regola sotto), dura al massimo 1,3 s e si salta con qualsiasi input; il cambio pagina
+			resta istantaneo.
+
+			X  oggi: la pagina compare subito, nessun avvio.
+			A  POST: righe di un controllo d'accensione con dati veri del sito (build, contenuti,
+			   lingue, agente), poi la finestra si apre. Circa 1,25 s.
+			B  cursore: solo "esse.dev" col cursore al centro della scrivania; il logo vola al suo
+			   posto nella lista mentre la finestra si apre. Il cursore dell'avvio è lo stesso del
+			   logo: il sito continua ad averne uno solo. Circa 0,95 s.
+			C  ritorno: non un'alternativa ad A e B ma il caso di chi torna. Due righe: build e
+			   novità dall'ultima visita (le voci di changelog nuove); dopo, "modifiche" nella lista
+			   resta segnato. Circa 1 s. C1: chi torna dopo 7 giorni senza novità, una riga sola.
+			D  kernel: un avvio intero, da BIOS a login. Test della memoria che conta i contenuti,
+			   tema e lingua rilevati davvero, righe "[  OK  ]" stile systemd con i pezzi veri del
+			   sito; l'attesa dei font è reale (document.fonts.ready) e gira lo spinner finché non
+			   arrivano. Finisce con "esse.dev login: ospite" battuto a mano. Circa 3,7 s.
+			E  terminale: una sessione ssh. Si batte "ssh ospite@esse.dev", compare il banner, poi
+			   "Ultimo accesso" con la data della visita precedente (o "Primo accesso") e, se ci sono,
+			   le novità; infine "workspace --open". Copre da sola prima visita e ritorno: legge il
+			   pannello della regola. Circa 3,3 s.
+
+			Regola proposta (pannello in basso a destra): prima visita, avvio completo (A o B);
+			release nuova dall'ultima visita, C, una volta per release; ultima visita da 7 giorni o
+			più senza novità, C1; altrimenti niente. Storage non accessibile: niente, altrimenti
+			l'avvio comparirebbe a ogni pagina (ogni navigazione ricarica la pagina intera).
+
+			Mappatura sul codice di oggi (fattibilità, non piano): la decisione va presa prima del
+			paint in uno script inline come src/scripts/theme-init.js, con il suo hash CSP in
+			astro.config.mjs, che mette data-boot su <html>; l'overlay è markup in Workspace.astro,
+			sopra contenuto già renderizzato, e non ritarda né rendering né hydration. Build, conteggi
+			e modello arrivano alla build (git, content.ts, src/agent/models.ts); l'id dell'ultima
+			voce di changelog idem. Finito l'avvio l'overlay va a display: none (Safari campiona i
+			layer fissi anche a opacità 0) e durante usa --color-bar-*. Le fixture Playwright
+			preimpostano lo storage. Reduced motion (#25): le righe compaiono uguali, la finestra
+			passa da scala a sola opacità, il logo di B non vola ma si dissolve sul posto.
+
+			Dati: build, data, 24 progetti pubblicati, 4 note di metodo, 17 voci di changelog, lingue
+			e modello dell'agente sono quelli del repo al 27/10/2026. "3 dall'ultima visita" è
+			inventato (le tre voci del 27/10). La replica del workspace è semplificata: lista e home
+			senza loghi nella frase né "Da dove iniziare"; su telefono solo il pannello, senza barra
+			delle schede.
+
+			Giro 2: "mi aspettavo qualcosa di meno breve, e un filo più nerd". Aggiunte D ed E, più
+			lunghe (3,3-3,7 s) e da terminale; A, B e C restano per il confronto. Il limite di 1,3 s
+			cade: regge solo perché l'avvio compare alla prima visita e alle release, e si salta.
+			Il verde resta sugli stati riusciti ("OK"), mai sul testo.
+			Giro 3: scelta D. Per chi torna D1, kernel corto (riga BIOS, una riga [ OK ] per ogni
+			novità, login); frequenza con la regola release + 7 giorni.
+			Scelta: D per la prima visita, D1 per il ritorno, regola release + 7 giorni. Aperti: la
+			versione inglese dei testi, il telefono (righe lunghe che vanno a capo), D1 senza novità
+			(solo BIOS e login) da vedere nel prodotto.
+		-->
+		<style>
+			@font-face { font-family: 'Geist'; font-weight: 400; src: url(https://cdn.jsdelivr.net/fontsource/fonts/geist@latest/latin-400-normal.woff2) format('woff2'); }
+			@font-face { font-family: 'Geist'; font-weight: 500; src: url(https://cdn.jsdelivr.net/fontsource/fonts/geist@latest/latin-500-normal.woff2) format('woff2'); }
+			@font-face { font-family: 'Departure Mono'; src: url(../../src/assets/fonts/DepartureMono-Regular.woff2) format('woff2'); }
+
+			/* Tokens copied from src/styles/global.css (@theme and the light override). */
+			:root {
+				color-scheme: dark;
+				--desk: #0a0912;
+				--frame: #08080b;
+				--panel: #0e0e12;
+				--surface: rgb(255 255 255 / 0.05);
+				--fg: #efedf5;
+				--text: #cbc9d4;
+				--muted: #9c9aa8;
+				--subtle: #908e9b;
+				--accent: #b59cff;
+				--live: #7dff9b;
+				--glow: #6e50ff;
+				--radius-control: 6px;
+				--radius-card: 11px;
+				--radius-window: 18px;
+				--radius-edge: 24px;
+				--ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+				--sidebar: clamp(17rem, 22vw, 22rem);
+				--pad: clamp(1.25rem, 3.5vw, 4.5rem);
+				--crt-title-glow: 3.5px;
+				--crt-accent-glow: 5px;
+				--crt-scan: 0.018;
+				--crt-vignette: 0.14;
+				--wall: 0.44;
+				--wall-light: 0.32;
+				--glass-blur: 32px;
+				--glass-sat: 110%;
+				--glass-tint: 0;
+				--glass-rim: 0.12;
+				--glass-shadow: 0 12px 32px rgb(0 0 0 / 0.35);
+				--veil-rgb: 255 255 255;
+				--shade-rgb: 0 0 0;
+				--sans: 'Geist', ui-sans-serif, system-ui, sans-serif;
+				--mono: 'Departure Mono', ui-monospace, monospace;
+			}
+			:root[data-theme='light'] {
+				color-scheme: light;
+				--desk: #bcb2dc;
+				--frame: #e6e2f2;
+				--panel: #ece8f4;
+				--surface: rgb(40 25 90 / 0.07);
+				--fg: #17141f;
+				--text: #312d3c;
+				--muted: #504b60;
+				--subtle: #57526a;
+				--accent: #5f40d6;
+				--live: #179a4c;
+				--glow: #9d85ff;
+				--crt-title-glow: 2px;
+				--crt-accent-glow: 4px;
+				--crt-scan: 0.03;
+				--crt-vignette: 0.07;
+				--wall: 0.55;
+				--wall-light: 0.4;
+				--glass-sat: 140%;
+				--glass-tint: 0.3;
+				--glass-rim: 0.55;
+				--glass-shadow: 0 1px 2px rgb(40 25 90 / 0.08), 0 14px 36px rgb(40 25 90 / 0.16);
+				--veil-rgb: 40 25 90;
+				--shade-rgb: 40 24 90;
+			}
+			* { box-sizing: border-box; }
+			html, body { margin: 0; height: 100%; overscroll-behavior: none; }
+			body { background: var(--desk); color: var(--text); font: 15px/1.5 var(--sans); overflow: hidden; }
+			[hidden] { display: none !important; }
+			a { color: inherit; text-decoration: none; }
+
+			/* Concept chrome: the variant bar and the rule panel. Not part of the design. */
+			.switch { position: fixed; inset: 0 0 auto; z-index: 1000; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; padding: 8px 12px; background: #111; color: #aaa; font: 12px/1.4 ui-monospace, Menlo, monospace; }
+			.switch button, .rule button { font: inherit; border: 0; padding: 5px 9px; border-radius: 6px; background: #262626; color: #eee; cursor: pointer; }
+			.switch button[aria-pressed='true'], .rule button[aria-pressed='true'] { background: #eee; color: #111; }
+			.switch p { margin: 0 0 0 8px; flex: 1 1 240px; min-width: 0; }
+			body[data-chrome='off'] .switch, body[data-chrome='off'] .rule { display: none; }
+			.rule { position: fixed; right: 12px; bottom: 12px; z-index: 1000; width: 280px; padding: 12px; border-radius: 10px; background: #111; color: #ddd; font: 12px/1.4 ui-monospace, Menlo, monospace; }
+			.rule b { display: block; margin-bottom: 8px; color: #fff; font-weight: 400; }
+			.rule div { display: flex; flex-wrap: wrap; gap: 4px; align-items: center; margin-bottom: 6px; }
+			.rule span { width: 100%; color: #999; }
+			.rule p { margin: 8px 0; color: #fff; }
+			.rule small { display: block; color: #999; }
+
+			/* The wallpaper and the window: a simplified replica of Workspace.astro. */
+			.wallpaper {
+				position: fixed;
+				inset: 0;
+				padding: 12px;
+				background:
+					repeating-linear-gradient(to right, rgb(var(--veil-rgb) / 0.03) 0 1px, transparent 1px 48px),
+					repeating-linear-gradient(to bottom, rgb(var(--veil-rgb) / 0.03) 0 1px, transparent 1px 48px),
+					radial-gradient(22% 26% at 14% 6%, color-mix(in srgb, var(--accent) calc(var(--wall-light) * 100%), transparent), transparent 70%),
+					linear-gradient(var(--wall-angle, 135deg), color-mix(in srgb, var(--accent) calc(var(--wall) * 55%), transparent) 0%, color-mix(in srgb, var(--glow) calc(var(--wall) * 45%), transparent) 50%, transparent 100%),
+					var(--desk);
+			}
+			body:not([data-chrome='off']) .wallpaper { top: 40px; }
+			.glass {
+				position: relative;
+				background-image: linear-gradient(rgb(255 255 255 / var(--glass-tint)), rgb(255 255 255 / var(--glass-tint)));
+				box-shadow: inset 0 1px 0 rgb(255 255 255 / var(--glass-rim)), inset 0 -1px 0 rgb(255 255 255 / calc(var(--glass-rim) * 0.25)), var(--glass-shadow);
+			}
+			.blur { backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat)); -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat)); }
+			.ws {
+				display: grid;
+				grid-template-columns: var(--sidebar) minmax(0, 1fr);
+				gap: 8px;
+				height: 100%;
+				padding: 8px;
+				border-radius: var(--radius-window);
+				background-color: color-mix(in srgb, var(--frame) 20%, transparent);
+				transform-origin: 50% 46%;
+			}
+			.side, .pane { min-height: 0; overflow: hidden; border-radius: var(--radius-card); background-color: color-mix(in srgb, var(--panel) 48%, transparent); }
+			.side { display: flex; flex-direction: column; font-size: 15px; }
+			.pane { display: flex; flex-direction: column; }
+			.ws { text-shadow: -0.22px 0 rgb(255 40 140 / 0.45), 0.22px 0 rgb(40 220 255 / 0.45); }
+			[data-glow], h1, .label { text-shadow: 0 0 var(--crt-title-glow) color-mix(in srgb, var(--accent) 55%, transparent), 0 0 calc(var(--crt-title-glow) / 4) color-mix(in srgb, var(--accent) 35%, transparent); }
+			.logo { color: var(--fg); font: 13px/1 var(--mono); white-space: nowrap; }
+			.caret { display: inline-block; width: 0.5em; height: 1.05em; margin-left: 0.15em; vertical-align: -0.15em; background: var(--accent); box-shadow: 0 0 var(--crt-accent-glow) var(--accent); animation: caret-blink 1.1s steps(1) infinite; }
+			@keyframes caret-blink { 50% { opacity: 0; } }
+			.side-head { height: 48px; display: flex; align-items: center; padding: 0 8px 0 24px; flex-shrink: 0; }
+			.search { margin: 4px 16px 8px; height: 36px; display: flex; align-items: center; gap: 8px; padding: 0 6px 0 10px; border-radius: var(--radius-control); background: var(--surface); color: var(--subtle); font: 13px var(--mono); }
+			.search kbd { margin-left: auto; padding: 1px 6px; border-radius: 4px; background: var(--surface); font: inherit; }
+			.nav { padding: 0 16px; overflow: hidden; }
+			.row { display: flex; align-items: center; gap: 12px; height: 36px; padding: 0 8px; border-radius: var(--radius-control); color: var(--text); }
+			.row[aria-current] { background: var(--surface); color: var(--fg); }
+			.row svg { width: 16px; height: 16px; flex-shrink: 0; color: var(--subtle); }
+			.row img { width: 18px; height: 18px; border-radius: 4px; flex-shrink: 0; }
+			.row .meta { margin-left: auto; color: var(--subtle); font: 12px var(--mono); }
+			.row .num { width: 18px; color: var(--subtle); font: 12px var(--mono); }
+			.row.more { color: var(--muted); font: 13px var(--mono); }
+			.label { display: flex; justify-content: space-between; margin: 20px 8px 8px; color: var(--accent); font: 12px var(--mono); letter-spacing: 0.08em; text-transform: uppercase; }
+			.side-foot { margin-top: auto; padding: 12px 24px 16px; display: flex; flex-wrap: wrap; gap: 4px 14px; color: var(--muted); font: 12px var(--mono); }
+			.side-foot .new { color: var(--accent); }
+			.toolbar { height: 48px; flex-shrink: 0; display: flex; align-items: center; gap: 8px; padding: 0 var(--pad) 0 calc(var(--pad) * 0.6); color: var(--muted); font: 13px var(--mono); }
+			.toolbar .crumb { color: var(--fg); }
+			.toolbar .langs { margin-left: auto; display: flex; gap: 12px; }
+			.toolbar .langs b { color: var(--fg); font-weight: 400; }
+			.toolbar .logo { display: none; }
+			main { overflow: hidden; padding: clamp(2rem, 5vh, 4rem) var(--pad) 2rem; }
+			.eyebrow { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; font: 14px var(--mono); color: var(--accent); }
+			.eyebrow b { color: var(--fg); font-weight: 400; }
+			.led { width: 7px; height: 7px; border-radius: 50%; background: var(--live); box-shadow: 0 0 var(--crt-accent-glow) color-mix(in srgb, var(--live) 75%, transparent); }
+			h1 { margin: 20px 0 24px; color: var(--fg); font: 500 clamp(2rem, 1.2rem + 2.6vw, 3.1rem)/1.12 var(--sans); letter-spacing: -0.025em; }
+			h1 em { font-style: normal; color: var(--accent); }
+			.intro { max-width: 62ch; margin: 0 0 32px; font-size: clamp(1rem, 0.9rem + 0.35vw, 1.2rem); line-height: 1.6; }
+			.facts { display: grid; grid-template-columns: max-content 1fr; gap: 14px 40px; font-size: 15px; }
+			.facts dt { color: var(--accent); font: 12px/1.6 var(--mono); letter-spacing: 0.08em; text-transform: uppercase; }
+			.facts dd { margin: 0; color: var(--text); }
+
+			/* The CRT veil over everything, the boot included: lines and vignette. */
+			.scan { position: fixed; inset: 0; z-index: 900; pointer-events: none; background: repeating-linear-gradient(to bottom, rgb(var(--veil-rgb) / var(--crt-scan)) 0 1px, transparent 1px 3px), var(--vignette, radial-gradient(ellipse at center, transparent 50%, rgb(var(--shade-rgb) / var(--crt-vignette)))); }
+
+			/* The boot: a desk-colored layer over the rendered window, and the logo of B beside it
+			   (not inside, so it does not fade with the layer). */
+			.boot { position: fixed; inset: 0; z-index: 500; display: none; background: var(--desk); }
+			.post { position: absolute; top: clamp(4rem, 14vh, 9rem); left: clamp(1.5rem, 7vw, 7rem); right: 1.5rem; font: 13px/1.9 var(--mono); color: var(--muted); }
+			.post p { margin: 0; display: grid; grid-template-columns: 11ch minmax(0, 1fr); gap: 0 2ch; animation: phosphor 700ms var(--ease-out) both; }
+			.post .k { color: var(--subtle); }
+			.post .v { color: var(--fg); }
+			.post em { font-style: normal; color: var(--accent); }
+			.post .led { display: inline-block; margin: 0 6px 1px 10px; vertical-align: middle; }
+			.post p.end { display: block; }
+			.post .go { display: block; margin-top: 10px; color: var(--fg); }
+			.post.raw { bottom: 5rem; overflow: hidden; }
+			.post.raw p { display: block; white-space: pre-wrap; animation-duration: 450ms; }
+			.post .dim { color: var(--subtle); }
+			.post .hd { color: var(--fg); }
+			.post .st b { font-weight: 400; color: var(--live); }
+			.post .st b.wait { color: var(--accent); }
+			.post .okw { color: var(--live); }
+			.post .t { color: var(--fg); }
+			.post.raw p.banner { --px: min(7px, 1.6vw); display: flex; gap: 1px; margin-bottom: 1px; filter: drop-shadow(0 0 3px color-mix(in srgb, var(--accent) 60%, transparent)); animation: none; }
+			.post .banner i { width: var(--px); height: var(--px); background: var(--accent); }
+			.post .banner i.o { background: none; }
+			.post .go[data-glow] { text-shadow: 0 0 var(--crt-title-glow) color-mix(in srgb, var(--accent) 55%, transparent); }
+			@keyframes phosphor { from { color: var(--accent); text-shadow: 0 0 var(--crt-accent-glow) color-mix(in srgb, var(--accent) 90%, transparent); } }
+			.hint { position: absolute; left: clamp(1.5rem, 7vw, 7rem); bottom: clamp(1.5rem, 6vh, 3rem); color: var(--subtle); font: 12px var(--mono); }
+			.mark { position: fixed; z-index: 600; display: none; transform-origin: 0 0; font-size: 24px; animation: phosphor 600ms var(--ease-out) both; }
+
+			/* The states of the boot. closed: the layer covers, the window waits smaller and
+			   transparent; opening: the layer fades and the window settles; off: the layer leaves the
+			   page. */
+			body[data-boot='closed'] .boot, body[data-boot='opening'] .boot { display: block; }
+			body[data-boot='closed'] .ws { opacity: 0; transform: scale(0.965); }
+			body[data-boot='opening'] .boot { opacity: 0; transition: opacity 260ms ease-out; }
+			body[data-boot='opening'] .ws { transition: opacity 380ms ease-out, transform 440ms var(--ease-out); }
+			body[data-base='b'][data-boot='closed'] .mark, body[data-base='b'][data-boot='opening'] .mark { display: block; }
+			body[data-boot='opening'] .mark { transition: transform 460ms var(--ease-out), opacity 300ms ease-out; }
+			body[data-base='b'][data-boot='closed'] [data-target], body[data-base='b'][data-boot='opening'] [data-target] { visibility: hidden; }
+			body[data-instant] *, body[data-instant] *::before { transition: none !important; }
+
+			/* Reduced motion (#25): no scale on the window, the logo fades in place. The m key
+			   simulates it. */
+			body[data-rm='on'][data-boot='closed'] .ws { transform: none; }
+			body[data-rm='on'][data-boot] [data-target] { visibility: visible; }
+			@media (prefers-reduced-motion: reduce) {
+				body[data-boot='closed'] .ws { transform: none; }
+				body[data-boot] [data-target] { visibility: visible; }
+			}
+
+			/* Phones: the pane only, the logo in the toolbar of the home. */
+			@media (width < 64rem) {
+				:root { --wall-angle: 180deg; --wall-light: 0; --vignette: linear-gradient(rgb(var(--shade-rgb) / var(--crt-vignette)), transparent 25% 75%, rgb(var(--shade-rgb) / var(--crt-vignette))); }
+				.wallpaper { padding: 6px; }
+				.ws { display: block; padding: 0; background: none; box-shadow: none; }
+				.side { display: none; }
+				.pane { height: 100%; border-radius: var(--radius-edge); }
+				.toolbar { padding: 0 20px; }
+				.toolbar .logo { display: inline; }
+				.toolbar .tilde { display: none; }
+				.post { font-size: 12px; }
+				.post p { grid-template-columns: minmax(0, 1fr); }
+				.post .k { margin-top: 6px; }
+				.facts { grid-template-columns: 1fr; gap: 4px; }
+				.facts dd { margin-bottom: 12px; }
+				.rule { left: 12px; width: auto; }
+			}
+		</style>
+	</head>
+	<body data-v="x" data-boot="off">
+		<div class="switch">
+			<span data-buttons></span>
+			<p data-desc></p>
+			<button data-replay>r riavvia</button>
+			<button data-rm-toggle>m reduced motion</button>
+			<button data-theme-toggle>t tema</button>
+		</div>
+
+		<div class="wallpaper">
+			<div class="ws glass">
+				<aside class="side glass blur">
+					<div class="side-head"><a class="logo" data-glow data-target="desk">esse.dev<span class="caret"></span></a></div>
+					<div class="search">
+						<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18" /><path d="M7 12h10" /><path d="M10 18h4" /></svg>
+						Cerca<kbd>/</kbd>
+					</div>
+					<nav class="nav">
+						<a class="row" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8" /><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /></svg>Benvenuto</a>
+						<a class="row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg>Chi sono</a>
+						<a class="row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2" /></svg>Adesso<span class="meta">set 2026</span></a>
+						<a class="row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 8V4H8" /><rect width="16" height="12" x="4" y="8" rx="2" /><path d="M2 14h2" /><path d="M20 14h2" /><path d="M15 13v2" /><path d="M9 13v2" /></svg>Agente</a>
+						<div class="label"><span>Progetti</span><span>24</span></div>
+						<a class="row"><img src="../../src/content/projects/relay/logo.png" alt="" />Relay<span class="meta">2026</span></a>
+						<a class="row"><img class="dk" src="../../src/content/projects/nexus/logo.svg" alt="" /><img class="lt" src="../../src/content/projects/nexus/logo-light.svg" alt="" />Nexus<span class="meta">2026</span></a>
+						<a class="row"><img src="../../src/content/projects/varco/logo.png" alt="" />Varco<span class="meta">2026</span></a>
+						<a class="row"><img class="dk" src="../../src/content/projects/pgbee/logo.svg" alt="" /><img class="lt" src="../../src/content/projects/pgbee/logo-light.svg" alt="" />pgbee<span class="meta">2026</span></a>
+						<a class="row"><img class="dk" src="../../src/content/projects/zeno/logo.svg" alt="" /><img class="lt" src="../../src/content/projects/zeno/logo-light.svg" alt="" />Zeno<span class="meta">2026</span></a>
+						<a class="row"><img src="../../src/content/projects/floppy/logo.png" alt="" />Floppy<span class="meta">2026</span></a>
+						<a class="row more"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></svg>tutti i 24</a>
+						<div class="label"><span>Metodo</span><span>4</span></div>
+						<a class="row"><span class="num">01</span>Architettura prima del codice</a>
+						<a class="row"><span class="num">02</span>Il contesto è il lavoro</a>
+						<a class="row"><span class="num">03</span>Misurare invece di fidarsi</a>
+					</nav>
+					<div class="side-foot">
+						<span>linkedin ↗</span><span>github ↗</span><span>instagram ↗</span><span>x ↗</span>
+						<span>privacy</span><span>modifiche <span class="new" data-only="c">3 nuove</span></span>
+					</div>
+				</aside>
+				<section class="pane glass blur">
+					<div class="toolbar">
+						<a class="logo" data-glow data-target="phone">esse.dev<span class="caret"></span></a>
+						<span class="tilde">~ /</span><span class="crumb tilde">benvenuto</span>
+						<span class="langs"><span>en</span><b>it</b></span>
+					</div>
+					<main>
+						<div class="eyebrow"><span class="led"></span><b>Simone Salerno</b>Lead AI Engineer in Yellow Tech · Milano</div>
+						<h1>Porto l'AI generativa dentro aziende vere e la <em>tengo in produzione</em>.</h1>
+						<p class="intro">Per conto mio costruisco strumenti per sviluppatori (relay, portsage, mcpbelt, pgbee), quasi tutti open source, e app mie. Progetto l'architettura, l'AI scrive il codice, io verifico e rilascio.</p>
+						<dl class="facts">
+							<dt>Programmo con</dt><dd>Claude Code e Codex, con un solo contesto condiviso</dd>
+							<dt>Nei prodotti</dt><dd>agenti su harness su misura, come quello di questo sito</dd>
+							<dt>Contatti</dt><dd>hello@esse.dev · linkedin · github · instagram · x</dd>
+						</dl>
+					</main>
+				</section>
+			</div>
+		</div>
+
+		<div class="boot" aria-hidden="true">
+			<div class="post" data-post></div>
+			<div class="hint" data-only="a c d e">Premi un tasto o tocca lo schermo per saltare.</div>
+		</div>
+		<div class="mark logo" data-glow data-mark aria-hidden="true">esse.dev<span class="caret"></span></div>
+		<div class="scan" aria-hidden="true"></div>
+
+		<div class="rule">
+			<b>regola di avvio</b>
+			<div><span>ultima visita</span><button data-seen="never">mai</button><button data-seen="3">3 giorni fa</button><button data-seen="9">9 giorni fa</button></div>
+			<div><span>release nuova da allora</span><button data-release="no">no</button><button data-release="yes">sì</button></div>
+			<p data-outcome></p>
+			<div><button data-try>prova</button></div>
+			<small data-took></small>
+		</div>
+
+		<script>
+			const DESC = {
+				x: 'oggi: la pagina compare subito, nessun avvio',
+				a: 'POST: righe di accensione con dati veri del sito, poi la finestra si apre (1,25 s)',
+				b: 'cursore: solo il logo col cursore, che vola al suo posto nella lista (0,95 s)',
+				c: 'ritorno: chi torna con release nuove, build e novità, poi "modifiche" resta segnato (1 s)',
+				c1: 'breve: chi torna dopo 7 giorni senza novità, una riga sola (0,7 s)',
+				d: 'kernel: avvio intero da BIOS a login, righe systemd coi pezzi veri del sito (3,7 s)',
+				d1: 'kernel corto: chi torna, BIOS, una riga [ OK ] per novità, login (1,7 s)',
+				e: 'terminale: sessione ssh col banner, ultimo accesso e novità, poi workspace --open (3,3 s)'
+			};
+			const KEY = `concept:${location.pathname}`;
+			const root = document.documentElement;
+			const body = document.body;
+			const base = (v) => v.replace(/\d+$/, '');
+
+			const load = () => {
+				try { return JSON.parse(localStorage.getItem(KEY) || '{}'); } catch { return {}; }
+			};
+			const save = (state) => {
+				try { localStorage.setItem(KEY, JSON.stringify(state)); } catch {}
+			};
+
+			const BUILD = { k: 'esse.dev', v: 'build <em>b04c484</em> · 27 ott 2026' };
+			const GO = 'apro il workspace';
+			// Each boot: its lines (or the flying logo) and when the window starts opening, in ms.
+			const BOOT = {
+				a: {
+					lines: [
+						BUILD,
+						{ k: 'contenuti', v: '24 progetti · 4 note di metodo · 17 versioni' },
+						{ k: 'lingue', v: 'it · en' },
+						{ k: 'agente', v: 'glm-5.3-flash via openrouter<span class="led"></span>pronto' }
+					],
+					open: 800
+				},
+				b: { mark: true, open: 480 },
+				c: {
+					lines: [BUILD, { k: 'novità', v: "3 dall'ultima visita · <em>Sotto-agenti in background</em>" }],
+					open: 560
+				},
+				c1: { lines: [BUILD], open: 300 }
+			};
+			const START = 90;
+			const STEP = 110;
+			const OPEN_MS = 450;
+
+			const post = document.querySelector('[data-post]');
+			const mark = document.querySelector('[data-mark]');
+			const rm = () => body.dataset.rm === 'on' || matchMedia('(prefers-reduced-motion: reduce)').matches;
+			let timers = [];
+			let booting = false;
+			let started = 0;
+			const later = (ms, fn) => timers.push(setTimeout(fn, ms));
+			const took = (skipped) => {
+				const s = ((performance.now() - started) / 1000).toFixed(2).replace('.', ',');
+				document.querySelector('[data-took]').textContent = skipped ? `saltato dopo ${s} s` : `durata: ${s} s`;
+			};
+
+			// Jumps to the final state without transitions, as a skip does.
+			const settle = () => {
+				timers.forEach(clearTimeout);
+				timers = [];
+				body.dataset.instant = '';
+				body.dataset.boot = 'off';
+				mark.style.transform = '';
+				mark.style.opacity = '';
+				requestAnimationFrame(() => requestAnimationFrame(() => delete body.dataset.instant));
+			};
+			const finish = (skipped) => {
+				if (!booting) return;
+				booting = false;
+				took(skipped);
+				settle();
+			};
+
+			const target = () => [...document.querySelectorAll('[data-target]')].find((el) => el.offsetParent);
+
+			// The scripted boots (D, E): a line at a time, typed text, counters, a spinner. Every
+			// wait goes through `later`, so a skip clears it and the script stops where it is.
+			// PACE scales every wait of the scripted boots: the one knob for their length.
+			const PACE = 0.72;
+			const sleep = (ms) => new Promise((r) => later(ms * PACE, r));
+			const add = (html, cls) => {
+				if (html.includes('caret')) post.querySelectorAll('.caret').forEach((c) => c.remove());
+				const p = document.createElement('p');
+				if (cls) p.className = cls;
+				p.innerHTML = html;
+				post.append(p);
+				post.scrollTop = post.scrollHeight;
+				return p;
+			};
+			const typeIn = async (p, text, ms) => {
+				const t = p.querySelector('.t');
+				for (const ch of text) {
+					t.textContent += ch;
+					await sleep(ms * (0.6 + Math.random() * 0.8));
+				}
+			};
+			const count = async (p, ms) => {
+				const els = [...p.querySelectorAll('[data-n]')];
+				const steps = Math.round(ms / 40);
+				for (let i = 1; i <= steps; i++) {
+					els.forEach((e) => (e.textContent = Math.round((e.dataset.n * i) / steps)));
+					await sleep(40);
+				}
+			};
+			const OK = '<span class="st">[<b>  OK  </b>]</span> ';
+			const SPIN = ['*     ', '**    ', '***   ', ' ***  ', '  *** ', '   ***', '    **', '     *', '    **', '   ***', '  *** ', ' ***  ', '***   ', '**    '];
+			const spin = async (p, done, min) => {
+				const st = p.querySelector('b');
+				let ready = false;
+				done.then(() => (ready = true));
+				const t0 = performance.now();
+				st.className = 'wait';
+				for (let i = 0; !ready || performance.now() - t0 < min; i++) {
+					st.textContent = SPIN[i % SPIN.length];
+					await sleep(80);
+				}
+				st.className = '';
+				st.textContent = '  OK  ';
+			};
+			const FONT = {
+				e: ['     ', ' ███ ', '█   █', '█████', '█    ', ' ███ '],
+				s: ['     ', ' ████', '█    ', ' ███ ', '    █', '████ '],
+				'.': ['  ', '  ', '  ', '  ', '  ', '██'],
+				d: ['    █', ' ████', '█   █', '█   █', '█   █', ' ████'],
+				v: ['     ', '█   █', '█   █', '█   █', ' █ █ ', '  █  ']
+			};
+			const banner = (word) => FONT.e.map((_, r) => [...word].map((c) => FONT[c][r]).join(' '));
+
+			const kernel = async () => {
+				const theme = root.dataset.theme === 'light' ? 'chiaro' : 'scuro';
+				const vignette = getComputedStyle(root).getPropertyValue('--crt-vignette').trim().replace('.', ',');
+				add('esse.dev BIOS 2026.10 · build <em>b04c484</em> del 27 ott 2026', 'hd');
+				await sleep(180);
+				add('CPU0: Simone Salerno, Milano');
+				await sleep(90);
+				add('CPU1: Claude Code   CPU2: Codex   <span class="dim">(un solo contesto condiviso)</span>');
+				await sleep(160);
+				const mem = add('Test memoria: <span data-n="24">0</span> progetti · <span data-n="4">0</span> note di metodo · <span data-n="1">0</span> scritto · <span data-n="17">0</span> versioni');
+				await count(mem, 520);
+				mem.insertAdjacentHTML('beforeend', '  <span class="okw">OK</span>');
+				await sleep(160);
+				add(`Rilevo il tema ...... ${theme} <span class="dim">(sistema)</span>`);
+				await sleep(110);
+				add(`Rilevo la lingua .... ${navigator.language} <span class="dim">(Accept-Language)</span>`);
+				await sleep(240);
+				add(' ');
+				add('Avvio esse.dev su Cloudflare Workers...');
+				await sleep(220);
+				for (const t of ['Montato /content/projects (24 voci)', 'Montato /content/method (4 voci)', 'Montato /content/writing (1 voce)', 'Applicata la Content Security Policy']) {
+					add(OK + t);
+					await sleep(80 + Math.random() * 100);
+				}
+				await spin(add(OK + 'Attendo i font: Departure Mono, Geist, Geist Mono'), document.fonts.ready, 520);
+				await sleep(90);
+				for (const t of [`Acceso il velo CRT (righe 3 px, vignetta ${vignette})`, 'Pronto site-agent · z-ai/glm-5.3-flash via OpenRouter', 'Raggiunto workspace.target']) {
+					add(OK + t);
+					await sleep(90 + Math.random() * 110);
+				}
+				add(' ');
+				const login = add('esse.dev login: <span class="t"></span><span class="caret"></span>');
+				await sleep(260);
+				await typeIn(login, 'ospite', 80);
+				await sleep(300);
+			};
+
+			const terminal = async () => {
+				const ssh = add('<span class="dim">~ $</span> <span class="t"></span><span class="caret"></span>');
+				await sleep(240);
+				await typeIn(ssh, 'ssh ospite@esse.dev', 50);
+				await sleep(260);
+				add('<span class="dim">Connessione a esse.dev (Cloudflare Workers)...</span>');
+				await sleep(280);
+				add(' ');
+				for (const row of banner('esse.dev')) {
+					add([...row].map((c) => (c === '█' ? '<i></i>' : '<i class="o"></i>')).join(''), 'banner');
+					await sleep(40);
+				}
+				add(' ');
+				add('Simone Salerno · Lead AI Engineer in Yellow Tech · Milano', 'hd');
+				await sleep(160);
+				if (rule.seen === 'never') add('Primo accesso: benvenuto.');
+				else {
+					const d = new Date(Date.now() - rule.seen * 864e5);
+					const day = d.toLocaleDateString('it-IT', { weekday: 'short', day: 'numeric', month: 'short', year: 'numeric' });
+					add(`Ultimo accesso: ${day} alle 18:42`);
+					if (rule.release === 'yes') {
+						await sleep(140);
+						add("3 novità dall'ultimo accesso: <em>Sotto-agenti in background</em>, Progetti aggiornati, Questa pagina");
+					}
+				}
+				await sleep(380);
+				add(' ');
+				const cmd = add('<span class="dim">ospite@esse.dev:~$</span> <span class="t"></span><span class="caret"></span>');
+				await sleep(240);
+				await typeIn(cmd, 'workspace --open', 55);
+				await sleep(280);
+			};
+			// D1: the return visit. Without news (7 days or more) only the BIOS line and the login.
+			const kernelShort = async () => {
+				add('esse.dev BIOS 2026.10 · build <em>b04c484</em> del 27 ott 2026', 'hd');
+				await sleep(200);
+				add("Avvio rapido: 3 novità dall'ultimo avvio");
+				await sleep(160);
+				for (const t of ['Sotto-agenti in background', 'Progetti aggiornati', 'Questa pagina']) {
+					add(`${OK}Nuovo: <em>${t}</em>`);
+					await sleep(110 + Math.random() * 80);
+				}
+				add(' ');
+				const login = add('esse.dev login: <span class="t"></span><span class="caret"></span>');
+				await sleep(200);
+				await typeIn(login, 'ospite', 70);
+				await sleep(240);
+			};
+			BOOT.d = { script: kernel };
+			BOOT.d1 = { script: kernelShort };
+			BOOT.e = { script: terminal };
+
+			const run = (v) => {
+				settle();
+				booting = false;
+				const cfg = BOOT[v];
+				if (!cfg) return;
+				post.innerHTML = '';
+				post.className = cfg.script ? 'post raw' : 'post';
+				if (cfg.script) {
+					requestAnimationFrame(async () => {
+						body.dataset.boot = 'closed';
+						booting = true;
+						started = performance.now();
+						await cfg.script();
+						body.dataset.boot = 'opening';
+						later(OPEN_MS, () => finish(false));
+					});
+					return;
+				}
+				// The logo's landing spot is measured with the window at rest, before it closes.
+				const to = cfg.mark ? target()?.getBoundingClientRect() : null;
+				requestAnimationFrame(() => {
+					body.dataset.boot = 'closed';
+					booting = true;
+					started = performance.now();
+					if (to) {
+						mark.style.transform = '';
+						mark.style.opacity = '';
+						const r = mark.getBoundingClientRect();
+						mark.style.left = `${(innerWidth - r.width) / 2}px`;
+						mark.style.top = `${(innerHeight - r.height) / 2}px`;
+					}
+					const lines = cfg.lines || [];
+					lines.forEach((l, i) =>
+						later(START + i * STEP, () => {
+							const p = document.createElement('p');
+							p.innerHTML = `<span class="k">${l.k}</span><span class="v">${l.v}</span>`;
+							post.append(p);
+						})
+					);
+					if (lines.length)
+						later(START + lines.length * STEP, () => {
+							const p = document.createElement('p');
+							p.className = 'end';
+							p.innerHTML = `<span class="go" data-glow>${GO}<span class="caret"></span></span>`;
+							post.append(p);
+						});
+					later(cfg.open, () => {
+						body.dataset.boot = 'opening';
+						if (to) {
+							if (rm()) mark.style.opacity = '0';
+							else {
+								const from = mark.getBoundingClientRect();
+								const s = to.height / from.height;
+								mark.style.transform = `translate(${to.left - from.left}px, ${to.top - from.top}px) scale(${s})`;
+							}
+						}
+					});
+					later(cfg.open + OPEN_MS, () => finish(false));
+				});
+			};
+
+			// Any input during the boot skips it; a key does nothing else, a click still lands.
+			addEventListener('keydown', (e) => {
+				if (!booting) return;
+				e.stopImmediatePropagation();
+				e.preventDefault();
+				finish(true);
+			}, true);
+			['pointerdown', 'wheel', 'touchstart'].forEach((t) => addEventListener(t, () => finish(true), { capture: true, passive: true }));
+
+			const name = (v) => DESC[v].split(':')[0];
+			const label = (v) => (/\d$/.test(v) ? `${v.slice(-1)} ${base(v).toUpperCase()} ${name(v)}` : `${v.toUpperCase()} ${name(v)}`);
+			document.querySelector('[data-buttons]').innerHTML = Object.keys(DESC)
+				.map((v) => `<button data-v="${v}">${label(v)}</button>`)
+				.join(' ');
+
+			const pick = (v) => {
+				if (!DESC[v]) return;
+				body.dataset.v = v;
+				body.dataset.base = base(v);
+				document.querySelectorAll('.switch [data-v]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.v === v)));
+				document.querySelector('[data-desc]').textContent = DESC[v];
+				document.querySelectorAll('[data-only]').forEach((el) => {
+					const list = el.dataset.only.split(/\s+/);
+					el.hidden = !list.includes(v) && !list.includes(base(v));
+				});
+				history.replaceState(null, '', `${location.search}#${v}`);
+				if (typeof showRule === 'function') showRule();
+				run(v);
+			};
+
+			const setTheme = (t) => {
+				root.dataset.theme = t;
+				document.querySelectorAll('.dk').forEach((el) => (el.hidden = t === 'light'));
+				document.querySelectorAll('.lt').forEach((el) => (el.hidden = t !== 'light'));
+				save({ ...load(), theme: t });
+			};
+			const toggleRm = () => {
+				body.dataset.rm = body.dataset.rm === 'on' ? 'off' : 'on';
+				document.querySelector('[data-rm-toggle]').setAttribute('aria-pressed', String(body.dataset.rm === 'on'));
+			};
+
+			// The proposed rule: first visit full, a new release once per release, 7 days or more
+			// without news the short one, otherwise nothing.
+			const rule = { seen: 'never', release: 'no' };
+			const outcome = () => {
+				if (base(body.dataset.v) === 'e') return rule.seen === 'never' || rule.release === 'yes' || rule.seen === '9' ? ['E, con quello che dice la regola', 'e'] : ['niente: la pagina compare subito (X)', 'x'];
+				if (base(body.dataset.v) === 'd') {
+					if (rule.seen === 'never') return ['kernel intero (D)', 'd'];
+					if (rule.release === 'yes' || rule.seen === '9') return ['kernel corto (D1)', 'd1'];
+					return ['niente: la pagina compare subito (X)', 'x'];
+				}
+				if (rule.seen === 'never') return ['avvio completo (A, B o D)', null];
+				if (rule.release === 'yes') return ['ritorno con novità (C)', 'c'];
+				if (rule.seen === '9') return ['ritorno breve (C1)', 'c1'];
+				return ['niente: la pagina compare subito (X)', 'x'];
+			};
+			const showRule = () => {
+				document.querySelectorAll('[data-seen]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.seen === rule.seen)));
+				document.querySelectorAll('[data-release]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.release === rule.release)));
+				const releaseRow = document.querySelector('[data-release]').parentElement;
+				releaseRow.hidden = rule.seen === 'never';
+				document.querySelector('[data-outcome]').textContent = `→ ${outcome()[0]}`;
+			};
+			document.querySelector('.rule').addEventListener('click', (e) => {
+				const b = e.target.closest('button');
+				if (!b) return;
+				if (b.dataset.seen) rule.seen = b.dataset.seen;
+				if (b.dataset.release) rule.release = b.dataset.release;
+				if (b.hasAttribute('data-try')) {
+					const v = outcome()[1] ?? (['a', 'b', 'd'].includes(base(body.dataset.v)) ? base(body.dataset.v) : 'a');
+					pick(v);
+				}
+				showRule();
+			});
+
+			document.querySelector('.switch').addEventListener('click', (e) => {
+				const b = e.target.closest('[data-v]');
+				if (b) pick(b.dataset.v);
+			});
+			document.querySelector('[data-theme-toggle]').addEventListener('click', () => setTheme(root.dataset.theme === 'dark' ? 'light' : 'dark'));
+			document.querySelector('[data-replay]').addEventListener('click', () => run(body.dataset.v));
+			document.querySelector('[data-rm-toggle]').addEventListener('click', toggleRm);
+			addEventListener('keydown', (e) => {
+				if (e.metaKey || e.ctrlKey || e.altKey || e.target.closest('input, textarea, select, [contenteditable]')) return;
+				const k = e.key.toLowerCase();
+				if (k === 't') setTheme(root.dataset.theme === 'dark' ? 'light' : 'dark');
+				else if (k === 'p') body.dataset.chrome = body.dataset.chrome === 'off' ? 'on' : 'off';
+				else if (k === 'r') run(body.dataset.v);
+				else if (k === 'm') toggleRm();
+				else if (/^\d$/.test(k)) pick(`${base(body.dataset.v)}${k}`);
+				else pick(k);
+			});
+
+			setTheme(load().theme || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'));
+			showRule();
+			pick(DESC[location.hash.slice(1)] ? location.hash.slice(1) : Object.keys(DESC)[0]);
+		</script>
+	</body>
+</html>
