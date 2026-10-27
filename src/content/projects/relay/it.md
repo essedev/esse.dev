@@ -18,8 +18,9 @@ Lavoro con cinque o sei sessioni di Claude Code e Codex aperte insieme, su proge
 
 - Lo stato di ogni agente (in esecuzione, in attesa di input, errore, finito) arriva dagli hook nativi di Claude Code e Codex, non dal parsing dell'output. Resta giusto anche sotto un muro di log di build.
 - Un modello di attenzione in tre passi: una sessione che ti vuole si fa notare, una che hai visto resta in sottofondo, rispondere la spegne.
-- Una dashboard di triage (Cmd+D) mette tutte le sessioni su uno schermo, in quattro corsie per urgenza.
-- Workspace con gruppi e archivio, pane divisi con i propri tab, finestre multiple e un layout che sopravvive al riavvio.
+- Home (Cmd+D) dice quante sessioni ti aspettano e le elenca con l'ultima riga lasciata dall'agente e l'azione che vuole, poi cosa sta lavorando e quali progetti si sono fermati.
+- Un progetto si chiude senza perderlo: tiene gruppo, tab e sessioni degli agenti, e ferma i processi così la memoria torna libera. La sidebar mostra solo i progetti aperti, Projects li elenca tutti e Cmd+P ne riapre uno per nome.
+- Workspace con gruppi, pane divisi con i propri tab, finestre multiple e un layout che sopravvive al riavvio. Gli aggiornamenti si installano dall'app, che poi propone il riavvio.
 
 È scritto in Swift 6 e AppKit, con SwiftTerm come motore dietro un'astrazione che lascia spazio a libghostty. I terminali inattivi vengono scaricati dalla memoria: circa 90 MB residenti con un terminale vivo, 92 con tredici, e 2,4 µs aggiunti nel caso peggiore su un tasto. Metodo e numeri sono nel repo.
 
