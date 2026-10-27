@@ -148,7 +148,7 @@
 		"agentStepCommits": "the latest commits of {repo}",
 		"agentStepRun": "runs code: {line}",
 		"agentStepBudget": "checks the credits",
-		"agentStepDelegate": "hands off {n} jobs",
+		"agentStepDelegate": "hands off to sub-agents",
 		"agentCountResults": "result|results",
 		"agentCountLines": "line|lines",
 		"agentCountFiles": "file|files",

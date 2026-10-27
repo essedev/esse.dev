@@ -20,7 +20,6 @@ describe('describeStep', () => {
 			path: 'src/agent/triage.ts',
 			file: 'triage.ts'
 		});
-		expect(describeStep('delegate', { tasks: [{}, {}] }).values.n).toBe('2');
 		expect(
 			describeStep('run_code', { code: 'async () => {\n  const r = await codemode.search_site();' })
 				.values.line

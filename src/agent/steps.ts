@@ -90,8 +90,6 @@ export function describeStep(
 	values.path = str(a.path).replace(/^\/+/, '');
 	values.file = base(values.path);
 	values.line = codeLine(str(a.code));
-	const tasks = Array.isArray(a.tasks) ? a.tasks.length : 0;
-	values.n = String(tasks);
 	return {
 		family: FAMILY[name] ?? 'other',
 		values,

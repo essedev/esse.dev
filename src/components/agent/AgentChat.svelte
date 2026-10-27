@@ -5,7 +5,12 @@
 	import { credits, nextReset, SHOW_BUDGET_BELOW } from '../../agent/budget';
 	import { renderMarkdown } from '../../agent/markdown';
 	import { parseRender, type RenderView as View } from '../../agent/render';
-	import { parseReport, type ChildRecord, type ChildReport } from '../../agent/delegate';
+	import {
+		delegateArgs,
+		parseReport,
+		type ChildRecord,
+		type ChildReport
+	} from '../../agent/delegate';
 	import { callText, describeStep, fillStep, type Step, type StepCount } from '../../agent/steps';
 	import AgentStatus from './AgentStatus.svelte';
 	import ChildSheet from './ChildSheet.svelte';
@@ -622,7 +627,8 @@
 	/** One token of a turn's work: a tool call, or a sub-agent that `delegate` started. */
 	type Token =
 		| { kind: 'tool'; id: string; name: string; args: unknown; result?: ToolResult; step: Step }
-		| { kind: 'child'; id: string; child: ChildRecord; title: string };
+		| { kind: 'child'; id: string; child: ChildRecord; title: string }
+		| { kind: 'task'; id: string; title: string };
 	type Report = NonNullable<ReturnType<typeof parseReport>>;
 	/**
 	 * The transcript read by turn: a message of the visitor, a sub-agent's report, or the
@@ -678,7 +684,9 @@
 				}
 				if (part.type !== 'tool-call') continue;
 				const result = results.get(part.id);
-				const work = part.name === 'delegate' ? delegated(part.arguments, result) : null;
+				// The arguments as the server reads them: one task passed as `{ task, title }` too.
+				const work =
+					part.name === 'delegate' ? delegated(delegateArgs(part.arguments), result) : null;
 				if (
 					(part.name === 'draft_message' && drafted(part.arguments, result)) ||
 					(part.name === 'render' && drawn(part.arguments, result)) ||
@@ -694,6 +702,11 @@
 							child,
 							title: child.title || work.tasks[i]?.title || ''
 						})
+					);
+				} else if (work && !result) {
+					// Asked, not started yet: a token per task, by its title.
+					work.tasks.forEach((task, i) =>
+						steps.push({ kind: 'task', id: `${part.id}:${i}`, title: task.title })
 					);
 				} else {
 					steps.push({
@@ -718,7 +731,9 @@
 					usd: done.reduce((n, m) => n + (m.usage?.usd ?? 0), 0)
 				}
 			: null;
-		const live = steps.some((t) => (t.kind === 'tool' ? !t.result : t.child.status === 'working'));
+		const live = steps.some((t) =>
+			t.kind === 'tool' ? !t.result : t.kind === 'task' || t.child.status === 'working'
+		);
 		return { steps, thinking, content, usage, live };
 	}
 	/** The open token, whose call and result show under the row, and the open reasoning. */
@@ -944,6 +959,14 @@
 													>{statusLabel(token.child.status)}</span
 												>
 											</button>
+										{:else if token.kind === 'task'}
+											<span class={TOKEN}>
+												<span class="led" data-status="in-progress"></span>
+												<span class="truncate text-fg">{token.title}</span>
+												<span class="font-mono text-[0.7rem] whitespace-nowrap text-subtle"
+													>{labels.childWorking}</span
+												>
+											</span>
 										{:else}
 											<StepToken
 												name={token.name}
@@ -993,8 +1016,8 @@
 								}}
 								onsend={(fields) => sendDraft(part.id, fields)}
 							/>
-						{:else if part.type === 'tool-call' && part.name === 'delegate' && delegated(part.arguments, results.get(part.id))}
-							{@const work = delegated(part.arguments, results.get(part.id))!}
+						{:else if part.type === 'tool-call' && part.name === 'delegate' && delegated(delegateArgs(part.arguments), results.get(part.id))}
+							{@const work = delegated(delegateArgs(part.arguments), results.get(part.id))!}
 							<DelegateView
 								tasks={work.tasks}
 								reports={work.reports}

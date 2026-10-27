@@ -410,6 +410,82 @@ test.describe('agent turns', () => {
 	});
 });
 
+test.describe('agent delegate tokens', () => {
+	test('one task passed as { task, title } reads as its sub-agent, by title, not as a count', async ({
+		page
+	}) => {
+		const call = (id: string, title: string) => ({
+			type: 'toolCall',
+			id,
+			name: 'delegate',
+			arguments: { title, task: `Analizza il repo: ${title}` }
+		});
+		const entries = [
+			{
+				id: 1,
+				kind: 'pi.message',
+				model: [
+					{ role: 'user', content: [{ type: 'text', text: 'fallo con 2 subagents' }], timestamp: 0 }
+				]
+			},
+			{
+				id: 2,
+				kind: 'pi.message',
+				model: [
+					assistant([call('d1', 'Analisi repo Relay'), call('d2', 'Analisi repo Portsage')], {
+						stopReason: 'toolUse'
+					})
+				]
+			},
+			{
+				id: 3,
+				kind: 'pi.message',
+				model: [
+					{
+						role: 'toolResult',
+						toolCallId: 'd1',
+						toolName: 'delegate',
+						content: [{ type: 'text', text: 'Started 1 sub-agent(s).' }],
+						details: { children: [{ id: 7, title: 'Analisi repo Relay' }] },
+						isError: false,
+						timestamp: 0
+					}
+				]
+			}
+		];
+		await page.routeWebSocket(/\/agents\/site-agent\//, (ws) => {
+			ws.send(JSON.stringify({ type: 'hello', tools: [] }));
+			ws.send(JSON.stringify({ type: 'events', events: [{ ...snapshot, entries }] }));
+			ws.send(
+				JSON.stringify({
+					type: 'children',
+					children: [
+						{
+							id: 7,
+							title: 'Analisi repo Relay',
+							call: 2,
+							status: 'working',
+							started: 0,
+							reserved: 0.003
+						}
+					]
+				})
+			);
+		});
+		await page.goto('/it/agente');
+
+		const work = page.locator('[data-agent-work]');
+		// Started: the sub-agent's token, which opens its sheet.
+		await expect(work.getByRole('button', { name: /Analisi repo Relay/ })).toBeVisible({
+			timeout: 15_000
+		});
+		// Asked and not started yet: its title, at work.
+		await expect(work).toContainText('Analisi repo Portsage');
+		await expect(work).toContainText('al lavoro');
+		await expect(work).not.toContainText('affida');
+	});
+});
+
 test.describe('agent sub-agents', () => {
 	test('sub-agents sit on the field, open live in a sheet and report as their own line', async ({
 		page

@@ -148,7 +148,7 @@
 		"agentStepCommits": "gli ultimi commit di {repo}",
 		"agentStepRun": "esegue codice: {line}",
 		"agentStepBudget": "controlla i crediti",
-		"agentStepDelegate": "affida {n} lavori",
+		"agentStepDelegate": "affida a sotto-agenti",
 		"agentCountResults": "risultato|risultati",
 		"agentCountLines": "riga|righe",
 		"agentCountFiles": "file|file",
