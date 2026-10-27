@@ -59,6 +59,8 @@ which stopped the day Nexus restarted.
 **Registry**:
 
 - Portsage.
+- Floppy: a shared disk for video teams on Mac (JuiceFS on S3 in a Lima VM), born from what
+  some colleagues needed; who they are is not named.
 - Copilota: a copilot for sales calls, macOS app in Swift with the backend inside the app,
   transcription of both channels, cards from the knowledge base, Nemotron locally. Private
   repo.
