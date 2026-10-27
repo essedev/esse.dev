@@ -6,8 +6,9 @@
 	import { credits, nextReset, SHOW_BUDGET_BELOW } from '../../agent/budget';
 	import { renderMarkdown } from '../../agent/markdown';
 	import { parseRender, type RenderView as View } from '../../agent/render';
-	import type { ChildReport } from '../../agent/delegate';
+	import { parseReport, type ChildRecord, type ChildReport } from '../../agent/delegate';
 	import AgentStatus from './AgentStatus.svelte';
+	import ChildSheet from './ChildSheet.svelte';
 	import DelegateView from './DelegateView.svelte';
 	import DraftView from './DraftView.svelte';
 	import RenderView from './RenderView.svelte';
@@ -66,6 +67,19 @@
 		open: string;
 		subagents: string;
 		answer: string;
+		/** One `delegate` sub-agent, its states and the words of its sheet. */
+		child: string;
+		childWorking: string;
+		childDone: string;
+		childStopped: string;
+		childFailed: string;
+		childStop: string;
+		childClose: string;
+		childTask: string;
+		childWatch: string;
+		childEnd: string;
+		childStoppedNote: string;
+		childFailedNote: string;
 		draft: string;
 		draftSubject: string;
 		draftContact: string;
@@ -113,6 +127,27 @@
 		{}
 	);
 	let client: AgentClient | undefined;
+	/** The visitor's object: the sheet of a sub-agent opens its socket on the same one. */
+	let visitor = '';
+	/** The sub-agents of the conversation, as the server lists them, and the one in the sheet. */
+	let children: ChildRecord[] = $state([]);
+	let sheet: number | null = $state(null);
+	const sheetChild = $derived(children.find((c) => c.id === sheet) ?? null);
+	/** On the field: the ones at work and the latest finished, four at most. */
+	const rail = $derived.by(() => {
+		const live = children.filter((c) => c.status === 'working');
+		const rest = children
+			.filter((c) => c.status !== 'working')
+			.slice(-Math.max(0, 4 - live.length));
+		return children.filter((c) => live.includes(c) || rest.includes(c));
+	});
+	const statusLabel = (status: ChildRecord['status']) =>
+		({
+			working: labels.childWorking,
+			done: labels.childDone,
+			stopped: labels.childStopped,
+			failed: labels.childFailed
+		})[status];
 	/** Whether the socket was ever open: a close after that is a drop, not a failed start. */
 	let opened = $state(false);
 	let reconnected = $state(false);
@@ -177,7 +212,8 @@
 	onMount(() => {
 		prefill();
 		const slowTimer = setTimeout(() => (slow = true), UNREACHABLE_MS);
-		client = new AgentClient({ agent: 'SiteAgent', name: visitorId(), host: location.host });
+		visitor = visitorId();
+		client = new AgentClient({ agent: 'SiteAgent', name: visitor, host: location.host });
 		client.addEventListener('open', () => {
 			// Back after a drop: say so for a moment, then the model returns in the line.
 			if (status === 'closed') {
@@ -239,6 +275,10 @@
 					break;
 				case 'budget':
 					budget = { remaining: message.remaining, limit: message.limit };
+					break;
+				case 'children':
+					children = [...message.children];
+					if (sheet !== null && !children.some((c) => c.id === sheet)) sheet = null;
 					break;
 				case 'error':
 					pending = [];
@@ -324,9 +364,8 @@
 	const lastUserText = $derived(
 		[...view.messages]
 			.reverse()
-			.find((m) => m.role === 'user')
-			?.parts.map((p) => (p.type === 'text' ? p.text : ''))
-			.join('') ?? ''
+			.map((m) => (m.role === 'user' ? userText(m) : null))
+			.find((text) => text !== null && !parseReport(text)) ?? ''
 	);
 	function retry() {
 		if (!lastUserText || status !== 'open') return;
@@ -358,7 +397,10 @@
 	 * before it (`after`) and leaves when pi records it, when a notice stops it, or on an error.
 	 */
 	let pending: { text: string; after: number }[] = $state([]);
-	const users = $derived(view.messages.filter((m) => m.role === 'user').length);
+	// A sub-agent's report is a user message too, but not the visitor's.
+	const users = $derived(
+		view.messages.filter((m) => m.role === 'user' && !parseReport(userText(m))).length
+	);
 	function wait(text: string) {
 		pending = [...pending, { text, after: users + pending.length }];
 	}
@@ -442,6 +484,7 @@
 	/** Back to an empty conversation in the browser: what lives only here goes too. */
 	function forget() {
 		sent = false;
+		sheet = null;
 		triages = {};
 		locals = [];
 		pending = [];
@@ -493,17 +536,35 @@
 		send({ type: 'send-draft', draftId, ...fields });
 	}
 
-	/** The `delegate` tasks from the arguments, and the reports from the result when there is one. */
+	/**
+	 * The `delegate` tasks from the arguments and, from the result: the children it started
+	 * (`details`, DECISIONS #33) or, on calls from before, the reports. `null` for a call the
+	 * server refused, which reads as a plain tool call.
+	 */
 	function delegated(
 		args: unknown,
 		part: ToolResult | undefined
-	): { tasks: { title: string; task: string }[]; reports: ChildReport[] | null } | null {
+	): {
+		tasks: { title: string; task: string }[];
+		reports: ChildReport[] | null;
+		children: ChildRecord[];
+	} | null {
 		const tasks = (args as { tasks?: unknown } | null)?.tasks;
 		if (!Array.isArray(tasks) || part?.error) return null;
-		if (!part) return { tasks, reports: null };
+		if (!part) return { tasks, reports: null, children: [] };
+		const started = (part.details as { children?: { id: number }[] } | undefined)?.children;
+		if (Array.isArray(started)) {
+			// Before the first list from the server, a started child shows as at work.
+			const rows = started.map(
+				(s) =>
+					children.find((c) => c.id === s.id) ??
+					({ ...s, title: '', call: 0, status: 'working', started: 0, reserved: 0 } as ChildRecord)
+			);
+			return { tasks, reports: null, children: rows };
+		}
 		try {
 			const reports = (JSON.parse(resultText(part)) as { reports?: ChildReport[] }).reports;
-			return Array.isArray(reports) ? { tasks, reports } : null;
+			return Array.isArray(reports) ? { tasks, reports, children: [] } : null;
 		} catch {
 			return null;
 		}
@@ -702,7 +763,45 @@
 			{@render localNotice(item)}
 		{/each}
 		{#each shown as message, index (message.id)}
-			{#if message.role === 'user'}
+			{#if message.role === 'user' && parseReport(userText(message))}
+				{@const report = parseReport(userText(message))!}
+				{@const child = children.find((c) => c.id === report.id)}
+				<!-- A sub-agent's findings: they reach the agent as a message, not the visitor's. -->
+				<details class="group pl-6" data-agent-report>
+					<summary
+						class="flex cursor-pointer list-none flex-wrap items-center gap-x-2.5 gap-y-1 font-mono text-xs text-muted transition-colors hover:text-fg [&::-webkit-details-marker]:hidden"
+					>
+						<span class="led" data-status={report.status === 'finished' ? 'completed' : 'idea'}
+						></span>
+						<span class="text-fg">{labels.child} #{report.id} · {report.title}</span>
+						<span>
+							{report.status === 'finished'
+								? labels.childDone
+								: labels.childFailed}{#if child?.tokens}<span>
+									· {tokens(child.tokens)} token · {spent(child.usd ?? 0)}</span
+								>{/if}
+						</span>
+						{#if child}
+							<button
+								type="button"
+								onclick={(e) => {
+									e.preventDefault();
+									sheet = report.id;
+								}}
+								class="ml-auto cursor-pointer text-subtle transition-colors hover:text-fg"
+							>
+								{labels.childWatch}
+							</button>
+						{/if}
+					</summary>
+					<div
+						class="prose mt-2 max-w-none rounded-[var(--radius-control)] bg-surface/60 px-3.5 py-3 text-[0.9375rem] leading-relaxed prose-invert prose-p:my-2 prose-p:text-muted prose-a:text-fg prose-a:decoration-subtle prose-code:font-normal prose-code:text-fg prose-code:before:content-none prose-code:after:content-none prose-li:text-muted [&>:first-child]:mt-0 [&>:last-child]:mb-0"
+					>
+						<!-- eslint-disable-next-line svelte/no-at-html-tags -- renderMarkdown neutralizes HTML and links (src/agent/markdown.ts, with tests) -->
+						{@html renderMarkdown(report.body)}
+					</div>
+				</details>
+			{:else if message.role === 'user'}
 				{@const text = userText(message)}
 				{@const triage = triages[text]}
 				<div class="flex flex-col gap-1.5">
@@ -754,9 +853,12 @@
 							<DelegateView
 								tasks={work.tasks}
 								reports={work.reports}
+								children={work.children}
 								labels={{ subagents: labels.subagents, answer: labels.answer }}
 								{tokens}
 								{spent}
+								{statusLabel}
+								onopen={(id) => (sheet = id)}
 							/>
 						{:else if part.type === 'tool-call' && part.name === 'render' && drawn(part.arguments, results.get(part.id))}
 							<RenderView view={drawn(part.arguments, results.get(part.id))!} {locale} />
@@ -863,60 +965,110 @@
 		{/if}
 	</div>
 
-	<!-- A glass panel anchored at the bottom of the pane: the conversation scrolls behind it. -->
-	<div
-		class="glass sticky bottom-3 z-10 mt-8 mb-3 rounded-[var(--radius-panel)] bg-panel/60 px-3 pt-3 pb-2.5"
-	>
-		<form onsubmit={submit} class="flex items-end gap-3">
-			<span class="pb-1.5 font-mono text-sm text-accent glow select-none" aria-hidden="true">›</span
-			>
-			<textarea
-				bind:value={input}
-				data-agent-input
-				onkeydown={onKey}
-				rows="1"
-				placeholder={status === 'open'
-					? labels.placeholder
-					: status === 'connecting'
-						? labels.connecting
-						: labels.offline}
-				aria-label={labels.placeholder}
-				class="[field-sizing:content] min-h-8 flex-1 resize-none bg-transparent py-1.5 font-mono text-[0.875rem] text-fg outline-none placeholder:text-subtle"
-			></textarea>
-			{#if view.running}
-				<button type="button" onclick={() => send({ type: 'abort' })} class="chip hover:text-fg">
-					{labels.stop}
-				</button>
-			{:else}
-				<button
-					type="submit"
-					disabled={status !== 'open'}
-					class="chip hover:text-fg disabled:opacity-40"
+	<!-- Anchored at the bottom of the pane, the conversation scrolls behind it: a sub-agent's
+	     sheet, when open, and the glass panel of the field. Two glasses side by side, neither
+	     inside the other (DECISIONS #16). -->
+	<div class="sticky bottom-3 z-10 mt-8 mb-3 flex flex-col gap-2">
+		{#if sheetChild}
+			<ChildSheet
+				child={sheetChild}
+				{visitor}
+				labels={{
+					subagent: labels.child,
+					stop: labels.childStop,
+					close: labels.childClose,
+					task: labels.childTask,
+					end: labels.childEnd,
+					stoppedNote: labels.childStoppedNote,
+					failedNote: labels.childFailedNote
+				}}
+				{statusLabel}
+				{phaseLabel}
+				{tokens}
+				{spent}
+				onclose={() => (sheet = null)}
+			/>
+		{/if}
+		<div class="glass rounded-[var(--radius-panel)] bg-panel/60 px-3 pt-3 pb-2.5">
+			{#if rail.length}
+				<div class="mb-2.5 flex flex-wrap gap-1.5 border-b border-line/60 pb-2.5" data-agent-rail>
+					{#each rail as child (child.id)}
+						<button
+							type="button"
+							onclick={() => (sheet = sheet === child.id ? null : child.id)}
+							aria-pressed={sheet === child.id}
+							class="chip max-w-full cursor-pointer hover:text-fg aria-pressed:bg-hover aria-pressed:text-fg"
+						>
+							<span
+								class="led"
+								data-status={child.status === 'working'
+									? 'in-progress'
+									: child.status === 'done'
+										? 'completed'
+										: 'idea'}
+							></span>
+							<span class="truncate">{child.title}</span>
+							<span class="text-subtle">{statusLabel(child.status)}</span>
+						</button>
+					{/each}
+				</div>
+			{/if}
+			<form onsubmit={submit} class="flex items-end gap-3">
+				<span class="pb-1.5 font-mono text-sm text-accent glow select-none" aria-hidden="true"
+					>›</span
 				>
-					{labels.send}
-				</button>
-			{/if}
-		</form>
-		<div
-			class="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 px-1 font-mono text-[0.7rem] text-subtle"
-		>
-			<span class="flex items-center gap-2" aria-live="polite">
-				<span class="led" data-status={status === 'open' ? 'in-progress' : 'idea'}></span>
-				{#if reconnected}
-					<span class="text-live">{labels.reconnected}</span>
-				{:else if status === 'closed' && opened}
-					{labels.reconnecting}
+				<textarea
+					bind:value={input}
+					data-agent-input
+					onkeydown={onKey}
+					rows="1"
+					placeholder={status === 'open'
+						? labels.placeholder
+						: status === 'connecting'
+							? labels.connecting
+							: labels.offline}
+					aria-label={labels.placeholder}
+					class="[field-sizing:content] min-h-8 flex-1 resize-none bg-transparent py-1.5 font-mono text-[0.875rem] text-fg outline-none placeholder:text-subtle"
+				></textarea>
+				{#if view.running}
+					<button type="button" onclick={() => send({ type: 'abort' })} class="chip hover:text-fg">
+						{labels.stop}
+					</button>
 				{:else}
-					{view.model?.modelId ??
-						(status === 'open' ? '' : status === 'connecting' ? labels.connecting : labels.offline)}
+					<button
+						type="submit"
+						disabled={status !== 'open'}
+						class="chip hover:text-fg disabled:opacity-40"
+					>
+						{labels.send}
+					</button>
 				{/if}
-			</span>
-			{#if budget && lowBudget}
-				<span>{credits(budget.remaining).toLocaleString(locale)} {labels.budget}</span>
-			{/if}
-			<a href={labels.privacyHref} class="ml-auto transition-colors hover:text-fg"
-				>{labels.privacyNote}</a
+			</form>
+			<div
+				class="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1 px-1 font-mono text-[0.7rem] text-subtle"
 			>
+				<span class="flex items-center gap-2" aria-live="polite">
+					<span class="led" data-status={status === 'open' ? 'in-progress' : 'idea'}></span>
+					{#if reconnected}
+						<span class="text-live">{labels.reconnected}</span>
+					{:else if status === 'closed' && opened}
+						{labels.reconnecting}
+					{:else}
+						{view.model?.modelId ??
+							(status === 'open'
+								? ''
+								: status === 'connecting'
+									? labels.connecting
+									: labels.offline)}
+					{/if}
+				</span>
+				{#if budget && lowBudget}
+					<span>{credits(budget.remaining).toLocaleString(locale)} {labels.budget}</span>
+				{/if}
+				<a href={labels.privacyHref} class="ml-auto transition-colors hover:text-fg"
+					>{labels.privacyNote}</a
+				>
+			</div>
 		</div>
 	</div>
 </div>

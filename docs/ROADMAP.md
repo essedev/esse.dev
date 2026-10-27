@@ -68,9 +68,8 @@ of the earlier idea (the site redesigned live by a model). Choices in
 - Read-only tools on already public data. No writes, no fetch of arbitrary URLs, no
   private repos, no memory between visits. The only effect outside the site is the
   `draft_message` email, and it goes out only from a visitor's click.
-- In progress (Cycle 29): sub-agents in the background (#33). Server done; the page still
-  shows the old card and the reports as visitor messages: the chips, the switch to a
-  child's live transcript and the report card follow concept N. Not to push before then.
+- Done (Cycle 29): sub-agents in the background (#33), on the page as chips on the field
+  with the live transcript in a sheet (#34). Open: the sheet's height on phones.
 - `@cloudflare/computer` only if running the repos' code became necessary.
 - To measure with real traffic: whether the weight estimated by Jev predicts the real
   cost of the answers (both exist for every message). Only if it predicts it well, use it

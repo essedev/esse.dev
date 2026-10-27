@@ -752,7 +752,7 @@ export class SiteAgent extends DurableObject<Env> {
 		{
 			admit: (text, reply, ip) => this.admit(text, reply, ip),
 			writable: (session) => this.writable(session),
-			beforeReset: () => this.stopChildren(),
+			beforeReset: () => this.clearChildren(),
 			sendDraft: (session, message, reply) => this.sendDraft(session, message, reply),
 			settled: (session, receipt) => this.ctx.waitUntil(this.settle(session, receipt)),
 			status: (reply) => this.status(reply)
@@ -851,8 +851,12 @@ export class SiteAgent extends DurableObject<Env> {
 		return !(await this.#children()).some((c) => String(c.id) === session);
 	}
 
-	/** Stops the children at work: before a reset they would report into the new chat. */
-	async stopChildren(): Promise<void> {
+	/**
+	 * Before a reset: stops the children at work, which would report into the new chat, and
+	 * empties the list, which belongs to the old one. Their reporters still charge what they
+	 * spent; a record they no longer find is skipped.
+	 */
+	async clearChildren(): Promise<void> {
 		const pi = await this.harness.pi();
 		const live = liveChildren(await this.#children());
 		await Promise.all(
@@ -862,6 +866,11 @@ export class SiteAgent extends DurableObject<Env> {
 				)
 			)
 		);
+		const root = await pi.conversation(Number(ROOT_SESSION) as ConversationId, BACKGROUND_CONTEXT);
+		await root?.commit(async (tx) => {
+			(await tx.doc(Children, root.id)).children = [];
+		}, BACKGROUND_CONTEXT);
+		await this.#broadcast();
 	}
 
 	/** Turnstile: the widget token, verified by Cloudflare with the site's secret. */

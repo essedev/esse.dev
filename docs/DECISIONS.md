@@ -442,3 +442,18 @@ has one path. Measured in preview: one child on a file, main answer in 7 s, repo
 stays open), one report for all the children (with one child it is the same, with three it
 hides the first findings), a stopped child that starts a turn (it costs for nothing: a note
 is enough), letting the visitor write to a child (a second budget path).
+
+## #34 - The sub-agents on the field, their transcript in a sheet
+
+**Status:** active (Cycle 29)
+
+From concept N (`docs/concepts/concept-n-subagenti.html`), variant B. The sub-agents of #33
+sit as chips on the glass panel of the field, with their state; a chip, or a row of the
+`delegate` card, opens the child's transcript live in a sheet above the field, on a socket
+of its own on the child's session (read-only, Stop sends `abort`). The field stays usable
+under the sheet: the visitor watches a sub-agent and talks to the agent at once. A report
+reads as its own line ("sotto-agente #7 · finito") with the findings folded, never as the
+visitor's message. Sheet and panel are two glasses side by side in the anchored block, not
+one inside the other (#16). Rejected: tabs that swap the whole conversation (A, watching
+stops the talking) and a live `delegate` card in the thread (C, it scrolls away, on phones
+first). Open: on phones chips and field leave the sheet about half the screen.

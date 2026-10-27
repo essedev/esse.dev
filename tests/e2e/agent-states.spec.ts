@@ -315,6 +315,144 @@ test.describe('agent states', () => {
 	});
 });
 
+test.describe('agent sub-agents', () => {
+	test('sub-agents sit on the field, open live in a sheet and report as their own line', async ({
+		page
+	}) => {
+		const TITLE = 'Legge triage.ts';
+		const TASK = 'Leggi src/agent/triage.ts e riassumi il triage.';
+		let main: WebSocketRoute | undefined;
+		let aborted = false;
+		const child = (status: string, extra: Record<string, unknown> = {}) => ({
+			type: 'children',
+			children: [{ id: 7, title: TITLE, call: 3, status, started: 0, reserved: 0.003, ...extra }]
+		});
+		await page.routeWebSocket(/\/agents\/site-agent\//, (ws) => {
+			// The sheet's own socket, on the child's session: its task and a first read.
+			if (ws.url().includes('session=7')) {
+				ws.onMessage((raw) => {
+					if ((JSON.parse(String(raw)) as { type: string }).type === 'abort') aborted = true;
+				});
+				const entries = [
+					{ id: 10, kind: 'pi.message', model: [{ role: 'user', content: TASK, timestamp: 0 }] },
+					{
+						id: 11,
+						kind: 'pi.message',
+						model: [
+							assistant(
+								[
+									{
+										type: 'toolCall',
+										id: 'r1',
+										name: 'read_file',
+										arguments: { repo: 'essedev/esse.dev', path: 'src/agent/triage.ts' }
+									}
+								],
+								{ stopReason: 'toolUse' }
+							)
+						]
+					}
+				];
+				ws.send(JSON.stringify({ type: 'events', events: [{ ...snapshot, entries }] }));
+				return;
+			}
+			main = ws;
+			const entries = [
+				{
+					id: 1,
+					kind: 'pi.message',
+					model: [
+						{
+							role: 'user',
+							content: [{ type: 'text', text: 'Come funziona il triage?' }],
+							timestamp: 0
+						}
+					]
+				},
+				{
+					id: 2,
+					kind: 'pi.message',
+					model: [
+						assistant(
+							[
+								{ type: 'text', text: 'Avvio un sotto-agente sul triage.' },
+								{
+									type: 'toolCall',
+									id: 'd1',
+									name: 'delegate',
+									arguments: { tasks: [{ title: TITLE, task: TASK }] }
+								}
+							],
+							{ stopReason: 'toolUse' }
+						)
+					]
+				},
+				{
+					id: 3,
+					kind: 'pi.message',
+					model: [
+						{
+							role: 'toolResult',
+							toolCallId: 'd1',
+							toolName: 'delegate',
+							content: [{ type: 'text', text: 'Started 1 sub-agent(s).' }],
+							details: { children: [{ id: 7, title: TITLE }] },
+							isError: false,
+							timestamp: 0
+						}
+					]
+				}
+			];
+			ws.send(JSON.stringify({ type: 'hello', tools: [{ name: 'delegate', description: '' }] }));
+			ws.send(JSON.stringify({ type: 'events', events: [{ ...snapshot, entries }] }));
+			ws.send(JSON.stringify(child('working')));
+		});
+		await page.goto('/it/agente');
+
+		// At work: on the field and in the delegate card.
+		const rail = page.locator('[data-agent-rail]');
+		await expect(rail.getByRole('button', { name: new RegExp(TITLE) })).toBeVisible({
+			timeout: 15_000
+		});
+		await expect(rail).toContainText('al lavoro');
+
+		// The sheet: its own socket, read-only, with Stop; Esc closes it and stays on the page.
+		await rail.getByRole('button', { name: new RegExp(TITLE) }).click();
+		const sheet = page.locator('[data-agent-child-sheet]');
+		await expect(sheet).toContainText(TASK);
+		await expect(sheet).toContainText('read_file');
+		await sheet.getByRole('button', { name: 'Ferma' }).click();
+		await expect.poll(() => aborted).toBe(true);
+		const url = page.url();
+		await page.keyboard.press('Escape');
+		await expect(sheet).toHaveCount(0);
+		expect(page.url()).toBe(url);
+
+		// The report: its own line, never the visitor's message.
+		main!.send(JSON.stringify(child('done', { tokens: 8495, usd: 0.0015 })));
+		events(main!, {
+			type: 'entry_appended',
+			entry: {
+				id: 4,
+				kind: 'pi.message',
+				model: [
+					{
+						role: 'user',
+						content: `[sub-agent #7 "${TITLE}" finished]\nJev classifica ogni messaggio in circa 300 ms.`,
+						timestamp: 0
+					}
+				]
+			}
+		});
+		const report = page.locator('[data-agent-report]');
+		await expect(report).toContainText(`sotto-agente #7 · ${TITLE}`);
+		await expect(report).toContainText('finito');
+		await expect(page.getByText('[sub-agent #7')).toHaveCount(0);
+		await report.locator('summary').click();
+		await expect(report).toContainText('Jev classifica ogni messaggio');
+	});
+});
+
 test.describe('agent before and without JavaScript', () => {
 	test.use({ javaScriptEnabled: false });
 
