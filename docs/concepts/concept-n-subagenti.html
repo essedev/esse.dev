@@ -1,0 +1,545 @@
+<!doctype html>
+<html lang="it">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Concept N - Sub-agent</title>
+		<!--
+			Concept N: come il visitatore vede i sub-agent di delegate al lavoro e passa dalla chat
+			con l'agente alla trascrizione di uno di loro, mentre continua a parlare.
+			Tasti: x a b c per la variante, t tema, m larghezza telefono (390), r riavvia la
+			simulazione, p nasconde la barra.
+
+			Il problema: dopo DECISIONS #33 i sub-agent lavorano in background, ma la pagina mostra
+			ancora la card di #14 (si riempie solo a lavoro finito) e il report del sub-agent arriva
+			come un messaggio del visitatore con l'intestazione "[sub-agent #26 ...]".
+
+			X  oggi, dopo d3839b3: il risultato di delegate non è più il JSON che DelegateView legge,
+			   quindi la chiamata cade sulla riga generica del tool; niente si vede del lavoro dei
+			   sub-agent, e il report arriva come messaggio del visitatore con l'intestazione per il
+			   modello.
+			A  schede: una riga di schede in cima alla conversazione, l'agente e un sub-agent per
+			   scheda. La scheda di un sub-agent sostituisce la conversazione con la sua
+			   trascrizione dal vivo; il campo diventa una riga in sola lettura con Ferma.
+			B  binario: i sub-agent stanno sul pannello del campo, una fila di chip sopra la riga di
+			   scrittura. Un chip apre la trascrizione in un foglio che sale sopra la conversazione;
+			   il campo resta sotto e si continua a scrivere all'agente mentre si guarda.
+			C  nel filo: niente cromatura nuova. La card di delegate nella conversazione è viva:
+			   ogni sub-agent si apre sul posto con la sua traccia. Un chip "2 al lavoro" nella riga
+			   del modello riporta alla card quando è salita fuori vista.
+
+			Uguale in A, B e C (non è l'asse): il report arriva come una sua riga, "sub-agent #15
+			finito", con risultati richiudibili, mai come messaggio del visitatore; poi risponde
+			l'agente. Un sub-agent fermato non fa parlare l'agente (#33): cambia solo il suo stato.
+
+			Mappatura sul codice di oggi (fattibilità, non piano): la lista e gli stati arrivano col
+			messaggio `children` del socket (protocol.ts); la trascrizione di un sub-agent è una
+			seconda connessione `?session=<id>` con gli stessi eventi di pi, già proiettati da
+			transcript.ts; Ferma è `abort` su quella connessione. Il report si riconosce con
+			`parseReport` (delegate.ts). Nuovo: lo stato del client per più sessioni (view.ts ne
+			segue una), il componente della scheda o del foglio, la riga del report. Il foglio di B è
+			un vetro accanto a quello del campo, non dentro: la regola del vetro nel vetro (#16)
+			regge. Nessun dato manca.
+
+			Dati: la conversazione è quella vera della preview del 27/10 (due sub-agent su
+			triage.ts e budget.ts, una battuta in mezzo), accorciata; token e crediti sono quelli
+			misurati. I tempi sono compressi (circa 12 s invece di 15-20).
+		-->
+		<style>
+			@font-face { font-family: 'Geist'; font-weight: 400; src: url(https://cdn.jsdelivr.net/fontsource/fonts/geist@latest/latin-400-normal.woff2) format('woff2'); }
+			@font-face { font-family: 'Geist'; font-weight: 500; src: url(https://cdn.jsdelivr.net/fontsource/fonts/geist@latest/latin-500-normal.woff2) format('woff2'); }
+			@font-face { font-family: 'Geist Mono'; src: url(https://cdn.jsdelivr.net/fontsource/fonts/geist-mono@latest/latin-400-normal.woff2) format('woff2'); }
+			@font-face { font-family: 'Departure Mono'; src: url(https://cdn.jsdelivr.net/gh/rektdeckard/departure-mono@main/public/assets/DepartureMono-Regular.woff2) format('woff2'); }
+
+			/* Tokens copied from src/styles/global.css (@theme and the light override). */
+			:root {
+				--desk: #0a0912;
+				--panel: #0e0e12;
+				--surface: rgb(255 255 255 / 0.05);
+				--surface-60: rgb(255 255 255 / 0.03);
+				--hover: rgb(255 255 255 / 0.08);
+				--line: #23232b;
+				--fg: #efedf5;
+				--text: #cbc9d4;
+				--muted: #9c9aa8;
+				--subtle: #908e9b;
+				--accent: #b59cff;
+				--live: #7dff9b;
+				--danger: #f2857a;
+				--completed: #efedf5;
+				--archived: #4d4d58;
+				--glow: #6e50ff;
+				--radius-control: 6px;
+				--radius-panel: 10px;
+				--radius-window: 18px;
+				--glass-rim: 0.12;
+				--glass-tint: 0;
+				--glass-shadow: 0 12px 32px rgb(0 0 0 / 0.35);
+				--crt-accent-glow: 5px;
+				--veil-rgb: 255 255 255;
+				--wall: radial-gradient(40% 40% at 12% 0%, rgb(110 80 255 / 0.32), transparent 70%), linear-gradient(160deg, #1a1530, #0a0912 60%);
+				--sans: 'Geist', ui-sans-serif, system-ui, sans-serif;
+				--mono: 'Departure Mono', ui-monospace, monospace;
+				--code: 'Geist Mono', ui-monospace, monospace;
+				--ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+				color-scheme: dark;
+			}
+			:root[data-theme='light'] {
+				--desk: #bcb2dc;
+				--panel: #ece8f4;
+				--surface: rgb(40 25 90 / 0.07);
+				--surface-60: rgb(40 25 90 / 0.042);
+				--hover: rgb(40 25 90 / 0.1);
+				--line: #cfc9de;
+				--fg: #17141f;
+				--text: #312d3c;
+				--muted: #504b60;
+				--subtle: #57526a;
+				--accent: #5f40d6;
+				--live: #179a4c;
+				--danger: #c43d2e;
+				--completed: #17141f;
+				--archived: #a9a2bd;
+				--glow: #9d85ff;
+				--glass-rim: 0.55;
+				--glass-tint: 0.3;
+				--glass-shadow: 0 1px 2px rgb(40 25 90 / 0.08), 0 14px 36px rgb(40 25 90 / 0.16);
+				--crt-accent-glow: 4px;
+				--veil-rgb: 40 25 90;
+				--wall: radial-gradient(40% 40% at 12% 0%, rgb(255 255 255 / 0.45), transparent 70%), linear-gradient(160deg, #a99ed6, #bcb2dc 60%);
+				color-scheme: light;
+			}
+
+			* { box-sizing: border-box; }
+			html, body { margin: 0; }
+			body { min-height: 100vh; background: var(--wall), var(--desk); background-attachment: fixed; color: var(--text); font: 15px/1.5 var(--sans); -webkit-font-smoothing: antialiased; overscroll-behavior: none; }
+			[hidden] { display: none !important; }
+			button { font: inherit; color: inherit; background: none; border: 0; padding: 0; cursor: pointer; }
+
+			/* Concept chrome: not part of the design. */
+			.switch { position: sticky; top: 0; z-index: 100; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; padding: 8px 12px; background: #111; color: #aaa; font: 12px/1.4 ui-monospace, Menlo, monospace; }
+			.switch button { padding: 5px 9px; border-radius: 6px; background: #262626; color: #eee; }
+			.switch button[aria-pressed='true'] { background: #eee; color: #111; }
+			.switch p { margin: 0 0 0 8px; flex: 1 1 240px; min-width: 0; }
+			body[data-chrome='off'] .switch { display: none; }
+
+			/* The window and its pane: the agent page of the site, without the list. */
+			.stage { display: flex; justify-content: center; padding: 28px 24px 40px; }
+			.window { position: relative; width: min(100%, 980px); height: min(820px, calc(100vh - 110px)); display: flex; flex-direction: column; border-radius: var(--radius-window); box-shadow: inset 0 0 0 1px rgb(var(--veil-rgb) / var(--glass-rim)), var(--glass-shadow); overflow: hidden; }
+			/* The pane's blur on a layer of its own, which holds no other glass (#16): the composer
+			   and the sheet can blur above it. */
+			.window::before { content: ''; position: absolute; inset: 0; z-index: -1; border-radius: inherit; background: rgb(var(--veil-rgb) / calc(0.035 + var(--glass-tint) * 0.6)); backdrop-filter: blur(32px) saturate(110%); }
+			body[data-phone='on'] .window { width: 390px; border-radius: 0; height: min(780px, calc(100vh - 110px)); }
+			.toolbar { flex: none; display: flex; align-items: center; gap: 10px; height: 48px; padding: 0 20px; font: 12px var(--mono); color: var(--subtle); border-bottom: 1px solid rgb(var(--veil-rgb) / 0.06); }
+			.toolbar b { font-weight: 400; color: var(--fg); }
+			.scroll { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: none; padding: 28px 32px 0; display: flex; flex-direction: column; }
+			body[data-phone='on'] .scroll { padding: 20px 16px 0; }
+			.log { flex: 1; display: flex; flex-direction: column; gap: 24px; }
+
+			.mono { font-family: var(--mono); }
+			.label { font: 0.7rem var(--mono); letter-spacing: 0.1em; text-transform: uppercase; color: var(--subtle); }
+			.meta { font: 0.7rem var(--mono); color: var(--subtle); }
+			.glowtext { text-shadow: 0 0 var(--crt-accent-glow) color-mix(in srgb, var(--accent) 90%, transparent); }
+			.chip { display: inline-flex; align-items: center; gap: 0.4rem; height: 1.75rem; padding: 0 0.6rem; border-radius: var(--radius-control); background: var(--surface); color: var(--muted); font: 0.75rem var(--mono); white-space: nowrap; transition: color 150ms, background-color 150ms; }
+			.chip:hover { color: var(--fg); background: var(--hover); }
+
+			.led { position: relative; display: inline-block; flex: none; width: 7px; height: 7px; border-radius: 999px; background: var(--archived); }
+			.led[data-status='working'] { background: var(--live); box-shadow: 0 0 var(--crt-accent-glow) color-mix(in srgb, var(--live) 75%, transparent); animation: breathe 2.8s var(--ease-out) infinite; }
+			.led[data-status='done'] { background: var(--completed); }
+			.led[data-status='stopped'], .led[data-status='failed'] { background: transparent; box-shadow: inset 0 0 0 1.5px var(--archived); }
+			@keyframes breathe { 50% { opacity: 0.45; } }
+			@media (prefers-reduced-motion: reduce) { .led[data-status='working'] { animation-duration: 4s; } }
+
+			/* Messages, as AgentChat.svelte draws them. */
+			.user { display: flex; gap: 12px; font: 0.875rem var(--mono); color: var(--fg); }
+			.user .caret { color: var(--accent); }
+			.verdict { padding-left: 24px; margin-top: 6px; }
+			.answer { padding-left: 24px; display: flex; flex-direction: column; gap: 12px; }
+			.prose { font-size: 1.0625rem; line-height: 1.65; color: var(--text); }
+			.prose p { margin: 0; }
+			.prose p + p { margin-top: 12px; }
+			.prose code { font: 0.86em var(--code); color: var(--fg); background: var(--surface); padding: 2px 6px; border-radius: 4px; }
+			.prose strong { font-weight: 500; color: var(--fg); }
+			.tool { display: flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: var(--radius-control); background: var(--surface-60); font: 0.75rem var(--mono); color: var(--muted); }
+			.tool .name { color: var(--fg); }
+			.tool .arg { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; min-width: 0; }
+
+			/* The delegate card: X is DelegateView.svelte as it is. */
+			.delegate { display: flex; flex-direction: column; gap: 8px; padding: 12px 16px; border-radius: var(--radius-control); background: var(--surface-60); }
+			.delegate h3 { margin: 0; font: 0.75rem var(--mono); color: var(--subtle); font-weight: 400; }
+			.delegate ol { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+			.row { display: flex; align-items: center; gap: 10px; font-size: 0.875rem; }
+			.row .title { color: var(--fg); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+			.row .right { margin-left: auto; flex: none; display: flex; align-items: center; gap: 8px; font: 0.7rem var(--mono); color: var(--subtle); }
+			.row-btn { width: 100%; text-align: left; padding: 6px 8px; margin: 0 -8px; border-radius: var(--radius-control); transition: background-color 150ms; }
+			.row-btn:hover { background: var(--surface-60); }
+			.row-btn[aria-expanded='true'] { background: var(--surface); }
+			.trace { margin: 4px 0 8px 17px; display: flex; flex-direction: column; gap: 6px; font: 0.75rem var(--mono); color: var(--muted); }
+			.trace .t-call { display: flex; align-items: center; gap: 8px; min-width: 0; }
+			.trace .t-call span:last-child { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+			.trace .t-text { font: 0.875rem/1.6 var(--sans); color: var(--text); }
+			.trace .now { color: var(--subtle); }
+
+			/* The report line: same in A, B and C. */
+			.report { display: flex; flex-direction: column; gap: 6px; padding-left: 24px; }
+			.report summary { list-style: none; display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; cursor: pointer; font: 0.75rem var(--mono); color: var(--muted); }
+			.report summary::-webkit-details-marker { display: none; }
+			.report summary:hover { color: var(--fg); }
+			.report summary .who { color: var(--fg); }
+			.report .body { margin-top: 8px; padding: 12px 14px; border-radius: var(--radius-control); background: var(--surface-60); font-size: 0.9375rem; line-height: 1.6; color: var(--muted); }
+			.report .open { margin-left: auto; color: var(--subtle); }
+			.report .open:hover { color: var(--fg); }
+
+			/* The composer: the glass panel at the bottom of the pane. */
+			.dock { position: sticky; bottom: 12px; z-index: 10; margin: 32px 0 12px; display: flex; flex-direction: column; gap: 8px; }
+			.composer { border-radius: var(--radius-panel); padding: 12px 12px 10px; background: color-mix(in srgb, var(--panel) 60%, transparent); box-shadow: inset 0 0 0 1px rgb(var(--veil-rgb) / var(--glass-rim)), var(--glass-shadow); backdrop-filter: blur(32px) saturate(110%); }
+			.composer form { display: flex; align-items: flex-end; gap: 12px; }
+			.composer .caret { padding-bottom: 6px; font: 0.875rem var(--mono); color: var(--accent); }
+			.composer textarea { flex: 1; min-height: 32px; resize: none; border: 0; outline: none; background: transparent; padding: 6px 0; font: 0.875rem var(--mono); color: var(--fg); field-sizing: content; }
+			.composer textarea::placeholder { color: var(--subtle); }
+			.composer .foot { margin-top: 8px; padding: 0 4px; display: flex; flex-wrap: wrap; align-items: center; gap: 4px 16px; font: 0.7rem var(--mono); color: var(--subtle); }
+			.composer .foot .right { margin-left: auto; }
+			.readonly { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; min-height: 32px; font: 0.8125rem var(--mono); color: var(--muted); }
+			.readonly .note { flex: 1 1 220px; }
+			.readonly .chip { flex: none; }
+
+			/* A: the tabs. */
+			.tabs { flex: none; display: flex; gap: 4px; padding: 8px 28px; overflow-x: auto; overscroll-behavior-x: none; border-bottom: 1px solid rgb(var(--veil-rgb) / 0.06); scrollbar-width: none; }
+			body[data-phone='on'] .tabs { padding: 8px 12px; }
+			.tab { flex: none; display: inline-flex; align-items: center; gap: 8px; height: 30px; max-width: 220px; padding: 0 10px; border-radius: var(--radius-control); font: 0.75rem var(--mono); color: var(--muted); transition: color 150ms, background-color 150ms; }
+			.tab span.t { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+			.tab:hover { background: var(--surface-60); color: var(--fg); }
+			.tab[aria-selected='true'] { background: var(--surface); color: var(--fg); }
+			.tab .badge { min-width: 16px; height: 16px; padding: 0 4px; border-radius: 999px; background: var(--accent); color: var(--panel); font-size: 0.625rem; line-height: 16px; text-align: center; }
+
+			/* B: chips on the composer and the sheet. */
+			.rail { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid rgb(var(--veil-rgb) / 0.07); }
+			.rail .chip { max-width: 100%; }
+			.rail .chip[aria-pressed='true'] { background: var(--hover); color: var(--fg); }
+			.rail .chip .t { overflow: hidden; text-overflow: ellipsis; }
+			.sheet { position: absolute; left: 20px; right: 20px; top: 60px; bottom: var(--dock-h, 150px); z-index: 11; display: flex; flex-direction: column; border-radius: var(--radius-panel); background: color-mix(in srgb, var(--panel) 72%, transparent); box-shadow: inset 0 0 0 1px rgb(var(--veil-rgb) / var(--glass-rim)), var(--glass-shadow); backdrop-filter: blur(32px) saturate(110%); transform: translateY(12px); opacity: 0; pointer-events: none; transition: transform 260ms var(--ease-out), opacity 200ms; }
+			.sheet[data-open] { transform: none; opacity: 1; pointer-events: auto; }
+			@media (prefers-reduced-motion: reduce) { .sheet { transform: none; } }
+			body[data-phone='on'] .sheet { left: 8px; right: 8px; }
+			.sheet header { flex: none; display: flex; align-items: center; gap: 10px; padding: 12px 14px; border-bottom: 1px solid rgb(var(--veil-rgb) / 0.07); font: 0.75rem var(--mono); color: var(--muted); }
+			.sheet header .who { color: var(--fg); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+			.sheet header .acts { margin-left: auto; display: flex; gap: 6px; flex: none; }
+			.sheet .inner { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: none; padding: 16px 18px; }
+
+			/* C: the jump chip. */
+			.jump { color: var(--muted); }
+			.jump:hover { color: var(--fg); }
+
+			/* The child transcript, in A (whole pane) and B (sheet). */
+			.child-log { display: flex; flex-direction: column; gap: 18px; }
+			.child-log .task { font: 0.8125rem/1.6 var(--mono); color: var(--muted); }
+			.child-log .task .label { display: block; margin-bottom: 4px; }
+			.child-log .end { font: 0.75rem var(--mono); color: var(--subtle); }
+			.typing::after { content: '…'; }
+		</style>
+	</head>
+	<body data-v="x" data-phone="off">
+		<div class="switch">
+			<span data-buttons></span>
+			<p data-desc></p>
+			<button data-restart>r riavvia</button>
+			<button data-phone-toggle>m 390</button>
+			<button data-theme-toggle>t tema</button>
+		</div>
+
+		<main class="stage">
+			<div class="window">
+				<div class="toolbar"><span>esse.dev</span><span>/</span><b>Chiedi</b></div>
+				<nav class="tabs" role="tablist" data-only="a" data-tabs></nav>
+				<div class="scroll" data-scroll>
+					<div class="log" data-log></div>
+					<div class="dock" data-dock>
+						<div class="composer">
+							<div class="rail" data-only="b" data-rail></div>
+							<div data-compose></div>
+						</div>
+					</div>
+				</div>
+				<section class="sheet" data-only="b" data-sheet aria-label="Trascrizione del sub-agent"></section>
+			</div>
+		</main>
+
+		<script>
+			const DESC = {
+				x: 'oggi: delegate come riga generica del tool, report come messaggio del visitatore',
+				a: 'schede: ogni sub-agent ha la sua scheda, la scheda prende tutta la conversazione',
+				b: 'binario: chip sul pannello del campo, la trascrizione in un foglio, si scrive intanto',
+				c: 'nel filo: la card di delegate è viva, ogni sub-agent si apre sul posto'
+			};
+			const KEY = `concept:${location.pathname}`;
+			const root = document.documentElement;
+			const body = document.body;
+			const $ = (s) => document.querySelector(s);
+			const esc = (s) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+			const md = (s) => s.split('\n\n').map((p) => `<p>${esc(p).replace(/`([^`]+)`/g, '<code>$1</code>').replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')}</p>`).join('');
+			const load = () => { try { return JSON.parse(localStorage.getItem(KEY) || '{}'); } catch { return {}; } };
+			const save = (s) => { try { localStorage.setItem(KEY, JSON.stringify({ ...load(), ...s })); } catch {} };
+
+			// The conversation of the preview, shortened. Times in ms from the start.
+			const CHILDREN = {
+				15: { title: 'Legge triage.ts', task: 'Leggi src/agent/triage.ts nel repo essedev/esse.dev e riassumi come funziona il triage: classi, soglie, cosa succede se Jev non risponde.', tokens: '8,5k', credits: 15 },
+				26: { title: 'Legge budget.ts', task: 'Leggi src/agent/budget.ts e ledger.ts nel repo essedev/esse.dev e riassumi come si contano e si limitano i costi.', tokens: '7,5k', credits: 9 }
+			};
+			const ANSWERS = {
+				15: 'Prima del modello, Jev (TypeSafe, via OpenRouter) classifica ogni messaggio in circa 300 ms: intento (about, code, chat, offtopic, abuse), peso e lingua, con le probabilità. `admits()` ferma offtopic e abuse sopra soglia, la lingua decide quella della risposta, la chiacchiera accende la modalità breve. Se Jev non risponde entro 3 s il messaggio passa: il limite vero è il budget. File: `src/agent/triage.ts`, `admit` in `site-agent.ts`.',
+				26: 'Il budget conta costi reali: ogni risposta costa i token per il prezzo del modello, come li calcola pi-ai. Tre tetti al giorno: 10 centesimi per visitatore (1.000 crediti), uno per rete con l\'IP offuscato e uno per il sito, nel Durable Object `Ledger`. Si azzera a mezzanotte UTC. File: `src/agent/budget.ts`, `ledger.ts`.'
+			};
+			const SCRIPT = [
+				[0, { type: 'user', text: 'Come funzionano il triage e il budget di questo sito? Fallo fare a due sub-agent, uno per parte.', verdict: 'code · medium · it' }],
+				[900, { type: 'assistant', text: 'Avvio due sub-agent, uno sul triage e uno sul budget. Intanto puoi continuare a scrivermi, oppure guardarli lavorare.', delegate: [15, 26], usage: '3,1k token · 3 crediti' }],
+				[1500, { child: 15, call: ['read_file', 'essedev/esse.dev src/agent/triage.ts'] }],
+				[1900, { child: 26, call: ['read_file', 'essedev/esse.dev src/agent/budget.ts'] }],
+				[3000, { type: 'user', text: 'intanto raccontami una battuta breve', verdict: 'chat · light · it' }],
+				[3200, { child: 26, call: ['search_code', 'essedev/esse.dev VISITOR_DAILY_USD'] }],
+				[4100, { type: 'assistant', text: 'Un agente AI entra in un bar e chiude subito il conto: ha finito i crediti a mezzogiorno. Intanto i due sub-agent sono ancora sui file.', usage: '2,2k token · 1 credito' }],
+				[5200, { child: 15, call: ['read_file', 'essedev/esse.dev src/agent/site-agent.ts:800'] }],
+				[7000, { child: 15, done: true }],
+				[7100, { type: 'report', child: 15 }],
+				[8300, { type: 'assistant', afterReport: true, text: 'Il primo sub-agent ha finito. Ogni tuo messaggio passa prima da **Jev**, un modello piccolo che in circa 300 ms ne decide intento, peso e lingua: fuori tema e abusi si fermano lì, e se Jev tace il messaggio passa comunque. Quello sul budget sta ancora lavorando.', usage: '4,0k token · 4 crediti' }],
+				[9000, { child: 26, call: ['read_file', 'essedev/esse.dev src/agent/ledger.ts'] }],
+				[11300, { child: 26, done: true }],
+				[11400, { type: 'report', child: 26 }],
+				[12600, { type: 'assistant', afterReport: true, text: 'Anche il secondo ha finito, quindi il quadro è completo: il triage decide **se** un messaggio arriva al modello, il budget **quanto** può costare. Il costo è quello reale di ogni risposta, con tre tetti al giorno (tuo, della tua rete, del sito) che si azzerano a mezzanotte UTC.', usage: '4,6k token · 5 crediti' }]
+			];
+
+			let state;
+			let timers = [];
+			const reset = () => {
+				timers.forEach(clearTimeout);
+				timers = [];
+				state = {
+					log: [],
+					children: {},
+					view: 'main',
+					sheet: null,
+					open: {},
+					unread: 0,
+					t0: Date.now()
+				};
+				render();
+				for (const [at, step] of SCRIPT) timers.push(setTimeout(() => apply(step), at));
+			};
+
+			function apply(step) {
+				if (step.child && !step.type) {
+					const c = state.children[step.child];
+					if (!c || c.status !== 'working') return;
+					if (step.call) c.events.push({ call: step.call });
+					if (step.done) {
+						c.events.push({ text: ANSWERS[step.child] });
+						c.status = 'done';
+					}
+				} else if (step.type === 'report') {
+					if (state.children[step.child].status !== 'done') return;
+					state.log.push(step);
+					if (state.view !== 'main') state.unread++;
+				} else if (step.afterReport) {
+					// An answer to a report: only if that report reached the chat.
+					const last = state.log.at(-1);
+					if (last?.type !== 'report') return;
+					state.log.push(step);
+					if (state.view !== 'main') state.unread++;
+				} else {
+					state.log.push(step);
+					if (step.delegate) for (const id of step.delegate) state.children[id] = { id, ...CHILDREN[id], status: 'working', events: [] };
+					if (state.view !== 'main' && step.type === 'assistant') state.unread++;
+				}
+				render();
+			}
+
+			function stop(id) {
+				const c = state.children[id];
+				if (c?.status !== 'working') return;
+				c.status = 'stopped';
+				render();
+			}
+
+			const STATUS = { working: 'al lavoro', done: 'finito', stopped: 'fermato', failed: 'senza risultati' };
+			const childList = () => Object.values(state.children);
+			const live = () => childList().filter((c) => c.status === 'working');
+
+			// Pieces.
+			const userHtml = (m) => `<div><p class="user" style="margin:0"><span class="caret glowtext" aria-hidden="true">›</span><span>${esc(m.text)}</span></p><p class="verdict meta" style="margin:6px 0 0">${m.verdict}</p></div>`;
+
+			function traceHtml(c, full) {
+				const items = c.events.map((e) => (e.call ? `<div class="t-call"><span class="led" data-status="done"></span><span><span style="color:var(--fg)">${e.call[0]}</span> ${esc(e.call[1])}</span></div>` : `<div class="t-text prose">${md(e.text)}</div>`));
+				if (c.status === 'working') items.push(`<div class="now typing">sta leggendo</div>`);
+				if (c.status === 'stopped') items.push(`<div class="now">Fermato da te: non manderà risultati.</div>`);
+				return items.join('');
+			}
+
+			function delegateHtml(ids) {
+				const v = body.dataset.v;
+				const rows = ids.map((id) => {
+					const c = state.children[id];
+					const right = c.status === 'working' ? `<span>${STATUS[c.status]}</span>` : `<span>${STATUS[c.status]}${c.status === 'done' ? ` · ${c.tokens} token · ${c.credits} crediti` : ''}</span>`;
+					if (v === 'c') {
+						const open = !!state.open[id];
+						const stopBtn = c.status === 'working' ? `<button class="chip" data-stop="${id}">Ferma</button>` : '';
+						return `<li><button class="row row-btn" data-toggle="${id}" aria-expanded="${open}"><span class="led" data-status="${c.status}"></span><span class="title">${esc(c.title)}</span><span class="right">${right}</span></button>${open ? `<div class="trace">${traceHtml(c)}${stopBtn ? `<div>${stopBtn}</div>` : ''}</div>` : ''}</li>`;
+					}
+					const target = v === 'a' ? `data-tab="${id}"` : `data-sheet-open="${id}"`;
+					return `<li><button class="row row-btn" ${target}><span class="led" data-status="${c.status}"></span><span class="title">${esc(c.title)}</span><span class="right">${right}</span></button></li>`;
+				});
+				const head = `delegate · ${ids.length} sub-agent${v === 'c' ? '' : ' · apri per guardarli'}`;
+				return `<section class="delegate" data-delegate><h3>${head}</h3><ol>${rows.join('')}</ol></section>`;
+			}
+
+			function reportHtml(id) {
+				const c = state.children[id];
+				const v = body.dataset.v;
+				if (v === 'x') {
+					// Today: the report is a user message with the header the model reads.
+					return userHtml({ text: `[sub-agent #${id} "${c.title}" finished]\n${ANSWERS[id]}`, verdict: '' }).replace('<p class="verdict meta" style="margin:6px 0 0"></p>', '');
+				}
+				const open = v === 'a' ? `<button class="open" data-tab="${id}">apri la scheda</button>` : v === 'b' ? `<button class="open" data-sheet-open="${id}">guarda il lavoro</button>` : `<button class="open" data-jump="${id}">vai al lavoro</button>`;
+				return `<details class="report"><summary><span class="led" data-status="done"></span><span class="who">sub-agent #${id} · ${esc(c.title)}</span><span>finito · ${c.tokens} token · ${c.credits} crediti</span>${open}</summary><div class="body prose" style="font-size:0.9375rem">${md(ANSWERS[id])}</div></details>`;
+			}
+
+			function mainLog() {
+				return state.log.map((m) => {
+					if (m.type === 'user') return userHtml(m);
+					if (m.type === 'report') return reportHtml(m.child);
+					const parts = [`<div class="prose">${md(m.text)}</div>`];
+					// Today the result of delegate is no longer the JSON DelegateView reads: the page falls back to the plain tool line.
+					if (m.delegate) parts.push(body.dataset.v === 'x' ? `<div class="tool"><span class="led" data-status="done"></span><span class="name">delegate</span><span class="arg">{"tasks":[${m.delegate.map((id) => `{"title":"${CHILDREN[id].title}","task":"${CHILDREN[id].task}"}`).join(',')}]}</span></div>` : delegateHtml(m.delegate));
+					parts.push(`<p class="meta" style="margin:0">${m.usage}</p>`);
+					return `<div class="answer">${parts.join('')}</div>`;
+				}).join('');
+			}
+
+			function childLog(c) {
+				const end = c.status === 'done' ? `<p class="end">Finito · ${c.tokens} token · ${c.credits} crediti. I risultati sono andati all'agente.</p>` : '';
+				return `<div class="child-log"><p class="task" style="margin:0"><span class="label">compito</span>${esc(c.task)}</p><div class="trace" style="margin:0">${traceHtml(c)}</div>${end}</div>`;
+			}
+
+			const composer = (running) => `<form onsubmit="return false"><span class="caret glowtext" aria-hidden="true">›</span><textarea rows="1" placeholder="Chiedi dei progetti, del codice, di come lavora Simone"></textarea><button type="button" class="chip">Invia</button></form><div class="foot"><span style="display:flex;align-items:center;gap:8px"><span class="led" data-status="working"></span>z-ai/glm-5.3-flash</span>${running}<span class="right">privacy</span></div>`;
+
+			function render() {
+				const v = body.dataset.v;
+				const viewing = v === 'a' && state.view !== 'main' ? state.children[state.view] : null;
+
+				// A: tabs.
+				if (v === 'a') {
+					const tabs = [`<button class="tab" role="tab" data-tab="main" aria-selected="${state.view === 'main'}"><span class="t">Agente</span>${state.unread ? `<span class="badge">${state.unread}</span>` : ''}</button>`];
+					for (const c of childList()) tabs.push(`<button class="tab" role="tab" data-tab="${c.id}" aria-selected="${state.view === c.id}"><span class="led" data-status="${c.status}"></span><span class="t">${esc(c.title)}</span></button>`);
+					$('[data-tabs]').innerHTML = tabs.join('');
+					$('[data-tabs]').hidden = childList().length === 0;
+				}
+
+				$('[data-log]').innerHTML = viewing ? childLog(viewing) : mainLog();
+
+				// The composer.
+				const n = live().length;
+				let running = '';
+				if (v === 'c' && n) running = `<button class="jump" data-jump="card">${n} al lavoro ↑</button>`;
+				if (viewing) {
+					const stopBtn = viewing.status === 'working' ? `<button class="chip" data-stop="${viewing.id}">Ferma</button>` : '';
+					$('[data-compose]').innerHTML = `<div class="readonly"><span class="note">Stai guardando un sub-agent: lavora per l'agente, qui non si scrive.</span>${stopBtn}<button class="chip" data-tab="main">Torna all'agente</button></div>`;
+				} else {
+					$('[data-compose]').innerHTML = composer(running);
+				}
+
+				// B: rail and sheet.
+				if (v === 'b') {
+					const kids = childList();
+					$('[data-rail]').hidden = kids.length === 0;
+					$('[data-rail]').innerHTML = kids.map((c) => `<button class="chip" data-sheet-open="${c.id}" aria-pressed="${state.sheet === c.id}"><span class="led" data-status="${c.status}"></span><span class="t">${esc(c.title)}</span><span style="color:var(--subtle)">${STATUS[c.status]}</span></button>`).join('');
+					const sheet = $('[data-sheet]');
+					const c = state.children[state.sheet];
+					if (c) {
+						sheet.dataset.open = '';
+						sheet.innerHTML = `<header><span class="led" data-status="${c.status}"></span><span class="who">sub-agent #${c.id} · ${esc(c.title)}</span><span>${STATUS[c.status]}</span><span class="acts">${c.status === 'working' ? `<button class="chip" data-stop="${c.id}">Ferma</button>` : ''}<button class="chip" data-sheet-close>Chiudi <span style="color:var(--subtle)">esc</span></button></span></header><div class="inner">${childLog(c)}</div>`;
+					} else {
+						delete sheet.dataset.open;
+					}
+					const dock = $('[data-dock]').getBoundingClientRect();
+					const win = $('.window').getBoundingClientRect();
+					root.style.setProperty('--dock-h', `${Math.round(win.bottom - dock.top + 8)}px`);
+				}
+				stickBottom();
+			}
+
+			let pinned = true;
+			const scroller = $('[data-scroll]');
+			scroller.addEventListener('scroll', () => { pinned = scroller.scrollHeight - scroller.scrollTop - scroller.clientHeight < 40; });
+			const stickBottom = () => { if (pinned) scroller.scrollTop = scroller.scrollHeight; };
+
+			document.addEventListener('click', (e) => {
+				const t = e.target.closest('button, summary');
+				if (!t) return;
+				if (t.dataset.tab) {
+					state.view = t.dataset.tab === 'main' ? 'main' : Number(t.dataset.tab);
+					if (state.view === 'main') state.unread = 0;
+					pinned = true;
+					render();
+				} else if (t.dataset.sheetOpen) {
+					const id = Number(t.dataset.sheetOpen);
+					state.sheet = state.sheet === id ? null : id;
+					render();
+				} else if (t.hasAttribute('data-sheet-close')) {
+					state.sheet = null;
+					render();
+				} else if (t.dataset.stop) {
+					stop(Number(t.dataset.stop));
+				} else if (t.dataset.toggle) {
+					const id = Number(t.dataset.toggle);
+					state.open[id] = !state.open[id];
+					render();
+				} else if (t.dataset.jump) {
+					const id = Number(t.dataset.jump);
+					if (id) state.open[id] = true;
+					render();
+					$('[data-delegate]')?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+				}
+			});
+
+			// Concept chrome.
+			const pick = (v) => {
+				if (!DESC[v]) return;
+				body.dataset.v = v;
+				document.querySelectorAll('.switch [data-v]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.v === v)));
+				$('[data-desc]').textContent = DESC[v];
+				document.querySelectorAll('[data-only]').forEach((el) => (el.hidden = !el.dataset.only.split(/\s+/).includes(v)));
+				history.replaceState(null, '', `${location.search}#${v}`);
+				if (state) {
+					state.view = 'main';
+					state.sheet = null;
+					state.unread = 0;
+					render();
+				}
+			};
+			$('[data-buttons]').innerHTML = Object.keys(DESC).map((v) => `<button data-v="${v}">${v.toUpperCase()} ${DESC[v].split(':')[0]}</button>`).join(' ');
+			$('.switch').addEventListener('click', (e) => {
+				const b = e.target.closest('[data-v]');
+				if (b) pick(b.dataset.v);
+			});
+			const setTheme = (t) => { root.dataset.theme = t; save({ theme: t }); };
+			const setPhone = (p) => { body.dataset.phone = p; save({ phone: p }); render(); };
+			$('[data-theme-toggle]').addEventListener('click', () => setTheme(root.dataset.theme === 'dark' ? 'light' : 'dark'));
+			$('[data-phone-toggle]').addEventListener('click', () => setPhone(body.dataset.phone === 'on' ? 'off' : 'on'));
+			$('[data-restart]').addEventListener('click', reset);
+			addEventListener('keydown', (e) => {
+				if (e.key === 'Escape' && state.sheet) { state.sheet = null; render(); return; }
+				if (e.metaKey || e.ctrlKey || e.altKey || e.target.closest('input, textarea, select, [contenteditable]')) return;
+				const k = e.key.toLowerCase();
+				if (k === 't') setTheme(root.dataset.theme === 'dark' ? 'light' : 'dark');
+				else if (k === 'p') body.dataset.chrome = body.dataset.chrome === 'off' ? 'on' : 'off';
+				else if (k === 'm') setPhone(body.dataset.phone === 'on' ? 'off' : 'on');
+				else if (k === 'r') reset();
+				else pick(k);
+			});
+
+			const saved = load();
+			root.dataset.theme = saved.theme || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+			body.dataset.phone = saved.phone || 'off';
+			pick(DESC[location.hash.slice(1)] ? location.hash.slice(1) : 'a');
+			reset();
+		</script>
+	</body>
+</html>
