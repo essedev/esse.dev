@@ -6,15 +6,18 @@
 		countBy,
 		DEFAULT_FILTERS,
 		filtersFromSearch,
+		groupByStatus,
 		searchFromFilters,
 		STATUS_ORDER,
 		tagsByFrequency,
 		type Filters,
+		type Group,
 		type ListItem,
 		type SortKey,
 		type Status
 	} from '../lib/listing';
 	import EntryRow from './EntryRow.svelte';
+	import ProjectRow from './ProjectRow.svelte';
 	import Select from './ui/Select.svelte';
 
 	interface Labels {
@@ -36,12 +39,18 @@
 		items,
 		labels,
 		statusLabels = {},
-		locale
+		locale,
+		groups,
+		featuredLabel = ''
 	}: {
 		items: ListItem[];
 		labels: Labels;
 		statusLabels?: Partial<Record<Status, string>>;
 		locale: string;
+		/** Sections by status (the projects): they replace the status filter and its legend. */
+		groups?: Group[];
+		/** The badge of a featured item in a grouped list. */
+		featuredLabel?: string;
 	} = $props();
 
 	// The static render starts from the default filters (full list); those from the URL are
@@ -70,6 +79,7 @@
 	});
 
 	const visible = $derived(applyFilters(items, filters, locale));
+	const sections = $derived(groups ? groupByStatus(visible, groups, filters.sort) : []);
 
 	const tagCounts = $derived(countBy(items, 'tags'));
 	const tagOptions = $derived(
@@ -114,7 +124,7 @@
 			<div
 				class="flex gap-2 *:min-w-0 *:flex-1 *:last:flex-none sm:flex-wrap sm:gap-3 sm:*:flex-none"
 			>
-				{#if statusOptions.length > 1}
+				{#if !groups && statusOptions.length > 1}
 					<Select
 						label={labels.status}
 						options={statusOptions}
@@ -147,7 +157,7 @@
 				/>
 			</div>
 			<!-- Legend of the LEDs, only for the statuses the list contains. -->
-			{#if statusOptions.length}
+			{#if !groups && statusOptions.length}
 				<ul
 					class="flex flex-wrap items-center gap-x-4 gap-y-1 font-mono text-xs whitespace-nowrap text-subtle sm:ml-auto"
 				>
@@ -190,6 +200,29 @@
 
 	{#if visible.length === 0}
 		<p class="py-12 text-center text-sm text-muted">{labels.noResults}</p>
+	{:else if groups}
+		<div class="flex flex-col gap-[clamp(2.5rem,4vw,3.5rem)]">
+			{#each sections as section (section.key)}
+				<section aria-labelledby={`group-${section.key}`} class="flex flex-col gap-3">
+					<h2 id={`group-${section.key}`} class="label flex items-center gap-2.5">
+						{#each section.statuses as s (s)}
+							<span class="led" data-status={s}></span>
+						{/each}
+						{section.title}
+						<span class="opacity-70">{section.items.length}</span>
+					</h2>
+					<ul
+						class={section.kind === 'wide'
+							? '-mx-3 flex flex-col gap-1'
+							: '-mx-3 grid gap-x-[clamp(1.5rem,3vw,3rem)] lg:grid-cols-2'}
+					>
+						{#each section.items as item (item.id)}
+							<li><ProjectRow {item} kind={section.kind} {featuredLabel} /></li>
+						{/each}
+					</ul>
+				</section>
+			{/each}
+		</div>
 	{:else}
 		<ul class="-mx-3 flex flex-col sm:-mx-4">
 			{#each visible as item (item.id)}

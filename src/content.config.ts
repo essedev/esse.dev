@@ -321,6 +321,8 @@ const site = defineCollection({
 					statusMaintained: text,
 					statusIdea: text,
 					statusArchived: text,
+					groupDone: text,
+					groupShelf: text,
 					sortNewest: text,
 					sortOldest: text,
 					sortTitle: text,

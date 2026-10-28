@@ -7,6 +7,18 @@
 /** The status of a list item. */
 export type Status = 'in-progress' | 'maintained' | 'completed' | 'idea' | 'archived';
 
+/** An image already resolved at build time: the island only places it. */
+export interface Picture {
+	src: string;
+	srcset?: string;
+}
+
+/** An image with its light-theme variant, when it has one. */
+export interface ThemedPicture {
+	dark: Picture;
+	light?: Picture;
+}
+
 /** One row or card of a list. */
 export interface ListItem {
 	id: string;
@@ -20,6 +32,28 @@ export interface ListItem {
 	dateLabel: string;
 	status?: Status;
 	statusLabel?: string;
+	/** The position in the showcase (`featured.json`): first in its group, with a badge. */
+	featured?: number;
+	/** The project's logo, 20 px with the LED in its corner. */
+	logo?: ThemedPicture;
+	/** The project's cover, with the part to keep when it is cropped. */
+	cover?: ThemedPicture & { focus: 'top' | 'center' | 'bottom' };
+}
+
+/** How the rows of a group are drawn: large with the cover, or compact on one line. */
+export type GroupKind = 'wide' | 'compact';
+
+/** A section of a grouped list: the statuses it collects and how it draws them. */
+export interface Group {
+	key: string;
+	title: string;
+	statuses: Status[];
+	kind: GroupKind;
+}
+
+/** A group with the items that passed the filters. */
+export interface FilledGroup extends Group {
+	items: ListItem[];
 }
 
 /** How a list is sorted. */
@@ -63,6 +97,26 @@ export function applyFilters(items: ListItem[], f: Filters, locale: string): Lis
 	if (f.sort === 'oldest') return filtered.sort((a, b) => byDate(b, a));
 	if (f.sort === 'title') return filtered.sort((a, b) => a.title.localeCompare(b.title, locale));
 	return filtered.sort(byDate);
+}
+
+/**
+ * The filtered items split into groups by status, empty groups dropped. With the default
+ * order the featured items come first in their group, in the showcase order; an explicit order is followed as is.
+ */
+export function groupByStatus(items: ListItem[], groups: Group[], sort: SortKey): FilledGroup[] {
+	return groups
+		.map((group) => {
+			const inGroup = items.filter((item) => !!item.status && group.statuses.includes(item.status));
+			const showcase = inGroup
+				.filter((i) => i.featured !== undefined)
+				.sort((a, b) => a.featured! - b.featured!);
+			const ordered =
+				sort === DEFAULT_FILTERS.sort
+					? [...showcase, ...inGroup.filter((i) => i.featured === undefined)]
+					: inGroup;
+			return { ...group, items: ordered };
+		})
+		.filter((group) => group.items.length > 0);
 }
 
 /** The tags in the list, ordered by frequency and then alphabetically. */

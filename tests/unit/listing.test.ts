@@ -3,8 +3,10 @@ import {
 	applyFilters,
 	DEFAULT_FILTERS,
 	filtersFromSearch,
+	groupByStatus,
 	searchFromFilters,
 	tagsByFrequency,
+	type Group,
 	type ListItem
 } from '../../src/lib/listing';
 
@@ -102,5 +104,43 @@ describe('filters in the query string', () => {
 	it('drops unknown, empty or repeated values', () => {
 		expect(filtersFromSearch('?status=nope&sort=random&tag=')).toEqual(DEFAULT_FILTERS);
 		expect(filtersFromSearch('?tag=AI&tag=AI').tags).toEqual(['AI']);
+	});
+});
+
+describe('groupByStatus', () => {
+	const groups: Group[] = [
+		{ key: 'active', title: 'In progress', statuses: ['in-progress'], kind: 'wide' },
+		{ key: 'done', title: 'Done', statuses: ['maintained', 'completed'], kind: 'compact' },
+		{ key: 'shelf', title: 'Shelf', statuses: ['idea', 'archived'], kind: 'compact' }
+	];
+	const items: ListItem[] = [
+		item('new', '2026-05-01', [], 'in-progress'),
+		{ ...item('star', '2025-01-01', [], 'in-progress'), featured: 1 },
+		{ ...item('lead', '2024-06-01', [], 'in-progress'), featured: 0 },
+		item('kept', '2024-01-01', [], 'maintained'),
+		item('over', '2023-01-01', [], 'completed')
+	];
+
+	it('splits by status and drops the empty groups', () => {
+		const out = groupByStatus(items, groups, 'newest');
+		expect(out.map((g) => g.key)).toEqual(['active', 'done']);
+		expect(out[1].items.map((i) => i.id)).toEqual(['kept', 'over']);
+	});
+
+	it('puts the featured first only with the default order', () => {
+		expect(groupByStatus(items, groups, 'newest')[0].items.map((i) => i.id)).toEqual([
+			'lead',
+			'star',
+			'new'
+		]);
+		expect(groupByStatus(items, groups, 'oldest')[0].items.map((i) => i.id)).toEqual([
+			'new',
+			'star',
+			'lead'
+		]);
+	});
+
+	it('leaves out items without a status', () => {
+		expect(groupByStatus([item('post', '2026-01-01', [])], groups, 'newest')).toEqual([]);
 	});
 });

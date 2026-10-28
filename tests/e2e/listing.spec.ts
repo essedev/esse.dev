@@ -47,15 +47,15 @@ test.describe('listing filters', () => {
 		await expect(page.getByRole('button', { name: 'Remove filter: Rust' })).toBeVisible();
 	});
 
-	test('status multi-select and sort single-select', async ({ page }) => {
+	test('projects grouped by status, the showcase first, sort single-select', async ({ page }) => {
 		await open(page, '/en/projects');
-		await page.getByRole('button', { name: 'Status', exact: true }).click();
-		await page.getByRole('option', { name: /Completed/ }).click();
-		await page.getByRole('option', { name: /Archived/ }).click();
-		await expect(page.getByRole('listbox')).toBeVisible();
-		await page.locator('h1').click();
-		await expect(page.getByRole('listbox')).toBeHidden();
-		await expect(page).toHaveURL(/status=completed&status=archived/);
+		// The groups replace the status filter.
+		await expect(page.getByRole('button', { name: 'Status', exact: true })).toHaveCount(0);
+		const groups = page.locator('main section h2');
+		await expect(groups.first()).toContainText('In progress');
+		await expect(page.locator('main section').first().locator('a').first()).toContainText(
+			'featured'
+		);
 
 		await page.getByRole('button', { name: /^Sort/ }).click();
 		await page.getByRole('option', { name: 'Title a-z' }).click();

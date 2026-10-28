@@ -67,6 +67,8 @@
 		"statusMaintained": "Mantenuto",
 		"statusIdea": "Idea",
 		"statusArchived": "Archiviato",
+		"groupDone": "Mantenuti e completati",
+		"groupShelf": "Idee e archiviati",
 		"sortNewest": "Più recenti",
 		"sortOldest": "Più vecchi",
 		"sortTitle": "Titolo a-z",
