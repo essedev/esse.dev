@@ -38,9 +38,8 @@ Principles, voice and sorting in `docs/features/progetti.md`.
   Floppy in the showcase in place of Portsage and mcpbelt.
 - Done (Cycle 32): the projects page grouped by status (#40); a `now` line per project in
   progress for the Now page (#42).
-- To do: Now reads every project's real activity. Zeno has no repo under `essedev` and
-  Copilota's private repo has no `activityRepo`: both show the `updated` of `meta.json`,
-  which for Copilota is later than its last commit.
+- To do: Now reads every project's real activity. Copilota's private repo has no
+  `activityRepo`: it shows the `updated` of `meta.json`, later than its last commit.
 - To do: tags cleaned up.
 - To do: a skill that proposes the new or updated items from the repos; it proposes, it
   does not publish.

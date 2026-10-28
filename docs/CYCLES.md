@@ -430,7 +430,7 @@ commit of its own (`7d612fe` .. `d757d3a`); one changelog entry for the release
 - **Tests:** unit on grouping (`listing.test.ts`) and on weeks, pause and bars
   (`activity.test.ts`); the listing E2E follows the groups.
 - **Next step:** the photo and its position; `GITHUB_ACTIVITY_TOKEN` in the Workers Builds
-  variables, without it production reads only the public repos; Zeno's repo (none under
-  `essedev`, so its date is `meta.json`'s); Copilota's private repo is not read, so it shows
+  variables, without it production reads only the public repos; Zeno's repo, local only,
+  now private on GitHub with its `activityRepo`; Copilota's private repo is not read, so it shows
   a `meta.json` date; rereading the method's lines and the projects' `now` lines with
   Simone.
