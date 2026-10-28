@@ -111,7 +111,9 @@
 <div class="flex flex-col gap-6">
 	<div class="flex flex-col gap-3">
 		<div class="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
-			<div class="grid grid-cols-2 gap-3 sm:flex sm:flex-wrap">
+			<div
+				class="flex gap-2 *:min-w-0 *:flex-1 *:last:flex-none sm:flex-wrap sm:gap-3 sm:*:flex-none"
+			>
 				{#if statusOptions.length > 1}
 					<Select
 						label={labels.status}
