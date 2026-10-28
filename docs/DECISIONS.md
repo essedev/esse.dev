@@ -593,7 +593,9 @@ static and refreshes with every deploy. Dates and counts only, never messages: a
 repo is named in `activityRepo` (never shown as a link) and read with
 `GITHUB_ACTIVITY_TOKEN`, a build variable separate from the agent's `GITHUB_TOKEN`, which
 stays public-only and a Worker secret. A repo that cannot be read falls back to `updated`
-in `meta.json` with a warning in the build log; the build does not fail. Rejected: a
+in `meta.json` with a warning in the build log; the build does not fail. A stalled or
+overloaded request is asked again twice, with a growing wait, four repos at a time: the
+first deploy lost three rows to requests that hung for the whole timeout. Rejected: a
 monthly snapshot by hand above the activity (A, the hand part still ages), the activity
 with no hand line (B), everything automatic (C, no voice), and reading GitHub on the Worker
 at each visit (one more dynamic page, GitHub on every cold visit). The cost: GitHub is a

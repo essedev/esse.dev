@@ -7,8 +7,14 @@
  */
 
 const API = 'https://api.github.com';
-const TIMEOUT_MS = 10_000;
+const TIMEOUT_MS = 15_000;
 const MAX_PAGES = 5;
+// A request that stalls or is turned away for load gets two more tries: on 2026-10-28 three
+// of eleven requests from the build hung for the whole timeout while the same ones answer in
+// under a second (DECISIONS #42). Few at a time, so the build does not look like a burst.
+const ATTEMPTS = 3;
+const BACKOFF_MS = 1000;
+const CONCURRENCY = 4;
 const DAY_MS = 86_400_000;
 
 /** How many weeks of commits a row shows. */
@@ -72,24 +78,49 @@ export function repoOf(url: string): string | null {
 }
 
 type Fetcher = (input: string, init?: RequestInit) => Promise<Response>;
+type Wait = (ms: number) => Promise<void>;
 
-async function get(
+/** A GitHub answer worth asking again: overload, rate limit or a server error. */
+class RetryableError extends Error {}
+
+const sleep: Wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+async function getOnce(
 	path: string,
 	token: string | undefined,
 	fetcher: Fetcher
 ): Promise<{ data: { commit: { author: { date: string } } }[]; next: string | null }> {
-	const res = await fetcher(path.startsWith('http') ? path : `${API}${path}`, {
-		headers: {
-			accept: 'application/vnd.github+json',
-			'user-agent': 'esse.dev-build',
-			'x-github-api-version': '2022-11-28',
-			...(token ? { authorization: `Bearer ${token}` } : {})
-		},
-		signal: AbortSignal.timeout(TIMEOUT_MS)
-	});
+	let res: Response;
+	try {
+		res = await fetcher(path.startsWith('http') ? path : `${API}${path}`, {
+			headers: {
+				accept: 'application/vnd.github+json',
+				'user-agent': 'esse.dev-build',
+				'x-github-api-version': '2022-11-28',
+				...(token ? { authorization: `Bearer ${token}` } : {})
+			},
+			signal: AbortSignal.timeout(TIMEOUT_MS)
+		});
+	} catch (error) {
+		// A timeout or a dropped connection: the request never got an answer.
+		throw new RetryableError((error as Error).message);
+	}
+	if (res.status === 403 || res.status === 429 || res.status >= 500)
+		throw new RetryableError(`GitHub ${res.status} on ${path}`);
 	if (!res.ok) throw new Error(`GitHub ${res.status} on ${path}`);
 	const next = /<([^>]+)>;\s*rel="next"/.exec(res.headers.get('link') ?? '');
 	return { data: await res.json(), next: next ? next[1] : null };
+}
+
+async function get(path: string, token: string | undefined, fetcher: Fetcher, wait: Wait) {
+	for (let attempt = 1; ; attempt++) {
+		try {
+			return await getOnce(path, token, fetcher);
+		} catch (error) {
+			if (!(error instanceof RetryableError) || attempt >= ATTEMPTS) throw error;
+			await wait(BACKOFF_MS * 2 ** (attempt - 1));
+		}
+	}
 }
 
 /** The activity of one repo over the last `WEEKS` weeks, and its last commit even if older. */
@@ -97,13 +128,14 @@ export async function readRepo(
 	repo: string,
 	today: Date,
 	token: string | undefined,
-	fetcher: Fetcher = (input, init) => fetch(input, init)
+	fetcher: Fetcher = (input, init) => fetch(input, init),
+	wait: Wait = sleep
 ): Promise<RepoActivity> {
 	const since = new Date(today.getTime() - WEEKS * 7 * DAY_MS).toISOString();
 	const dates: string[] = [];
 	let path: string | null = `/repos/${repo}/commits?since=${since}&per_page=100`;
 	for (let page = 0; path && page < MAX_PAGES; page++) {
-		const { data, next } = await get(path, token, fetcher);
+		const { data, next } = await get(path, token, fetcher, wait);
 		dates.push(...data.map((c) => c.commit.author.date));
 		path = next;
 	}
@@ -113,7 +145,7 @@ export async function readRepo(
 			.sort()
 			.at(-1) ?? null;
 	if (!last) {
-		const { data } = await get(`/repos/${repo}/commits?per_page=1`, token, fetcher);
+		const { data } = await get(`/repos/${repo}/commits?per_page=1`, token, fetcher, wait);
 		last = data[0]?.commit.author.date.slice(0, 10) ?? null;
 	}
 	return { weeks: weeklyCounts(dates, today), last };
@@ -132,17 +164,20 @@ export function readActivity(
 ): Promise<Map<string, RepoActivity | null>> {
 	cache ??= (async () => {
 		const token = process.env.GITHUB_ACTIVITY_TOKEN || undefined;
-		const entries = await Promise.all(
-			[...new Set(repos)].map(async (repo) => {
+		const queue = [...new Set(repos)];
+		const read = new Map<string, RepoActivity | null>();
+		const worker = async () => {
+			for (let repo = queue.shift(); repo; repo = queue.shift()) {
 				try {
-					return [repo, await readRepo(repo, today, token)] as const;
+					read.set(repo, await readRepo(repo, today, token));
 				} catch (error) {
 					console.warn(`[activity] ${repo}: ${(error as Error).message}, using meta.json`);
-					return [repo, null] as const;
+					read.set(repo, null);
 				}
-			})
-		);
-		return new Map(entries);
+			}
+		};
+		await Promise.all(Array.from({ length: CONCURRENCY }, worker));
+		return read;
 	})();
 	return cache;
 }

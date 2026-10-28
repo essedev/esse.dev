@@ -91,8 +91,38 @@ describe('readRepo', () => {
 		expect(out.weeks.every((n) => n === 0)).toBe(true);
 	});
 
-	it('fails on an unreadable repo, so the caller can fall back', async () => {
-		const fetcher = async () => new Response('', { status: 404 });
-		await expect(readRepo('essedev/private', today, undefined, fetcher)).rejects.toThrow('404');
+	it('fails at once on an unreadable repo, so the caller can fall back', async () => {
+		let calls = 0;
+		const fetcher = async () => {
+			calls++;
+			return new Response('', { status: 404 });
+		};
+		await expect(
+			readRepo('essedev/private', today, undefined, fetcher, async () => {})
+		).rejects.toThrow('404');
+		expect(calls).toBe(1);
+	});
+
+	it('asks again after a stalled request or an overload, with a growing wait', async () => {
+		const waits: number[] = [];
+		let calls = 0;
+		const fetcher = async () => {
+			calls++;
+			if (calls === 1) throw new Error('The operation was aborted due to timeout');
+			if (calls === 2) return new Response('', { status: 429 });
+			return reply([commit('2026-10-27T10:00:00Z')]);
+		};
+		const out = await readRepo('essedev/x', today, undefined, fetcher, async (ms) => {
+			waits.push(ms);
+		});
+		expect(out.last).toBe('2026-10-27');
+		expect(waits).toEqual([1000, 2000]);
+	});
+
+	it('gives up after three tries', async () => {
+		const fetcher = async () => new Response('', { status: 503 });
+		await expect(readRepo('essedev/x', today, undefined, fetcher, async () => {})).rejects.toThrow(
+			'503'
+		);
 	});
 });
