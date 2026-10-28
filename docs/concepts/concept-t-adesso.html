@@ -1,0 +1,778 @@
+<!doctype html>
+<html lang="it">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Concept T - Adesso</title>
+		<!--
+			Concept T: di cosa è fatta la pagina Adesso perché sia una fotografia del momento e non un
+			log che invecchia.
+			Tasti: x a b c d per la variante, t tema, p nasconde la barra, m anteprima mobile.
+
+			Il problema: oggi Adesso è un elenco di voci scritte a mano, ognuna legata a un progetto
+			(`project` è obbligatorio nello schema). L'ultima è del 20 settembre: al 28 ottobre la
+			pagina ha più di 5 settimane e il sottotitolo dice "aggiornato dai progetti", che non è
+			vero. Intanto nei repo pubblici ci sono 548 commit in 4 settimane e 14 rilasci.
+
+			X  oggi: la replica fedele, tre voci con data, testo e link al progetto.
+			A  fotografia: un testo breve del mese scritto a mano (lavoro a, imparo, uso, prossimo) con
+			   la data in vista, sotto l'attività vera dei repo per progetto, in fondo le fotografie
+			   vecchie. Scommette che il pezzo a mano resta, ma piccolo e datato, e che i dati sotto
+			   tengono viva la pagina anche quando la fotografia ha un mese.
+			B  progetti vivi: la pagina è lo stato dei progetti in corso, una riga ciascuno con cosa ci
+			   sto facendo, l'ultima attività e 8 settimane di commit. Chi è fermo da più di 3
+			   settimane scende da solo in "In pausa". Scommette che "adesso" vuol dire "su cosa mi
+			   muovo", e che l'onestà sullo stato la fa la data, non la buona volontà.
+			C  automatico: niente da scrivere a mano. Numeri delle ultime 4 settimane, i commit giorno
+			   per giorno, i rilasci, le ultime voci del changelog, gli ultimi commit. Scommette che se
+			   serve scrivere, prima o poi non si scrive.
+
+			Mappatura sul codice di oggi (fattibilità, non piano):
+			- Schema: `now` in src/content.config.ts vuole `date` e `project` (stringa obbligatoria).
+			  A cambia la forma: una voce per mese con campi (`focus`, `learning`, `using`, `next`) e
+			  link nel testo, `project` tolto o opzionale. B sposta la riga "cosa ci sto facendo" nel
+			  progetto (un campo nuovo nel testo di ogni lingua, es. `now:`) e la collection `now`
+			  sparisce. C non ha contenuto a mano: `now` sparisce.
+			- Attività: i commit vengono dall'API di GitHub come nel tool `recent_commits` dell'agente
+			  (src/agent/github.ts, repo pubblici in `publicRepos`). Due strade:
+			  build-time, una fetch in getStaticPaths, la pagina resta statica, i dati si aggiornano a
+			  ogni push (cioè quasi ogni giorno, il deploy è Workers Builds su push); serve
+			  GITHUB_TOKEN anche nel build, altrimenti 60 richieste l'ora per IP di Cloudflare.
+			  Worker, la pagina passa nella lista di quelle dinamiche (oggi solo index, [...path], 500
+			  e l'agente), sempre fresca con cache di qualche minuto, ma una pagina in più sul Worker
+			  e una dipendenza da GitHub a ogni visita fredda. Raccomandato build-time.
+			- Repo privati (Nexus, Varco, Zeno, Media Hub, Watch OS, Copilota, mcpbelt): l'agente non
+			  li legge. Al build un token con lettura sui privati potrebbe dare solo date e conteggi,
+			  mai messaggi; nel mock i privati mostrano la data di `updated` del meta.json.
+			- Il "set 2026" accanto ad Adesso nella lista viene dalla voce più recente: in A diventa il
+			  mese della fotografia, in B e C la data dell'ultimo commit.
+			- Il grafico di C sono barre in CSS, nessuna libreria.
+
+			Dati: commit, conteggi settimanali e giornalieri e rilasci sono veri, letti con `gh api` il
+			28/10/2026 da essedev/{esse.dev, relay, pgbee, floppy, portsage} (dal 3 settembre).
+			I messaggi di commit sono quelli veri, in inglese come nei repo. Le date dei progetti
+			privati sono `updated` dei meta.json. I titoli in "Sul sito" sono quelli veri del changelog. Inventati: il testo della fotografia di ottobre in A
+			(ricavato da changelog di ottobre, ROADMAP e commit) e le righe "cosa ci sto facendo" in B
+			(dagli excerpt e dai commit). Le fotografie vecchie in A sono le tre voci di oggi.
+			Il repo "monitor" (progetto Server) è privato: escluso.
+
+			Giro 2: indeciso fra A e B; aggiunta D sintesi: B più una sola riga scritta a mano in
+			testa, datata. I privati sono ammessi: al build un token separato da quello dell'agente
+			(che resta "Public repositories (read-only)" ed è un secret del Worker, non del build)
+			legge solo date e conteggi, mai i messaggi. In D i conteggi dei privati sono veri, letti
+			con `gh api` il 28/10: Nexus 203 commit dal 2 settembre, Media Hub (repo home-media) 130,
+			Varco 164. Watch OS non ha commit dal 26 aprile e mcpbelt dal 26 agosto: in B le loro
+			date venivano da `updated` di meta.json ed erano sbagliate, ora scendono in pausa. Copilota ha un
+			repo privato con un altro nome, fermo dal 13 gennaio (meta.json diceva 3 ottobre): in pausa, e
+			il nome del repo non va mostrato. Zeno non ha un repo sotto essedev: resta con la data di
+			meta.json. La riga del mese
+			è inventata.
+		
+			Scelta: D, sintesi. Aperto: dove sta il repo di Zeno; il token del build
+			solo per date e conteggi, separato da quello dell'agente.
+		-->
+		<style>
+			@font-face { font-family: 'Geist'; font-weight: 400; src: url(https://cdn.jsdelivr.net/fontsource/fonts/geist@latest/latin-400-normal.woff2) format('woff2'); }
+			@font-face { font-family: 'Geist'; font-weight: 500; src: url(https://cdn.jsdelivr.net/fontsource/fonts/geist@latest/latin-500-normal.woff2) format('woff2'); }
+			@font-face { font-family: 'Departure Mono'; src: url(https://cdn.jsdelivr.net/gh/rektdeckard/departure-mono@main/public/assets/DepartureMono-Regular.woff2) format('woff2'); }
+
+			/* Scuro: i token di @theme (copiati da concept-l-home). */
+			:root {
+				--desk: #0a0912;
+				--wall-a: rgb(181 156 255 / 0.24);
+				--wall-b: rgb(110 80 255 / 0.22);
+				--light: rgb(181 156 255 / 0.32);
+				--grid: rgb(255 255 255 / 0.03);
+				--frame: rgb(8 8 11 / 0.2);
+				--glass: rgb(14 14 18 / 0.48);
+				--edge: rgb(255 255 255 / 0.12);
+				--shadow: 0 12px 32px rgb(0 0 0 / 0.35);
+				--surface: rgb(255 255 255 / 0.05);
+				--hover: rgb(255 255 255 / 0.08);
+				--line: #23232b;
+				--fg: #efedf5;
+				--text: #cbc9d4;
+				--muted: #9c9aa8;
+				--subtle: #908e9b;
+				--accent: #b59cff;
+				--on-accent: #140c2b;
+				--live: #7dff9b;
+				--glow: 3.5px;
+				--scan: rgb(255 255 255 / 0.018);
+				--vignette: rgb(0 0 0 / 0.14);
+				--sans: 'Geist', ui-sans-serif, system-ui, sans-serif;
+				--mono: 'Departure Mono', ui-monospace, monospace;
+				color-scheme: dark;
+			}
+			/* Chiaro: la lavanda fumé. */
+			:root[data-theme='light'] {
+				--desk: #bcb2dc;
+				--wall-a: rgb(157 133 255 / 0.32);
+				--wall-b: rgb(110 80 255 / 0.18);
+				--light: rgb(255 255 255 / 0.4);
+				--grid: rgb(40 25 90 / 0.04);
+				--frame: rgb(230 226 242 / 0.3);
+				--glass: rgb(236 232 244 / 0.62);
+				--edge: rgb(255 255 255 / 0.55);
+				--shadow: 0 1px 2px rgb(40 25 90 / 0.08), 0 14px 36px rgb(40 25 90 / 0.16);
+				--surface: rgb(40 25 90 / 0.07);
+				--hover: rgb(40 25 90 / 0.1);
+				--line: #cfc9de;
+				--fg: #17141f;
+				--text: #312d3c;
+				--muted: #504b60;
+				--subtle: #57526a;
+				--accent: #5f40d6;
+				--on-accent: #ffffff;
+				--live: #179a4c;
+				--glow: 2px;
+				--scan: rgb(40 25 90 / 0.03);
+				--vignette: rgb(40 24 90 / 0.07);
+				color-scheme: light;
+			}
+
+			* { box-sizing: border-box; }
+			html, body { height: 100%; margin: 0; }
+			body {
+				font-family: var(--sans);
+				font-weight: 380;
+				color: var(--fg);
+				background:
+					repeating-linear-gradient(to right, var(--grid) 0 1px, transparent 1px 48px),
+					repeating-linear-gradient(to bottom, var(--grid) 0 1px, transparent 1px 48px),
+					radial-gradient(22% 26% at 14% 6%, var(--light), transparent 70%),
+					linear-gradient(135deg, var(--wall-a) 0%, var(--wall-b) 50%, transparent 100%),
+					var(--desk);
+				-webkit-font-smoothing: antialiased;
+				display: flex;
+				flex-direction: column;
+			}
+			body::after { content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 10; background: repeating-linear-gradient(to bottom, var(--scan) 0 1px, transparent 1px 3px), radial-gradient(ellipse at center, transparent 50%, var(--vignette)); }
+			a { color: inherit; text-decoration: none; }
+			p, h1, h2, h3, ol, ul, dl, dd { margin: 0; }
+			ol, ul { list-style: none; padding: 0; }
+			img { display: block; }
+			[hidden] { display: none !important; }
+
+			/* Il selettore delle varianti, fuori dalla finestra. Non fa parte del design. */
+			.switch { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; padding: 10px 14px; font-family: var(--mono); font-size: 12px; color: var(--muted); }
+			.switch button { font: inherit; border: 0; padding: 6px 10px; border-radius: 6px; background: var(--surface); color: var(--text); cursor: pointer; }
+			.switch button[aria-pressed='true'] { background: var(--fg); color: var(--desk); }
+			.switch .theme { margin-left: auto; }
+			.switch p { margin: 0 0 0 10px; flex: 1 1 240px; min-width: 0; }
+			body[data-chrome='off'] .switch { display: none; }
+
+			/* Il guscio: la finestra con lista e pannello. */
+			.window { flex: 1; min-height: 0; margin: 0 12px 12px; padding: 8px; display: grid; grid-template-columns: clamp(17rem, 22vw, 22rem) 1fr; gap: 8px; border-radius: 18px; background: var(--frame); box-shadow: inset 0 1px 0 var(--edge), var(--shadow); }
+			body[data-chrome='off'] .window { margin-top: 12px; }
+			.card { border-radius: 10px; overflow: hidden; position: relative; background: var(--glass); -webkit-backdrop-filter: blur(32px) saturate(120%); backdrop-filter: blur(32px) saturate(120%); box-shadow: inset 0 0 0 1px var(--edge), var(--shadow); }
+			.side { padding: 14px; display: flex; flex-direction: column; gap: 2px; overflow: auto; }
+			.pane { display: flex; flex-direction: column; min-height: 0; }
+			.logo { font-family: var(--mono); font-size: 13px; padding: 4px 8px 14px; text-shadow: 0 0 var(--glow) color-mix(in srgb, var(--accent) 55%, transparent); }
+			.caret { display: inline-block; width: 0.5em; height: 1.05em; vertical-align: -0.15em; margin-left: 0.15em; background: var(--accent); box-shadow: 0 0 4px var(--accent); animation: blink 1.1s steps(1) infinite; }
+			@keyframes blink { 50% { opacity: 0; } }
+			.search { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 12px; color: var(--subtle); background: var(--surface); border-radius: 6px; padding: 9px 10px; margin-bottom: 14px; }
+			.kbd { display: inline-flex; align-items: center; justify-content: center; min-width: 1.4rem; height: 1.4rem; padding: 0 0.35rem; border-radius: 4px; background: var(--surface); color: var(--muted); font-family: var(--mono); font-size: 0.7rem; line-height: 1; }
+			.row { display: flex; align-items: center; gap: 12px; padding: 7px 8px; border-radius: 6px; font-size: 14.5px; color: var(--fg); }
+			.row.on { background: var(--surface); }
+			.row .meta { margin-left: auto; font-family: var(--mono); font-size: 11px; color: var(--subtle); }
+			.row .num { font-family: var(--mono); font-size: 11px; color: var(--subtle); width: 14px; }
+			.row svg { width: 14px; height: 14px; color: var(--subtle); flex: none; }
+			.row svg.bot { color: var(--accent); filter: drop-shadow(0 0 3px color-mix(in srgb, var(--accent) 60%, transparent)); }
+			.row .all { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+			.side .group { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--subtle); padding: 18px 8px 6px; display: flex; justify-content: space-between; }
+			.side img { width: 20px; height: 20px; border-radius: 5px; }
+			.bar { height: 48px; flex: none; display: flex; align-items: center; padding: 0 clamp(1.25rem, 3.5vw, 3rem); font-family: var(--mono); font-size: 13px; color: var(--subtle); gap: 8px; }
+			.bar b { font-weight: 400; color: var(--fg); }
+			.bar .end { margin-left: auto; }
+			.scroll { flex: 1; min-height: 0; overflow: auto; overscroll-behavior: none; }
+			.page { padding: clamp(1.5rem, 3vw, 3rem) clamp(1.25rem, 3.5vw, 3rem) 5rem; }
+
+			/* Pezzi comuni del sistema. */
+			.label { font-family: var(--mono); font-size: 0.7rem; font-weight: 400; letter-spacing: 0.1em; text-transform: uppercase; color: var(--subtle); text-shadow: 0 0 var(--glow) color-mix(in srgb, var(--accent) 55%, transparent); }
+			.mono { font-family: var(--mono); }
+			.led { display: inline-block; flex: none; width: 7px; height: 7px; border-radius: 999px; background: var(--live); box-shadow: 0 0 5px color-mix(in srgb, var(--live) 75%, transparent); animation: breathe 2.8s cubic-bezier(0.16, 1, 0.3, 1) infinite; }
+			.led[data-s='maintained'] { animation: none; }
+			.led[data-s='completed'] { background: var(--fg); box-shadow: none; animation: none; }
+			.led[data-s='paused'] { background: transparent; box-shadow: inset 0 0 0 1.5px var(--subtle); animation: none; }
+			@keyframes breathe { 50% { opacity: 0.45; } }
+			.arrow { width: 14px; height: 14px; flex: none; transition: color 0.15s, translate 0.2s; }
+			a:hover .arrow { color: var(--accent); translate: 3px 0; }
+			@media (prefers-reduced-motion: reduce) { a:hover .arrow { translate: none; } }
+			.ul { color: var(--fg); text-decoration: underline; text-decoration-color: var(--subtle); text-underline-offset: 4px; }
+			.ul:hover { text-decoration-color: var(--fg); }
+			.plogo { width: 20px; height: 20px; border-radius: 5px; flex: none; }
+
+			/* Testata della pagina, uguale in tutte le varianti (cambia solo il sottotitolo). */
+			.head { display: flex; flex-direction: column; gap: 16px; }
+			.h1 { font-size: clamp(2rem, 1.2rem + 2.6vw, 3.5rem); line-height: 1.05; font-weight: 500; letter-spacing: -0.025em; }
+			.sub { color: var(--muted); font-size: clamp(1rem, 0.92rem + 0.28vw, 1.1875rem); text-wrap: pretty; }
+			.body { margin-top: clamp(2rem, 4vw, 3.5rem); }
+			.section + .section { margin-top: clamp(2.5rem, 5vw, 4rem); }
+			.sec-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 6px 16px; margin-bottom: 14px; }
+			.sec-head .note { font-family: var(--mono); font-size: 0.75rem; color: var(--subtle); }
+
+			/* X, oggi: il blocco section === 'now'. */
+			.x-list { display: flex; flex-direction: column; gap: 40px; }
+			.x-list li { display: grid; gap: 8px 40px; grid-template-columns: 8rem minmax(0, 1fr); }
+			.x-list time { padding-top: 4px; font-family: var(--mono); font-size: 0.75rem; color: var(--subtle); }
+			.x-list .t { display: flex; flex-direction: column; gap: 8px; }
+			.x-list h2 { font-size: 1.1875rem; font-weight: 500; letter-spacing: -0.01em; }
+			.x-list .txt { font-size: 1.0625rem; line-height: 1.625; color: var(--text); text-wrap: pretty; }
+			.x-list .proj { margin-top: 4px; display: inline-flex; align-items: center; gap: 8px; align-self: start; font-family: var(--mono); font-size: 0.75rem; color: var(--muted); }
+			.x-list .proj:hover { color: var(--fg); }
+
+			/* A, fotografia. */
+			.a-snap { border-radius: 10px; background: color-mix(in srgb, var(--surface) 60%, transparent); padding: clamp(1.25rem, 2.5vw, 2rem); }
+			.a-when { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; }
+			.a-when .stamp { display: inline-flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 0.8125rem; color: var(--fg); }
+			.a-when .stamp svg { width: 14px; height: 14px; color: var(--accent); }
+			.a-when .age { font-family: var(--mono); font-size: 0.75rem; color: var(--subtle); }
+			.a-lead { margin-top: 18px; font-size: clamp(1.125rem, 1rem + 0.4vw, 1.375rem); line-height: 1.55; color: var(--fg); text-wrap: pretty; }
+			.a-grid { margin-top: 24px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px clamp(1.5rem, 3vw, 3rem); }
+			.a-grid dt { margin-bottom: 6px; }
+			.a-grid dd { font-size: 1rem; line-height: 1.6; color: var(--text); text-wrap: pretty; }
+			.a-repos { margin: 0 -12px; }
+			.a-repos li > a { display: grid; grid-template-columns: 20px minmax(0, 1fr) auto; gap: 4px 14px; align-items: center; padding: 12px; border-radius: 10px; }
+			.a-repos li > a:hover { background: color-mix(in srgb, var(--surface) 60%, transparent); }
+			.a-repos .name { font-weight: 500; font-size: 1rem; }
+			.a-repos .msg { grid-column: 2; font-family: var(--mono); font-size: 0.75rem; color: var(--muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+			.a-repos .right { grid-row: 1 / span 2; grid-column: 3; display: flex; flex-direction: column; align-items: end; gap: 4px; font-family: var(--mono); font-size: 0.75rem; color: var(--subtle); }
+			.a-repos .right b { font-weight: 400; color: var(--fg); }
+			.a-private { margin-top: 10px; font-size: 0.875rem; color: var(--subtle); text-wrap: pretty; }
+			.a-archive { margin: 0 -12px; }
+			.a-archive details { border-radius: 10px; }
+			.a-archive summary { list-style: none; cursor: pointer; display: grid; grid-template-columns: 8rem minmax(0, 1fr) auto; gap: 4px 24px; align-items: baseline; padding: 14px 12px; border-radius: 10px; }
+			.a-archive summary::-webkit-details-marker { display: none; }
+			.a-archive summary:hover { background: color-mix(in srgb, var(--surface) 60%, transparent); }
+			.a-archive details[open] summary { background: var(--surface); }
+			.a-archive .month { font-family: var(--mono); font-size: 0.75rem; color: var(--subtle); }
+			.a-archive .gist { color: var(--text); }
+			.a-archive .chev { width: 14px; height: 14px; color: var(--subtle); align-self: center; transition: rotate 0.2s; }
+			.a-archive details[open] .chev { rotate: 90deg; }
+			.a-archive .old { padding: 14px 12px 6px calc(8rem + 36px); display: flex; flex-direction: column; gap: 18px; }
+			.a-archive .old h3 { font-size: 1.0625rem; font-weight: 500; }
+			.a-archive .old p { margin-top: 4px; color: var(--text); line-height: 1.6; text-wrap: pretty; }
+
+			/* B, progetti vivi. */
+			.b-sum { margin-bottom: clamp(2rem, 4vw, 3rem); display: flex; flex-wrap: wrap; gap: 8px 28px; font-family: var(--mono); font-size: 0.8125rem; color: var(--muted); }
+			.b-sum b { font-weight: 400; color: var(--fg); }
+			body[data-v='d'] .b-sum { margin-top: clamp(1.5rem, 3vw, 2rem); }
+			.b-cols { display: grid; grid-template-columns: 20px minmax(0, 1fr) 7.5rem 8.5rem; gap: 16px; padding: 0 12px 8px; margin: 0 -12px; }
+			.b-cols span:nth-child(3), .b-cols span:nth-child(4) { text-align: right; }
+			.b-list { margin: 0 -12px; }
+			.b-list a { display: grid; grid-template-columns: 20px minmax(0, 1fr) 7.5rem 8.5rem; gap: 2px 16px; align-items: center; padding: 14px 12px; border-radius: 10px; }
+			.b-list a:hover { background: color-mix(in srgb, var(--surface) 60%, transparent); }
+			.b-list .who { display: flex; align-items: center; gap: 10px; font-weight: 500; font-size: 1.0625rem; letter-spacing: -0.01em; }
+			.b-list .doing { grid-column: 2; color: var(--text); font-size: 0.9375rem; line-height: 1.5; text-wrap: pretty; }
+			.b-list .spark, .b-list .priv { grid-row: 1 / span 2; grid-column: 3; justify-self: end; }
+			.b-list .when { grid-row: 1 / span 2; grid-column: 4; justify-self: end; font-family: var(--mono); font-size: 0.75rem; color: var(--subtle); text-align: right; white-space: nowrap; }
+			.b-list .when b { display: block; font-weight: 400; color: var(--fg); }
+			.b-list .priv { font-family: var(--mono); font-size: 0.6875rem; color: var(--subtle); display: inline-flex; align-items: center; gap: 6px; }
+			.b-list .priv svg { width: 12px; height: 12px; }
+			.b-list.paused .who, .b-list.paused .doing { color: var(--muted); }
+			.spark { display: flex; align-items: end; gap: 3px; height: 22px; }
+			.spark i { width: 6px; border-radius: 1.5px; background: var(--accent); opacity: 0.85; }
+			.spark i.zero { height: 2px !important; background: var(--subtle); opacity: 0.35; }
+
+			/* C, automatico. */
+			.c-stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+			.c-stats div { border-radius: 10px; background: color-mix(in srgb, var(--surface) 60%, transparent); padding: 16px 18px; display: flex; flex-direction: column; gap: 6px; }
+			.c-stats b { font-weight: 500; font-size: clamp(1.75rem, 1.3rem + 1.4vw, 2.5rem); letter-spacing: -0.03em; line-height: 1; font-variant-numeric: tabular-nums; }
+			.c-days { display: grid; grid-template-columns: repeat(56, minmax(0, 1fr)); gap: 2px; align-items: end; height: 120px; }
+			.c-days i { border-radius: 2px 2px 0 0; background: var(--accent); min-height: 2px; }
+			.c-days i.zero { background: var(--subtle); opacity: 0.3; }
+			.c-days i:hover { opacity: 0.6; }
+			.c-axis { margin-top: 8px; display: flex; justify-content: space-between; font-family: var(--mono); font-size: 0.6875rem; color: var(--subtle); }
+			.c-two { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: clamp(2rem, 4vw, 4rem); }
+			.c-rel li, .c-log li { display: grid; grid-template-columns: 20px minmax(0, 1fr) auto; gap: 2px 12px; align-items: center; padding: 10px 0; }
+			.c-rel li + li, .c-log li + li { box-shadow: inset 0 1px 0 color-mix(in srgb, var(--line) 70%, transparent); }
+			.c-rel .v { font-family: var(--mono); font-size: 0.8125rem; color: var(--fg); }
+			.c-rel .d, .c-log .d { font-family: var(--mono); font-size: 0.75rem; color: var(--subtle); }
+			.c-log li { grid-template-columns: minmax(0, 1fr) auto; }
+			.c-log .t { color: var(--fg); }
+			.c-commits li { display: grid; grid-template-columns: 6rem 7rem minmax(0, 1fr); gap: 4px 16px; padding: 8px 0; font-family: var(--mono); font-size: 0.75rem; align-items: baseline; }
+			.c-commits .d { color: var(--subtle); }
+			.c-commits .r { color: var(--muted); }
+			.c-commits .m { color: var(--text); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+			@media (width < 64rem) {
+				.window { grid-template-columns: 1fr; margin: 0 6px 6px; padding: 6px; border-radius: 16px; }
+				.side { display: none; }
+			}
+			@media (width < 40rem) {
+				.x-list li { grid-template-columns: 1fr; }
+				.a-grid { grid-template-columns: 1fr; }
+				.a-archive summary { grid-template-columns: minmax(0, 1fr) auto; }
+				.a-archive .gist { grid-column: 1; }
+				.a-archive .chev { grid-row: 1 / span 2; grid-column: 2; }
+				.a-archive .old { padding-left: 12px; }
+				.b-cols { display: none; }
+				.b-list a { grid-template-columns: 20px minmax(0, 1fr) auto; }
+				.b-list .doing { grid-column: 2 / -1; }
+				.b-list .spark, .b-list .priv { grid-row: 3; grid-column: 2; justify-self: start; margin-top: 6px; }
+				.b-list .when { grid-row: 1; grid-column: 3; }
+				.b-list .when b { display: inline; }
+				.b-list .when .rel { display: none; }
+				.c-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+				.c-days { gap: 1px; height: 90px; }
+				.c-two { grid-template-columns: 1fr; }
+				.c-commits li { grid-template-columns: auto minmax(0, 1fr); }
+				.c-commits .m { grid-column: 1 / -1; white-space: normal; }
+			}
+		</style>
+	</head>
+	<body data-v="x">
+		<svg width="0" height="0" style="position: absolute">
+			<symbol id="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></symbol>
+			<symbol id="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6" /></symbol>
+			<symbol id="house" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8" /><path d="M3 10a2 2 0 0 1 .709-1.528l7-6a2 2 0 0 1 2.582 0l7 6A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /></symbol>
+			<symbol id="user" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></symbol>
+			<symbol id="activity" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2" /></symbol>
+			<symbol id="bot" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6V2H8" /><path d="m8 18-4 4V8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2Z" /><path d="M2 12h2" /><path d="M9 11v2" /><path d="M15 11v2" /><path d="M20 12h2" /></symbol>
+			<symbol id="camera" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z" /><circle cx="12" cy="13" r="3" /></symbol>
+			<symbol id="lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2" /><path d="M7 11V7a5 5 0 0 1 10 0v4" /></symbol>
+		</svg>
+
+		<div class="switch">
+			<span data-buttons></span>
+			<p data-desc></p>
+			<button class="theme" data-theme-toggle>t tema</button>
+		</div>
+
+		<div class="window">
+			<aside class="card side">
+				<div class="logo">esse.dev<span class="caret"></span></div>
+				<div class="search">Cerca <span class="kbd">/</span></div>
+				<div class="row"><svg><use href="#house" /></svg>Benvenuto</div>
+				<div class="row"><svg><use href="#user" /></svg>Chi sono</div>
+				<div class="row on">
+					<svg style="color: var(--live)"><use href="#activity" /></svg>Adesso
+					<span class="meta" data-only="x">set 2026</span>
+					<span class="meta" data-only="a">ott 2026</span>
+					<span class="meta" data-only="b c d">oggi</span>
+				</div>
+				<div class="row"><svg class="bot"><use href="#bot" /></svg>Agente</div>
+				<div class="group">Progetti <span>24</span></div>
+				<div class="row"><img src="../../src/content/projects/relay/logo.png" alt="" />Relay<span class="meta">2026</span></div>
+				<div class="row"><img data-logo="nexus" alt="" />Nexus<span class="meta">2026</span></div>
+				<div class="row"><img src="../../src/content/projects/varco/logo.png" alt="" />Varco<span class="meta">2026</span></div>
+				<div class="row"><img data-logo="pgbee" alt="" />pgbee<span class="meta">2026</span></div>
+				<div class="row"><img data-logo="zeno" alt="" />Zeno<span class="meta">2026</span></div>
+				<div class="row"><img src="../../src/content/projects/floppy/logo.png" alt="" />Floppy<span class="meta">2026</span></div>
+				<div class="row"><svg><use href="#arrow" /></svg><span class="all">tutti i 24</span></div>
+				<div class="group">Metodo <span>4</span></div>
+				<div class="row"><span class="num">01</span>Architettura prima del codice</div>
+				<div class="row"><span class="num">02</span>Il contesto è il lavoro</div>
+				<div class="row"><span class="num">03</span>Misurare invece di fidarsi</div>
+				<div class="row"><span class="num">04</span>Il mio setup</div>
+			</aside>
+
+			<main class="card pane">
+				<div class="bar">~ / <b>adesso</b><span class="end">en <b>it</b></span></div>
+				<div class="scroll">
+					<div class="page">
+						<header class="head">
+							<h1 class="h1">Adesso</h1>
+							<p class="sub" data-only="x">Su cosa sto lavorando adesso, aggiornato dai progetti.</p>
+							<p class="sub" data-only="a">Su cosa sto lavorando questo mese, scritto da me. Sotto, cosa si muove davvero nei repository.</p>
+							<p class="sub" data-only="b">I progetti in corso, uno per riga: cosa ci sto facendo e quando li ho toccati l'ultima volta.</p>
+							<p class="sub" data-only="d">Su cosa mi muovo adesso: una riga scritta da me, poi i progetti in corso e l'ultima volta che li ho toccati.</p>
+							<p class="sub" data-only="c">Cosa è successo nelle ultime quattro settimane, letto dai repository pubblici.</p>
+						</header>
+
+						<!-- X, oggi. -->
+						<div class="body" data-only="x">
+							<ol class="x-list">
+								<li>
+									<time>20 set 2026</time>
+									<div class="t">
+										<h2>Relay, il terminale per gli agenti</h2>
+										<p class="txt">Relay è il terminale in cui lavoro ogni giorno, con cinque o sei agenti aperti. Lo sto rendendo indipendente dal motore del terminale, così posso cambiarlo senza toccare il resto.</p>
+										<a class="proj" href="#"><span class="led"></span>Relay<svg class="arrow"><use href="#arrow" /></svg></a>
+									</div>
+								</li>
+								<li>
+									<time>12 set 2026</time>
+									<div class="t">
+										<h2>Nexus e il gate umano</h2>
+										<p class="txt">Nexus è un'app dove l'agente modifica lo schema del database, dietro un gate umano. Sto capendo fin dove ci si può spingere senza perdere il controllo.</p>
+										<a class="proj" href="#"><span class="led"></span>Nexus<svg class="arrow"><use href="#arrow" /></svg></a>
+									</div>
+								</li>
+								<li>
+									<time>18 ago 2026</time>
+									<div class="t">
+										<h2>Modelli locali su MacBook</h2>
+										<p class="txt">Misuro quanto regge il coding agentico su un MacBook rispetto al cloud. Il numero che conta è la banda della memoria, non la RAM.</p>
+										<a class="proj" href="#"><span class="led" data-s="completed"></span>Local LLM Experiments<svg class="arrow"><use href="#arrow" /></svg></a>
+									</div>
+								</li>
+							</ol>
+						</div>
+
+						<!-- A, fotografia. -->
+						<div class="body" data-only="a">
+							<section class="section">
+								<div class="a-snap">
+									<div class="a-when">
+										<span class="label">Ottobre 2026</span>
+										<span class="stamp"><svg><use href="#camera" /></svg>aggiornata il 28 ott 2026</span>
+										<span class="age">oggi</span>
+									</div>
+									<p class="a-lead">Ottobre è stato il mese del sito: l'agente ora lancia sotto-agenti, il sito si accende come un computer e ha un changelog. Fuori dal sito ho chiuso il giro di rilasci di <a class="ul" href="#">Floppy</a>.</p>
+									<dl class="a-grid">
+										<div><dt class="label">Ci lavoro</dt><dd><a class="ul" href="#">Floppy</a>, che ora si aggiorna da solo con Homebrew, e <a class="ul" href="#">Watch OS</a>, l'orologio che parla con <a class="ul" href="#">Nexus</a>.</dd></div>
+										<div><dt class="label">Sto imparando</dt><dd>ESP-IDF e il firmware embedded: su un ESP32-S3 ogni kilobyte di memoria si conta.</dd></div>
+										<div><dt class="label">Uso ogni giorno</dt><dd><a class="ul" href="#">Relay</a> con cinque o sei agenti aperti, Claude Code e Codex con un solo contesto condiviso.</dd></div>
+										<div><dt class="label">Il prossimo passo</dt><dd>La scheda dei sotto-agenti sul telefono, che oggi lascia libera metà schermo.</dd></div>
+									</dl>
+								</div>
+							</section>
+
+							<section class="section">
+								<div class="sec-head">
+									<h2 class="label">Nei repository</h2>
+									<span class="note">ultime 4 settimane · letto da GitHub a ogni rilascio del sito</span>
+								</div>
+								<ul class="a-repos">
+									<li><a href="#"><img class="plogo" src="../../public/favicon.svg" alt="" /><span class="name">Questo sito</span><span class="msg">style(ui): stack the home facts and fit the project filters on one row</span><span class="right"><b>oggi</b>269 commit</span></a></li>
+									<li><a href="#"><img class="plogo" src="../../src/content/projects/floppy/logo.png" alt="" /><span class="name">Floppy</span><span class="msg">chore(release): 0.2.6</span><span class="right"><b>21 ott</b>238 commit</span></a></li>
+									<li><a href="#"><img class="plogo" data-logo="pgbee" alt="" /><span class="name">pgbee</span><span class="msg">docs(readme): drop the stale version from the status line</span><span class="right"><b>12 ott</b>11 commit</span></a></li>
+									<li><a href="#"><img class="plogo" src="../../src/content/projects/relay/logo.png" alt="" /><span class="name">Relay</span><span class="msg">chore(release): 0.26.1</span><span class="right"><b>11 ott</b>35 commit</span></a></li>
+									<li><a href="#"><img class="plogo" src="../../src/content/projects/portsage/logo.png" alt="" /><span class="name">Portsage</span><span class="msg">Release v0.15.0</span><span class="right"><b>4 ott</b>4 commit</span></a></li>
+								</ul>
+								<p class="a-private">Nexus, Varco, Zeno, Media Hub e Watch OS hanno il repository privato: qui non compaiono.</p>
+							</section>
+
+							<section class="section">
+								<div class="sec-head"><h2 class="label">Fotografie precedenti</h2></div>
+								<div class="a-archive">
+									<details>
+										<summary><span class="month">settembre 2026</span><span class="gist">Relay senza il motore del terminale, Nexus e il gate umano.</span><svg class="chev"><use href="#chev" /></svg></summary>
+										<div class="old">
+											<div><h3>Relay, il terminale per gli agenti</h3><p>Relay è il terminale in cui lavoro ogni giorno, con cinque o sei agenti aperti. Lo sto rendendo indipendente dal motore del terminale, così posso cambiarlo senza toccare il resto.</p></div>
+											<div><h3>Nexus e il gate umano</h3><p>Nexus è un'app dove l'agente modifica lo schema del database, dietro un gate umano. Sto capendo fin dove ci si può spingere senza perdere il controllo.</p></div>
+										</div>
+									</details>
+									<details>
+										<summary><span class="month">agosto 2026</span><span class="gist">Modelli locali su MacBook.</span><svg class="chev"><use href="#chev" /></svg></summary>
+										<div class="old">
+											<div><h3>Modelli locali su MacBook</h3><p>Misuro quanto regge il coding agentico su un MacBook rispetto al cloud. Il numero che conta è la banda della memoria, non la RAM.</p></div>
+										</div>
+									</details>
+								</div>
+							</section>
+						</div>
+
+						<!-- B, progetti vivi. -->
+						<div class="body" data-only="b">
+							<p class="b-sum"><span><b>9</b> progetti in movimento</span><span><b>2</b> in pausa</span><span>ultimo commit <b>oggi</b></span></p>
+							<section class="section">
+								<div class="sec-head"><h2 class="label">In movimento</h2><span class="note">ordinati per ultima attività</span></div>
+								<div class="b-cols label" aria-hidden="true"><span></span><span></span><span>8 settimane</span><span>ultima</span></div>
+								<ul class="b-list" data-list="live"></ul>
+							</section>
+							<section class="section">
+								<div class="sec-head"><h2 class="label">In pausa</h2><span class="note">fermi da più di 3 settimane, scendono qui da soli</span></div>
+								<ul class="b-list paused" data-list="paused"></ul>
+							</section>
+						</div>
+
+						<!-- D, sintesi. -->
+						<div class="body" data-only="d">
+							<section class="section">
+								<div class="a-snap">
+									<div class="a-when">
+										<span class="label">Questo mese</span>
+										<span class="stamp"><svg><use href="#camera" /></svg>scritto il 28 ott 2026</span>
+									</div>
+									<p class="a-lead">Ottobre è il mese del sito e di <a class="ul" href="#">Varco</a>: l'agente lancia sotto-agenti, il sito si accende come un computer, e Varco è online. Il prossimo passo è <a class="ul" href="#">Nexus</a> dall'orologio.</p>
+								</div>
+							</section>
+							<p class="b-sum"><span><b>7</b> progetti in movimento</span><span><b>4</b> in pausa</span><span>ultimo commit <b>oggi</b></span></p>
+							<section class="section">
+								<div class="sec-head"><h2 class="label">In movimento</h2><span class="note">ordinati per ultima attività · letto da GitHub a ogni rilascio del sito</span></div>
+								<div class="b-cols label" aria-hidden="true"><span></span><span></span><span>8 settimane</span><span>ultima</span></div>
+								<ul class="b-list" data-list="live-d"></ul>
+							</section>
+							<section class="section">
+								<div class="sec-head"><h2 class="label">In pausa</h2><span class="note">fermi da più di 3 settimane, scendono qui da soli</span></div>
+								<ul class="b-list paused" data-list="paused-d"></ul>
+							</section>
+						</div>
+
+						<!-- C, automatico. -->
+						<div class="body" data-only="c">
+							<section class="section">
+								<div class="c-stats">
+									<div><b>548</b><span class="label">commit</span></div>
+									<div><b>5</b><span class="label">repository</span></div>
+									<div><b>14</b><span class="label">rilasci</span></div>
+									<div><b>14</b><span class="label">novità sul sito</span></div>
+								</div>
+							</section>
+							<section class="section">
+								<div class="sec-head"><h2 class="label">Commit al giorno</h2><span class="note">8 settimane · repository pubblici</span></div>
+								<div class="c-days" data-days></div>
+								<div class="c-axis"><span>3 set</span><span>1 ott</span><span>oggi</span></div>
+							</section>
+							<section class="section c-two">
+								<div>
+									<div class="sec-head"><h2 class="label">Rilasci</h2></div>
+									<ul class="c-rel">
+										<li><img class="plogo" src="../../src/content/projects/floppy/logo.png" alt="" /><span>Floppy <span class="v">0.2.6</span></span><span class="d">21 ott</span></li>
+										<li><img class="plogo" src="../../src/content/projects/relay/logo.png" alt="" /><span>Relay <span class="v">0.26.1</span></span><span class="d">11 ott</span></li>
+										<li><img class="plogo" src="../../src/content/projects/portsage/logo.png" alt="" /><span>Portsage <span class="v">0.15.0</span></span><span class="d">4 ott</span></li>
+										<li><img class="plogo" data-logo="pgbee" alt="" /><span>pgbee <span class="v">0.3.1</span></span><span class="d">2 ott</span></li>
+									</ul>
+								</div>
+								<div>
+									<div class="sec-head"><h2 class="label">Sul sito</h2></div>
+									<ul class="c-log">
+										<li><a class="t" href="#">Più ordine sul telefono</a><span class="d">28 ott</span></li>
+										<li><a class="t" href="#">Sotto-agenti in background</a><span class="d">27 ott</span></li>
+										<li><a class="t" href="#">Il sito si avvia</a><span class="d">27 ott</span></li>
+										<li><a class="t" href="#">Progetti aggiornati</a><span class="d">27 ott</span></li>
+									</ul>
+								</div>
+							</section>
+							<section class="section">
+								<div class="sec-head"><h2 class="label">Ultimi commit</h2></div>
+								<ul class="c-commits">
+									<li><span class="d">28 ott</span><span class="r">esse.dev</span><span class="m">style(ui): stack the home facts and fit the project filters on one row</span></li>
+									<li><span class="d">28 ott</span><span class="r">esse.dev</span><span class="m">fix(agent): keep the field clear of the tab bar's disc on phones</span></li>
+									<li><span class="d">21 ott</span><span class="r">floppy</span><span class="m">fix(app): end the old app after an update, Homebrew does not quit it</span></li>
+									<li><span class="d">21 ott</span><span class="r">floppy</span><span class="m">fix(app): one Keychain item for every secret, one password per update</span></li>
+									<li><span class="d">12 ott</span><span class="r">pgbee</span><span class="m">docs(readme): lead with an llm column that runs on any provider</span></li>
+									<li><span class="d">10 ott</span><span class="r">relay</span><span class="m">feat(update): install updates from the popup and offer a restart</span></li>
+								</ul>
+							</section>
+						</div>
+					</div>
+				</div>
+			</main>
+		</div>
+
+		<script>
+			const DESC = {
+				x: 'oggi: tre voci scritte a mano legate a un progetto, l\'ultima del 20 settembre',
+				a: 'fotografia: un testo del mese scritto a mano e datato, sotto i repository veri, in fondo i mesi passati',
+				b: 'progetti vivi: una riga per progetto in corso con cosa ci faccio e 8 settimane di commit; chi è fermo scende da solo',
+				c: 'automatico: niente a mano, numeri, commit al giorno, rilasci e changelog, quindi non invecchia mai',
+				d: 'sintesi: B con una riga del mese scritta a mano in testa; i privati contano grazie a un token solo del build'
+			};
+
+			// B: weekly commits, oldest first, from gh api; private repos show the meta.json date.
+			const LIVE = [
+				{ name: 'Questo sito', img: '../../public/favicon.svg', s: 'in-progress', weeks: [0, 0, 33, 27, 195, 38, 0, 36], date: '28 ott', rel: 'oggi', doing: 'Rifinisco il telefono: le due barre, il campo dell\'agente, i filtri dei progetti.' },
+				{ name: 'Nexus', logo: 'nexus', s: 'in-progress', date: '27 ott', rel: 'ieri', doing: 'L\'agente cambia lo schema dietro un gate umano; adesso risponde anche dall\'orologio.' },
+				{ name: 'Media Hub', logo: 'media-hub', s: 'in-progress', date: '25 ott', rel: '3 giorni fa', doing: 'Il video parte mentre il file arriva; l\'app per la TV Samsung.' },
+				{ name: 'Varco', img: '../../src/content/projects/varco/logo.png', s: 'in-progress', date: '23 ott', rel: '5 giorni fa', doing: 'La PWA è online; ora il percorso che evita ZTL e Area B in base al veicolo.' },
+				{ name: 'Floppy', img: '../../src/content/projects/floppy/logo.png', s: 'in-progress', weeks: [0, 0, 0, 0, 11, 4, 223, 0], date: '21 ott', rel: '1 settimana fa', doing: 'Si aggiorna da solo con Homebrew e chiede una password sola nel portachiavi.' },
+				{ name: 'pgbee', logo: 'pgbee', s: 'in-progress', weeks: [0, 0, 0, 86, 2, 3, 0, 0], date: '12 ott', rel: '2 settimane fa', doing: 'Requeue per riga e retry dei job falliti; il README parte dalla colonna llm.' },
+				{ name: 'Relay', img: '../../src/content/projects/relay/logo.png', s: 'in-progress', weeks: [9, 2, 31, 3, 7, 25, 0, 0], date: '11 ott', rel: '2 settimane fa', doing: 'Gli aggiornamenti si installano dal popup; poi il motore del terminale staccato dal resto.' },
+				{ name: 'Watch OS', logo: 'watch-os', s: 'in-progress', date: '6 ott', rel: '3 settimane fa', doing: 'Premi un tasto, parli, e risponde l\'agente di Nexus.' },
+				{ name: 'Copilota', img: '../../src/content/projects/copilota/logo.png', s: 'in-progress', date: '3 ott', rel: '3 settimane fa', doing: 'Trascrive i due lati della call e propone le risposte dalla knowledge base.' }
+			];
+			const PAUSED = [
+				{ name: 'Zeno', logo: 'zeno', s: 'paused', date: '28 set', rel: '1 mese fa', doing: 'Un\'agenzia web fatta di agenti per le attività locali.' },
+				{ name: 'mcpbelt', logo: 'mcpbelt', s: 'paused', date: '22 set', rel: '5 settimane fa', doing: 'Un solo server MCP con le capability che un agente non ha in locale.' }
+			];
+			const spark = (w) => {
+				const max = Math.max(...w);
+				const bars = w.map((n) => (n ? `<i style="height:${Math.max(4, Math.round(Math.sqrt(n / max) * 22))}px" title="${n} commit"></i>` : '<i class="zero"></i>')).join('');
+				return `<span class="spark" title="commit per settimana">${bars}</span>`;
+			};
+			const row = (p) => `<li><a href="#">
+				<img class="plogo" ${p.img ? `src="${p.img}"` : `data-logo="${p.logo}"`} alt="" />
+				<span class="who">${p.name}<span class="led" data-s="${p.s}"></span></span>
+				<span class="doing">${p.doing}</span>
+				${p.weeks ? spark(p.weeks) : '<span class="priv"><svg><use href="#lock" /></svg>privato</span>'}
+				<span class="when"><b>${p.date}</b><span class="rel">${p.rel}</span></span>
+			</a></li>`;
+			document.querySelector('[data-list="live"]').innerHTML = LIVE.map(row).join('');
+			document.querySelector('[data-list="paused"]').innerHTML = PAUSED.map(row).join('');
+
+			// D: B with the private repos counted (dates and counts only), read on 28 Oct 2026.
+			const LIVE_D = [
+				{ ...LIVE[0] },
+				{ ...LIVE[1], weeks: [101, 35, 0, 0, 2, 47, 7, 9] },
+				{ ...LIVE[2], weeks: [0, 0, 0, 0, 93, 15, 13, 9] },
+				{ ...LIVE[3], weeks: [0, 0, 0, 0, 0, 0, 143, 21] },
+				{ ...LIVE[4] },
+				{ ...LIVE[5] },
+				{ ...LIVE[6] }
+			];
+			const PAUSED_D = [
+				{ ...LIVE[8], s: 'paused', weeks: [0, 0, 0, 0, 0, 0, 0, 0], date: '13 gen', rel: '9 mesi fa' },
+				{ ...PAUSED[0] },
+				{ ...PAUSED[1], weeks: [0, 0, 0, 0, 0, 0, 0, 0], date: '26 ago', rel: '2 mesi fa' },
+				{ ...LIVE[7], s: 'paused', weeks: [0, 0, 0, 0, 0, 0, 0, 0], date: '26 apr', rel: '6 mesi fa' }
+			];
+			document.querySelector('[data-list="live-d"]').innerHTML = LIVE_D.map(row).join('');
+			document.querySelector('[data-list="paused-d"]').innerHTML = PAUSED_D.map(row).join('');
+
+			// C: commits per day over all public repos, 3 Sep to 28 Oct 2026.
+			const DAYS = [4, 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 2, 0, 2, 2, 1, 0, 45, 14, 0, 11, 15, 62, 19, 0, 0, 9, 0, 2, 42, 88, 59, 23, 5, 23, 1, 26, 13, 7, 0, 0, 0, 13, 131, 44, 16, 0, 19, 0, 0, 0, 0, 0, 32, 4];
+			const start = new Date(2026, 8, 3);
+			const dmax = Math.max(...DAYS);
+			document.querySelector('[data-days]').innerHTML = DAYS.map((n, i) => {
+				const d = new Date(start);
+				d.setDate(d.getDate() + i);
+				const when = d.toLocaleDateString('it-IT', { day: 'numeric', month: 'short' });
+				return n ? `<i style="height:${Math.max(4, Math.round(Math.sqrt(n / dmax) * 100))}%" title="${when}: ${n} commit"></i>` : `<i class="zero" title="${when}: nessun commit"></i>`;
+			}).join('');
+
+			// Logos with a light variant follow the theme, like logoLight in the site.
+			const root = document.documentElement;
+			const body = document.body;
+			const setLogos = () => {
+				const light = root.dataset.theme === 'light';
+				document.querySelectorAll('[data-logo]').forEach((img) => {
+					img.src = `../../src/content/projects/${img.dataset.logo}/logo${light ? '-light' : ''}.svg`;
+				});
+			};
+
+			document.querySelector('[data-buttons]').innerHTML = Object.keys(DESC)
+				.map((v) => `<button data-v="${v}">${v.toUpperCase()} ${DESC[v].split(':')[0]}</button>`)
+				.join(' ');
+			const pick = (v) => {
+				if (!DESC[v]) return;
+				body.dataset.v = v;
+				document.querySelectorAll('.switch [data-v]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.v === v)));
+				document.querySelector('[data-desc]').textContent = DESC[v];
+				document.querySelectorAll('[data-only]').forEach((el) => (el.hidden = !el.dataset.only.split(/\s+/).includes(v)));
+				document.querySelector('.scroll').scrollTop = 0;
+				history.replaceState(null, '', `${location.search}#${v}`);
+			};
+			const setTheme = (t) => {
+				root.dataset.theme = t;
+				setLogos();
+				try { localStorage.setItem('concept-t-theme', t); } catch {}
+			};
+			document.querySelector('.switch').addEventListener('click', (e) => {
+				const b = e.target.closest('[data-v]');
+				if (b) pick(b.dataset.v);
+			});
+			document.querySelector('[data-theme-toggle]').addEventListener('click', () => setTheme(root.dataset.theme === 'dark' ? 'light' : 'dark'));
+			addEventListener('keydown', (e) => {
+				if (e.metaKey || e.ctrlKey || e.altKey || e.target.closest('input, textarea, select, [contenteditable]')) return;
+				const k = e.key.toLowerCase();
+				if (k === 't') setTheme(root.dataset.theme === 'dark' ? 'light' : 'dark');
+				else if (k === 'p') body.dataset.chrome = body.dataset.chrome === 'off' ? 'on' : 'off';
+				else pick(k);
+			});
+
+			addEventListener('hashchange', () => pick(location.hash.slice(1)));
+
+			let saved = null;
+			try { saved = localStorage.getItem('concept-t-theme'); } catch {}
+			setTheme(saved || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark'));
+			pick(DESC[location.hash.slice(1)] ? location.hash.slice(1) : 'x');
+		</script>
+		<script>
+			// Mobile preview: the same file in a 390 px iframe, so the media queries are the real ones.
+			// The page drives the frame: variant, theme and sub-variant follow the switch bar; keys
+			// pressed inside the frame go back up to the page.
+			(() => {
+				const root = document.documentElement;
+				const body = document.body;
+				const press = (key) => body.dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true }));
+
+				if (new URLSearchParams(location.search).has('frame')) {
+					const style = document.createElement('style');
+					style.textContent = '.switch { display: none !important; }';
+					document.head.append(style);
+					addEventListener(
+						'keydown',
+						(e) => {
+							if (!e.isTrusted) return;
+							e.stopImmediatePropagation();
+							parent.postMessage({ mobileKey: e.key }, '*');
+						},
+						true
+					);
+					let applied = null;
+					addEventListener('message', ({ data }) => {
+						if (!data || !data.mobileState) return;
+						const { v, theme, photo, file } = data.mobileState;
+						if (file && file !== applied) {
+							applied = file;
+							const url = URL.createObjectURL(file);
+							document.querySelectorAll('[data-photo-slot]').forEach((el) => {
+								el.querySelector('.media').style.backgroundImage = `url(${url})`;
+								el.dataset.real = '';
+							});
+						}
+						if (theme && root.dataset.theme !== theme) press('t');
+						if (v && body.dataset.v !== v) {
+							press(v.replace(/\d+$/, ''));
+							if (/\d$/.test(v)) press(v.slice(-1));
+						}
+						if (photo && body.dataset.photo !== photo) press(photo);
+					});
+					return;
+				}
+
+				const KEY = `concept-mobile:${location.pathname}`;
+				const css = document.createElement('style');
+				css.textContent = `
+					.mobile-stage { position: fixed; inset: var(--mobile-top, 48px) 0 0; z-index: 50; display: none; place-items: center; background: var(--desk); }
+					body[data-mobile='on'] .mobile-stage { display: grid; }
+					.mobile-stage iframe { width: 390px; height: 844px; border: 0; border-radius: 44px; box-shadow: 0 0 0 10px #050408, 0 0 0 11px var(--edge), 0 30px 80px rgb(0 0 0 / 0.45); transform-origin: center; background: var(--desk); }
+					.switch [data-mobile-toggle] { order: 99; }
+				`;
+				document.head.append(css);
+
+				const sw = document.querySelector('.switch');
+				const button = document.createElement('button');
+				button.dataset.mobileToggle = '';
+				button.textContent = 'm mobile';
+				sw.append(button);
+
+				const stage = document.createElement('div');
+				stage.className = 'mobile-stage';
+				const frame = document.createElement('iframe');
+				frame.title = 'Anteprima mobile, 390 px';
+				stage.append(frame);
+				body.append(stage);
+
+				let file = null;
+				document.querySelector('[data-upload]')?.addEventListener('change', (e) => {
+					file = e.target.files?.[0] || file;
+					sync();
+				});
+				const state = () => ({ v: body.dataset.v, theme: root.dataset.theme, photo: body.dataset.photo, file });
+				const sync = () => frame.contentWindow && frame.contentWindow.postMessage({ mobileState: state() }, '*');
+				const fit = () => {
+					const top = sw.offsetHeight;
+					root.style.setProperty('--mobile-top', `${top}px`);
+					const scale = Math.min(1, (innerHeight - top - 48) / 844);
+					frame.style.transform = `scale(${scale})`;
+				};
+				const set = (on) => {
+					body.dataset.mobile = on ? 'on' : 'off';
+					button.setAttribute('aria-pressed', String(on));
+					try { localStorage.setItem(KEY, on ? 'on' : 'off'); } catch {}
+					if (on && !frame.src) frame.src = `${location.pathname}?frame#${body.dataset.v}`;
+					if (on) { fit(); sync(); }
+				};
+
+				frame.addEventListener('load', sync);
+				new MutationObserver(sync).observe(body, { attributes: true, attributeFilter: ['data-v', 'data-photo'] });
+				new MutationObserver(sync).observe(root, { attributes: true, attributeFilter: ['data-theme'] });
+				addEventListener('message', ({ data }) => data && data.mobileKey && press(data.mobileKey));
+				addEventListener('resize', fit);
+				button.addEventListener('click', () => set(body.dataset.mobile !== 'on'));
+				addEventListener('keydown', (e) => {
+					if (e.metaKey || e.ctrlKey || e.altKey || e.target.closest('input, textarea, select, [contenteditable]')) return;
+					if (e.key.toLowerCase() === 'm') set(body.dataset.mobile !== 'on');
+				});
+				let saved = null;
+				try { saved = localStorage.getItem(KEY); } catch {}
+				set(saved === 'on');
+			})();
+		</script>
+	</body>
+</html>

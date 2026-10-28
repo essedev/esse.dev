@@ -1,0 +1,649 @@
+<!doctype html>
+<html lang="it">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Concept R - Progetti</title>
+		<!--
+			Concept R: come la pagina Progetti separa la vetrina dal resto e usa cover e loghi.
+			Tasti: x a b c per la variante, 1 per la sottovariante di A, t tema, p nasconde la barra.
+
+			Il problema: oggi /it/progetti è una lista di 24 righe uguali ordinate per data di
+			creazione, con LED, titolo, due righe di estratto, tre tag e anno. La vetrina di
+			featured.json (6) si vede solo nella sidebar, che la pagina ripete; cover e loghi, che
+			ogni progetto ha (DECISIONS #22, #28), qui non compaiono. Il logo nella riga col LED
+			sull'angolo, previsto da #22, c'è solo nella sidebar.
+
+			X  oggi: la replica fedele, filtri Stato, Tag e ordine sopra tutta la lista.
+			A  due densità: i 6 della vetrina come card con cover e logo, sotto gli altri 18 come
+			   registro compatto su una riga (logo, nome, estratto, stato, anno), coi filtri solo lì.
+			   Riprende #5 dell'archivio (vetrina a card + indice tipografico), sospeso col ritorno
+			   allo stile base e non bocciato: allora le due metà erano per stato, qui per scelta.
+			A1 A a mosaico: Relay grande, gli altri cinque intorno.
+			B  indice con anteprima: una sola densità, una tabella fitta di tutti i 24 (vetrina in
+			   testa), e la cover arriva a richiesta in un pannello fisso a destra che segue la riga
+			   sotto il puntatore o il focus. Su telefono il pannello sparisce e ogni riga ha la
+			   miniatura.
+			C  per stato: niente vetrina curata, la struttura è lo stato. In corso (10) come righe
+			   larghe con la cover a sinistra, mantenuti e completati (7) come righe compatte col
+			   logo, idee e archiviati (7) come indice su due colonne. I 6 della vetrina in testa
+			   agli "in corso".
+
+			Mappatura sul codice di oggi (fattibilità, non piano): tutto poggia su dati che ci sono
+			già. featured.json dà la vetrina, meta.json logo, logoLight, cover, srcLight e focus,
+			image() le varianti responsive. A e C: CollectionBrowser riceve solo il registro (o un
+			gruppo) invece di tutti gli item, la vetrina è Astro statico come le card della home. B:
+			l'anteprima è un'isola nuova o uno script che sposta un'immagine già nel DOM; con 24
+			cover nel DOM servono loading lazy e le dimensioni giuste, o si carica solo quella
+			mostrata. La ricerca della sidebar (?q=) filtra la lista: in A filtra solo il registro
+			o anche la vetrina, da decidere. In C i filtri per stato diventano ridondanti coi gruppi:
+			restano Tag e ordine.
+			Dati: i 24 progetti pubblicati, titolo, estratto, tag, stato e data di creazione da
+			src/content/projects/*/meta.json e it.md; cover e loghi veri per path relativo, con le
+			varianti chiare dove esistono. I filtri di X e A sono statici; l'anteprima di B funziona.
+		
+			Scelta: C, per stato. Aperto: i filtri restanti (tag e ordinamento) e dove sta la vetrina, che C non distingue.
+		-->
+		<style>
+			@font-face { font-family: 'Geist'; font-weight: 400; src: url(https://cdn.jsdelivr.net/fontsource/fonts/geist@latest/latin-400-normal.woff2) format('woff2'); }
+			@font-face { font-family: 'Geist'; font-weight: 500; src: url(https://cdn.jsdelivr.net/fontsource/fonts/geist@latest/latin-500-normal.woff2) format('woff2'); }
+			@font-face { font-family: 'Departure Mono'; src: url(https://cdn.jsdelivr.net/gh/rektdeckard/departure-mono@main/public/assets/DepartureMono-Regular.woff2) format('woff2'); }
+
+			/* Scuro: i token di @theme. */
+			:root {
+				--desk: #0a0912;
+				--wall-a: rgb(181 156 255 / 0.24);
+				--wall-b: rgb(110 80 255 / 0.22);
+				--light: rgb(181 156 255 / 0.32);
+				--grid: rgb(255 255 255 / 0.03);
+				--frame: rgb(8 8 11 / 0.2);
+				--glass: rgb(14 14 18 / 0.48);
+				--edge: rgb(255 255 255 / 0.12);
+				--shadow: 0 12px 32px rgb(0 0 0 / 0.35);
+				--surface: rgb(255 255 255 / 0.05);
+				--hover: rgb(255 255 255 / 0.08);
+				--line: #23232b;
+				--fg: #efedf5;
+				--text: #cbc9d4;
+				--muted: #9c9aa8;
+				--subtle: #908e9b;
+				--accent: #b59cff;
+				--live: #7dff9b;
+				--st-completed: #efedf5;
+				--st-idea: #9c9aa8;
+				--st-archived: #4d4d58;
+				--led-lift: rgb(0 0 0 / 0.9);
+				--glow: 3.5px;
+				--scan: rgb(255 255 255 / 0.018);
+				--vignette: rgb(0 0 0 / 0.14);
+				--shade: 0 0 0;
+				--logo-shadow: 0 8px 18px rgb(0 0 0 / 0.55);
+				--sans: 'Geist', ui-sans-serif, system-ui, sans-serif;
+				--mono: 'Departure Mono', ui-monospace, monospace;
+				color-scheme: dark;
+			}
+			/* Chiaro: la lavanda fumé. */
+			:root[data-theme='light'] {
+				--desk: #bcb2dc;
+				--wall-a: rgb(157 133 255 / 0.32);
+				--wall-b: rgb(110 80 255 / 0.18);
+				--light: rgb(255 255 255 / 0.4);
+				--grid: rgb(40 25 90 / 0.04);
+				--frame: rgb(230 226 242 / 0.3);
+				--glass: rgb(236 232 244 / 0.62);
+				--edge: rgb(255 255 255 / 0.55);
+				--shadow: 0 1px 2px rgb(40 25 90 / 0.08), 0 14px 36px rgb(40 25 90 / 0.16);
+				--surface: rgb(40 25 90 / 0.07);
+				--hover: rgb(40 25 90 / 0.1);
+				--line: #cfc9de;
+				--fg: #17141f;
+				--text: #312d3c;
+				--muted: #504b60;
+				--subtle: #57526a;
+				--accent: #5f40d6;
+				--live: #179a4c;
+				--st-completed: #17141f;
+				--st-idea: #504b60;
+				--st-archived: #a9a2bd;
+				--led-lift: rgb(255 255 255 / 0.95);
+				--glow: 2px;
+				--scan: rgb(40 25 90 / 0.03);
+				--vignette: rgb(40 24 90 / 0.07);
+				--shade: 40 24 90;
+				--logo-shadow: 0 8px 18px rgb(60 40 130 / 0.22);
+				color-scheme: light;
+			}
+
+			* { box-sizing: border-box; }
+			html, body { height: 100%; margin: 0; }
+			body {
+				font-family: var(--sans);
+				font-weight: 380;
+				color: var(--fg);
+				background:
+					repeating-linear-gradient(to right, var(--grid) 0 1px, transparent 1px 48px),
+					repeating-linear-gradient(to bottom, var(--grid) 0 1px, transparent 1px 48px),
+					radial-gradient(22% 26% at 14% 6%, var(--light), transparent 70%),
+					linear-gradient(135deg, var(--wall-a) 0%, var(--wall-b) 50%, transparent 100%),
+					var(--desk);
+				-webkit-font-smoothing: antialiased;
+				display: flex;
+				flex-direction: column;
+			}
+			body::after { content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 10; background: repeating-linear-gradient(to bottom, var(--scan) 0 1px, transparent 1px 3px), radial-gradient(ellipse at center, transparent 50%, var(--vignette)); }
+			a { color: inherit; text-decoration: none; }
+			p, h1, h2, h3, ul, ol { margin: 0; }
+			ul, ol { padding: 0; list-style: none; }
+			img { display: block; }
+			[hidden] { display: none !important; }
+
+			/* Il selettore delle varianti, fuori dalla finestra. */
+			.switch { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; padding: 10px 14px; font-family: var(--mono); font-size: 12px; color: var(--muted); }
+			.switch button { font: inherit; border: 0; padding: 6px 10px; border-radius: 6px; background: var(--surface); color: var(--text); cursor: pointer; }
+			.switch button[aria-pressed='true'] { background: var(--fg); color: var(--desk); }
+			.switch .theme { margin-left: auto; }
+			.switch p { margin: 0 0 0 10px; flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+			body[data-chrome='off'] .switch { display: none; }
+
+			/* Il guscio: la finestra con lista e pannello. */
+			.window { flex: 1; min-height: 0; margin: 0 12px 12px; padding: 8px; display: grid; grid-template-columns: clamp(17rem, 22vw, 22rem) 1fr; gap: 8px; border-radius: 18px; background: var(--frame); box-shadow: inset 0 1px 0 var(--edge), var(--shadow); }
+			body[data-chrome='off'] .window { margin-top: 12px; }
+			.card { border-radius: 10px; overflow: hidden; position: relative; background: var(--glass); -webkit-backdrop-filter: blur(32px) saturate(120%); backdrop-filter: blur(32px) saturate(120%); box-shadow: inset 0 1px 0 var(--edge), var(--shadow); }
+			.side { padding: 14px; display: flex; flex-direction: column; gap: 2px; overflow: hidden; }
+			.pane { display: flex; flex-direction: column; min-height: 0; }
+			.logo { font-family: var(--mono); font-size: 13px; padding: 4px 8px 14px; text-shadow: 0 0 var(--glow) color-mix(in srgb, var(--accent) 55%, transparent); }
+			.caret { display: inline-block; width: 0.5em; height: 1.05em; vertical-align: -0.15em; margin-left: 0.15em; background: var(--accent); box-shadow: 0 0 4px var(--accent); animation: blink 1.1s steps(1) infinite; }
+			@keyframes blink { 50% { opacity: 0; } }
+			.search { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 12px; color: var(--subtle); background: var(--surface); border-radius: 6px; padding: 9px 10px; margin-bottom: 14px; }
+			.kbd { display: inline-flex; align-items: center; justify-content: center; min-width: 1.4rem; height: 1.4rem; padding: 0 0.35rem; border-radius: 4px; background: var(--surface); color: var(--muted); font-family: var(--mono); font-size: 0.7rem; line-height: 1; }
+			.row { display: flex; align-items: center; gap: 12px; padding: 7px 8px; border-radius: 6px; font-size: 14.5px; color: var(--fg); }
+			.row.on { background: var(--surface); }
+			.row .meta { margin-left: auto; font-family: var(--mono); font-size: 11px; color: var(--subtle); }
+			.row .num { font-family: var(--mono); font-size: 11px; color: var(--subtle); }
+			.row.more { font-family: var(--mono); font-size: 12px; color: var(--muted); }
+			.row.more svg { width: 14px; height: 14px; color: var(--subtle); }
+			.ico { width: 14px; height: 14px; border: 1.5px solid var(--subtle); border-radius: 4px; }
+			.side .group { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--subtle); padding: 18px 8px 6px; display: flex; justify-content: space-between; }
+			.side .lg { width: 20px; height: 20px; border-radius: 5px; }
+			.bar { height: 48px; flex: none; display: flex; align-items: center; padding: 0 clamp(1.25rem, 3.5vw, 3rem); font-family: var(--mono); font-size: 13px; color: var(--subtle); gap: 8px; }
+			.bar b { font-weight: 400; color: var(--fg); }
+			.bar .end { margin-left: auto; }
+			.scroll { flex: 1; min-height: 0; overflow: auto; overscroll-behavior: none; }
+			.page { padding: clamp(1.5rem, 3vw, 3rem) clamp(1.25rem, 3.5vw, 3rem) 5rem; }
+
+			/* Pezzi comuni del sistema. */
+			.label { font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--subtle); text-shadow: 0 0 var(--glow) color-mix(in srgb, var(--accent) 55%, transparent); }
+			.mono { font-family: var(--mono); }
+			.led { position: relative; display: inline-block; flex: none; width: 7px; height: 7px; border-radius: 999px; background: var(--st-archived); }
+			.led[data-status='in-progress'] { background: var(--live); box-shadow: 0 0 3.5px color-mix(in srgb, var(--live) 75%, transparent); animation: breathe 2.8s cubic-bezier(0.16, 1, 0.3, 1) infinite; }
+			.led[data-status='maintained'] { background: var(--live); box-shadow: 0 0 1.75px color-mix(in srgb, var(--live) 50%, transparent); }
+			.led[data-status='completed'] { background: var(--st-completed); }
+			.led[data-status='idea'] { background: transparent; box-shadow: inset 0 0 0 1.5px var(--st-idea); }
+			@keyframes breathe { 50% { opacity: 0.45; } }
+			.arrow { width: 16px; height: 16px; flex: none; color: var(--subtle); transition: color 0.15s, translate 0.2s; }
+			a:hover .arrow { color: var(--accent); translate: 3px 0; }
+			.bot { width: 16px; height: 16px; color: var(--accent); filter: drop-shadow(0 0 3px color-mix(in srgb, var(--accent) 60%, transparent)); }
+
+			/* Il logo di un progetto col LED sull'angolo, come nella sidebar (#22). */
+			.plogo { position: relative; flex: none; width: 22px; height: 22px; }
+			.plogo img { width: 100%; height: 100%; border-radius: 5px; }
+			.plogo .led { position: absolute; right: -2px; bottom: -2px; width: 6px; height: 6px; filter: drop-shadow(0 0 1.5px var(--led-lift)); }
+
+			/* Testata, uguale in tutte le varianti. */
+			.h1 { font-size: clamp(2rem, 1.2rem + 2.6vw, 3.5rem); line-height: 1.05; font-weight: 500; letter-spacing: -0.025em; }
+			.lead { margin-top: 16px; color: var(--muted); font-size: clamp(1rem, 0.92rem + 0.28vw, 1.1875rem); text-wrap: pretty; }
+			.body { margin-top: clamp(2rem, 4vw, 3.5rem); }
+
+			/* I controlli di oggi: Select a bottone (ui/Select.svelte) e legenda dei LED. */
+			.tools { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+			.sel { display: inline-flex; align-items: center; gap: 10px; height: 36px; padding: 0 12px; border-radius: 6px; background: var(--surface); font-family: var(--mono); font-size: 13px; color: var(--text); }
+			.sel svg { width: 14px; height: 14px; color: var(--subtle); }
+			.legend { margin-left: auto; display: flex; flex-wrap: wrap; gap: 4px 16px; font-family: var(--mono); font-size: 12px; color: var(--subtle); white-space: nowrap; }
+			.legend li { display: flex; align-items: center; gap: 6px; }
+
+			.v { display: none; }
+			body[data-base='x'] .v-x, body[data-base='a'] .v-a, body[data-base='b'] .v-b, body[data-base='c'] .v-c { display: block; }
+
+			/* X, oggi: EntryRow. */
+			.x-list { margin: 24px -16px 0; display: flex; flex-direction: column; }
+			.x-row { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; align-items: baseline; gap: 4px 16px; padding: 16px; border-radius: 10px; transition: background 0.15s; }
+			.x-row:hover { background: var(--surface); }
+			.x-row .led { translate: 0 -1px; }
+			.x-row b { font-weight: 500; font-size: 1.0625rem; letter-spacing: -0.01em; color: var(--fg); }
+			.x-row .ex { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-top: 4px; color: var(--muted); font-size: 0.9375rem; line-height: 1.6; }
+			.x-row .tg { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 4px 12px; font-family: var(--mono); font-size: 0.7rem; color: var(--subtle); }
+			.yr { font-family: var(--mono); font-size: 0.75rem; color: var(--subtle); font-variant-numeric: tabular-nums; }
+
+			/* A, due densità: card della vetrina, registro compatto. */
+			.a-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+			.a-card { position: relative; display: flex; flex-direction: column; border-radius: 10px; background: var(--surface); overflow: hidden; transition: background 0.15s; }
+			.a-card:hover { background: var(--hover); }
+			.a-card .vis { position: relative; aspect-ratio: 16 / 10; }
+			.a-card .vis > img:not(.badge) { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: scale 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+			.a-card:hover .vis > img:not(.badge) { scale: 1.03; }
+			.a-card .badge { position: absolute; left: 16px; bottom: -18px; width: 40px; height: 40px; border-radius: 10px; box-shadow: var(--logo-shadow); z-index: 1; }
+			.a-card .txt { padding: 28px 18px 18px; display: flex; flex-direction: column; gap: 6px; flex: 1; }
+			.a-card .hd { display: flex; align-items: center; gap: 10px; }
+			.a-card b { font-weight: 500; font-size: 1.125rem; letter-spacing: -0.015em; }
+			.a-card .hd .yr { margin-left: auto; }
+			.a-card small { color: var(--muted); font-size: 0.875rem; line-height: 1.55; display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+			/* A1: Relay grande a sinistra, gli altri intorno. */
+			body[data-v='a1'] .a-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+			body[data-v='a1'] .a-card:first-child { grid-column: span 2; grid-row: span 2; }
+			body[data-v='a1'] .a-card:first-child .vis { aspect-ratio: auto; flex: 1; min-height: 16rem; }
+			body[data-v='a1'] .a-card:first-child b { font-size: 1.5rem; }
+			body[data-v='a1'] .a-card:first-child .txt { flex: none; }
+			body[data-v='a1'] .a-card:not(:first-child) small { -webkit-line-clamp: 2; }
+			.a-reg { margin-top: clamp(3rem, 5vw, 4.5rem); }
+			.a-reg-head { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 20px; }
+			.a-reg-head .tools { margin-left: auto; }
+			.reg { margin: 16px -12px 0; display: flex; flex-direction: column; }
+			.reg a { display: grid; grid-template-columns: 22px minmax(8rem, 13rem) minmax(0, 1fr) 6.5rem 2.5rem; align-items: center; gap: 0 16px; padding: 10px 12px; border-radius: 8px; transition: background 0.15s; }
+			.reg a:hover, .reg a.on { background: var(--surface); }
+			.reg b { font-weight: 500; font-size: 0.9375rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+			.reg .ex { color: var(--muted); font-size: 0.875rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+			.reg .st { font-family: var(--mono); font-size: 0.7rem; color: var(--subtle); display: flex; align-items: center; gap: 6px; white-space: nowrap; }
+			.reg .yr { text-align: right; }
+			.reg .th { display: none; }
+
+			/* B, indice con anteprima. */
+			.b-wrap { display: grid; grid-template-columns: minmax(0, 1fr) minmax(16rem, 0.62fr); gap: clamp(1.5rem, 3vw, 2.5rem); align-items: start; margin-top: 20px; }
+			.b-wrap .reg { margin-top: 0; }
+			.b-wrap .reg a { grid-template-columns: 22px minmax(7rem, 11rem) minmax(0, 1fr) 2.5rem; }
+			.reg .grp { padding: 18px 12px 8px; display: flex; justify-content: space-between; }
+			.reg .grp:first-child { padding-top: 0; }
+			.b-prev { position: sticky; top: 0; border-radius: 10px; background: var(--surface); overflow: hidden; }
+			.b-prev .vis { position: relative; aspect-ratio: 16 / 10; }
+			.b-prev .vis > img:not(.badge) { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+			.b-prev .badge { position: absolute; left: 16px; bottom: -18px; width: 40px; height: 40px; border-radius: 10px; box-shadow: var(--logo-shadow); }
+			.b-prev .txt { padding: 30px 18px 20px; display: flex; flex-direction: column; gap: 8px; }
+			.b-prev .hd { display: flex; align-items: center; gap: 10px; }
+			.b-prev b { font-weight: 500; font-size: 1.25rem; letter-spacing: -0.015em; }
+			.b-prev .hd .st { margin-left: auto; font-family: var(--mono); font-size: 0.7rem; color: var(--subtle); display: flex; align-items: center; gap: 6px; }
+			.b-prev p { color: var(--text); font-size: 0.9375rem; line-height: 1.6; text-wrap: pretty; }
+			.b-prev .tg { display: flex; flex-wrap: wrap; gap: 4px 12px; font-family: var(--mono); font-size: 0.7rem; color: var(--subtle); }
+			.b-thumb { display: none; }
+			.b-wrap .reg .st { display: none; }
+
+			/* C, per stato. */
+			.c-sec + .c-sec { margin-top: clamp(2.5rem, 4vw, 3.5rem); }
+			.c-sec > h2 { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+			.c-sec > h2 .n { color: var(--subtle); opacity: 0.7; }
+			.c-wide { margin: 0 -12px; display: flex; flex-direction: column; gap: 4px; }
+			.c-wide a { display: grid; grid-template-columns: clamp(10rem, 18vw, 15rem) minmax(0, 1fr) auto; gap: 0 20px; align-items: center; padding: 10px 12px; border-radius: 10px; transition: background 0.15s; }
+			.c-wide a:hover { background: var(--surface); }
+			.c-wide .vis { position: relative; aspect-ratio: 16 / 9; border-radius: 6px; overflow: hidden; }
+			.c-wide .vis img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+			.c-wide .hd { display: flex; align-items: center; gap: 10px; }
+			.c-wide b { font-weight: 500; font-size: 1.0625rem; letter-spacing: -0.01em; }
+			.c-wide .ex { margin-top: 6px; color: var(--muted); font-size: 0.9375rem; line-height: 1.55; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+			.c-wide .tg { margin-top: 8px; display: flex; flex-wrap: wrap; gap: 4px 12px; font-family: var(--mono); font-size: 0.7rem; color: var(--subtle); }
+			.c-wide .pin { font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--accent); padding: 2px 6px; border-radius: 4px; background: color-mix(in srgb, var(--accent) 12%, transparent); }
+			.c-wide .yr { align-self: start; padding-top: 2px; }
+			.c-cols { margin: 0 -12px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 clamp(1.5rem, 3vw, 3rem); }
+			.c-cols a { display: grid; grid-template-columns: 22px minmax(0, auto) minmax(0, 1fr) auto; align-items: center; gap: 0 12px; padding: 9px 12px; border-radius: 8px; transition: background 0.15s; }
+			.c-cols a:hover { background: var(--surface); }
+			.c-cols b { font-weight: 500; font-size: 0.9375rem; white-space: nowrap; }
+			.c-cols .ex { color: var(--subtle); font-size: 0.8125rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+			.c-tools { margin-bottom: clamp(1.5rem, 3vw, 2.5rem); }
+
+			@media (width < 64rem) {
+				.window { grid-template-columns: 1fr; }
+				.side { display: none; }
+				.a-grid, body[data-v='a1'] .a-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+				body[data-v='a1'] .a-card:first-child { grid-row: auto; }
+				.b-wrap { grid-template-columns: 1fr; }
+				.b-prev { display: none; }
+				.b-thumb { display: block; width: 56px; aspect-ratio: 16 / 10; border-radius: 5px; object-fit: cover; }
+				.b-wrap .reg a { grid-template-columns: 56px minmax(0, 1fr) 2.5rem; padding: 10px 12px; }
+				.b-wrap .reg a .plogo { display: none; }
+				.b-wrap .reg a .nm { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+				.reg a { grid-template-columns: 22px minmax(0, 1fr) 2.5rem; align-items: start; }
+				.reg a .plogo { margin-top: 1px; }
+				.reg .st { display: none; }
+				.reg .nm { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+				.reg .ex { white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+				.c-cols { grid-template-columns: 1fr; }
+			}
+			@media (width >= 64rem) {
+				/* Su desktop nome ed estratto sono due colonne della tabella. */
+				.reg .nm { display: contents; }
+			}
+			@media (width < 40rem) {
+				.window { margin: 0; border-radius: 0; padding: 6px; }
+				.a-grid, body[data-v='a1'] .a-grid { grid-template-columns: 1fr; }
+				body[data-v='a1'] .a-card:first-child { grid-column: auto; }
+				body[data-v='a1'] .a-card:first-child .vis { aspect-ratio: 16 / 10; min-height: 0; }
+				.legend { margin-left: 0; }
+				.a-reg-head .tools { margin-left: 0; }
+				.c-wide a { grid-template-columns: 1fr; gap: 12px; }
+				.c-wide .yr { display: none; }
+				.c-cols .ex { display: none; }
+			}
+		</style>
+	</head>
+	<body data-v="x">
+		<svg width="0" height="0" style="position: absolute">
+			<symbol id="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></symbol>
+			<symbol id="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6" /></symbol>
+			<symbol id="bot" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6V2H8" /><path d="m8 18-4 4V8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2Z" /><path d="M2 12h2" /><path d="M9 11v2" /><path d="M15 11v2" /><path d="M20 12h2" /></symbol>
+		</svg>
+
+		<div class="switch">
+			<span data-buttons></span>
+			<p data-desc></p>
+			<button class="theme" data-theme-toggle>t tema</button>
+		</div>
+
+		<div class="window">
+			<aside class="card side">
+				<div class="logo">esse.dev<span class="caret"></span></div>
+				<div class="search">Cerca <span class="kbd">/</span></div>
+				<div class="row"><span class="ico"></span>Benvenuto</div>
+				<div class="row"><span class="ico"></span>Chi sono</div>
+				<div class="row"><span class="ico"></span>Adesso<span class="meta">set 2026</span></div>
+				<div class="row"><svg class="bot"><use href="#bot" /></svg>Agente</div>
+				<div class="group">Progetti <span>24</span></div>
+				<div data-side-featured></div>
+				<div class="row more on"><svg><use href="#arrow" /></svg>tutti i 24</div>
+				<div class="group">Metodo <span>4</span></div>
+				<div class="row"><span class="num">01</span>Architettura prima del codice</div>
+				<div class="row"><span class="num">02</span>Il contesto è il lavoro</div>
+				<div class="row"><span class="num">03</span>Misurare invece di fidarsi</div>
+				<div class="row"><span class="num">04</span>Il mio setup</div>
+			</aside>
+
+			<main class="card pane">
+				<div class="bar">~ / <b>progetti</b><span class="end">en <b>it</b></span></div>
+				<div class="scroll">
+					<div class="page">
+						<h1 class="h1">Progetti</h1>
+						<p class="lead">Cose che ho costruito e che sto costruendo: prodotti, strumenti per sviluppatori, esperimenti con l'AI e qualche idea ancora sulla carta.</p>
+
+						<div class="body">
+							<!-- X, oggi. -->
+							<div class="v v-x">
+								<div class="tools" data-tools="all"></div>
+								<ul class="x-list" data-x></ul>
+							</div>
+
+							<!-- A, due densità. -->
+							<div class="v v-a">
+								<h2 class="label">In vetrina</h2>
+								<div class="a-grid" data-a-grid style="margin-top: 16px"></div>
+								<section class="a-reg">
+									<div class="a-reg-head">
+										<h2 class="label">Tutti gli altri <span data-a-count></span></h2>
+										<div class="tools" data-tools="reg"></div>
+									</div>
+									<div class="reg" data-a-reg></div>
+								</section>
+							</div>
+
+							<!-- B, indice con anteprima. -->
+							<div class="v v-b">
+								<div class="tools" data-tools="all"></div>
+								<div class="b-wrap">
+									<div class="reg" data-b-reg></div>
+									<aside class="b-prev" data-b-prev></aside>
+								</div>
+							</div>
+
+							<!-- C, per stato. -->
+							<div class="v v-c">
+								<div class="tools c-tools" data-tools="nostatus"></div>
+								<div data-c></div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</main>
+		</div>
+
+		<script>
+			const PROJECTS = [{"d":"varco","t":"Varco","e":"Un navigatore per Milano che sa dove può entrare la tua auto: ZTL, aree pedonali, Area B e Area C in base al veicolo e all'orario, e un percorso che le evita.","tags":["React","MapLibre","Cloudflare Workers","Hono","Python","Valhalla","PWA","Open Data"],"s":"in-progress","c":"2026-10-19","logo":"logo.png","logoL":null,"coverL":true,"f":"center"},
+				{"d":"floppy","t":"Floppy","e":"Un disco condiviso per chi monta video su Mac: nel Finder è un volume come gli altri, i file stanno su S3 e una cache locale rende veloci le clip già toccate.","tags":["macOS","JuiceFS","Tauri","React","Python","FastAPI","Valkey","Homebrew"],"s":"in-progress","c":"2026-10-06","logo":"logo.png","logoL":null,"coverL":true,"f":"center"},
+				{"d":"pgbee","t":"pgbee","e":"Un'estensione per PostgreSQL: dichiari in SQL che una colonna si ricava da altre con un modello, e il database la tiene compilata, versionata e con i costi registrati.","tags":["PostgreSQL","SQL","Python","LLM","Embeddings","Open Source"],"s":"in-progress","c":"2026-09-26","logo":"logo.svg","logoL":"logo-light.svg","coverL":false,"f":"top"},
+				{"d":"zeno","t":"Zeno","e":"Un'agenzia web fatta di agenti per le attività locali italiane: trova chi non ha un sito, gliene costruisce una demo vera e segue vendita, pubblicazione e supporto.","tags":["AI Agents","Astro","Cloudflare Workers","Python","FastAPI"],"s":"in-progress","c":"2026-08-28","logo":"logo.svg","logoL":"logo-light.svg","coverL":false,"f":"top"},
+				{"d":"media-hub","t":"Media Hub","e":"La piattaforma del server di casa: una home con più app su un backend unico, un media server che fa partire il video mentre il file arriva e un'app per la TV Samsung.","tags":["Python","FastAPI","React","Tizen","ffmpeg","Self-hosted"],"s":"in-progress","c":"2026-08-22","logo":"logo.svg","logoL":"logo-light.svg","coverL":true,"f":"top"},
+				{"d":"server","t":"Server personali","e":"Due VPS per le mie app, uno che serve e uno che ogni notte prova a ripristinare i backup, con la conoscenza in un repo e un monitor che guarda tutto da fuori.","tags":["Docker","Caddy","Cloudflare Workers","TypeScript","Ops"],"s":"maintained","c":"2026-08-06","logo":"logo.svg","logoL":"logo-light.svg","coverL":true,"f":"center"},
+				{"d":"mcpbelt","t":"mcpbelt","e":"Un solo server MCP che dà a qualunque agente le capability che non può eseguire in locale: documenti, audio, pagine web, immagini.","tags":["Python","FastAPI","MCP","AI Agents","OAuth","Astro"],"s":"in-progress","c":"2026-08-05","logo":"logo.svg","logoL":"logo-light.svg","coverL":false,"f":"top"},
+				{"d":"maia","t":"Maia","e":"Un assistente per imparare davvero: misura cosa sai in ogni ambito, trova i buchi che contano e ti guida a chiuderli con metodi che funzionano.","tags":["Python","FastAPI","React","LLM","Learning"],"s":"idea","c":"2026-07-21","logo":"logo.svg","logoL":"logo-light.svg","coverL":false,"f":"top"},
+				{"d":"relay","t":"Relay","e":"Terminale nativo per macOS pensato per far girare tanti coding agent in parallelo, con lo stato di ogni agente letto dagli hook e non dall'output.","tags":["Swift","AppKit","macOS","AI Agents","Claude Code","Homebrew"],"s":"in-progress","c":"2026-07-02","logo":"logo.png","logoL":null,"coverL":false,"f":"top"},
+				{"d":"printor","t":"Edge Lab","e":"Un laboratorio di ricerca quant su una domanda sola: dove un LLM dà un vantaggio vero nel trading, se lo dà. Con un harness costruito per non ingannarmi.","tags":["Python","LLM","Quant","DuckDB","Research"],"s":"archived","c":"2026-06-20","logo":"logo.svg","logoL":"logo-light.svg","coverL":true,"f":"center"},
+				{"d":"nexus","t":"Nexus","e":"Piattaforma dati personale guidata da un assistente AI: ogni cosa è un'entità definita da uno schema, e aggiungere un tipo nuovo non richiede codice.","tags":["Python","FastAPI","React","PostgreSQL","AI Agents","MCP"],"s":"in-progress","c":"2026-06-14","logo":"logo.svg","logoL":"logo-light.svg","coverL":false,"f":"top"},
+				{"d":"local-llm-eval","t":"Local LLM Experiments","e":"Quanto regge il coding agentico con modelli locali su un MacBook Pro M5 da 32 GB, misurato contro i modelli cloud.","tags":["LLM","MLX","Benchmark","AI Agents","Research","Python"],"s":"completed","c":"2026-05-26","logo":"logo.svg","logoL":"logo-light.svg","coverL":false,"f":"top"},
+				{"d":"watch-os","t":"Watch OS","e":"Un firmware mio per uno smartwatch ESP32-S3: premi un tasto, parli, e risponde l'agente di Nexus.","tags":["C++","ESP-IDF","ESP-Brookesia","ESP32","Embedded","Voice"],"s":"in-progress","c":"2026-04-26","logo":"logo.svg","logoL":"logo-light.svg","coverL":true,"f":"center"},
+				{"d":"portsage","t":"Portsage","e":"App per la barra dei menu di macOS che gestisce le porte dei progetti in sviluppo, con un server MCP e una CLI per gli agenti.","tags":["Rust","Tauri","React","macOS","MCP","CLI"],"s":"maintained","c":"2026-04-02","logo":"logo.png","logoL":null,"coverL":false,"f":"top"},
+				{"d":"idkcraft","t":"IDKCraft","e":"Un voxel game in stile Minecraft in Kotlin e OpenGL, con multiplayer, macchine e un aggiornamento dal vivo: 209 commit in due giorni. Più uno studio che genera le texture in pixel art.","tags":["Kotlin","OpenGL","LWJGL","Game","Multiplayer","AI"],"s":"archived","c":"2026-03-18","logo":"logo.svg","logoL":"logo-light.svg","coverL":true,"f":"center"},
+				{"d":"minerd","t":"Minerd","e":"Un idle game di mining per mobile, già giocabile in singleplayer, come base per un'idea: un gioco che si aggiorna da solo con l'AI.","tags":["TypeScript","Phaser","Fastify","PostgreSQL","Game"],"s":"idea","c":"2026-02-14","logo":"logo.svg","logoL":"logo-light.svg","coverL":false,"f":"center"},
+				{"d":"copilota","t":"Copilota","e":"Un copilota per le call di vendita: app macOS in Swift che trascrive i due lati della call in tempo reale e propone le risposte dalla knowledge base in un overlay che vede solo chi vende.","tags":["Swift","SwiftUI","macOS","FastAPI","RAG","Speech-to-text"],"s":"in-progress","c":"2026-01-13","logo":"logo.png","logoL":null,"coverL":true,"f":"center"},
+				{"d":"solplace","t":"Esperimenti su Solana","e":"Una mappa del mondo on-chain dove i token si contendono il territorio, e intorno gli strumenti che ho scritto per leggere il mercato di Solana in tempo reale.","tags":["Solana","Rust","Anchor","TypeScript","Python","Web3"],"s":"archived","c":"2025-08-15","logo":"logo.svg","logoL":"logo-light.svg","coverL":true,"f":"center"},
+				{"d":"pigeon","t":"Pigeon","e":"Invio di email transazionali da template, con un'API e un pannello: la porta HTTP davanti al tuo server SMTP.","tags":["TypeScript","Fastify","PostgreSQL","Docker","Email","API"],"s":"maintained","c":"2024-10-08","logo":"logo.svg","logoL":"logo-light.svg","coverL":false,"f":"top"},
+				{"d":"budokan","t":"Polisportiva Bu Do Kan","e":"Il sito della polisportiva Bu Do Kan: corsi, orari, istruttori e richiesta di una lezione di prova, con un pannello su misura da cui la palestra gestisce contenuti e richieste.","tags":["Next.js","Cloudflare Workers","D1","CMS","CRM","Sport"],"s":"maintained","c":"2024-09-09","logo":"logo.svg","logoL":"logo-light.svg","coverL":false,"f":"top"},
+				{"d":"flux","t":"Flux","e":"Lettore di newsletter e feed RSS che estrae gli articoli in markdown pulito e fedele all'originale, tutto su un solo Worker Cloudflare.","tags":["Cloudflare Workers","Hono","D1","React","PWA","AI"],"s":"completed","c":"2024-02-23","logo":"logo.svg","logoL":"logo-light.svg","coverL":true,"f":"center"},
+				{"d":"ethicode","t":"Ethicode","e":"Piattaforma di e-learning per imparare a programmare, nata come Let's Code Italia.","tags":["SvelteKit","TailwindCSS","PocketBase","E-learning"],"s":"archived","c":"2023-06-10","logo":"logo.svg","logoL":"logo-light.svg","coverL":false,"f":"top"},
+				{"d":"doppia-os","t":"doppia.os","e":"Un desktop nel browser con finestre che si trascinano, si agganciano e si ridimensionano. Iniziato a mano nel 2022, ripreso con l'AI nel 2025.","tags":["Svelte","TypeScript","UI/UX","AI"],"s":"archived","c":"2022-04-16","logo":"logo.svg","logoL":"logo-light.svg","coverL":false,"f":"top"},
+				{"d":"lrl-elettrica","t":"L.R.L. Elettrica","e":"Sito web e assistenza per l'azienda L.R.L. Elettrica, specializzata in impianti elettrici e altre soluzioni per la casa.","tags":["SvelteKit","TailwindCSS","Business"],"s":"maintained","c":"2022-03-15","logo":"logo.svg","logoL":"logo-light.svg","coverL":false,"f":"center"}];
+			const FEATURED = ['relay', 'nexus', 'varco', 'pgbee', 'zeno', 'floppy'];
+			const STATUS = { 'in-progress': 'in corso', maintained: 'mantenuto', completed: 'completato', idea: 'idea', archived: 'archiviato' };
+			const DESC = {
+				x: 'oggi: 24 righe uguali per data, filtri sopra tutto',
+				a: 'due densità: la vetrina a card con cover, gli altri 18 in un registro compatto coi filtri',
+				a1: 'mosaico: A con Relay grande e gli altri cinque intorno',
+				b: 'indice: una tabella fitta di tutti, la cover a richiesta nel pannello a destra',
+				c: 'per stato: la struttura è lo stato, la densità scende da in corso ad archiviato'
+			};
+
+			const root = document.documentElement;
+			const body = document.body;
+			const base = (v) => v.replace(/\d+$/, '');
+			const light = () => root.dataset.theme === 'light';
+			const by = Object.fromEntries(PROJECTS.map((p) => [p.d, p]));
+			const featured = FEATURED.map((d) => by[d]);
+			const rest = PROJECTS.filter((p) => !FEATURED.includes(p.d));
+			const dir = (p) => `../../src/content/projects/${p.d}`;
+			const logo = (p) => `${dir(p)}/${light() && p.logoL ? p.logoL : p.logo}`;
+			const cover = (p) => `${dir(p)}/${light() && p.coverL ? 'cover-light.webp' : 'cover.webp'}`;
+			const year = (p) => p.c.slice(0, 4);
+			const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;');
+			const led = (p) => `<span class="led" data-status="${p.s}" title="${STATUS[p.s]}"></span>`;
+			const plogo = (p) => `<span class="plogo"><img src="${logo(p)}" alt="" />${led(p)}</span>`;
+			const tags = (p, n = 3) => p.tags.slice(0, n).map((t) => `<span>${esc(t)}</span>`).join('') + (p.tags.length > n ? `<span>+${p.tags.length - n}</span>` : '');
+			const sel = (l) => `<span class="sel">${l}<svg><use href="#chev" /></svg></span>`;
+			const legend = (list) => `<ul class="legend">${[...new Set(list.map((p) => p.s))].sort((a, b) => Object.keys(STATUS).indexOf(a) - Object.keys(STATUS).indexOf(b)).map((s) => `<li><span class="led" data-status="${s}"></span>${STATUS[s]}</li>`).join('')}</ul>`;
+
+			const regRow = (p, cls = '') => `<a href="#" class="${cls}" data-p="${p.d}">${plogo(p)}<img class="b-thumb" src="${cover(p)}" alt="" /><span class="nm"><b>${esc(p.t)}</b><span class="ex">${esc(p.e)}</span></span><span class="st">${STATUS[p.s]}</span><span class="yr">${year(p)}</span></a>`;
+			const aCard = (p) => `<a href="#" class="a-card"><span class="vis"><img src="${cover(p)}" alt="" style="object-position: ${p.f}" loading="lazy" /><img class="badge" src="${logo(p)}" alt="" /></span><span class="txt"><span class="hd"><b>${esc(p.t)}</b>${led(p)}<span class="yr">${year(p)}</span></span><small>${esc(p.e)}</small></span></a>`;
+
+			function preview(p) {
+				document.querySelector('[data-b-prev]').innerHTML = `<div class="vis"><img src="${cover(p)}" alt="" style="object-position: ${p.f}" /><img class="badge" src="${logo(p)}" alt="" /></div><div class="txt"><div class="hd"><b>${esc(p.t)}</b><span class="st">${led(p)}${STATUS[p.s]}</span></div><p>${esc(p.e)}</p><div class="tg">${tags(p, 6)}</div></div>`;
+				document.querySelectorAll('[data-b-reg] a').forEach((a) => a.classList.toggle('on', a.dataset.p === p.d));
+			}
+
+			function render() {
+				document.querySelector('[data-side-featured]').innerHTML = featured.map((p) => `<div class="row">${plogo(p)}${p.t}<span class="meta">${year(p)}</span></div>`).join('');
+				document.querySelectorAll('[data-tools]').forEach((el) => {
+					const k = el.dataset.tools;
+					const list = k === 'reg' ? rest : PROJECTS;
+					el.innerHTML = (k === 'nostatus' ? '' : sel('Stato')) + sel('Tag') + sel('Più recenti') + (k === 'all' ? legend(list) : '');
+				});
+				document.querySelector('[data-x]').innerHTML = PROJECTS.map((p) => `<li><a href="#" class="x-row">${led(p)}<span><b>${esc(p.t)}</b><span class="ex">${esc(p.e)}</span><span class="tg">${tags(p)}</span></span><span class="yr">${year(p)}</span></a></li>`).join('');
+
+				document.querySelector('[data-a-grid]').innerHTML = featured.map(aCard).join('');
+				document.querySelector('[data-a-count]').textContent = `· ${rest.length}`;
+				document.querySelector('[data-a-reg]').innerHTML = rest.map((p) => regRow(p)).join('');
+
+				document.querySelector('[data-b-reg]').innerHTML =
+					`<div class="grp label">In vetrina <span>${featured.length}</span></div>` + featured.map((p) => regRow(p)).join('') +
+					`<div class="grp label">Tutti gli altri <span>${rest.length}</span></div>` + rest.map((p) => regRow(p)).join('');
+				const cur = document.querySelector('[data-b-reg] a.on')?.dataset.p || featured[0].d;
+				preview(by[cur]);
+
+				const groups = [
+					['in-progress', 'In corso', 'wide'],
+					[['maintained', 'completed'], 'Mantenuti e completati', 'cols'],
+					[['idea', 'archived'], 'Idee e archiviati', 'cols']
+				];
+				document.querySelector('[data-c]').innerHTML = groups.map(([st, title, kind]) => {
+					const sts = [].concat(st);
+					let list = PROJECTS.filter((p) => sts.includes(p.s));
+					if (kind === 'wide') list = [...featured.filter((p) => sts.includes(p.s)), ...list.filter((p) => !FEATURED.includes(p.d))];
+					const rows = kind === 'wide'
+						? `<div class="c-wide">${list.map((p) => `<a href="#"><span class="vis"><img src="${cover(p)}" alt="" style="object-position: ${p.f}" loading="lazy" /></span><span><span class="hd">${plogo(p)}<b>${esc(p.t)}</b>${FEATURED.includes(p.d) ? '<span class="pin">vetrina</span>' : ''}</span><span class="ex">${esc(p.e)}</span><span class="tg">${tags(p)}</span></span><span class="yr">${year(p)}</span></a>`).join('')}</div>`
+						: `<div class="c-cols">${list.map((p) => `<a href="#">${plogo(p)}<b>${esc(p.t)}</b><span class="ex">${esc(p.e)}</span><span class="yr">${year(p)}</span></a>`).join('')}</div>`;
+					return `<section class="c-sec"><h2 class="label">${sts.map((s) => `<span class="led" data-status="${s}"></span>`).join('')}${title} <span class="n">${list.length}</span></h2>${rows}</section>`;
+				}).join('');
+			}
+
+			// B: the preview follows the pointer and the keyboard focus.
+			const bReg = document.querySelector('[data-b-reg]');
+			const follow = (e) => {
+				const a = e.target.closest('a[data-p]');
+				if (a) preview(by[a.dataset.p]);
+			};
+			bReg.addEventListener('pointerover', follow);
+			bReg.addEventListener('focusin', follow);
+			document.addEventListener('click', (e) => {
+				if (e.target.closest('.window a')) e.preventDefault();
+			});
+
+			const name = (v) => DESC[v].split(':')[0];
+			const label = (v) => (/\d$/.test(v) ? `${v.slice(-1)} ${base(v).toUpperCase()} ${name(v)}` : `${v.toUpperCase()} ${name(v)}`);
+			document.querySelector('[data-buttons]').innerHTML = Object.keys(DESC).map((v) => `<button data-v="${v}">${label(v)}</button>`).join(' ');
+			const pick = (v) => {
+				if (!DESC[v]) return;
+				body.dataset.v = v;
+				body.dataset.base = base(v);
+				document.querySelectorAll('.switch [data-v]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.v === v)));
+				document.querySelector('[data-desc]').textContent = DESC[v];
+				document.querySelector('.scroll').scrollTop = 0;
+				history.replaceState(null, '', `${location.search}#${v}`);
+			};
+			const toggleTheme = () => {
+				root.dataset.theme = light() ? 'dark' : 'light';
+				render();
+			};
+			document.querySelector('.switch').addEventListener('click', (e) => {
+				const b = e.target.closest('[data-v]');
+				if (b) pick(b.dataset.v);
+			});
+			document.querySelector('[data-theme-toggle]').addEventListener('click', toggleTheme);
+			addEventListener('keydown', (e) => {
+				if (e.metaKey || e.ctrlKey || e.altKey || e.target.closest('input, textarea, select, [contenteditable]')) return;
+				const k = e.key.toLowerCase();
+				if (k === 't') toggleTheme();
+				else if (k === 'p') body.dataset.chrome = body.dataset.chrome === 'off' ? 'on' : 'off';
+				else if (/^\d$/.test(k)) pick(`${base(body.dataset.v)}${k}`);
+				else pick(k);
+			});
+
+			root.dataset.theme = matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark';
+			render();
+			pick(DESC[location.hash.slice(1)] ? location.hash.slice(1) : 'x');
+		</script>
+		<script>
+			// Mobile preview: the same file in a 390 px iframe, so the media queries are the real ones.
+			// The page drives the frame: variant, theme and sub-variant follow the switch bar; keys
+			// pressed inside the frame go back up to the page.
+			(() => {
+				const root = document.documentElement;
+				const body = document.body;
+				const press = (key) => body.dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true }));
+
+				if (new URLSearchParams(location.search).has('frame')) {
+					const style = document.createElement('style');
+					style.textContent = '.switch { display: none !important; }';
+					document.head.append(style);
+					addEventListener(
+						'keydown',
+						(e) => {
+							if (!e.isTrusted) return;
+							e.stopImmediatePropagation();
+							parent.postMessage({ mobileKey: e.key }, '*');
+						},
+						true
+					);
+					let applied = null;
+					addEventListener('message', ({ data }) => {
+						if (!data || !data.mobileState) return;
+						const { v, theme, photo, file } = data.mobileState;
+						if (file && file !== applied) {
+							applied = file;
+							const url = URL.createObjectURL(file);
+							document.querySelectorAll('[data-photo-slot]').forEach((el) => {
+								el.querySelector('.media').style.backgroundImage = `url(${url})`;
+								el.dataset.real = '';
+							});
+						}
+						if (theme && root.dataset.theme !== theme) press('t');
+						if (v && body.dataset.v !== v) {
+							press(v.replace(/\d+$/, ''));
+							if (/\d$/.test(v)) press(v.slice(-1));
+						}
+						if (photo && body.dataset.photo !== photo) press(photo);
+					});
+					return;
+				}
+
+				const KEY = `concept-mobile:${location.pathname}`;
+				const css = document.createElement('style');
+				css.textContent = `
+					.mobile-stage { position: fixed; inset: var(--mobile-top, 48px) 0 0; z-index: 50; display: none; place-items: center; background: var(--desk); }
+					body[data-mobile='on'] .mobile-stage { display: grid; }
+					.mobile-stage iframe { width: 390px; height: 844px; border: 0; border-radius: 44px; box-shadow: 0 0 0 10px #050408, 0 0 0 11px var(--edge), 0 30px 80px rgb(0 0 0 / 0.45); transform-origin: center; background: var(--desk); }
+					.switch [data-mobile-toggle] { order: 99; }
+				`;
+				document.head.append(css);
+
+				const sw = document.querySelector('.switch');
+				const button = document.createElement('button');
+				button.dataset.mobileToggle = '';
+				button.textContent = 'm mobile';
+				sw.append(button);
+
+				const stage = document.createElement('div');
+				stage.className = 'mobile-stage';
+				const frame = document.createElement('iframe');
+				frame.title = 'Anteprima mobile, 390 px';
+				stage.append(frame);
+				body.append(stage);
+
+				let file = null;
+				document.querySelector('[data-upload]')?.addEventListener('change', (e) => {
+					file = e.target.files?.[0] || file;
+					sync();
+				});
+				const state = () => ({ v: body.dataset.v, theme: root.dataset.theme, photo: body.dataset.photo, file });
+				const sync = () => frame.contentWindow && frame.contentWindow.postMessage({ mobileState: state() }, '*');
+				const fit = () => {
+					const top = sw.offsetHeight;
+					root.style.setProperty('--mobile-top', `${top}px`);
+					const scale = Math.min(1, (innerHeight - top - 48) / 844);
+					frame.style.transform = `scale(${scale})`;
+				};
+				const set = (on) => {
+					body.dataset.mobile = on ? 'on' : 'off';
+					button.setAttribute('aria-pressed', String(on));
+					try { localStorage.setItem(KEY, on ? 'on' : 'off'); } catch {}
+					if (on && !frame.src) frame.src = `${location.pathname}?frame#${body.dataset.v}`;
+					if (on) { fit(); sync(); }
+				};
+
+				frame.addEventListener('load', sync);
+				new MutationObserver(sync).observe(body, { attributes: true, attributeFilter: ['data-v', 'data-photo'] });
+				new MutationObserver(sync).observe(root, { attributes: true, attributeFilter: ['data-theme'] });
+				addEventListener('message', ({ data }) => data && data.mobileKey && press(data.mobileKey));
+				addEventListener('resize', fit);
+				button.addEventListener('click', () => set(body.dataset.mobile !== 'on'));
+				addEventListener('keydown', (e) => {
+					if (e.metaKey || e.ctrlKey || e.altKey || e.target.closest('input, textarea, select, [contenteditable]')) return;
+					if (e.key.toLowerCase() === 'm') set(body.dataset.mobile !== 'on');
+				});
+				let saved = null;
+				try { saved = localStorage.getItem(KEY); } catch {}
+				set(saved === 'on');
+			})();
+		</script>
+	</body>
+</html>

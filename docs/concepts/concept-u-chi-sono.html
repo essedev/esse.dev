@@ -1,0 +1,698 @@
+<!doctype html>
+<html lang="it">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Concept U - Chi sono</title>
+		<!--
+			Concept U: dove va la foto nella pagina Chi sono, e se il percorso resta prosa o diventa
+			una timeline.
+			Tasti: x a b c per la variante, 1 2 3 per le posizioni della foto in A, t tema, p nasconde
+			la barra, m anteprima mobile. Nella barra "prova una foto" carica un'immagine
+			dal disco al posto del segnaposto (resta nel browser, non va da nessuna parte).
+
+			Il problema: la pagina è solo testo. Tre paragrafi densi, il secondo racconta cinque
+			tappe in una frase sola; nessun volto in tutto il sito.
+
+			X  oggi: titolo, tre paragrafi, colonna "Scrivimi" a destra da 80rem in su.
+			A  percorso: la foto sta accanto al titolo, piccola; il secondo paragrafo diventa una
+			   timeline con la stessa griglia di Adesso e Modifiche (data a sinistra, testo a destra).
+			   Scommette che il percorso si legge meglio a tappe e che il volto basta vederlo una volta.
+			B  biglietto: la foto apre la colonna "Scrivimi", con nome e ruolo, come un biglietto da
+			   visita; il testo resta com'è. Scommette che la foto serve dove si decide di scrivere,
+			   e che la prosa non va toccata. Sotto 80rem il biglietto sale sopra il testo.
+			C  ritratto: header diviso, ritratto grande a sinistra e accanto il primo paragrafo con
+			   tre fatti; il percorso è una striscia orizzontale di tappe, i contatti in riga in fondo.
+			   Scommette che la pagina è una presentazione, e la persona è il primo contenuto.
+
+			Trattamento (1 2 3): 1 naturale, col filo chiaro del vetro su tutto il bordo; 2 lilla,
+			bianco e nero virato con l'accento del tema (mix-blend-mode: color su un velo); 3 monitor,
+			il viraggio di 2 più le righe del velo CRT. Tutti in CSS su un wrapper attorno
+			all'immagine: nel sito vero il velo è uno pseudo-elemento, niente stili inline.
+
+			Mappatura sul codice di oggi (fattibilità, non piano): la pagina è il blocco `about` di
+			`src/pages/[lang]/[section]/index.astro`, testo in `src/content/pages/about/<lang>.md`,
+			contatti in `contact/<lang>.md`. Nuovo: la foto (un file in `src/content/pages/about/`,
+			servito da `astro:assets` come le cover) e, per A e C, la timeline come dati nel
+			frontmatter (`path: [{ year?, title, note, link? }]` tradotto per lingua), così la prosa
+			del secondo paragrafo non va tenuta allineata a mano. L'agente legge il testo: la
+			timeline va anche nell'indice del sito.
+			Dati: testi veri da about/it.md e contact/it.md. Le date che i testi non danno non sono
+			inventate: insegnamento e Let's Code Italia sono "poi", Yellow Tech è "oggi" (l'anno di
+			ingresso non è scritto da nessuna parte), la certificazione non ha data. I titoli delle
+			tappe sono riformulati dal paragrafo, le note sono sue frasi accorciate. La foto è un
+			segnaposto astratto: nessuna persona generata.
+
+			Giro 2: scelta A per la timeline, ma la foto accanto al titolo non piace e nemmeno i
+			trattamenti. Tolti 2 lilla e 3 monitor: la foto resta naturale, col solo filo del vetro
+			delle cover. A resta come riferimento del giro 1; le cifre ora spostano la foto dentro A:
+			A1 colonna (apre la colonna Scrivimi, sopra i contatti), A2 intro (accanto al primo
+			paragrafo, più grande), A3 orizzontale (una foto larga 21:9 fra il titolo e il testo,
+			per una foto d'ambiente più che un ritratto).
+		-->
+		<style>
+			@font-face { font-family: 'Geist'; font-weight: 400; src: url(https://cdn.jsdelivr.net/fontsource/fonts/geist@latest/latin-400-normal.woff2) format('woff2'); }
+			@font-face { font-family: 'Geist'; font-weight: 500; src: url(https://cdn.jsdelivr.net/fontsource/fonts/geist@latest/latin-500-normal.woff2) format('woff2'); }
+			@font-face { font-family: 'Departure Mono'; src: url(https://cdn.jsdelivr.net/gh/rektdeckard/departure-mono@main/public/assets/DepartureMono-Regular.woff2) format('woff2'); }
+
+			/* Scuro: i token di @theme. */
+			:root {
+				--desk: #0a0912;
+				--wall-a: rgb(181 156 255 / 0.24);
+				--wall-b: rgb(110 80 255 / 0.22);
+				--light: rgb(181 156 255 / 0.32);
+				--grid: rgb(255 255 255 / 0.03);
+				--frame: rgb(8 8 11 / 0.2);
+				--glass: rgb(14 14 18 / 0.48);
+				--edge: rgb(255 255 255 / 0.12);
+				--shadow: 0 12px 32px rgb(0 0 0 / 0.35);
+				--surface: rgb(255 255 255 / 0.05);
+				--hover: rgb(255 255 255 / 0.08);
+				--line: #23232b;
+				--fg: #efedf5;
+				--text: #cbc9d4;
+				--muted: #9c9aa8;
+				--subtle: #908e9b;
+				--accent: #b59cff;
+				--on-accent: #140c2b;
+				--live: #7dff9b;
+				--glow: 3.5px;
+				--scan: rgb(255 255 255 / 0.018);
+				--vignette: rgb(0 0 0 / 0.14);
+				--shade: 0 0 0;
+				--photo-edge: rgb(255 255 255 / 0.14);
+				--photo-scan: rgb(0 0 0 / 0.22);
+				--radius-control: 6px;
+				--radius-panel: 10px;
+				--radius-card: 11px;
+				--sans: 'Geist', ui-sans-serif, system-ui, sans-serif;
+				--mono: 'Departure Mono', ui-monospace, monospace;
+				color-scheme: dark;
+			}
+			/* Chiaro: la lavanda fumé. */
+			:root[data-theme='light'] {
+				--desk: #bcb2dc;
+				--wall-a: rgb(157 133 255 / 0.32);
+				--wall-b: rgb(110 80 255 / 0.18);
+				--light: rgb(255 255 255 / 0.4);
+				--grid: rgb(40 25 90 / 0.04);
+				--frame: rgb(230 226 242 / 0.3);
+				--glass: rgb(236 232 244 / 0.62);
+				--edge: rgb(255 255 255 / 0.55);
+				--shadow: 0 1px 2px rgb(40 25 90 / 0.08), 0 14px 36px rgb(40 25 90 / 0.16);
+				--surface: rgb(40 25 90 / 0.07);
+				--hover: rgb(40 25 90 / 0.1);
+				--line: #cfc9de;
+				--fg: #17141f;
+				--text: #312d3c;
+				--muted: #504b60;
+				--subtle: #57526a;
+				--accent: #5f40d6;
+				--on-accent: #ffffff;
+				--live: #179a4c;
+				--glow: 2px;
+				--scan: rgb(40 25 90 / 0.03);
+				--vignette: rgb(40 24 90 / 0.07);
+				--shade: 40 24 90;
+				--photo-edge: rgb(255 255 255 / 0.6);
+				--photo-scan: rgb(40 25 90 / 0.12);
+				color-scheme: light;
+			}
+
+			* { box-sizing: border-box; }
+			html, body { height: 100%; margin: 0; }
+			body {
+				font-family: var(--sans);
+				font-weight: 380;
+				color: var(--fg);
+				background:
+					repeating-linear-gradient(to right, var(--grid) 0 1px, transparent 1px 48px),
+					repeating-linear-gradient(to bottom, var(--grid) 0 1px, transparent 1px 48px),
+					radial-gradient(22% 26% at 14% 6%, var(--light), transparent 70%),
+					linear-gradient(135deg, var(--wall-a) 0%, var(--wall-b) 50%, transparent 100%),
+					var(--desk);
+				-webkit-font-smoothing: antialiased;
+				display: flex;
+				flex-direction: column;
+			}
+			body::after { content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 10; background: repeating-linear-gradient(to bottom, var(--scan) 0 1px, transparent 1px 3px), radial-gradient(ellipse at center, transparent 50%, var(--vignette)); }
+			a { color: inherit; text-decoration: none; }
+			p, h1, h2, ol, ul, dl, dd, figure { margin: 0; }
+			ol, ul { list-style: none; padding: 0; }
+			img { display: block; }
+			svg.i { width: 16px; height: 16px; flex: none; }
+			[hidden] { display: none !important; }
+
+			/* Il selettore delle varianti, fuori dalla finestra. Non fa parte del design. */
+			.switch { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; padding: 10px 14px; font-family: var(--mono); font-size: 12px; color: var(--muted); }
+			.switch button, .switch label { font: inherit; border: 0; padding: 6px 10px; border-radius: 6px; background: var(--surface); color: var(--text); cursor: pointer; }
+			.switch button[aria-pressed='true'] { background: var(--fg); color: var(--desk); }
+			.switch .sep { width: 1px; height: 18px; background: var(--line); margin: 0 4px; }
+			.switch input[type='file'] { display: none; }
+			.switch .theme { margin-left: auto; }
+			.switch p { margin: 0 0 0 10px; flex: 1 1 260px; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+			body[data-chrome='off'] .switch { display: none; }
+
+			/* Il guscio: la finestra con lista e pannello. */
+			.window { flex: 1; min-height: 0; margin: 0 12px 12px; padding: 8px; display: grid; grid-template-columns: clamp(17rem, 22vw, 22rem) minmax(0, 1fr); gap: 8px; border-radius: 18px; background: var(--frame); box-shadow: inset 0 1px 0 var(--edge), var(--shadow); }
+			.card { border-radius: var(--radius-card); overflow: hidden; position: relative; background: var(--glass); -webkit-backdrop-filter: blur(32px) saturate(120%); backdrop-filter: blur(32px) saturate(120%); box-shadow: inset 0 1px 0 var(--edge), var(--shadow); }
+			.side { padding: 14px; display: flex; flex-direction: column; gap: 2px; overflow: auto; }
+			.pane { display: flex; flex-direction: column; min-height: 0; }
+			.logo { font-family: var(--mono); font-size: 13px; padding: 4px 8px 14px; text-shadow: 0 0 var(--glow) color-mix(in srgb, var(--accent) 55%, transparent); }
+			.caret { display: inline-block; width: 0.5em; height: 1.05em; vertical-align: -0.15em; margin-left: 0.15em; background: var(--accent); box-shadow: 0 0 4px var(--accent); animation: blink 1.1s steps(1) infinite; }
+			@keyframes blink { 50% { opacity: 0; } }
+			.search { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 12px; color: var(--subtle); background: var(--surface); border-radius: var(--radius-control); padding: 9px 10px; margin-bottom: 14px; }
+			.kbd { display: inline-flex; align-items: center; justify-content: center; min-width: 1.4rem; height: 1.4rem; padding: 0 0.35rem; border-radius: 4px; background: var(--surface); color: var(--muted); font-family: var(--mono); font-size: 0.7rem; line-height: 1; }
+			.row { display: flex; align-items: center; gap: 12px; padding: 7px 8px; border-radius: var(--radius-control); font-size: 14.5px; color: var(--fg); }
+			.row.on { background: var(--surface); }
+			.row .meta { margin-left: auto; font-family: var(--mono); font-size: 11px; color: var(--subtle); }
+			.row .n { font-family: var(--mono); font-size: 11px; color: var(--subtle); }
+			.row svg.i { width: 14px; height: 14px; color: var(--subtle); }
+			.row svg.live { color: var(--live); }
+			.row svg.bot { color: var(--accent); filter: drop-shadow(0 0 3px color-mix(in srgb, var(--accent) 60%, transparent)); }
+			.row.more { color: var(--muted); font-family: var(--mono); font-size: 12px; }
+			.side .group { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--subtle); padding: 18px 8px 6px; display: flex; justify-content: space-between; }
+			.side img { width: 20px; height: 20px; border-radius: 5px; }
+			.bar { height: 48px; flex: none; display: flex; align-items: center; padding: 0 clamp(1.25rem, 3.5vw, 3rem); font-family: var(--mono); font-size: 13px; color: var(--subtle); gap: 8px; }
+			.bar b { font-weight: 400; color: var(--fg); }
+			.bar .end { margin-left: auto; }
+			.scroll { flex: 1; min-height: 0; overflow: auto; overscroll-behavior: none; }
+			.page { padding: clamp(1.5rem, 3vw, 3rem) clamp(1.25rem, 3.5vw, 3rem) 5rem; }
+
+			/* Pezzi comuni del sistema. */
+			.label { font-family: var(--mono); font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--subtle); text-shadow: 0 0 var(--glow) color-mix(in srgb, var(--accent) 55%, transparent); }
+			.mono { font-family: var(--mono); }
+			.led { display: inline-block; flex: none; width: 7px; height: 7px; border-radius: 999px; background: var(--live); box-shadow: 0 0 5px color-mix(in srgb, var(--live) 75%, transparent); animation: breathe 2.8s cubic-bezier(0.16, 1, 0.3, 1) infinite; }
+			.led.off { background: var(--subtle); box-shadow: none; animation: none; }
+			@keyframes breathe { 50% { opacity: 0.45; } }
+
+			/* La pagina, come oggi: titolo, descrizione, corpo. */
+			.head { display: flex; flex-direction: column; gap: 16px; }
+			.h1 { font-size: clamp(2rem, 1.2rem + 2.6vw, 3.5rem); line-height: 1.05; font-weight: 500; letter-spacing: -0.025em; }
+			.desc { color: var(--muted); font-size: clamp(1rem, 0.92rem + 0.28vw, 1.1875rem); text-wrap: pretty; }
+			.body { margin-top: clamp(2rem, 4vw, 3.5rem); display: grid; gap: 48px clamp(2rem, 5vw, 6rem); }
+			.prose { display: flex; flex-direction: column; gap: 1.25em; font-size: clamp(1rem, 0.92rem + 0.28vw, 1.1875rem); line-height: 1.75; color: var(--text); text-wrap: pretty; }
+			.prose a { color: var(--fg); text-decoration: underline; text-decoration-color: var(--subtle); text-underline-offset: 4px; }
+			.prose a:hover { text-decoration-color: var(--fg); }
+			@media (width >= 80rem) {
+				.body.cols { grid-template-columns: minmax(0, 1fr) minmax(14rem, 19rem); }
+				.stick { position: sticky; top: clamp(1.5rem, 3vw, 3.5rem); align-self: start; }
+				.contact.stick { padding-top: 8px; }
+			}
+
+			/* Scrivimi: la colonna dei contatti di oggi. */
+			.contact { display: flex; flex-direction: column; gap: 16px; }
+			.contact .sub { color: var(--text); text-wrap: pretty; }
+			.links { margin-top: 8px; display: flex; flex-direction: column; gap: 4px; }
+			.mail { display: flex; width: 100%; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 14px; border: 0; border-radius: var(--radius-control); background: var(--surface); color: var(--fg); font-family: var(--mono); font-size: 0.875rem; cursor: pointer; transition: background 0.15s; }
+			.mail:hover { background: var(--hover); }
+			.mail svg { color: var(--subtle); }
+			.mail .ok { display: none; color: var(--live); }
+			.mail[data-copied] .cp { display: none; }
+			.mail[data-copied] .ok { display: block; }
+			.ext { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 14px; border-radius: var(--radius-control); color: var(--text); transition: background 0.15s, color 0.15s; }
+			.ext:hover { background: color-mix(in srgb, var(--surface) 60%, transparent); color: var(--fg); }
+			.ext svg { color: var(--subtle); }
+
+			/* La foto: un wrapper col velo del trattamento sopra il media. Il segnaposto è astratto,
+			   toni da fotografia senza una persona; "prova una foto" lo sostituisce. */
+			.photo { position: relative; isolation: isolate; overflow: hidden; border-radius: var(--radius-panel); aspect-ratio: 4 / 5; background: var(--surface); }
+			.photo .media {
+				position: absolute; inset: 0; background-size: cover; background-position: center 30%;
+				background-image:
+					radial-gradient(38% 30% at 50% 38%, rgb(214 188 168 / 0.95), transparent 70%),
+					radial-gradient(60% 45% at 50% 95%, rgb(58 56 70 / 0.95), transparent 72%),
+					radial-gradient(70% 60% at 20% 15%, rgb(170 176 168 / 0.7), transparent 70%),
+					linear-gradient(160deg, #9aa0a6, #6d6a73 55%, #4a4650);
+			}
+			.photo .ph { white-space: nowrap; position: absolute; left: 8px; bottom: 8px; z-index: 3; display: inline-flex; align-items: center; gap: 6px; padding: 4px 7px; border-radius: 4px; background: rgb(10 9 18 / 0.55); color: #efedf5; font-family: var(--mono); font-size: 10px; letter-spacing: 0.04em; }
+			.photo .ph svg { width: 12px; height: 12px; }
+			.photo[data-real] .ph { display: none; }
+			/* Il filo chiaro su tutto il bordo, sopra al media e ai veli. */
+			.photo::after { content: ''; position: absolute; inset: 0; z-index: 2; border-radius: inherit; box-shadow: inset 0 0 0 1px var(--photo-edge); pointer-events: none; }
+
+			/* A, percorso. */
+			.a-head { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 24px clamp(1.5rem, 4vw, 3rem); align-items: center; }
+			.a-head .photo { width: clamp(5.5rem, 3rem + 5vw, 8.5rem); }
+			.a-main { display: flex; flex-direction: column; gap: 40px; }
+			.a-path h2 { margin-bottom: 20px; }
+			.a-side { display: flex; flex-direction: column; gap: 24px; }
+			.a-side .photo { width: 100%; max-width: 19rem; }
+			body[data-v='a2'] .a-intro { display: grid; grid-template-columns: clamp(9rem, 5rem + 7vw, 13rem) minmax(0, 1fr); gap: 20px clamp(1.5rem, 3vw, 2.5rem); align-items: start; }
+			.a-wide { margin-top: clamp(2rem, 4vw, 3rem); aspect-ratio: 21 / 9; }
+			.a-wide .media { background-position: center 40%; }
+			.tl { display: flex; flex-direction: column; gap: 28px; }
+			.tl li { display: grid; grid-template-columns: 6rem minmax(0, 1fr); gap: 6px 2.5rem; }
+			.tl time { padding-top: 4px; font-family: var(--mono); font-size: 0.75rem; color: var(--subtle); font-variant-numeric: tabular-nums; }
+			.tl b { display: block; font-weight: 500; font-size: 1.1875rem; letter-spacing: -0.01em; color: var(--fg); }
+			.tl p { margin-top: 6px; color: var(--text); font-size: 1.0625rem; line-height: 1.65; text-wrap: pretty; }
+			.chip { margin-top: 10px; display: inline-flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 0.75rem; color: var(--muted); transition: color 0.15s; }
+			.chip:hover { color: var(--fg); }
+			.chip img { width: 18px; height: 18px; border-radius: 4px; }
+			.chip svg { width: 14px; height: 14px; transition: translate 0.2s; }
+			.chip:hover svg { translate: 3px 0; }
+			.cert { display: inline-flex; align-items: center; gap: 10px; padding: 8px 12px; border-radius: var(--radius-control); background: color-mix(in srgb, var(--surface) 60%, transparent); font-family: var(--mono); font-size: 0.75rem; color: var(--text); }
+			.cert svg { width: 14px; height: 14px; color: var(--accent); }
+
+			/* B, biglietto. Raggi concentrici: 11px fuori = 6px della foto + 5px di passe-partout. */
+			.b-card { display: flex; flex-direction: column; border-radius: var(--radius-card); padding: 5px; background: color-mix(in srgb, var(--surface) 60%, transparent); box-shadow: inset 0 0 0 1px var(--edge); }
+			.b-card .photo { border-radius: var(--radius-control); aspect-ratio: 1; }
+			.b-id { padding: 14px 11px 4px; display: flex; flex-direction: column; gap: 6px; }
+			.b-id b { font-weight: 500; font-size: 1.125rem; letter-spacing: -0.01em; color: var(--fg); }
+			.b-id span { display: flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 0.75rem; color: var(--muted); }
+			.b-card .contact { padding: 14px 11px 6px; }
+			.b-card .links { margin-top: 0; }
+			.b-card .ext { padding: 10px 12px; }
+			@media (width < 80rem) {
+				.b-body .b-card { order: -1; display: grid; grid-template-columns: clamp(6rem, 18vw, 9rem) minmax(0, 1fr); gap: 0 6px; align-items: start; }
+				.b-body .b-card .photo { aspect-ratio: 4 / 5; }
+				.b-body .b-card .contact { grid-column: 1 / -1; }
+			}
+
+			/* C, ritratto. */
+			.c-hero { display: grid; grid-template-columns: clamp(14rem, 10rem + 10vw, 22rem) minmax(0, 1fr); gap: 32px clamp(2rem, 4vw, 3.5rem); align-items: start; }
+			.c-hero .head { gap: 14px; }
+			.c-lead { margin-top: 28px; font-size: clamp(1.0625rem, 0.98rem + 0.35vw, 1.3125rem); line-height: 1.65; color: var(--text); text-wrap: pretty; }
+			.c-facts { margin-top: 32px; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 14px 28px; align-items: baseline; font-size: 0.9375rem; }
+			.c-facts dd { color: var(--text); display: flex; align-items: center; gap: 10px; }
+			.c-path { margin-top: clamp(3rem, 6vw, 4.5rem); }
+			.c-path h2 { margin-bottom: 22px; }
+			/* L'asse della striscia è una riga che attraversa i punti: tempo, non selezione. */
+			.strip { position: relative; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 20px; }
+			.strip::before { content: ''; position: absolute; left: 0; right: 0; top: 29px; height: 1px; background: var(--line); }
+			.strip li { position: relative; display: flex; flex-direction: column; gap: 8px; }
+			.strip time { font-family: var(--mono); font-size: 0.75rem; color: var(--subtle); height: 18px; }
+			.strip .dot { position: relative; width: 9px; height: 9px; margin: 2px 0 8px; border-radius: 999px; background: var(--subtle); box-shadow: 0 0 0 4px color-mix(in srgb, var(--glass) 100%, transparent); }
+			.strip .dot.now { background: var(--live); box-shadow: 0 0 0 4px var(--glass), 0 0 6px color-mix(in srgb, var(--live) 70%, transparent); }
+			.strip b { font-weight: 500; font-size: 1.0625rem; letter-spacing: -0.01em; color: var(--fg); line-height: 1.3; }
+			.strip p { color: var(--muted); font-size: 0.9375rem; line-height: 1.55; text-wrap: pretty; }
+			.c-rest { margin-top: clamp(3rem, 6vw, 4.5rem); display: grid; gap: 40px; }
+			.c-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 4px; }
+			.c-row .mail { width: auto; }
+			.c-row .ext { padding: 10px 12px; gap: 8px; }
+
+			@media (width < 64rem) {
+				.window { grid-template-columns: minmax(0, 1fr); margin: 0 6px 6px; padding: 6px; }
+				.side { display: none; }
+				.c-hero { grid-template-columns: minmax(0, 1fr); }
+				.c-hero .photo { aspect-ratio: 4 / 3; }
+				.strip { grid-template-columns: minmax(0, 1fr); gap: 22px; }
+				.strip::before { display: none; }
+				.strip li { display: grid; grid-template-columns: 4.5rem minmax(0, 1fr); gap: 4px 16px; }
+				.strip li > :not(time) { grid-column: 2; }
+				.strip time { grid-row: 1 / span 3; padding-top: 3px; }
+				.strip .dot { display: none; }
+			}
+			@media (width < 40rem) {
+				.tl li { grid-template-columns: minmax(0, 1fr); }
+				.a-head { grid-template-columns: minmax(0, 1fr) 5.5rem; align-items: start; }
+				.a-head .photo { width: 5.5rem; }
+				body[data-v='a2'] .a-intro { grid-template-columns: minmax(0, 1fr); }
+				.a-intro .photo { width: 10rem; }
+				.a-wide { aspect-ratio: 4 / 3; }
+				.c-facts { grid-template-columns: minmax(0, 1fr); gap: 4px; }
+				.c-facts dd { margin-bottom: 10px; }
+			}
+		</style>
+	</head>
+	<body data-v="x">
+		<svg width="0" height="0" style="position: absolute">
+			<symbol id="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14" /><path d="m12 5 7 7-7 7" /></symbol>
+			<symbol id="out" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 7h10v10" /><path d="M7 17 17 7" /></symbol>
+			<symbol id="copy" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="14" height="14" x="8" y="8" rx="2" ry="2" /><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2" /></symbol>
+			<symbol id="check" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5" /></symbol>
+			<symbol id="image" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2" /><circle cx="9" cy="9" r="2" /><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" /></symbol>
+			<symbol id="house" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8" /><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /></symbol>
+			<symbol id="user" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></symbol>
+			<symbol id="activity" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.49 12H2" /></symbol>
+			<symbol id="bot" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 6V2H8" /><path d="m8 18-4 4V8a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2Z" /><path d="M2 12h2" /><path d="M9 11v2" /><path d="M15 11v2" /><path d="M20 12h2" /></symbol>
+			<symbol id="award" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15.477 12.89 1.515 8.526a.5.5 0 0 1-.81.47l-3.58-2.687a1 1 0 0 0-1.197 0l-3.586 2.686a.5.5 0 0 1-.81-.469l1.514-8.526" /><circle cx="12" cy="8" r="6" /></symbol>
+		</svg>
+
+		<div class="switch">
+			<span data-buttons></span>
+			<span class="sep"></span>
+			<label>prova una foto<input type="file" accept="image/*" data-upload /></label>
+			<p data-desc></p>
+			<button class="theme" data-theme-toggle>t tema</button>
+		</div>
+
+		<div class="window">
+			<aside class="card side">
+				<div class="logo">esse.dev<span class="caret"></span></div>
+				<div class="search">Cerca <span class="kbd">/</span></div>
+				<div class="row"><svg class="i"><use href="#house" /></svg>Benvenuto</div>
+				<div class="row on"><svg class="i"><use href="#user" /></svg>Chi sono</div>
+				<div class="row"><svg class="i live"><use href="#activity" /></svg>Adesso<span class="meta">set 2026</span></div>
+				<div class="row"><svg class="i bot"><use href="#bot" /></svg>Agente</div>
+				<div class="group">Progetti <span>24</span></div>
+				<div class="row"><img src="../../src/content/projects/relay/logo.png" alt="" />Relay<span class="meta">2026</span></div>
+				<div class="row"><img data-logo="nexus" alt="" />Nexus<span class="meta">2026</span></div>
+				<div class="row"><img src="../../src/content/projects/varco/logo.png" alt="" />Varco<span class="meta">2026</span></div>
+				<div class="row"><img data-logo="pgbee" alt="" />pgbee<span class="meta">2026</span></div>
+				<div class="row"><img data-logo="zeno" alt="" />Zeno<span class="meta">2026</span></div>
+				<div class="row"><img src="../../src/content/projects/floppy/logo.png" alt="" />Floppy<span class="meta">2026</span></div>
+				<div class="row more"><svg class="i"><use href="#arrow" /></svg>tutti i 24</div>
+				<div class="group">Metodo <span>4</span></div>
+				<div class="row"><span class="n">01</span>Architettura prima del codice</div>
+				<div class="row"><span class="n">02</span>Il contesto è il lavoro</div>
+				<div class="row"><span class="n">03</span>Misurare invece di fidarsi</div>
+				<div class="row"><span class="n">04</span>Il mio setup</div>
+			</aside>
+
+			<main class="card pane">
+				<div class="bar">~ / <b>chi-sono</b><span class="end">en <b>it</b></span></div>
+				<div class="scroll">
+					<!-- X, oggi. -->
+					<div class="page" data-only="x">
+						<header class="head">
+							<h1 class="h1">Chi sono</h1>
+							<p class="desc">Chi sono, da dove arrivo e come scrivermi.</p>
+						</header>
+						<div class="body cols">
+							<div class="prose">
+								<p data-text="role"></p>
+								<p>Ci sono arrivato per una strada non lineare. Nel 2021 ho seguito per un anno a Pavia uno dei primi corsi di laurea italiani in Intelligenza Artificiale, quando AI Engineer non era ancora un mestiere, poi ho scelto il lavoro. Ho insegnato a programmare ai ragazzi, ho provato a fare startup nell'EdTech con Let's Code Italia, poi diventata <a href="#">Ethicode</a>, di cui ho progettato e sviluppato tutta la piattaforma, e dal 2023 ho lavorato in una software house, con progetti da freelance in parallelo.</p>
+								<p data-text="rest"></p>
+							</div>
+							<section class="contact stick" data-contact></section>
+						</div>
+					</div>
+
+					<!-- A, percorso. -->
+					<div class="page" data-only="a a1 a2 a3">
+						<div class="a-head">
+							<header class="head">
+								<h1 class="h1">Chi sono</h1>
+								<p class="desc">Chi sono, da dove arrivo e come scrivermi.</p>
+							</header>
+							<figure class="photo" data-photo-slot data-only="a"></figure>
+						</div>
+						<figure class="photo a-wide" data-photo-slot data-only="a3"></figure>
+						<div class="body cols">
+							<div class="a-main">
+								<div class="a-intro">
+									<figure class="photo" data-photo-slot data-only="a2"></figure>
+									<div class="prose"><p data-text="role"></p></div>
+								</div>
+								<section class="a-path">
+									<h2 class="label">Il percorso</h2>
+									<ol class="tl" data-path="tl"></ol>
+								</section>
+								<div class="prose"><p data-text="rest-short"></p></div>
+								<p><span class="cert"><svg><use href="#award" /></svg>Claude Certified Architect - Foundations · Anthropic</span></p>
+							</div>
+							<div class="a-side stick">
+								<figure class="photo" data-photo-slot data-only="a1"></figure>
+								<section class="contact" data-contact></section>
+							</div>
+						</div>
+					</div>
+
+					<!-- B, biglietto. -->
+					<div class="page" data-only="b">
+						<header class="head">
+							<h1 class="h1">Chi sono</h1>
+							<p class="desc">Chi sono, da dove arrivo e come scrivermi.</p>
+						</header>
+						<div class="body cols b-body">
+							<div class="prose">
+								<p data-text="role"></p>
+								<p>Ci sono arrivato per una strada non lineare. Nel 2021 ho seguito per un anno a Pavia uno dei primi corsi di laurea italiani in Intelligenza Artificiale, quando AI Engineer non era ancora un mestiere, poi ho scelto il lavoro. Ho insegnato a programmare ai ragazzi, ho provato a fare startup nell'EdTech con Let's Code Italia, poi diventata <a href="#">Ethicode</a>, di cui ho progettato e sviluppato tutta la piattaforma, e dal 2023 ho lavorato in una software house, con progetti da freelance in parallelo.</p>
+								<p data-text="rest"></p>
+							</div>
+							<aside class="b-card stick contact-card">
+								<figure class="photo" data-photo-slot></figure>
+								<div class="b-id">
+									<b>Simone Salerno</b>
+									<span><i class="led"></i>Lead AI Engineer · Yellow Tech · Milano</span>
+								</div>
+								<section class="contact" data-contact></section>
+							</aside>
+						</div>
+					</div>
+
+					<!-- C, ritratto. -->
+					<div class="page" data-only="c">
+						<div class="c-hero">
+							<figure class="photo" data-photo-slot></figure>
+							<div>
+								<header class="head">
+									<h1 class="h1">Chi sono</h1>
+									<p class="desc">Chi sono, da dove arrivo e come scrivermi.</p>
+								</header>
+								<p class="c-lead" data-text="role"></p>
+								<dl class="c-facts">
+									<dt class="label">adesso</dt><dd><i class="led"></i>Lead AI Engineer in Yellow Tech</dd>
+									<dt class="label">base</dt><dd>Milano</dd>
+									<dt class="label">certificazione</dt><dd>Claude Certified Architect - Foundations, Anthropic</dd>
+								</dl>
+							</div>
+						</div>
+						<section class="c-path">
+							<h2 class="label">Il percorso</h2>
+							<ol class="strip" data-path="strip"></ol>
+						</section>
+						<div class="c-rest">
+							<div class="prose"><p data-text="rest-short"></p></div>
+							<section class="contact" data-contact data-inline></section>
+						</div>
+					</div>
+				</div>
+			</main>
+		</div>
+
+		<script>
+			const DESC = {
+				x: 'oggi: titolo, tre paragrafi, Scrivimi a destra',
+				a: 'percorso: foto piccola accanto al titolo, il secondo paragrafo diventa una timeline a tappe',
+				a1: 'colonna: la timeline di A, la foto apre la colonna Scrivimi sopra i contatti',
+				a2: 'intro: la timeline di A, la foto accanto al primo paragrafo, più grande',
+				a3: 'orizzontale: la timeline di A, una foto larga fra il titolo e il testo',
+				b: 'biglietto: la foto apre la colonna Scrivimi con nome e ruolo, il testo resta com\'è',
+				c: 'ritratto: header diviso col ritratto grande, il percorso in una striscia, contatti in riga'
+			};
+
+			// Testi veri, da src/content/pages/about/it.md e contact/it.md.
+			const TEXT = {
+				role: 'Sono Lead AI Engineer in Yellow Tech, a Milano. Le scelte tecniche e architetturali delle soluzioni AI che costruiamo per i clienti passano da me, dalla valutazione di fattibilità alla messa in produzione. Accanto ai progetti curo il metodo di engineering del team, cioè le convenzioni e la documentazione che rendono ripetibile il modo in cui lavoriamo, e le piattaforme interne che usiamo ogni giorno.',
+				rest: 'Il resto del tempo lo passo a costruire cose mie, che trovi tra i <a href="#">progetti</a>, e a capire cosa di nuovo nell\'AI regge davvero in produzione. Come lavoro con gli agenti l\'ho scritto nel <a href="#">metodo</a>. Ho la certificazione Claude Certified Architect - Foundations di Anthropic.',
+				'rest-short': 'Il resto del tempo lo passo a costruire cose mie, che trovi tra i <a href="#">progetti</a>, e a capire cosa di nuovo nell\'AI regge davvero in produzione. Come lavoro con gli agenti l\'ho scritto nel <a href="#">metodo</a>.'
+			};
+			// Le tappe del secondo paragrafo. "poi" e "oggi" dove i testi non danno l'anno.
+			const PATH = [
+				{ year: '2021', title: 'Intelligenza Artificiale a Pavia', note: 'Un anno in uno dei primi corsi di laurea italiani in AI, quando AI Engineer non era ancora un mestiere. Poi ho scelto il lavoro.' },
+				{ year: 'poi', title: 'Insegnare a programmare', note: 'Ho insegnato a programmare ai ragazzi.' },
+				{ year: 'poi', title: "Let's Code Italia, poi Ethicode", note: "Una startup nell'EdTech: ho progettato e sviluppato tutta la piattaforma.", link: true },
+				{ year: '2023', title: 'Software house e freelance', note: 'Progetti per clienti, con lavori da freelance in parallelo.' },
+				{ year: 'oggi', title: 'Lead AI Engineer in Yellow Tech', note: 'Scelte tecniche e architetturali delle soluzioni AI per i clienti, il metodo del team, le piattaforme interne.', now: true }
+			];
+			const LINKS = [
+				['LinkedIn', 'https://www.linkedin.com/in/simone-salerno'],
+				['GitHub', 'https://github.com/essedev/'],
+				['Instagram', 'https://www.instagram.com/essedotdev/'],
+				['X', 'https://x.com/essedotdev/']
+			];
+
+			const icon = (id, cls = '') => `<svg class="i ${cls}"><use href="#${id}" /></svg>`;
+			const ethicode = () => `<a class="chip" href="#"><img data-logo="ethicode" alt="" /><i class="led off"></i>Ethicode ${icon('arrow')}</a>`;
+			const mail = `<button type="button" class="mail" data-copy>hello@esse.dev${icon('copy', 'cp')}${icon('check', 'ok')}</button>`;
+			const ext = LINKS.map(([n, u]) => `<a class="ext" href="${u}" target="_blank" rel="noopener noreferrer">${n}${icon('out')}</a>`);
+
+			document.querySelectorAll('[data-text]').forEach((el) => (el.innerHTML = TEXT[el.dataset.text]));
+			document.querySelectorAll('[data-contact]').forEach((el) => {
+				const inline = el.hasAttribute('data-inline');
+				el.innerHTML = `<h2 class="label">Scrivimi</h2>
+					<p class="sub">Sono aperto a talk, collaborazioni su articoli e side project selezionati. Per tutto il resto, una mail va benissimo.</p>
+					<div class="${inline ? 'c-row' : 'links'}">${mail}${ext.join('')}</div>`;
+			});
+			document.querySelector('[data-path="tl"]').innerHTML = PATH.map(
+				(s) => `<li><time>${s.year}</time><div><b>${s.title}</b><p>${s.note}</p>${s.link ? ethicode() : ''}</div></li>`
+			).join('');
+			document.querySelector('[data-path="strip"]').innerHTML = PATH.map(
+				(s) => `<li><time>${s.year}</time><span class="dot ${s.now ? 'now' : ''}"></span><b>${s.title}</b><p>${s.note}</p>${s.link ? ethicode() : ''}</li>`
+			).join('');
+			document.querySelectorAll('[data-photo-slot]').forEach(
+				(el) => (el.innerHTML = `<div class="media"></div><span class="ph">${icon('image')}segnaposto</span>`)
+			);
+
+			// La mail si copia come nel sito: l'icona diventa la spunta verde per un attimo.
+			document.addEventListener('click', (e) => {
+				const b = e.target.closest('[data-copy]');
+				if (!b) return;
+				navigator.clipboard?.writeText('hello@esse.dev').catch(() => {});
+				b.dataset.copied = '';
+				setTimeout(() => delete b.dataset.copied, 1400);
+			});
+
+			// "prova una foto": l'immagine resta nel browser, va in tutti gli slot.
+			document.querySelector('[data-upload]').addEventListener('change', (e) => {
+				const file = e.target.files?.[0];
+				if (!file) return;
+				const url = URL.createObjectURL(file);
+				document.querySelectorAll('[data-photo-slot]').forEach((el) => {
+					el.querySelector('.media').style.backgroundImage = `url(${url})`;
+					el.dataset.real = '';
+				});
+			});
+
+			const KEY = `concept:${location.pathname}`;
+			const root = document.documentElement;
+			const body = document.body;
+			const load = () => { try { return JSON.parse(localStorage.getItem(KEY) || '{}'); } catch { return {}; } };
+			const save = (s) => { try { localStorage.setItem(KEY, JSON.stringify({ ...load(), ...s })); } catch {} };
+
+			const LOGOS = { nexus: 'nexus', pgbee: 'pgbee', zeno: 'zeno', ethicode: 'ethicode' };
+			const setLogos = () => {
+				const light = root.dataset.theme === 'light';
+				document.querySelectorAll('[data-logo]').forEach((img) => {
+					img.src = `../../src/content/projects/${LOGOS[img.dataset.logo]}/logo${light ? '-light' : ''}.svg`;
+				});
+			};
+			const describe = () => {
+				document.querySelector('[data-desc]').textContent = DESC[body.dataset.v];
+			};
+
+			document.querySelector('[data-buttons]').innerHTML = Object.keys(DESC)
+				.map((v) => `<button data-v="${v}">${/\d$/.test(v) ? `${v.slice(-1)} A` : v.toUpperCase()} ${DESC[v].split(':')[0]}</button>`)
+				.join(' ');
+
+			const pick = (v) => {
+				if (!DESC[v]) return;
+				body.dataset.v = v;
+				document.querySelectorAll('.switch [data-v]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.v === v)));
+				document.querySelectorAll('[data-only]').forEach((el) => (el.hidden = !el.dataset.only.split(/\s+/).includes(v)));
+				document.querySelector('.scroll').scrollTop = 0;
+				describe();
+				history.replaceState(null, '', `${location.search}#${v}`);
+			};
+			const setTheme = (t) => {
+				root.dataset.theme = t;
+				save({ theme: t });
+				setLogos();
+			};
+
+			document.querySelector('.switch').addEventListener('click', (e) => {
+				const v = e.target.closest('[data-v]');
+				if (v) pick(v.dataset.v);
+			});
+			document.querySelector('[data-theme-toggle]').addEventListener('click', () => setTheme(root.dataset.theme === 'dark' ? 'light' : 'dark'));
+			addEventListener('keydown', (e) => {
+				if (e.metaKey || e.ctrlKey || e.altKey || e.target.closest('input, textarea, select, [contenteditable]')) return;
+				const k = e.key.toLowerCase();
+				if (k === 't') setTheme(root.dataset.theme === 'dark' ? 'light' : 'dark');
+				else if (k === 'p') body.dataset.chrome = body.dataset.chrome === 'off' ? 'on' : 'off';
+				else if (/^\d$/.test(k)) pick(`${body.dataset.v.replace(/\d+$/, '')}${k}`);
+				else pick(k);
+			});
+
+			const saved = load();
+			root.dataset.theme = saved.theme || (matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
+			setLogos();
+			pick(DESC[location.hash.slice(1)] ? location.hash.slice(1) : 'x');
+		</script>
+		<script>
+			// Mobile preview: the same file in a 390 px iframe, so the media queries are the real ones.
+			// The page drives the frame: variant, theme and sub-variant follow the switch bar; keys
+			// pressed inside the frame go back up to the page.
+			(() => {
+				const root = document.documentElement;
+				const body = document.body;
+				const press = (key) => body.dispatchEvent(new KeyboardEvent('keydown', { key, bubbles: true }));
+
+				if (new URLSearchParams(location.search).has('frame')) {
+					const style = document.createElement('style');
+					style.textContent = '.switch { display: none !important; }';
+					document.head.append(style);
+					addEventListener(
+						'keydown',
+						(e) => {
+							if (!e.isTrusted) return;
+							e.stopImmediatePropagation();
+							parent.postMessage({ mobileKey: e.key }, '*');
+						},
+						true
+					);
+					let applied = null;
+					addEventListener('message', ({ data }) => {
+						if (!data || !data.mobileState) return;
+						const { v, theme, photo, file } = data.mobileState;
+						if (file && file !== applied) {
+							applied = file;
+							const url = URL.createObjectURL(file);
+							document.querySelectorAll('[data-photo-slot]').forEach((el) => {
+								el.querySelector('.media').style.backgroundImage = `url(${url})`;
+								el.dataset.real = '';
+							});
+						}
+						if (theme && root.dataset.theme !== theme) press('t');
+						if (v && body.dataset.v !== v) {
+							press(v.replace(/\d+$/, ''));
+							if (/\d$/.test(v)) press(v.slice(-1));
+						}
+						if (photo && body.dataset.photo !== photo) press(photo);
+					});
+					return;
+				}
+
+				const KEY = `concept-mobile:${location.pathname}`;
+				const css = document.createElement('style');
+				css.textContent = `
+					.mobile-stage { position: fixed; inset: var(--mobile-top, 48px) 0 0; z-index: 50; display: none; place-items: center; background: var(--desk); }
+					body[data-mobile='on'] .mobile-stage { display: grid; }
+					.mobile-stage iframe { width: 390px; height: 844px; border: 0; border-radius: 44px; box-shadow: 0 0 0 10px #050408, 0 0 0 11px var(--edge), 0 30px 80px rgb(0 0 0 / 0.45); transform-origin: center; background: var(--desk); }
+					.switch [data-mobile-toggle] { order: 99; }
+				`;
+				document.head.append(css);
+
+				const sw = document.querySelector('.switch');
+				const button = document.createElement('button');
+				button.dataset.mobileToggle = '';
+				button.textContent = 'm mobile';
+				sw.append(button);
+
+				const stage = document.createElement('div');
+				stage.className = 'mobile-stage';
+				const frame = document.createElement('iframe');
+				frame.title = 'Anteprima mobile, 390 px';
+				stage.append(frame);
+				body.append(stage);
+
+				let file = null;
+				document.querySelector('[data-upload]')?.addEventListener('change', (e) => {
+					file = e.target.files?.[0] || file;
+					sync();
+				});
+				const state = () => ({ v: body.dataset.v, theme: root.dataset.theme, photo: body.dataset.photo, file });
+				const sync = () => frame.contentWindow && frame.contentWindow.postMessage({ mobileState: state() }, '*');
+				const fit = () => {
+					const top = sw.offsetHeight;
+					root.style.setProperty('--mobile-top', `${top}px`);
+					const scale = Math.min(1, (innerHeight - top - 48) / 844);
+					frame.style.transform = `scale(${scale})`;
+				};
+				const set = (on) => {
+					body.dataset.mobile = on ? 'on' : 'off';
+					button.setAttribute('aria-pressed', String(on));
+					try { localStorage.setItem(KEY, on ? 'on' : 'off'); } catch {}
+					if (on && !frame.src) frame.src = `${location.pathname}?frame#${body.dataset.v}`;
+					if (on) { fit(); sync(); }
+				};
+
+				frame.addEventListener('load', sync);
+				new MutationObserver(sync).observe(body, { attributes: true, attributeFilter: ['data-v', 'data-photo'] });
+				new MutationObserver(sync).observe(root, { attributes: true, attributeFilter: ['data-theme'] });
+				addEventListener('message', ({ data }) => data && data.mobileKey && press(data.mobileKey));
+				addEventListener('resize', fit);
+				button.addEventListener('click', () => set(body.dataset.mobile !== 'on'));
+				addEventListener('keydown', (e) => {
+					if (e.metaKey || e.ctrlKey || e.altKey || e.target.closest('input, textarea, select, [contenteditable]')) return;
+					if (e.key.toLowerCase() === 'm') set(body.dataset.mobile !== 'on');
+				});
+				let saved = null;
+				try { saved = localStorage.getItem(KEY); } catch {}
+				set(saved === 'on');
+			})();
+		</script>
+	</body>
+</html>
