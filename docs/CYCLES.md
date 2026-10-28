@@ -404,9 +404,9 @@ entry `2026-10-28-mobile` (merged into `2026-10-28-pagine` with Cycle 32, one en
 
 ## Cycle 32 - The listing pages rebuilt: projects, method, now, about (2026-10-28)
 
-Four concepts, one per listing page (`f0de0b8`), each chosen with Simone and built in a
-commit of its own (`7d612fe` .. `d757d3a`); one changelog entry for the release
-(`d3cd62a`).
+Four concepts, one per listing page (`84b518e`), each chosen with Simone and built in a
+commit of its own (`962be19` .. `a4ce159`); one changelog entry for the release
+(`24895ca`).
 
 - **Projects (#40):** concept R, variant C. Grouped by status: in progress as wide rows
   with the cover, the showcase first with its badge; maintained and completed, ideas and
