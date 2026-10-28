@@ -1,3 +1,4 @@
 {
-	"projects": ["relay", "nexus", "varco", "pgbee", "zeno", "floppy"]
+	"projects": ["relay", "nexus", "varco", "pgbee", "zeno", "floppy"],
+	"method": "contesto"
 }

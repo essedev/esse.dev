@@ -2,6 +2,14 @@
 slug: "setup"
 title: "Il mio setup"
 summary: "Un solo contesto per tutti i coding agent che uso."
+quote: "Questo sito è costruito *dentro quel metodo*."
+proofs:
+  - project: "relay"
+    note: "Il terminale dove tengo aperti cinque o sei agenti insieme."
+  - project: "local-llm-eval"
+    note: "LLM Dash: i modelli locali sul Mac in quattro profili, collegati a OpenCode."
+  - page: "changelog"
+    note: "Quello che cambia nel sito, con la data, scritto a ogni rilascio."
 ---
 
 Un solo contesto per Claude Code, Codex e OpenCode, regole che si caricano per tipo di file, hook che fermano un push sull'account sbagliato o un file con un segreto.

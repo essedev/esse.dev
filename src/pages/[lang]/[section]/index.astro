@@ -1,10 +1,20 @@
 ---
 import { render } from 'astro:content';
-import { ArrowRight, ArrowUpRight, Check, Copy, SquarePen } from '@lucide/astro';
+import {
+	ArrowRight,
+	ArrowUpRight,
+	BotMessageSquare,
+	Check,
+	Copy,
+	FileText,
+	ScrollText,
+	SquarePen
+} from '@lucide/astro';
 import AgentChat from '../../../components/agent/AgentChat.svelte';
 import AgentFallback from '../../../components/agent/AgentFallback.astro';
 import CollectionBrowser from '../../../components/CollectionBrowser.svelte';
 import Page from '../../../components/Page.astro';
+import ProjectLogo from '../../../components/ProjectLogo.astro';
 import Prose from '../../../components/Prose.astro';
 import Workspace from '../../../layouts/Workspace.astro';
 import { featured, languageCodes, navigation } from '../../../lib/config';
@@ -16,6 +26,7 @@ import {
 	getPage,
 	getProjects
 } from '../../../lib/content';
+import { splitEmphasis } from '../../../lib/emphasis';
 import { SECTIONS, type Section } from '../../../lib/i18n';
 import { articleItem, formatDate, projectItem, STATUS_KEY } from '../../../lib/items';
 import type { Group } from '../../../lib/listing';
@@ -81,6 +92,32 @@ const articleItems =
 		? (await getArticles(lang)).map((a) => articleItem(a, routes.articles))
 		: [];
 const method = section === 'method' ? await getMethod(lang) : [];
+// The proofs of the method: a project (title, logo, page), a page of the site or a public URL.
+const projectsById = new Map(
+	section === 'method' ? (await getProjects(lang)).map((p) => [p.id, p]) : []
+);
+const PAGE_ICON = { agent: BotMessageSquare, changelog: ScrollText } as const;
+const proofsOf = (m: (typeof method)[number]) =>
+	m.text.proofs.map((proof) => {
+		if (proof.project) {
+			const p = projectsById.get(proof.project)!;
+			return {
+				...proof,
+				title: p.text.title,
+				href: `/${lang}/${routes.projects}/${p.text.slug}`,
+				p
+			};
+		}
+		if (proof.page) {
+			return {
+				...proof,
+				title: site.sections[proof.page],
+				href: `/${lang}/${routes[proof.page]}`,
+				p: undefined
+			};
+		}
+		return { ...proof, title: proof.title!, href: proof.url!, p: undefined };
+	});
 const now = section === 'now' ? await getNow(lang) : [];
 const about = section === 'about' ? await getPage('about', lang) : null;
 const contact = section === 'about' ? await getPage('contact', lang) : null;
@@ -172,30 +209,96 @@ const ogSection = section === 'projects' ? 'projects' : section === 'articles' ?
 			)}
 
 			{section === 'method' && (
-				<ol class="-mx-3 flex flex-col">
-					{method.map((m, i) => (
-						<li>
-							<a
-								href={`${path}/${m.text.slug}`}
-								class="group hover:bg-surface/60 grid grid-cols-[2.5rem_minmax(0,1fr)_auto] items-baseline gap-x-4 rounded-[var(--radius-panel)] px-3 py-5 transition-colors"
-							>
-								<span class="text-subtle font-mono text-sm tabular-nums">
-									{String(i + 1).padStart(2, '0')}
-								</span>
-								<span class="flex flex-col gap-1.5">
-									<span class="text-fg text-[clamp(1.125rem,1rem+0.4vw,1.375rem)] font-medium tracking-tight">
-										{m.text.title}
-									</span>
-									<span class="text-muted text-[0.9375rem] text-pretty">{m.text.summary}</span>
-								</span>
-								<ArrowRight
-									data-motion="arrow"
-									class="text-subtle group-hover:text-accent size-4 self-center transition-colors"
-								/>
-							</a>
-						</li>
-					))}
-				</ol>
+				<div class="flex flex-col gap-[clamp(3rem,5vw,4.5rem)]">
+					{method.map((m, i) => {
+						const quote = m.text.quote ? splitEmphasis(m.text.quote) : null;
+						const proofs = proofsOf(m);
+						return (
+							<article class="grid gap-x-[clamp(2rem,4vw,4rem)] gap-y-6 xl:grid-cols-[minmax(0,1fr)_minmax(17rem,26rem)]">
+								<div class="flex flex-col gap-4">
+									<h2>
+										<a
+											href={`${path}/${m.text.slug}`}
+											class="group text-muted hover:text-fg inline-flex items-center gap-3 transition-colors"
+										>
+											<span class="text-subtle font-mono text-sm tabular-nums">
+												{String(i + 1).padStart(2, '0')}
+											</span>
+											{m.text.title}
+											<ArrowRight
+												data-motion="arrow"
+												class="text-subtle group-hover:text-accent size-4 transition-colors"
+											/>
+										</a>
+									</h2>
+									{quote && (
+										<p class="text-fg text-[clamp(1.5rem,1.1rem+1.3vw,2.25rem)] leading-[1.18] font-medium tracking-[-0.025em] text-balance">
+											{quote.before}
+											<span class="text-accent">{quote.accent}</span>
+											{quote.after}
+										</p>
+									)}
+									<p class="text-text text-[1.0625rem] leading-relaxed text-pretty">
+										{m.text.summary}
+									</p>
+								</div>
+								{proofs.length > 0 && (
+									<div class="flex flex-col gap-1.5">
+										<h3 class="label pb-2">{t('methodProofs')}</h3>
+										<ul class="flex flex-col gap-1.5">
+											{proofs.map((proof) => {
+												const external = !!proof.url;
+												const Icon = proof.page ? PAGE_ICON[proof.page] : FileText;
+												return (
+													<li>
+														<a
+															href={proof.href}
+															{...(external
+																? { target: '_blank', rel: 'noopener noreferrer' }
+																: {})}
+															class="group bg-surface/60 hover:bg-hover grid grid-cols-[1.5rem_minmax(0,1fr)_auto] items-start gap-x-3 gap-y-0.5 rounded-[var(--radius-panel)] px-3.5 py-3 transition-colors"
+														>
+															<span class="row-span-2">
+																{proof.p?.meta.logo ? (
+																	<ProjectLogo
+																		logo={proof.p.meta.logo}
+																		logoLight={proof.p.meta.logoLight}
+																		size="inline"
+																	/>
+																) : (
+																	<span class="bg-surface text-accent grid size-6 place-items-center rounded-[var(--radius-control)]">
+																		<Icon class="size-3.5" />
+																	</span>
+																)}
+															</span>
+															<span class="text-fg text-[0.9375rem] font-medium">
+																{proof.title}
+															</span>
+															{external ? (
+																<ArrowUpRight
+																	data-motion="external"
+																	class="text-subtle col-start-3 row-start-1 size-4 self-center"
+																/>
+															) : (
+																<ArrowRight
+																	data-motion="arrow"
+																	class="text-subtle group-hover:text-accent col-start-3 row-start-1 size-4 self-center transition-colors"
+																/>
+															)}
+															<span class="text-muted col-start-2 text-sm leading-snug text-pretty">
+																{proof.note}
+															</span>
+														</a>
+													</li>
+												);
+											})}
+										</ul>
+									</div>
+								)}
+							</article>
+						);
+					})}
+				</div>
 			)}
 
 			{section === 'now' && (

@@ -54,8 +54,10 @@ const covers = cover
 const focus = { top: 'object-top', center: 'object-center', bottom: 'object-bottom' }[
 	cover?.focus ?? 'center'
 ];
-// The method card shows a line from the notes, not their index: the first note that has one.
-const quoted = method.find((m) => m.text.quote);
+// The method card shows a line from the notes, not their index: the note named in
+// featured.json, or the first that has one.
+const quoted =
+	method.find((m) => m.id === featured.method && m.text.quote) ?? method.find((m) => m.text.quote);
 const quote = quoted?.text.quote ? splitEmphasis(quoted.text.quote) : null;
 const number = (i: number) => String(i + 1).padStart(2, '0');
 

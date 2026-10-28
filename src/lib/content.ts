@@ -152,6 +152,23 @@ function loadAll() {
 				throw new Error(`method/${m.id}: \`quote\` presente solo in alcune lingue`);
 		}
 		const publishedIds = new Set(projects.map((p) => p.id));
+		// The proofs point to the same places in every language, and to published projects.
+		for (const m of method) {
+			const target = (lang: string) =>
+				JSON.stringify(m.texts[lang].data.proofs.map((p) => p.project ?? p.page ?? p.url));
+			const [first, ...rest] = languageCodes;
+			for (const lang of rest) {
+				if (target(lang) !== target(first))
+					throw new Error(`method/${m.id}: \`proofs\` diverse tra ${first} e ${lang}`);
+			}
+			for (const p of m.texts[first].data.proofs) {
+				if (p.project && !publishedIds.has(p.project))
+					throw new Error(`method/${m.id}: "${p.project}" non è un progetto pubblicato`);
+			}
+		}
+		if (featured.method && !method.some((m) => m.id === featured.method)) {
+			throw new Error(`featured.json: "${featured.method}" non è una nota del metodo`);
+		}
 		for (const id of featured.projects) {
 			if (!publishedIds.has(id))
 				throw new Error(`featured.json: "${id}" non è un progetto pubblicato`);

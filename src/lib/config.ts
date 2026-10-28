@@ -26,8 +26,11 @@ export const NavigationSchema = z.record(
 		changelog: z.string().min(1)
 	})
 );
-/** Schema of `featured.json`: the showcase, at most six projects. */
-export const FeaturedSchema = z.object({ projects: z.array(z.string().min(1)).max(6) });
+/** Schema of `featured.json`: the showcase, at most six projects, and the home's method note. */
+export const FeaturedSchema = z.object({
+	projects: z.array(z.string().min(1)).max(6),
+	method: z.string().min(1).optional()
+});
 
 /** A language of the site. */
 export type Language = z.infer<typeof LanguagesSchema>[number];

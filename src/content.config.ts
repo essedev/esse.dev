@@ -126,7 +126,29 @@ const methodTexts = defineCollection({
 		quote: z
 			.string()
 			.regex(/^[^*]+(\*[^*]+\*[^*]*)?$/, 'al massimo una parte tra *...*')
-			.optional()
+			.optional(),
+		/**
+		 * Where the principle shows, on the method page: a published project, a page of the
+		 * site or a public URL (with its `title`), each with a one-line note. The same targets
+		 * in every language.
+		 */
+		proofs: z
+			.array(
+				z
+					.object({
+						project: z.string().min(1).optional(),
+						page: z.enum(['agent', 'changelog']).optional(),
+						url: z.url().optional(),
+						title: z.string().min(1).optional(),
+						note: z.string().min(1)
+					})
+					.refine(
+						(p) => [p.project, p.page, p.url].filter(Boolean).length === 1 && (!p.url || !!p.title),
+						'una prova punta a un progetto, a una pagina o a un url con title'
+					)
+			)
+			.max(3)
+			.default([])
 	})
 });
 
@@ -304,6 +326,7 @@ const site = defineCollection({
 					homeAskNote: text,
 					homeAskReading: text,
 					homeMethodNote: text,
+					methodProofs: text,
 					featured: text,
 					allProjects: text,
 					search: text,
