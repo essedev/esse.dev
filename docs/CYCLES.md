@@ -421,14 +421,18 @@ commit of its own (`962be19` .. `a4ce159`); one changelog entry for the release
   "Paused" after 21 days idle. Read from GitHub at build, dates and counts only, private
   repos through `activityRepo` and `GITHUB_ACTIVITY_TOKEN`, separate from the agent's
   token; an unreadable repo falls back to `updated` in `meta.json`. A new dated note
-  (`2026-10-sito-varco`); a note's `project` is optional now.
+  (`2026-10-sito-varco`); a note's `project` is optional now. After the first deploy, where
+  three of eleven requests hung for the whole timeout, a stalled or overloaded request
+  (timeout, 403, 429, 5xx) is asked again twice with a growing wait, four repos at a time;
+  a 404 still fails at once (`3bd0c38`).
 - **About (#43):** concept U, variant A. `lead`, `path` (steps with `when`, title, note,
   optional project) and `certification` in the frontmatter, also in the agent's index; an
   optional `photo` that opens the "Scrivimi" column, none shown until there is one.
 - **Changelog:** the phone fixes' entry merged into `2026-10-28-pagine`, one entry per
   release (#35).
 - **Tests:** unit on grouping (`listing.test.ts`) and on weeks, pause and bars
-  (`activity.test.ts`); the listing E2E follows the groups.
+  (`activity.test.ts`), plus the retry and the 404 that fails at once; the listing E2E
+  follows the groups.
 - **Next step:** the photo and its position; `GITHUB_ACTIVITY_TOKEN` in the Workers Builds
   variables, without it production reads only the public repos; Zeno's repo, local only,
   now private on GitHub with its `activityRepo`; Copilota's private repo is not read, so it shows
