@@ -24,7 +24,7 @@ const slugMap = await getSlugMap();
 // the list opens from the tab bar's Menu (TabBar.astro).
 ---
 
-<header class="flex h-12 shrink-0 items-center gap-2 pr-3 pl-4 lg:gap-3 lg:px-(--pad)">
+<header class="flex h-12 shrink-0 items-center gap-2 pr-[calc(var(--pad)-0.375rem)] pl-(--pad) lg:gap-3">
 	{up ? (
 		<a
 			href={up.href}
