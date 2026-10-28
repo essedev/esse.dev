@@ -441,3 +441,18 @@ Cycle 29 (`be295b9` .. `f247b2f`).
   changelog page (`workspace.spec.ts`).
 - **Next step:** the sub-agents' sheet on phones; rereading the project entries with Simone;
   Search Console for `esse.dev`.
+
+## Cycle 31 - Tidier on phones (2026-10-28)
+
+Layout fixes below 640 px and on the tab bar (`c4b0f35` .. `660572f`), with the changelog
+entry `2026-10-28-mobile`.
+
+- **Toolbar:** its side padding follows `--pad`, the pane's text margins, at every width.
+- **Tab bar:** a lighter glass on phones (`bg-panel/55`, no glass shadow).
+- **Agent field:** its distance from the bottom of the pane is `--dock-gap` in
+  `global.css`, 1.25rem below `lg` so the field clears the agent disc rising over the tab
+  bar, 0.75rem from `lg`; shared by `AgentChat.svelte` and `AgentFallback.astro`.
+- **Home:** the facts stack value under label below `sm`; the label column left the values
+  about 200 px and every line wrapped.
+- **Projects:** the list's filters share one row on phones (`CollectionBrowser.svelte`).
+- **Next step:** unchanged from Cycle 30.

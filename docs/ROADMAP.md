@@ -2,7 +2,7 @@
 
 Current state of the project. Real milestones, not a wishlist. Updated together with the code.
 
-Last update: 2026-10-27 (Cycle 30: projects refreshed, changelog, boot, the chat by turn)
+Last update: 2026-10-28 (Cycle 31: layout fixes on phones)
 
 ## Context
 
