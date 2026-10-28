@@ -152,6 +152,18 @@ function loadAll() {
 				throw new Error(`method/${m.id}: \`quote\` presente solo in alcune lingue`);
 		}
 		const publishedIds = new Set(projects.map((p) => p.id));
+		// The about page's steps are the same in every language: only the words change.
+		const about = await getCollection('about');
+		const steps = (lang: string) =>
+			JSON.stringify(about.find((a) => a.id === lang)?.data.path.map((s) => s.project ?? '') ?? []);
+		for (const lang of languageCodes.slice(1)) {
+			if (steps(lang) !== steps(languageCodes[0]))
+				throw new Error(`pages/about: \`path\` diverso tra ${languageCodes[0]} e ${lang}`);
+		}
+		for (const step of about.flatMap((a) => a.data.path)) {
+			if (step.project && !publishedIds.has(step.project))
+				throw new Error(`pages/about: "${step.project}" non è un progetto pubblicato`);
+		}
 		// The Now page shows a project's line in the page language: none or all of them.
 		for (const p of projects) {
 			const has = languageCodes.map((lang) => p.texts[lang].data.now !== undefined);

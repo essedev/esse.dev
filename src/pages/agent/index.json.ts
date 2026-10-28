@@ -91,7 +91,13 @@ export const GET: APIRoute = async () => {
 			title: about.data.title,
 			summary: (await getSite(lang)).sectionDescriptions.about,
 			tags: [],
-			body: about.body ?? ''
+			// The lead and the steps live in the frontmatter: the agent reads them as text.
+			body: [
+				about.data.lead,
+				...about.data.path.map((s) => `${s.when}: ${s.title}. ${s.note}`),
+				about.body ?? '',
+				about.data.certification ?? ''
+			].join('\n\n')
 		});
 		// So the agent can answer "do you keep my messages?" from the notice, not from memory.
 		const privacy = await getPage('privacy', lang);

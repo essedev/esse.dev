@@ -1,8 +1,10 @@
 ---
+import { Image } from 'astro:assets';
 import { render } from 'astro:content';
 import {
 	ArrowRight,
 	ArrowUpRight,
+	Award,
 	BotMessageSquare,
 	Check,
 	Copy,
@@ -29,6 +31,7 @@ import {
 } from '../../../lib/content';
 import { barLevel } from '../../../lib/activity';
 import { splitEmphasis } from '../../../lib/emphasis';
+import { AUTHOR_NAME } from '../../../lib/seo';
 import { SECTIONS, type Section } from '../../../lib/i18n';
 import { articleItem, formatDate, projectItem, STATUS_KEY } from '../../../lib/items';
 import type { Group } from '../../../lib/listing';
@@ -97,7 +100,7 @@ const articleItems =
 const method = section === 'method' ? await getMethod(lang) : [];
 // The proofs of the method: a project (title, logo, page), a page of the site or a public URL.
 const projectsById = new Map(
-	section === 'method' ? (await getProjects(lang)).map((p) => [p.id, p]) : []
+	section === 'method' || section === 'about' ? (await getProjects(lang)).map((p) => [p.id, p]) : []
 );
 const PAGE_ICON = { agent: BotMessageSquare, changelog: ScrollText } as const;
 const proofsOf = (m: (typeof method)[number]) =>
@@ -602,13 +605,77 @@ const ogSection = section === 'projects' ? 'projects' : section === 'articles' ?
 
 			{about && AboutBody && contact && (
 				<div class="grid gap-x-[clamp(2rem,5vw,6rem)] gap-y-12 xl:grid-cols-[minmax(0,1fr)_minmax(14rem,19rem)]">
-					<Prose>
-						<AboutBody />
-					</Prose>
+					<div class="flex flex-col gap-10">
+						<Prose>
+							<p>{about.data.lead}</p>
+						</Prose>
+						<section aria-labelledby="path" class="flex flex-col gap-5">
+							<h2 id="path" class="label">
+								{t('aboutPath')}
+							</h2>
+							<ol class="flex flex-col gap-7">
+								{about.data.path.map((step) => {
+									const project = step.project ? projectsById.get(step.project) : undefined;
+									return (
+										<li class="grid gap-x-10 gap-y-1.5 sm:grid-cols-[6rem_minmax(0,1fr)]">
+											<span class="text-subtle pt-1 font-mono text-xs tabular-nums">
+												{step.when}
+											</span>
+											<div class="flex flex-col gap-1.5">
+												<h3 class="text-fg text-[1.1875rem] font-medium tracking-tight">
+													{step.title}
+												</h3>
+												<p class="text-text text-[1.0625rem] leading-relaxed text-pretty">
+													{step.note}
+												</p>
+												{project && (
+													<a
+														href={`/${lang}/${routes.projects}/${project.text.slug}`}
+														class="text-muted hover:text-fg mt-1 inline-flex items-center gap-2 self-start font-mono text-xs transition-colors"
+													>
+														{project.meta.logo && (
+															<ProjectLogo
+																logo={project.meta.logo}
+																logoLight={project.meta.logoLight}
+																size="row"
+																status={project.meta.status}
+															/>
+														)}
+														{project.text.title}
+														<ArrowRight data-motion="arrow" class="size-3.5" />
+													</a>
+												)}
+											</div>
+										</li>
+									);
+								})}
+							</ol>
+						</section>
+						<Prose>
+							<AboutBody />
+						</Prose>
+						{about.data.certification && (
+							<p>
+								<span class="bg-surface/60 text-text inline-flex items-center gap-2.5 rounded-[var(--radius-control)] px-3 py-2 font-mono text-xs">
+									<Award class="text-accent size-3.5" />
+									{about.data.certification}
+								</span>
+							</p>
+						)}
+					</div>
 					<section
 						aria-labelledby="contact"
 						class="flex flex-col gap-4 xl:sticky xl:top-[clamp(1.5rem,3vw,3.5rem)] xl:self-start xl:pt-2"
 					>
+						{about.data.photo && (
+							<Image
+								src={about.data.photo}
+								alt={AUTHOR_NAME}
+								widths={[304, 608]}
+								sizes="19rem"
+								class="mb-4 aspect-[4/5] w-full rounded-[var(--radius-panel)] object-cover"
+							/>
+						)}
 						<h2 id="contact" class="label">
 							{contact.data.title}
 						</h2>

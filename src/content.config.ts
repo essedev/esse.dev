@@ -214,9 +214,31 @@ const welcome = defineCollection({
 	})
 });
 
+// The about page: the role, the path as steps (DECISIONS #43), the rest in the body.
 const about = defineCollection({
 	loader: glob({ pattern: '*.md', base: './src/content/pages/about', generateId: langId }),
-	schema: z.object({ title: z.string().min(1) })
+	schema: ({ image }) =>
+		z.object({
+			title: z.string().min(1),
+			/** The first paragraph: the role today. */
+			lead: z.string().min(1),
+			/**
+			 * The steps that led here, oldest first. `when` is a year or a word ("poi", "oggi")
+			 * where the year is not stated; `project` links a published project. The same steps
+			 * in every language.
+			 */
+			path: z.array(
+				z.object({
+					when: z.string().min(1),
+					title: z.string().min(1),
+					note: z.string().min(1),
+					project: z.string().min(1).optional()
+				})
+			),
+			certification: z.string().min(1).optional(),
+			/** The portrait, one file shared by every language. */
+			photo: image().optional()
+		})
 });
 
 // The privacy notice: what the site collects, why, where it goes and for how long.
@@ -341,6 +363,7 @@ const site = defineCollection({
 					homeAskReading: text,
 					homeMethodNote: text,
 					methodProofs: text,
+					aboutPath: text,
 					nowMonth: text,
 					nowWritten: text,
 					nowMoving: text,

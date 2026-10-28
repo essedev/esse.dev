@@ -7,7 +7,8 @@ import { getLanguageUrl, type SlugMap } from './i18n';
  * is serialized through `serializeJsonLd`.
  */
 
-const AUTHOR_NAME = 'Simone Salerno';
+/** The site's author, for the metadata and the portrait's alternative text. */
+export const AUTHOR_NAME = 'Simone Salerno';
 
 /** One hreflang alternate link. */
 export interface AlternateLink {
