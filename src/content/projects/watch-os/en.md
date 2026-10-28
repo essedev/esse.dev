@@ -13,6 +13,7 @@ previously:
   - name: "Watch OS in C"
     year: 2026
     note: "The first version, in C on ESP-IDF: launcher, Wi-Fi, battery, time and settings. It had stopped before the voice app."
+now: "Press a button, speak, and Nexus's agent answers."
 ---
 
 A Waveshare smartwatch with an ESP32-S3 and a 2-inch AMOLED screen. The idea is a watch that only acts as interface, microphone and speaker: transcription, model, tools and voice live on [Nexus](/en/projects/nexus), and the watch is one of its voice channels.

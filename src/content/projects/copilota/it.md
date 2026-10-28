@@ -14,6 +14,7 @@ previously:
   - name: "Sales AI Copilot"
     year: 2026
     note: "La prima versione, con l'overlay in Electron. Riscritta da capo in Swift dopo gli spike su trascrizione, modelli veloci e retrieval."
+now: "Trascrive i due lati della call e propone le risposte dalla knowledge base."
 ---
 
 In una call di vendita le risposte servono nel momento in cui il cliente fa la domanda: prezzi, casi, obiezioni già sentite. Copilota ascolta la call e le porta in un overlay laterale, escluso dalla condivisione dello schermo e che non ruba il focus a Meet.

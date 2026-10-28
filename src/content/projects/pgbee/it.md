@@ -10,6 +10,7 @@ tags:
   - "Embeddings"
   - "Open Source"
 why: "Le garanzie stanno nel database, in SQL e PL/pgSQL: coda, versioni, lineage e correzioni umane. Il worker è sostituibile, e sotto i crash pgbee non lascia righe vuote né sovrascrive chi ha corretto a mano."
+now: "Requeue per riga e retry dei job falliti; il README parte dalla colonna llm."
 ---
 
 Quando una colonna la riempie un modello (la categoria di un ticket, un riassunto, un embedding) servono sempre le stesse cose: una coda, i retry, sapere quale prompt ha prodotto quale valore, non sovrascrivere chi ha corretto a mano. pgbee le mette dentro Postgres.

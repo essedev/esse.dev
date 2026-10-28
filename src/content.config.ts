@@ -35,6 +35,14 @@ const projects = defineCollection({
 			updated: isoDate,
 			/** Public code: the repo. Without it the project is private. */
 			repo: z.url().optional(),
+			/**
+			 * The private repo whose commits the Now page counts (`owner/repo`): read at build with
+			 * its own token, dates and counts only, never shown as a link.
+			 */
+			activityRepo: z
+				.string()
+				.regex(/^[\w.-]+\/[\w.-]+$/)
+				.optional(),
 			/** The project online, if it exists. */
 			site: z.url().optional(),
 			license: z.string().optional(),
@@ -70,6 +78,8 @@ const projectTexts = defineCollection({
 		tags: z.array(z.string().min(1)),
 		/** The interesting technical decision, for showcase projects. */
 		why: z.string().min(1).optional(),
+		/** What I am doing on it right now, one line for the Now page; in every language or none. */
+		now: z.string().min(1).optional(),
 		/**
 		 * The earlier iterations of the idea, oldest first: abandoned ones too, for
 		 * transparency (docs/features/progetti.md). Name and year are the same in every
@@ -155,7 +165,11 @@ const methodTexts = defineCollection({
 // Now: dated entries about what I am doing, each tied to a project.
 const now = defineCollection({
 	loader: glob({ pattern: '*/meta.json', base: './src/content/now', generateId: folderId }),
-	schema: z.object({ date: isoDate, project: z.string().min(1) })
+	schema: z.object({
+		date: isoDate,
+		/** The project the note is mostly about, for the agent's index. */
+		project: z.string().min(1).optional()
+	})
 });
 
 const nowTexts = defineCollection({
@@ -327,6 +341,17 @@ const site = defineCollection({
 					homeAskReading: text,
 					homeMethodNote: text,
 					methodProofs: text,
+					nowMonth: text,
+					nowWritten: text,
+					nowMoving: text,
+					nowMovingNote: text,
+					nowPaused: text,
+					nowPausedNote: text,
+					nowWeeks: text,
+					nowLast: text,
+					nowSite: text,
+					nowCommits: text,
+					nowCount: text,
 					featured: text,
 					allProjects: text,
 					search: text,

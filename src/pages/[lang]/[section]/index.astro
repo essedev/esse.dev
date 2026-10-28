@@ -7,6 +7,7 @@ import {
 	Check,
 	Copy,
 	FileText,
+	PenLine,
 	ScrollText,
 	SquarePen
 } from '@lucide/astro';
@@ -26,10 +27,12 @@ import {
 	getPage,
 	getProjects
 } from '../../../lib/content';
+import { barLevel } from '../../../lib/activity';
 import { splitEmphasis } from '../../../lib/emphasis';
 import { SECTIONS, type Section } from '../../../lib/i18n';
 import { articleItem, formatDate, projectItem, STATUS_KEY } from '../../../lib/items';
 import type { Group } from '../../../lib/listing';
+import { getNowBoard } from '../../../lib/now-board';
 import { projectCover, projectLogo } from '../../../lib/project-pictures';
 import { getSite, translator } from '../../../lib/site';
 import { credits, VISITOR_DAILY_USD } from '../../../agent/budget';
@@ -124,7 +127,14 @@ const contact = section === 'about' ? await getPage('contact', lang) : null;
 const AboutBody = about ? (await render(about)).Content : null;
 const privacy = section === 'privacy' ? await getPage('privacy', lang) : null;
 const PrivacyBody = privacy ? (await render(privacy)).Content : null;
-const nowBodies = await Promise.all(now.map(async (n) => (await render(n.entry)).Content));
+// The Now page: the latest note, then the projects in progress by their activity on GitHub.
+const NowNote = now[0] ? (await render(now[0].entry)).Content : null;
+const board = section === 'now' ? await getNowBoard(lang, t('nowSite')) : null;
+const BAR = ['h-px bg-subtle/40', 'h-1', 'h-2', 'h-3', 'h-4', 'h-5', 'h-6'];
+const bars = (weeks: number[]) => {
+	const max = Math.max(...weeks);
+	return weeks.map((n) => ({ n, level: barLevel(n, max) }));
+};
 const changelog = section === 'changelog' ? await getChangelog(lang) : [];
 const changelogBodies = await Promise.all(
 	changelog.map(async (c) => (await render(c.entry)).Content)
@@ -301,33 +311,98 @@ const ogSection = section === 'projects' ? 'projects' : section === 'articles' ?
 				</div>
 			)}
 
-			{section === 'now' && (
-				<ol class="flex flex-col gap-10">
-					{now.map((n, i) => {
-						const Body = nowBodies[i];
-						return (
-							<li class="grid gap-x-10 gap-y-2 sm:grid-cols-[8rem_minmax(0,1fr)]">
-								<time datetime={n.date} class="text-subtle pt-1 font-mono text-xs tabular-nums">
-									{formatDate(n.date, lang)}
-								</time>
-								<div class="flex flex-col gap-2">
-									<h2 class="text-fg text-[1.1875rem] font-medium tracking-tight">{n.title}</h2>
-									<div class="text-text text-[1.0625rem] leading-relaxed text-pretty">
-										<Body />
-									</div>
-									<a
-										href={`/${lang}/${routes.projects}/${n.project.text.slug}`}
-										class="text-muted hover:text-fg mt-1 inline-flex items-center gap-2 self-start font-mono text-xs transition-colors"
-									>
-										<span class="led" data-status={n.project.meta.status} />
-										{n.project.text.title}
-										<ArrowRight data-motion="arrow" class="size-3.5" />
-									</a>
+			{section === 'now' && board && (
+				<div class="flex flex-col gap-[clamp(2.5rem,4vw,3.5rem)]">
+					{now[0] && NowNote && (
+						<section class="bg-surface/60 flex flex-col gap-4 rounded-[var(--radius-panel)] p-[clamp(1.25rem,2.5vw,2rem)]">
+							<p class="flex flex-wrap items-center gap-x-4 gap-y-2">
+								<span class="label">{t('nowMonth')}</span>
+								<span class="text-fg inline-flex items-center gap-2 font-mono text-[0.8125rem]">
+									<PenLine class="text-accent size-3.5" />
+									{t('nowWritten').replace('{date}', formatDate(now[0].date, lang))}
+								</span>
+							</p>
+							<div class="text-fg [&_a]:decoration-accent text-[clamp(1.125rem,1rem+0.4vw,1.375rem)] leading-normal text-pretty [&_a]:underline [&_a]:decoration-[1.5px] [&_a]:underline-offset-[5px]">
+								<NowNote />
+							</div>
+						</section>
+					)}
+					<p class="text-muted -mb-4 font-mono text-[0.8125rem]">
+						{t('nowCount')
+							.replace('{moving}', String(board.moving.length))
+							.replace('{paused}', String(board.paused.length))}
+					</p>
+					{[
+						{
+							key: 'moving',
+							rows: board.moving,
+							title: t('nowMoving'),
+							note: t('nowMovingNote').replace('{date}', formatDate(board.readOn, lang))
+						},
+						{ key: 'paused', rows: board.paused, title: t('nowPaused'), note: t('nowPausedNote') }
+					]
+						.filter((g) => g.rows.length > 0)
+						.map((g) => (
+							<section aria-labelledby={`now-${g.key}`} class="flex flex-col gap-2">
+								<div class="flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1">
+									<h2 id={`now-${g.key}`} class="label">
+										{g.title}
+									</h2>
+									<span class="text-subtle font-mono text-xs">{g.note}</span>
 								</div>
-							</li>
-						);
-					})}
-				</ol>
+								<ul class="-mx-3 flex flex-col">
+									{g.rows.map((row) => (
+										<li>
+											<a
+												href={row.href}
+												class="hover:bg-surface/60 grid grid-cols-[1.25rem_minmax(0,1fr)_auto] items-center gap-x-4 gap-y-0.5 rounded-[var(--radius-panel)] px-3 py-3.5 transition-colors sm:grid-cols-[1.25rem_minmax(0,1fr)_auto_5.5rem]"
+											>
+												{row.logo ? (
+													<ProjectLogo
+														logo={row.logo}
+														logoLight={row.logoLight}
+														size="row"
+														status={g.key === 'moving' ? row.status : undefined}
+													/>
+												) : (
+													<img src="/favicon.svg" width="20" height="20" alt="" class="size-5" />
+												)}
+												<span class="text-fg text-[1.0625rem] font-medium tracking-tight">
+													{row.title}
+												</span>
+												{row.activity ? (
+													<span
+														class="col-start-3 row-span-2 hidden h-6 items-end gap-[3px] sm:flex"
+														aria-label={`${t('nowWeeks')}: ${row.activity.weeks.join(', ')}`}
+													>
+														{bars(row.activity.weeks).map((b) => (
+															<i
+																class:list={['bg-accent w-[5px] rounded-[1px]', BAR[b.level]]}
+																title={t('nowCommits').replace('{n}', String(b.n))}
+															/>
+														))}
+													</span>
+												) : (
+													<span class="text-subtle col-start-3 row-span-2 hidden font-mono text-xs sm:block">
+														{t('private')}
+													</span>
+												)}
+												<time
+													datetime={row.last}
+													class="text-fg col-start-3 row-start-1 text-right font-mono text-xs tabular-nums sm:col-start-4 sm:row-span-2"
+												>
+													{formatDate(row.last, lang)}
+												</time>
+												<span class="text-muted col-start-2 text-[0.9375rem] leading-normal text-pretty">
+													{row.line}
+												</span>
+											</a>
+										</li>
+									))}
+								</ul>
+							</section>
+						))}
+				</div>
 			)}
 
 			{section === 'changelog' && (

@@ -3,6 +3,7 @@
 	"published": true,
 	"created": "2026-06-14",
 	"updated": "2026-10-27",
+	"activityRepo": "essedev/nexus",
 	"logo": "./logo.svg",
 	"logoLight": "./logo-light.svg",
 	"cover": {

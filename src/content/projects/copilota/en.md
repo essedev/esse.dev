@@ -14,6 +14,7 @@ previously:
   - name: "Sales AI Copilot"
     year: 2026
     note: "The first version, with an Electron overlay. Rewritten from scratch in Swift after spikes on transcription, fast models and retrieval."
+now: "It transcribes both sides of the call and suggests answers from the knowledge base."
 ---
 
 On a sales call answers are needed the moment the customer asks: prices, case studies, objections heard before. Copilota listens to the call and brings them into a side overlay, hidden from screen sharing and never stealing focus from Meet.

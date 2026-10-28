@@ -10,6 +10,7 @@ tags:
   - "ffmpeg"
   - "Self-hosted"
 why: "The video starts while the file is still arriving: the engine fetches pieces in order, prioritising the ones where you are, and ffmpeg remuxes them on the fly for the browser."
+now: "Video starts while the file is still arriving; the app for the Samsung TV."
 ---
 
 My home server is a ThinkPad running Ubuntu. Media Hub is the platform on top of it: a home screen that opens several apps, on a single backend. The first one is the media server, which replaced the CasaOS and Jellyfin stack.

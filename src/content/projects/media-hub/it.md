@@ -10,6 +10,7 @@ tags:
   - "ffmpeg"
   - "Self-hosted"
 why: "Il video parte mentre il file sta ancora arrivando: il motore prende i pezzi in ordine, dà la precedenza a quelli dove ti trovi, e ffmpeg li rimpacchetta al volo per il browser."
+now: "Il video parte mentre il file arriva; l'app per la TV Samsung."
 ---
 
 Il server di casa è un ThinkPad con Ubuntu. Media Hub è la piattaforma che ci gira sopra: una home da cui si aprono più app, su un backend unico. La prima è il media server, che ha preso il posto dello stack con CasaOS e Jellyfin.

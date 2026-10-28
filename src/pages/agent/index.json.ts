@@ -65,7 +65,7 @@ export const GET: APIRoute = async () => {
 				lang,
 				kind: 'now',
 				title: n.title,
-				summary: n.project.text.title,
+				summary: n.project?.text.title ?? '',
 				tags: [],
 				date: n.date,
 				body: n.entry.body ?? ''

@@ -52,8 +52,8 @@ export interface NowEntry {
 	id: string;
 	lang: string;
 	date: string;
-	/** The project it refers to, in the same language. */
-	project: Project;
+	/** The project it is mostly about, in the same language. */
+	project?: Project;
 	title: string;
 	entry: CollectionEntry<'nowTexts'>;
 }
@@ -152,6 +152,12 @@ function loadAll() {
 				throw new Error(`method/${m.id}: \`quote\` presente solo in alcune lingue`);
 		}
 		const publishedIds = new Set(projects.map((p) => p.id));
+		// The Now page shows a project's line in the page language: none or all of them.
+		for (const p of projects) {
+			const has = languageCodes.map((lang) => p.texts[lang].data.now !== undefined);
+			if (has.some((x) => x !== has[0]))
+				throw new Error(`projects/${p.id}: \`now\` presente solo in alcune lingue`);
+		}
 		// The proofs point to the same places in every language, and to published projects.
 		for (const m of method) {
 			const target = (lang: string) =>
@@ -174,7 +180,7 @@ function loadAll() {
 				throw new Error(`featured.json: "${id}" non è un progetto pubblicato`);
 		}
 		for (const item of now) {
-			if (!publishedIds.has(item.meta.project)) {
+			if (item.meta.project && !publishedIds.has(item.meta.project)) {
 				throw new Error(`now/${item.id}: "${item.meta.project}" non è un progetto pubblicato`);
 			}
 		}
@@ -228,7 +234,7 @@ export async function getMethod(lang: string): Promise<MethodEntry[]> {
 		.sort((a, b) => a.order - b.order);
 }
 
-/** The "now" entries in one language, most recent first, with the linked project. */
+/** The "now" notes in one language, most recent first, with the project they are about. */
 export async function getNow(lang: string): Promise<NowEntry[]> {
 	const [{ now }, projects] = await Promise.all([load(), getProjects(lang)]);
 	const byId = new Map(projects.map((p) => [p.id, p]));
@@ -237,7 +243,7 @@ export async function getNow(lang: string): Promise<NowEntry[]> {
 			id: n.id,
 			lang,
 			date: n.meta.date,
-			project: byId.get(n.meta.project)!,
+			project: n.meta.project ? byId.get(n.meta.project) : undefined,
 			title: n.texts[lang].data.title,
 			entry: n.texts[lang]
 		}))

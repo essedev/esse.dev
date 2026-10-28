@@ -3,6 +3,7 @@
 	"published": true,
 	"created": "2026-08-22",
 	"updated": "2026-10-25",
+	"activityRepo": "essedev/home-media",
 	"logo": "./logo.svg",
 	"logoLight": "./logo-light.svg",
 	"cover": {

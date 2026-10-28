@@ -9,6 +9,7 @@ tags:
   - "Python"
   - "FastAPI"
 why: "Ogni contenuto dichiara nello schema da dove viene: dati camerali, dedotto, contenuto d'esempio o cliente. In sviluppo gli esempi si vedono, in produzione fanno fallire la build: un sito non può andare online con un testo inventato."
+now: "La prossima milestone: la conversazione con un modello vero, il portale e l'automazione del servizio."
 ---
 
 Tante attività locali non hanno un sito, o ne hanno uno rotto. Zeno è un sistema di agenti che le trova, genera una demo del loro sito con i loro dati e, se il titolare la approva, segue il resto: pagamento, pubblicazione, hosting, modifiche e supporto. La demo è la proposta. Zeno dichiara sempre di essere automatico; io sono il garante e intervengo solo su chiusure, approvazioni e blocchi.

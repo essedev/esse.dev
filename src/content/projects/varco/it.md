@@ -19,6 +19,7 @@ previously:
   - name: "Milanoz"
     year: 2026
     note: "Una mappa degli 88 quartieri ufficiali di Milano con abitanti, redditi, prezzi delle case, verde e isole di calore, più i luoghi con la loro storia. Statica: una pipeline in Python prepara i dati, senza backend."
+now: "È online alla versione 1.1; il prossimo passo è la prova in auto."
 ---
 
 Da quando mi sono trasferito a Milano, nel 2026, la città mi ha dato tre progetti: Varco è il terzo, i primi due sono qui sotto. In auto la domanda non è solo come arrivo, ma se posso entrare: ZTL con orari diversi, aree pedonali, Area B e Area C con regole che dipendono da alimentazione, classe Euro e deroghe. Il navigatore ti porta dentro senza chiederti che auto guidi. Varco parte da lì: dice per ogni zona se puoi entrare, a quali condizioni e fino a quando, e ti guida evitando quelle vietate.

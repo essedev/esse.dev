@@ -19,6 +19,7 @@ previously:
   - name: "Milanoz"
     year: 2026
     note: "A map of Milan's 88 official neighbourhoods with population, incomes, house prices, greenery and heat islands, plus places with their history. Static: a Python pipeline prepares the data, with no backend."
+now: "It is online at version 1.1; the next step is a test in the car."
 ---
 
 Since I moved to Milan in 2026, the city has given me three projects: Varco is the third, the first two are below. Driving here, the question is not only how to get there but whether you are allowed in: limited traffic zones (ZTL) with different hours, pedestrian areas, Area B and Area C with rules that depend on fuel, Euro class and exemptions. A navigator takes you inside without asking what car you drive. Varco starts from there: for every zone it says whether you can enter, on what terms and until when, and guides you around the closed ones.

@@ -32,6 +32,7 @@ previously:
   - name: "Bob"
     year: 2026
     note: "A voice assistant on Hermes Agent, with a PWA and a Discord bot: push-to-talk and streamed voice. Stopped the day Nexus restarted."
+now: "The agent changes the schema behind a human gate; now it also answers from the watch."
 ---
 
 Nexus is where I keep tasks, projects, notes, books, expenses, meetings and my Claude Code conversations. Instead of one app per thing there is a single engine: you define a schema and the system generates storage, the API, the assistant's tools and an interface with tables, boards, calendars and dashboards.

@@ -10,6 +10,7 @@ tags:
   - "Embeddings"
   - "Open Source"
 why: "The guarantees live in the database, in SQL and PL/pgSQL: queue, versions, lineage and human corrections. The worker is replaceable, and under crashes pgbee leaves no row empty and never overwrites someone who fixed a value by hand."
+now: "Per-row requeue and retry of failed jobs; the README starts from the llm column."
 ---
 
 When a model fills a column (a ticket's category, a summary, an embedding) you always need the same things: a queue, retries, knowing which prompt produced which value, never overwriting someone who corrected it by hand. pgbee puts them inside Postgres.

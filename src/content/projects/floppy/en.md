@@ -12,6 +12,7 @@ tags:
   - "Valkey"
   - "Homebrew"
 why: "On macOS JuiceFS would need macFUSE's kernel extension, which means booting every Mac into recovery. Floppy runs it in a small Linux VM and shares the disk to the Mac over SMB: no extensions and no administrator rights."
+now: "It updates itself with Homebrew and asks for a single password, kept in the keychain."
 ---
 
 It comes from what some colleagues needed: they edit video on Macs with CapCut, footage shot mostly on phones, and they want one thing, a disk that shows up in the Finder with the files on it. A plain network disk from the cloud does not hold up: a timeline reads scattered pieces of large files, and every read pays the distance to the datacenter. Streaming filesystems with a local cache solve this, at a price per person. Floppy does the same with open source parts, on the storage you pick.
