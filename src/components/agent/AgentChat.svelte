@@ -1118,7 +1118,7 @@
 	<!-- Anchored at the bottom of the pane, the conversation scrolls behind it: a sub-agent's
 	     sheet, when open, and the glass panel of the field. Two glasses side by side, neither
 	     inside the other (DECISIONS #16). -->
-	<div class="sticky bottom-3 z-10 mt-8 mb-3 flex flex-col gap-2">
+	<div class="sticky bottom-(--dock-gap) z-10 mt-8 mb-(--dock-gap) flex flex-col gap-2">
 		{#if sheetChild}
 			<ChildSheet
 				name={childName(sheetChild.id)}

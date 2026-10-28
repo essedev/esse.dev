@@ -70,7 +70,14 @@
 	:root {
 		--sidebar: clamp(17rem, 22vw, 22rem);
 		--pad: clamp(1.25rem, 3.5vw, 4.5rem);
+		/* The agent field's distance from the bottom of the pane: on phones it clears the agent
+		   disc, which rises 16px over the pane's edge from the tab bar. */
+		--dock-gap: 1.25rem;
 		color-scheme: dark;
+
+		@media (width >= 64rem) {
+			--dock-gap: 0.75rem;
+		}
 
 		/* The CRT veil: phosphor glow on titles and labels, glow on the accent, a red-cyan fringe
 		   on text, horizontal lines and a vignette over everything. */

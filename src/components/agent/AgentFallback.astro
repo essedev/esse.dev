@@ -21,7 +21,7 @@ const { placeholder, send, privacyNote, privacyHref, noScript } = Astro.props;
 		<p class="text-muted text-[0.9375rem] text-pretty">{noScript}</p>
 	</noscript>
 	<div class="flex-1"></div>
-	<div class="glass bg-panel/60 sticky bottom-3 z-10 mt-8 mb-3 rounded-[var(--radius-panel)] px-3 pt-3 pb-2.5">
+	<div class="glass bg-panel/60 sticky bottom-(--dock-gap) z-10 mt-8 mb-(--dock-gap) rounded-[var(--radius-panel)] px-3 pt-3 pb-2.5">
 		<div class="flex items-end gap-3">
 			<span class="text-accent glow pb-1.5 font-mono text-sm select-none" aria-hidden="true">
 				›
