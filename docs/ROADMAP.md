@@ -2,7 +2,7 @@
 
 Current state of the project. Real milestones, not a wishlist. Updated together with the code.
 
-Last update: 2026-10-28 (Cycle 31: layout fixes on phones)
+Last update: 2026-10-28 (Cycle 32: the listing pages rebuilt)
 
 ## Context
 
@@ -11,7 +11,8 @@ history in `docs/CYCLES.md`). Closed: M14, the migration to Astro (Cycle 11, DEC
 #10), and M15, structure and style (Cycles 12-20, DECISIONS #15, #16, #19); the light
 theme came after it (Cycle 26, DECISIONS #27), the new home and the tab bar on phones
 after that (Cycle 27, #30, #31), a changelog for visitors
-and a boot on the first visit in Cycle 30 (#35, #37). The "Laboratorio" restyle (M11) is paused: its motifs are
+and a boot on the first visit in Cycle 30 (#35, #37), the projects, method, now and
+about pages rebuilt in Cycle 32 (#40-#43). The "Laboratorio" restyle (M11) is paused: its motifs are
 in `docs/archive/RESTYLE.md`, and its branches (`restyle/laboratory`, `restyle/base`) and
 the `astro` working branch were retired when `astro` reached `main`. Their full history is
 kept in a git bundle outside the repo; the discarded pixel-art PNGs were dropped from the
@@ -35,6 +36,11 @@ Principles, voice and sorting in `docs/features/progetti.md`.
   light variants of the rendered logos and designed covers in Cycle 26 (#28).
 - Done (Cycle 30): Relay, Media Hub, Nexus and Watch OS brought up to date; Varco and
   Floppy in the showcase in place of Portsage and mcpbelt.
+- Done (Cycle 32): the projects page grouped by status (#40); a `now` line per project in
+  progress for the Now page (#42).
+- To do: Now reads every project's real activity. Zeno has no repo under `essedev` and
+  Copilota's private repo has no `activityRepo`: both show the `updated` of `meta.json`,
+  which for Copilota is later than its last commit.
 - To do: tags cleaned up.
 - To do: a skill that proposes the new or updated items from the repos; it proposes, it
   does not publish.
@@ -77,6 +83,10 @@ of the earlier idea (the site redesigned live by a model). Choices in
 
 ## Open
 
+- Listing pages (Cycle 32): the photo for the about page and its position (today it would
+  open the "Scrivimi" column, #43); rereading with Simone the method's lines and proofs
+  (#41) and the projects' `now` lines (#42).
+
 - List height: it should fit in 900 px (`.claude/rules/workspace-ui.md`), today it needs
   about 1,000 and on short screens it scrolls. Left like this by Simone at the close of
   M15; to be picked up again if the showcase or the single pages grow.
@@ -96,4 +106,7 @@ In production: `main` (Astro), deployed by Workers Builds on every push to `main
 `esse.dev` is a sending domain in Cloudflare Email Service. Not Email Routing: the
 domain's mail is on Qboxmail (MX and SPF), and Email Routing would take the MX; Email
 Service adds only the `cf-bounce` MX, DKIM and DMARC, and its SPF goes into the existing
-record, never a second one. Optional: `GITHUB_TOKEN`.
+record, never a second one. Optional: `GITHUB_TOKEN`. Build variable in Workers
+Builds, still to set: `GITHUB_ACTIVITY_TOKEN` (#42, read access to the repos' contents, used
+for dates and counts only); without it the Now page reads only the public repos, at 60
+requests an hour.

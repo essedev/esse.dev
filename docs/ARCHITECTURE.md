@@ -57,7 +57,19 @@ The single pages (welcome, about, contacts, privacy) are Markdown per language i
 `src/content/pages/`. The welcome page keeps its text in the frontmatter, without a body:
 the headline (`*...*` marks the accent) and the introduction, where `{tools}` places the
 logos of the projects listed in `tools`, are composed with components, which Markdown
-cannot do. The home's method card shows the `quote` of the first note that has one (#30).
+cannot do. The home's method card shows the `quote` of the note named in `featured.json`
+(`method`, #41). The about page works the same way: `lead`, the steps of `path` and the
+`certification` are frontmatter, composed into a timeline, with an optional `photo` (#43);
+the agent's index joins them back into text.
+
+The listing pages carry their own data. The projects page groups by status (#40); a method
+note lists its `proofs` (#41); the Now page (#42) joins the latest hand-written note, each
+project's `now` line and the activity of its repo, read from GitHub's REST API at build
+(`src/lib/activity.ts`, `src/lib/now-board.ts`): dates and counts only, private repos
+through `activityRepo` and the build variable `GITHUB_ACTIVITY_TOKEN`. It is the only
+external call of the build, and it does not fail it: an unreadable repo falls back to
+`updated` in `meta.json` with a warning in the log. The checks that proofs and steps match
+across languages live in `src/lib/content.ts` with the others.
 
 The changelog (#35) is a collection too, one folder per release in
 `src/content/changelog/` with `date` and `area` in `meta.json` and a title and a few

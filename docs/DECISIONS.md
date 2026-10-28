@@ -545,3 +545,73 @@ light veil, `surface` at 40%: the `panel` at 60% they had dug a darker hole in t
 the full `surface` read as white. Rejected: a list with a row per step (A), a panel that
 folds into one line (B, kept as the header), a hue per tool family (C, against the two
 colors of #15), a thread of nodes, a log in mono and a time waterfall (D1, D3, D4).
+
+## #40 - The projects page grouped by status
+
+**Status:** active
+
+Chosen with Simone on `docs/concepts/concept-r-progetti.html`, variant C. Before, the page
+was 24 identical rows by creation date under a status filter; the showcase showed only in
+the sidebar, covers and logos nowhere. Now the status is the structure: in progress as
+wide rows with the cover, the showcase first in the order of `featured.json` with its
+badge; maintained and completed, then ideas and archived, as compact rows with the logo
+(`groupByStatus` in `src/lib/listing.ts`, `ProjectRow.svelte`). The groups replace the
+status filter and its legend; search, tags and sort stay in the URL, and a sort other than
+the default drops the showcase's precedence. Covers and logos are resolved at build with
+`getImage` (`src/lib/project-pictures.ts`), so the island places the same optimized files.
+Rejected: the showcase as cards above a compact registry (A, the split of archived #5 made
+by choice instead of status) and its mosaic (A1), a dense index with the cover in a side
+panel that follows the pointer (B).
+
+## #41 - The method shown with its proofs, the home's note named in `featured.json`
+
+**Status:** active
+
+Chosen with Simone on `docs/concepts/concept-s-metodo.html`, variant A. The method index
+repeated the sidebar and left half the pane empty. Now each note's `quote` stands in large
+type next to at most three proofs, each a published project, a page of the site (`agent`,
+`changelog`) or a public URL with its title, with a one-line note. The proofs live in each
+language's frontmatter (`proofs`), and the build checks the same targets in every language
+and that a project is published. Since every note now has a quote, the home's method card
+(#30) no longer takes the first one that has it: the note is named in `featured.json`
+(`method`), checked at build, with the old rule as fallback. Rejected: one essay to read
+in three minutes (B, the detail pages would become duplicates) and one real case told end
+to end, the site's agent (C, kept as a possible closing box).
+
+## #42 - Now from the repos' activity, read at build
+
+**Status:** active
+
+Chosen with Simone on `docs/concepts/concept-t-adesso.html`, variant D. The Now page was a
+list of hand-written entries, each tied to a project, the last one five weeks old under a
+subtitle that said "updated from the projects". Now one dated note written by hand (the
+latest `now` entry, `project` optional), then this site and every project in progress with
+its `now` line (in every language or none, the excerpt otherwise), eight weeks of commits
+and the last one; past 21 days without a commit a project moves to "Paused" on its own
+(`src/lib/activity.ts`, `src/lib/now-board.ts`). GitHub is read at build, so the page stays
+static and refreshes with every deploy. Dates and counts only, never messages: a private
+repo is named in `activityRepo` (never shown as a link) and read with
+`GITHUB_ACTIVITY_TOKEN`, a build variable separate from the agent's `GITHUB_TOKEN`, which
+stays public-only and a Worker secret. A repo that cannot be read falls back to `updated`
+in `meta.json` with a warning in the build log; the build does not fail. Rejected: a
+monthly snapshot by hand above the activity (A, the hand part still ages), the activity
+with no hand line (B), everything automatic (C, no voice), and reading GitHub on the Worker
+at each visit (one more dynamic page, GitHub on every cold visit). The cost: GitHub is a
+build input, and a project with no readable repo shows a `meta.json` date that can be
+wrong.
+
+## #43 - About: the path as steps, an optional photo
+
+**Status:** active
+
+Chosen with Simone on `docs/concepts/concept-u-chi-sono.html`, variant A for the path. The
+second paragraph told five steps in one sentence; now the frontmatter holds `lead`, `path`
+(steps oldest first with `when`, title, note and an optional published project, the same
+steps in every language, checked at build) and `certification`, shown as a badge. `when`
+is a year or a word ("poi", "oggi") where the texts give no year: dates are not made up.
+The agent reads lead, steps and certification as text from its index. The photo is
+`photo: image()`, one file for every language, in its natural colors with the glass edge
+of the covers; until there is one the page shows none, and for now it opens the "Scrivimi"
+column (A1, position still open). Rejected: the photo beside the title (A, first round),
+the lilac and monitor treatments, the photo as a business card with the prose untouched
+(B), a large portrait with the path as a horizontal strip (C).

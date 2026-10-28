@@ -18,7 +18,8 @@ Portfolio personale di Simone Salerno, online su [esse.dev](https://esse.dev). F
 - Inglese e italiano con route e slug tradotti, redirect al canonico e hreflang
 - Il sito come spazio di lavoro: a sinistra una lista (pagine, vetrina dei progetti, metodo, scritti), a destra il riquadro del contenuto con la sua toolbar, navigazione da tastiera; sul telefono una barra delle schede con l'agente al centro
 - Home con al centro cosa faccio, i loghi dei progetti nella presentazione, i contatti e tre card da cui iniziare: l'agente, un progetto di punta, il metodo
-- Elenchi di progetti e articoli con ricerca e filtri per tag, stato e ordine, tenuti nell'URL
+- Progetti raggruppati per stato ed elenco degli articoli, con ricerca e filtri per tag e ordine, tenuti nell'URL
+- Una pagina del metodo con dove si vede ogni principio, una pagina Adesso costruita sull'attività dei progetti su GitHub, la pagina Chi sono come timeline
 - Tempo di lettura e stima dei token degli articoli, articoli correlati
 - Feed RSS per lingua, sitemap con alternate, JSON-LD, `llms.txt`
 - Immagini Open Graph generate alla build, una per pagina
@@ -40,6 +41,8 @@ pnpm preview      # build e anteprima con wrangler su :8787
 L'agente richiede `OPENROUTER_API_KEY`, legge meglio il codice su GitHub con un
 `GITHUB_TOKEN` facoltativo, e spedisce le bozze approvate con `TURNSTILE_SECRET` e `MAIL_TO`:
 in locale si copia `.dev.vars.example` in `.dev.vars`, in produzione si usa `wrangler secret put`.
+La pagina Adesso legge l'attività dei repo alla build: `GITHUB_ACTIVITY_TOKEN` nell'ambiente
+della build legge anche quelli privati (solo date e conteggi).
 
 Giro di qualità, da lanciare prima di ogni push:
 

@@ -6,64 +6,9 @@ session and the next. High-level planning lives in `docs/ROADMAP.md`.
 
 Older cycles are in `docs/archive/` (Cycles 1-6 in `CYCLES-1-6.md`, 7-8 in
 `CYCLES-7-8.md`, 9-10 in `CYCLES-9-10.md`, 11-12 in `CYCLES-11-12.md`, 13-14 in
-`CYCLES-13-14.md`, 15-16 in `CYCLES-15-16.md`).
+`CYCLES-13-14.md`, 15-16 in `CYCLES-15-16.md`, 17-18 in `CYCLES-17-18.md`).
 
 ---
-
-## Cycle 17 - Concept B's style and the slimmer home (2026-10-04)
-
-Round on M15 (`0c7cf2c` .. `709e47c`): the style chosen in a separate concept, then home
-and list refined in short rounds.
-
-- **Style (#15):** `docs/concepts/concept-b-stile.html`, three rounds with palette, mono
-  font, CRT effect and frame tunable live, then applied (`ccfa654`, `2d270b1`): lavender
-  accent (palette G), Departure Mono for the interface mono (code in prose stays Geist
-  Mono), CRT veil set by the `--crt-*` variables, on a wide screen a rounded window with
-  list and content as two cards; mobile stays flush. A phosphor green with a single job:
-  LED in progress, agent at work, successful copy or send.
-- **Motion:** instant page change, no view transition (`58cd7e7`); labels decode once when
-  the pointer enters and once when it leaves, not on every `pointerover` (`8eed59c`).
-- **Home:** gone the whoami line above the name; fewer duplicates (the line about the
-  build goes into the intro, the project count stays in the list); "Where to start" with
-  three items: the agent with an example question that ends up in its input without
-  starting, Relay, the method. Chosen by comparing a temporary `/v2`, then removed. In
-  the text the coding agents are separated from the agents in products, which run on
-  custom harnesses.
-- **Fix:** the example question used `?q=`, which is the site's search, and also filled the
-  list's box: now it is `?ask=`, with an E2E that checks it (`dcbe36c`).
-- **Agent page:** first the suggestions, then the 13 tools as names on three lines, with a
-  line describing the one under the pointer, focus or touch (`d27aa6e`).
-- **List and toolbar** (`07752bd`, `709e47c`): Welcome row at the top of the list, Activity
-  icon in green for Now, `~` as the first step of every path, external profiles as mono
-  names with the arrow (Lucide has no logos) next to the email on the home and at the
-  bottom of the list.
-- **Tests:** 99 unit and 55 E2E.
-- **Next step:** mobile (the window on mobile too, button and drawer for the list), the
-  height of the list beyond 900 px, the agent page that on mobile opens scrolled to the
-  bottom.
-
-## Cycle 18 - Mobile as a window with a drawer (2026-10-04)
-
-Round on M15: mobile takes the same shape as the wide screen.
-
-- **Window:** on mobile too the shell is detached from the edges (6 px, `desk` background)
-  and the pane is a rounded card that scrolls inside itself, with the toolbar fixed at the
-  top. Before, the whole page scrolled and the home showed the list below the
-  presentation.
-- **Drawer:** the list comes in from the left like a card above the pane, with logo, X,
-  search, items, profiles and legend (the keys stay only on desktop). It opens from the
-  `PanelLeft` button in the toolbar or from the magnifier, which goes straight to search;
-  it closes with Esc, the X, a tap outside or by dragging it to the left. The pane below
-  becomes `inert`, focus enters the drawer and returns to the button. Visibility changes
-  immediately on opening and at the end of the stroke on closing, otherwise focus does
-  not enter in the same gesture.
-- **Fix:** the agent page no longer scrolls to the bottom with an empty conversation
-  (`0c2518f`); `theme-color` aligned with the new background.
-- **CRT veil** (`5454486`): about a quarter lighter (glow, fringe, lines and vignette),
-  always and only from the `--crt-*` variables.
-- **Tests:** 104 unit and 57 E2E (drawer: Esc, X, tap outside, search from the magnifier).
-- **Next step:** the full round on a real iPhone, the agent placeholder on two lines, the
-  height of the list beyond 900 px.
 
 ## Cycle 19 - Glass, the chatting agent, per-IP limits (2026-10-04)
 
@@ -445,7 +390,7 @@ Cycle 29 (`be295b9` .. `f247b2f`).
 ## Cycle 31 - Tidier on phones (2026-10-28)
 
 Layout fixes below 640 px and on the tab bar (`c4b0f35` .. `660572f`), with the changelog
-entry `2026-10-28-mobile`.
+entry `2026-10-28-mobile` (merged into `2026-10-28-pagine` with Cycle 32, one entry per release).
 
 - **Toolbar:** its side padding follows `--pad`, the pane's text margins, at every width.
 - **Tab bar:** a lighter glass on phones (`bg-panel/55`, no glass shadow).
@@ -456,3 +401,36 @@ entry `2026-10-28-mobile`.
   about 200 px and every line wrapped.
 - **Projects:** the list's filters share one row on phones (`CollectionBrowser.svelte`).
 - **Next step:** unchanged from Cycle 30.
+
+## Cycle 32 - The listing pages rebuilt: projects, method, now, about (2026-10-28)
+
+Four concepts, one per listing page (`f0de0b8`), each chosen with Simone and built in a
+commit of its own (`7d612fe` .. `d757d3a`); one changelog entry for the release
+(`d3cd62a`).
+
+- **Projects (#40):** concept R, variant C. Grouped by status: in progress as wide rows
+  with the cover, the showcase first with its badge; maintained and completed, ideas and
+  archived as compact rows with the logo. The groups replace the status filter; covers and
+  logos resolved at build (`project-pictures.ts`).
+- **Method (#41):** concept S, variant A. Each note's line in large type next to up to three
+  proofs (`proofs` in the frontmatter: a project, a page or a public URL, each with a note),
+  checked at build. Every note has a `quote` now; the home's card takes the one named in
+  `featured.json` (`method`).
+- **Now (#42):** concept T, variant D. A dated note by hand, then the site and the projects
+  in progress with their `now` line, eight weeks of commits and the last one, moved to
+  "Paused" after 21 days idle. Read from GitHub at build, dates and counts only, private
+  repos through `activityRepo` and `GITHUB_ACTIVITY_TOKEN`, separate from the agent's
+  token; an unreadable repo falls back to `updated` in `meta.json`. A new dated note
+  (`2026-10-sito-varco`); a note's `project` is optional now.
+- **About (#43):** concept U, variant A. `lead`, `path` (steps with `when`, title, note,
+  optional project) and `certification` in the frontmatter, also in the agent's index; an
+  optional `photo` that opens the "Scrivimi" column, none shown until there is one.
+- **Changelog:** the phone fixes' entry merged into `2026-10-28-pagine`, one entry per
+  release (#35).
+- **Tests:** unit on grouping (`listing.test.ts`) and on weeks, pause and bars
+  (`activity.test.ts`); the listing E2E follows the groups.
+- **Next step:** the photo and its position; `GITHUB_ACTIVITY_TOKEN` in the Workers Builds
+  variables, without it production reads only the public repos; Zeno's repo (none under
+  `essedev`, so its date is `meta.json`'s); Copilota's private repo is not read, so it shows
+  a `meta.json` date; rereading the method's lines and the projects' `now` lines with
+  Simone.

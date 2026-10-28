@@ -18,7 +18,8 @@ Personal portfolio of Simone Salerno, online at [esse.dev](https://esse.dev). Bu
 - English and Italian with translated routes and slugs, canonical redirects and hreflang
 - The site as a workspace: a list on the left (pages, project showcase, method, writing), the content pane with its toolbar on the right, keyboard navigation; on phones a tab bar with the agent at the center
 - Home with what I do at the center, the project logos in the intro, contacts and three start cards: the agent, a lead project, the method
-- Project and article listings with search, tag, status and sort filters kept in the URL
+- Projects grouped by status and an article listing, with search, tag and sort filters kept in the URL
+- A method page with where each principle shows, a Now page built from the projects' activity on GitHub, an about page as a timeline
 - Article reading time and token estimate, related articles
 - Per-language RSS feed, sitemap with alternates, JSON-LD, `llms.txt`
 - Open Graph images generated at build time, one per page
@@ -39,7 +40,9 @@ pnpm preview      # build and serve with wrangler on :8787
 
 The agent needs `OPENROUTER_API_KEY`, reads code on GitHub better with an optional
 `GITHUB_TOKEN`, and sends approved drafts with `TURNSTILE_SECRET` and `MAIL_TO`: copy
-`.dev.vars.example` to `.dev.vars` locally, `wrangler secret put` in production.
+`.dev.vars.example` to `.dev.vars` locally, `wrangler secret put` in production. The Now
+page reads the repos' activity at build: `GITHUB_ACTIVITY_TOKEN` in the build's environment
+reads the private ones too (dates and counts only).
 
 Quality gate, run before every push:
 
