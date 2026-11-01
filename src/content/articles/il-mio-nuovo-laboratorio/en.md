@@ -1,49 +1,31 @@
 ---
-slug: "my-new-laboratory"
-title: "My New Laboratory: Where a Child's Ideas Meet Code"
-excerpt: "From an orange binder full of robot projects to code: the story of how my mad scientist laboratory transformed into this website."
-description: "From an orange binder full of robot projects to code: the story of how my mad scientist laboratory transformed into this website."
+slug: "the-orange-binder"
+title: "The orange binder"
+excerpt: "As a kid I filled a binder with robots I never built. Today I build my ideas, and I keep the ones that stopped too."
+description: "As a kid I filled a binder with robots I never built. Today I build my ideas, and I keep the ones that stopped too."
 tags:
-  - "SvelteKit"
-  - "TailwindCSS"
-  - "Software Architecture"
-  - "Routing"
-  - "Multilingual"
-  - "CMS"
-  - "Portfolio"
-  - "AI"
+  - "Side projects"
+  - "Coding agents"
 ---
 
-## Introduction: Once Upon a Time, a Secret Laboratory
+As a kid I wanted to be a mad scientist, and I meant it. I spent my afternoons filling an orange binder with projects: robots of every shape, complicated machines, unlikely inventions. I dreamed of buying an Ape Car, the tiny Italian three-wheeler, and turning it into a mobile lab.
 
-As a child, my ambition was clear: when I grew up, I would be a "mad scientist." I spent afternoons filling an orange binder with outlandish projects: robots of every shape, complex machines, and improbable inventions. I dreamed of buying an Ape Car to build my mobile secret laboratory inside it, an idea that, I admit, still fascinates me sometimes.
+![Drawings of robots like Triangolix and Volix](./robots.jpg)
 
-That creative energy led me to play with LEGOs for hours and dismantle any technological device I could get my hands on (with the small drawback that, most of the time, I didn't know how to put it back together). It was my personal exploration of the world, a way to understand how things worked "from the inside."
+None of those robots ever left the page. I built with LEGO and took apart any device I could get my hands on, to see how it worked inside. Putting it back together, most of the time, I could not.
 
-That energy and curiosity never went out. They just evolved.
+The binder did one thing right, though: it kept everything. The ideas that worked and the ones left halfway sat in the same place, one after the other.
 
-Today, that orange binder and the dream of a mobile laboratory have taken a new form. This website is my new laboratory. It's the digital space where I continue to experiment, build, and bring my ideas to life, just as I did as a child, but with different tools: no longer markers and graph paper, but code, software architectures, and an endless passion for technology.
+## The tools are here now
 
-## Building the Laboratory: The Technical Foundations
+Today the AI writes the code. I design the architecture, prepare the context the agent works in, check and ship. The distance between an idea and something that actually runs has shrunk enormously, so the ideas that used to stay on paper now become projects.
 
-To build this digital space, I carefully chose my tools. I opted for SvelteKit 5, appreciating its intrinsic reactivity and excellent developer experience. TypeScript was fundamental to ensure code robustness and maintainability through strong typing, reducing errors and facilitating scalability. For the user interface, Tailwind CSS 4 allowed me rapid and highly customizable creation of responsive design while maintaining impeccable style management.
+Many are born, and not all of them reach the end. That is fine, as long as I do not lose them.
 
-For deployment, I chose Cloudflare Pages for its speed and the efficiency of its cutting-edge serverless infrastructure. In the future, I intend to explore migration to Cloudflare Workers to achieve greater server-side flexibility and handle more complex logic or APIs directly at the edge, further optimizing performance.
+## The grown-up binder
 
-![Robot drawings like Triangolix and Volix](./robots.jpg)
+This site does the binder's job. The [projects](/en/projects) page has all of them, each with its real status: in progress, the tools I use every day, ideas on hold, archived.
 
-The most important choice for content management was a JSON file-based system, without a traditional database. This approach proved most convenient for this project's specific needs, particularly for ensuring extremely direct and performant access to data like URL translations and content metadata, essential for my multilingual routing system. Direct integration of JSON data into the build process gave me full control and made data immediately available and optimized. For now, it's the ideal solution, though I'll consider returning to more conventional databases if needs evolve in the future.
+And every project carries the attempts that came before it. [Nexus](/en/projects/nexus), where I keep my tasks, notes and data today, came after Plannerinator and a line of personal assistants: Verbosa, NanoClaw, Life Terminal, Almanac, a first Nexus in Elixir, Bob. Its page lists them all, in order, with what each one left to the next.
 
-## The Experiments: A Living, Evolving Portfolio
-
-A laboratory isn't a gallery of finished works, but a place of continuous creation. That's why you won't find only "Completed" projects here. I constantly work on numerous initiatives and always have several active projects simultaneously. So I wanted to create space for "Work In Progress" experiments, to show you what I'm working on in real-time, even if it's not yet complete. It's a choice to give you a broader glimpse of my development process, showing my proactivity, problem-solving ability, and continuous learning process, inviting you to follow the development and see an idea's growth from its earliest stages.
-
-The idea of also showing embryonic phases, "concepts," and sparks of new ideas is something I'm still framing and defining. I want to find the right way to tell the story of the creative chaos that precedes every structured project.
-
-## The Next Evolution: Me, My Site, and a New Partner
-
-This laboratory is designed to evolve. And just like any self-respecting "mad scientist," I'm always searching for new, powerful tools to transform ideas into reality.
-
-Recently, a new "partner" has joined my workbench, an assistant that's revolutionizing how I plan, write code, and even create content like this. I'm talking about Artificial Intelligence.
-
-I'll tell you in detail about this extraordinary symbiosis and how it's empowering my laboratory's capabilities in my next article. For now, I invite you to explore this space, browse through my experiments, and feel at home in my new digital laboratory.
+How I work with agents is in the [method](/en/method). The Ape Car, on the other hand, is still in the binder.
