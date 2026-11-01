@@ -99,30 +99,30 @@ test.describe('i18n routing & redirects', () => {
 	});
 });
 
-test.describe('article slug translation (cross-language)', () => {
-	// The only content with different slugs across languages (en: my-new-laboratory, it:
-	// il-mio-nuovo-laboratorio): it exercises the hook's slug translation, which never fires on
-	// projects because their slugs are the same in en and it.
-	test('italian article slug under /en redirects to the english slug', async ({ request }) => {
-		const res = await request.get('/en/writing/il-mio-nuovo-laboratorio', { maxRedirects: 0 });
+test.describe('detail slug translation (cross-language)', () => {
+	// The method notes have different slugs across languages (en: measure, it: misurare): they
+	// exercise the hook's slug translation, which never fires on projects because their slugs
+	// are the same in en and it.
+	test('italian slug under /en redirects to the english slug', async ({ request }) => {
+		const res = await request.get('/en/method/misurare', { maxRedirects: 0 });
 		expect(res.status()).toBe(301);
-		expect(res.headers()['location']).toMatch(/\/en\/writing\/my-new-laboratory$/);
+		expect(res.headers()['location']).toMatch(/\/en\/method\/measure$/);
 	});
 
-	test('english article slug under /it redirects to the italian slug', async ({ request }) => {
-		const res = await request.get('/it/scritti/my-new-laboratory', { maxRedirects: 0 });
+	test('english slug under /it redirects to the italian slug', async ({ request }) => {
+		const res = await request.get('/it/metodo/measure', { maxRedirects: 0 });
 		expect(res.status()).toBe(301);
-		expect(res.headers()['location']).toMatch(/\/it\/scritti\/il-mio-nuovo-laboratorio$/);
+		expect(res.headers()['location']).toMatch(/\/it\/metodo\/misurare$/);
 	});
 
-	test('the english article detail renders at its canonical slug', async ({ page }) => {
-		const res = await page.goto('/en/writing/my-new-laboratory');
+	test('the english detail renders at its canonical slug', async ({ page }) => {
+		const res = await page.goto('/en/method/measure');
 		expect(res?.status()).toBe(200);
 		await expect(page.locator('h1').first()).toBeVisible();
 	});
 
-	test('the italian article detail renders at its canonical slug', async ({ page }) => {
-		const res = await page.goto('/it/scritti/il-mio-nuovo-laboratorio');
+	test('the italian detail renders at its canonical slug', async ({ page }) => {
+		const res = await page.goto('/it/metodo/misurare');
 		expect(res?.status()).toBe(200);
 		await expect(page.locator('h1').first()).toBeVisible();
 	});
@@ -168,14 +168,14 @@ test.describe('sitemap', () => {
 });
 
 test.describe('rss', () => {
-	test('/en/rss.xml is a valid feed with items', async ({ request }) => {
+	// The feed stays up with no article, so subscribers keep it: valid and empty today.
+	// With the next article it gets back `<item>` and a `/en/writing/` link.
+	test('/en/rss.xml is a valid feed', async ({ request }) => {
 		const res = await request.get('/en/rss.xml');
 		expect(res.status()).toBe(200);
 		expect(res.headers()['content-type']).toContain('rss+xml');
 		const body = await res.text();
 		expect(body).toContain('<rss');
 		expect(body).toContain('<channel>');
-		expect(body).toContain('<item>');
-		expect(body).toContain('/en/writing/');
 	});
 });

@@ -40,13 +40,18 @@ import { projectCover, projectLogo } from '../../../lib/project-pictures';
 import { getSite, translator } from '../../../lib/site';
 import { credits, VISITOR_DAILY_USD } from '../../../agent/budget';
 
-export function getStaticPaths() {
-	return languageCodes.flatMap((lang) =>
-		SECTIONS.map((section) => ({
-			params: { lang, section: navigation[lang][section] },
-			props: { section }
-		}))
+export async function getStaticPaths() {
+	const paths = await Promise.all(
+		languageCodes.map(async (lang) => {
+			// Writing has no page while it has no article (the nav hides it too).
+			const writing = (await getArticles(lang)).length > 0;
+			return SECTIONS.filter((section) => section !== 'articles' || writing).map((section) => ({
+				params: { lang, section: navigation[lang][section] },
+				props: { section }
+			}));
+		})
 	);
+	return paths.flat();
 }
 
 const { lang } = Astro.params;

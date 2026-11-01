@@ -35,7 +35,11 @@ const [projects, articles, method] = await Promise.all([
 ]);
 const section = (s: (typeof SECTIONS)[number]) => `/${lang}/${routes[s]}`;
 const pages: PageRef[] = [
-	...SECTIONS.map((s) => ({ path: section(s), title: sections[s], kind: 'section' })),
+	...SECTIONS.filter((s) => s !== 'articles' || articles.length > 0).map((s) => ({
+		path: section(s),
+		title: sections[s],
+		kind: 'section'
+	})),
 	...projects.map((p) => ({
 		path: `${section('projects')}/${p.text.slug}`,
 		title: p.text.title,

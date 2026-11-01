@@ -15,10 +15,10 @@ test.describe('canonical & hreflang', () => {
 		expect(hreflangs).toEqual(expect.arrayContaining(['en', 'it', 'x-default']));
 	});
 
-	test('article detail alternate points to the translated slug', async ({ page }) => {
-		await page.goto('/en/writing/my-new-laboratory');
+	test('detail alternate points to the translated slug', async ({ page }) => {
+		await page.goto('/en/method/measure');
 		const itAlt = await page.locator('link[rel="alternate"][hreflang="it"]').getAttribute('href');
-		expect(itAlt).toContain('/it/scritti/il-mio-nuovo-laboratorio');
+		expect(itAlt).toContain('/it/metodo/misurare');
 	});
 });
 
@@ -30,15 +30,22 @@ test.describe('structured data (JSON-LD)', () => {
 		const types = (Array.isArray(data) ? data : [data]).map((d) => d['@type']);
 		expect(types).toEqual(expect.arrayContaining(['WebSite', 'Person']));
 	});
+});
 
-	test('article detail emits BlogPosting with headline and dates', async ({ page }) => {
-		await page.goto('/en/writing/my-new-laboratory');
-		const raw = await page.locator('script[type="application/ld+json"]').first().textContent();
-		const data = JSON.parse(raw!);
-		const post = Array.isArray(data) ? data[0] : data;
-		expect(post['@type']).toBe('BlogPosting');
-		expect(post.headline).toBeTruthy();
-		expect(post.datePublished).toBeTruthy();
+// No article is published today: writing has no page, no sidebar row and no sitemap entry.
+// When the next article arrives, this block becomes the BlogPosting check on its page
+// (the JSON-LD helper is covered in tests/unit/seo.test.ts meanwhile).
+test.describe('writing without articles', () => {
+	test('the section answers 404 and is not in the sidebar or the sitemap', async ({
+		page,
+		request
+	}) => {
+		const res = await page.goto('/en/writing');
+		expect(res?.status()).toBe(404);
+		await page.goto('/en');
+		await expect(page.locator('a[href="/en/writing"]')).toHaveCount(0);
+		const sitemap = await (await request.get('/sitemap.xml')).text();
+		expect(sitemap).not.toContain('/en/writing');
 	});
 });
 

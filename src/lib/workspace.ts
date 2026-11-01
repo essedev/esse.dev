@@ -153,20 +153,25 @@ export async function getNav(lang: string, t: Translate): Promise<Nav> {
 					search: `${m.text.title} ${m.text.summary}`
 				}))
 			},
-			{
-				section: 'articles',
-				label: site.sections.articles,
-				href: base('articles'),
-				count: articles.length,
-				items: articles.map((a) => ({
-					key: `articles/${a.id}`,
-					href: `${base('articles')}/${a.text.slug}`,
-					title: a.text.title,
-					meta: formatDate(a.meta.date, lang, 'month'),
-					icon: 'text',
-					search: `${a.text.title} ${a.text.tags.join(' ')}`
-				}))
-			}
+			// Writing exists only while there is something to read: no empty section.
+			...(articles.length
+				? [
+						{
+							section: 'articles' as const,
+							label: site.sections.articles,
+							href: base('articles'),
+							count: articles.length,
+							items: articles.map((a) => ({
+								key: `articles/${a.id}`,
+								href: `${base('articles')}/${a.text.slug}`,
+								title: a.text.title,
+								meta: formatDate(a.meta.date, lang, 'month'),
+								icon: 'text' as const,
+								search: `${a.text.title} ${a.text.tags.join(' ')}`
+							}))
+						}
+					]
+				: [])
 		]
 	};
 }

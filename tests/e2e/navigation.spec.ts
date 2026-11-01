@@ -22,12 +22,12 @@ test.describe('up one level', () => {
 	});
 
 	test('Esc behaves like the breadcrumb', async ({ page }) => {
-		await open(page, '/en/writing?tag=Routing');
-		await page.locator('main a[href*="/writing/"]').first().click();
-		await page.waitForURL(/\/en\/writing\/[^/?]+$/);
+		await open(page, '/en/projects?tag=Astro');
+		await page.locator('main a[href*="/projects/"]').first().click();
+		await page.waitForURL(/\/en\/projects\/[^/?]+$/);
 		await page.waitForLoadState('networkidle');
 		await page.keyboard.press('Escape');
-		await expect(page).toHaveURL(/\/en\/writing\?tag=Routing$/);
+		await expect(page).toHaveURL(/\/en\/projects\?tag=Astro$/);
 	});
 
 	test('home -> project detail -> up goes to the section, not back home', async ({ page }) => {
@@ -38,10 +38,10 @@ test.describe('up one level', () => {
 		await expect(page).toHaveURL(/\/en\/projects$/);
 	});
 
-	test('direct landing on an article -> up opens the listing', async ({ page }) => {
-		await open(page, '/en/writing/my-new-laboratory');
+	test('direct landing on a method note -> up opens the listing', async ({ page }) => {
+		await open(page, '/en/method/measure');
 		await crumbUp(page).click();
-		await expect(page).toHaveURL(/\/en\/writing$/);
+		await expect(page).toHaveURL(/\/en\/method$/);
 	});
 });
 
