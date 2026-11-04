@@ -438,3 +438,23 @@ commit of its own (`962be19` .. `a4ce159`); one changelog entry for the release
   now private on GitHub with its `activityRepo`; Copilota's private repo is not read, so it shows
   a `meta.json` date; rereading the method's lines and the projects' `now` lines with
   Simone.
+
+## Cycle 33 - Writing on hold, the Yellow Tech work told with the team (2026-11-01)
+
+The only article taken down and Writing hidden while empty (`f670545`, #44); the article
+rewritten as a draft (`beabbb9`); about and home in the new register (`8e930d3`,
+`053049b`). Changelog entry `2026-11-01-scritti`.
+
+- **Writing (#44):** the January 2025 article described the SvelteKit site on Pages and
+  promised a follow-up that never came, and the agent indexed it as current. With no
+  published article the section has no list row (`workspace.ts`), no listing page
+  (`getStaticPaths`), no sitemap entry and no 404 suggestion; the RSS feed stays up, empty.
+- **Draft:** `il-mio-nuovo-laboratorio` rewritten from scratch, `published: false`, dated
+  2026-11-01.
+- **About and home:** lead, meta description and the home's company paragraph follow the
+  new LinkedIn profile: the work at Yellow Tech in the plural, no three beats in a row. The
+  voice section of `docs/features/progetti.md` records the register.
+- **Tests:** the cross-language slug E2E move from the article to the method notes
+  (`measure`/`misurare`); navigation, SEO and workspace E2E expect no Writing.
+- **Next step:** publishing the draft brings Writing back on its own; the open items of
+  Cycle 32 stand.

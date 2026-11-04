@@ -617,3 +617,15 @@ of the covers; until there is one the page shows none, and for now it opens the 
 column (A1, position still open). Rejected: the photo beside the title (A, first round),
 the lilac and monitor treatments, the photo as a business card with the prose untouched
 (B), a large portrait with the path as a horizontal strip (C).
+
+## #44 - Writing exists only while it has a published article
+
+**Status:** active
+
+The only article (January 2025) described a site that no longer exists, and the agent read
+it as current. It went to `published: false`, and a section with nothing to read is not
+shown: no list row, no listing page, no sitemap entry, no 404 suggestion, all keyed on the
+published articles of the language. The RSS feed stays, empty, so subscribers keep it.
+Publishing an article brings the section back with no other change. Rejected: keeping the
+stale article (wrong facts in the agent's answers), an empty listing page with a "coming
+soon" (a dead section in the list), removing the section and its routes (to rebuild later).

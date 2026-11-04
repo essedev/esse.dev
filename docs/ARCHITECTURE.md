@@ -177,7 +177,8 @@ accent, the mobile menu fades), while color, opacity and redrawn strokes keep ru
 
 - **List** (`src/lib/workspace.ts`): in order of importance and at most 900 px tall.
   First Welcome (the home) and the single pages (about, now, agent), then the project
-  showcase with "all N" leading to the registry, method, writing. Projects outside the
+  showcase with "all N" leading to the registry, method, writing (only while it has a
+  published article, `docs/DECISIONS.md` #44). Projects outside the
   showcase stay in the page: search finds them and the open one appears. It is also the
   source of the pager order. At the bottom, above the status line, the external profiles
   (`SocialLinks.astro`, the same links as the contacts) as mono names with the arrow.
