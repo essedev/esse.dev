@@ -31,6 +31,10 @@ Applies to the whole site: entries, pages, articles.
 - AI-first and enthusiastic, never defensive: the human is not the brake that validates
   the AI, they design the system (architecture, context, checks) and that is why they can
   go fast. Engineering solidity is what allows delegating more, not what limits it.
+- Light and a bit self-ironic, with substance: plain sentences, no manifesto register
+  ("a simple principle", "AI-native", three beats in a row).
+- The work at Yellow Tech is told in the plural, with the team: the technical role shows
+  through what I do, without claiming that decisions go through me.
 - Banned: maxims of a seasoned craftsman ("the craft", "the value is not X, it is Y"),
   philosophical tone, LLM buzzwords (actionable, leverage), inflated metrics.
 - Register by status: a real project is a technical story; an idea or a spike is a short

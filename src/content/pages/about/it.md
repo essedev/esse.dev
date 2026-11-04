@@ -1,6 +1,6 @@
 ---
 title: "Chi sono"
-lead: "Sono Lead AI Engineer in Yellow Tech, a Milano. Le scelte tecniche e architetturali delle soluzioni AI che costruiamo per i clienti passano da me, dalla valutazione di fattibilità alla messa in produzione. Accanto ai progetti curo il metodo di engineering del team, cioè le convenzioni e la documentazione che rendono ripetibile il modo in cui lavoriamo, e le piattaforme interne che usiamo ogni giorno."
+lead: "Sono Lead AI Engineer in Yellow Tech, a Milano. Con il team costruiamo soluzioni AI per aziende italiane, dalla valutazione di fattibilità alla messa in produzione. Io mi occupo soprattutto di architettura, delle piattaforme interne che usiamo ogni giorno e del metodo con cui lavoriamo, cioè le convenzioni e la documentazione che lo rendono ripetibile."
 path:
   - when: "2021"
     title: "Intelligenza Artificiale a Pavia"
@@ -17,7 +17,7 @@ path:
     note: "Progetti in una software house, con lavori da freelance in parallelo."
   - when: "oggi"
     title: "Lead AI Engineer in Yellow Tech"
-    note: "Le scelte tecniche delle soluzioni AI per i clienti, il metodo del team, le piattaforme interne."
+    note: "Con il team: l'architettura delle soluzioni AI per i clienti, il metodo, le piattaforme interne."
 certification: "Claude Certified Architect - Foundations, Anthropic"
 ---
 
