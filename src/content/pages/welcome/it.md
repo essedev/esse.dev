@@ -1,8 +1,8 @@
 ---
 eyebrow: "Lead AI Engineer in Yellow Tech · Milano"
 title: "Simone Salerno"
-headline: "Porto l'AI generativa dentro aziende vere e la *tengo in produzione*."
-intro: "Per conto mio costruisco strumenti per sviluppatori {tools}, quasi tutti open source, e app mie. Progetto l'architettura, l'AI scrive il codice, io verifico e rilascio."
+headline: "Con il team portiamo l'AI generativa dentro aziende vere e la *teniamo in produzione*."
+intro: "Per conto mio costruisco strumenti per sviluppatori {tools}, quasi tutti open source, e app mie."
 tools: ["relay", "portsage", "mcpbelt", "pgbee"]
 facts:
   - label: "programmo con"
