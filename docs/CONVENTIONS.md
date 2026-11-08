@@ -17,7 +17,7 @@ This is a public repository: prose is in English, the Italian that remains is th
 | `README.it.md`                                                                                           | Italian, translation of `README.md`, updated in the same commit |
 | `docs/*` (except the archive), `CLAUDE.md`                                                               | English                                                         |
 | New commit messages                                                                                      | English, Conventional Commits                                   |
-| UI strings and content per language (`src/content/**/it.md`, `src/content/site/it.json`)                 | the language of the content                                     |
+| UI strings and content per language (`src/content/**/it.md{,x}`, `src/content/site/it.json`)             | the language of the content                                     |
 | Route names that are Italian UI labels (`progetti`, `scritti`, `adesso`, `chi-sono`, `agente`, `metodo`) | stay as they are                                                |
 | `docs/archive/`, git history                                                                             | stay as they are                                                |
 | Mockups in `docs/concepts/`                                                                              | the language of the UI they show                                |

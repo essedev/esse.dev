@@ -47,6 +47,12 @@ enforces the rules the schema cannot see: a published item has its text in every
 language, every text has its meta, slugs are unique per language, the showcase
 (`src/config/featured.json`) points to published projects. A violation fails the build.
 
+An article's text can be MDX (#45), for charts and diagrams in place of images: the page
+passes `View` (the agent's `RenderView`, with the same validation of `render.ts`), `Flow`
+and `Attempts` (a project's `previously` as a timeline), so the text imports nothing. They
+render to static HTML with the site's tokens, so they follow the theme and the CSP. In
+`pnpm dev` the drafts are visible, to read them in place; a build never shows one.
+
 Why two files per item: `meta.json` holds the facts, `<lang>.md` the prose. The facts are
 shared across languages (copying them into every Markdown would make them diverge) and
 are the ones a script can update from the sources (repo, dates, status) without touching

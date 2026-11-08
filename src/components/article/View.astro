@@ -1,0 +1,16 @@
+---
+import RenderView from '../agent/RenderView.svelte';
+import { parseRender, type RenderView as RenderViewData } from '../../agent/render';
+
+/**
+ * A chart, table or timeline in an article, with the data written in the MDX. The same view
+ * and validation as the agent's `render`: wrong data fails the build, and it is static HTML.
+ */
+type Props = RenderViewData;
+
+const view = parseRender(Astro.props);
+---
+
+<div class="not-prose my-8">
+	<RenderView view={view} locale={Astro.params.lang ?? 'en'} />
+</div>

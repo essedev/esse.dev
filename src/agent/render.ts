@@ -26,7 +26,8 @@ export type RenderView =
 	| {
 			type: 'timeline';
 			title: string;
-			items: { date: string; label: string; detail?: string }[];
+			/** `status`, set only by the site's own pages, is the LED's; the agent's views are live. */
+			items: { date: string; label: string; detail?: string; status?: string }[];
 	  };
 
 /** A validation failure of `render` arguments; the message names the wrong field. */

@@ -10,7 +10,7 @@ const isoDate = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, 'data in formato YYYY-MM
 
 // The id of a meta is the folder name; that of a text is `<folder>/<language>`.
 const folderId = ({ entry }: { entry: string }) => entry.split('/')[0];
-const textId = ({ entry }: { entry: string }) => entry.replace(/\.md$/, '');
+const textId = ({ entry }: { entry: string }) => entry.replace(/\.mdx?$/, '');
 
 export const projectStatus = z.enum(['in-progress', 'maintained', 'completed', 'idea', 'archived']);
 
@@ -106,8 +106,9 @@ const articles = defineCollection({
 	})
 });
 
+// Only articles can be MDX: their components are charts and diagrams (DECISIONS #45).
 const articleTexts = defineCollection({
-	loader: glob({ pattern: '*/*.md', base: './src/content/articles', generateId: textId }),
+	loader: glob({ pattern: '*/*.{md,mdx}', base: './src/content/articles', generateId: textId }),
 	schema: z.object({
 		slug: z.string().min(1),
 		title: z.string().min(1),

@@ -9,6 +9,7 @@ worker-configuration.d.ts
 
 # Content: people write the Markdown, not prettier
 src/content/**/*.md
+src/content/**/*.mdx
 
 # Concept mockups: standalone HTML, looked at and thrown away
 docs/concepts/

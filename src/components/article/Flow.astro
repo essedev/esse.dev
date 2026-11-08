@@ -1,0 +1,37 @@
+---
+import { ArrowRight } from '@lucide/astro';
+
+/**
+ * A sequence of steps in an article, as a row of boxes on a wide column and a stack on a
+ * narrow one. The column decides, not the screen: the pane's width depends on the list.
+ */
+interface Props {
+	title: string;
+	steps: {
+		label: string;
+		detail?: string;
+	}[];
+}
+
+const { title, steps } = Astro.props;
+---
+
+<figure class="not-prose bg-surface/60 @container my-8 flex flex-col gap-4 rounded-[var(--radius-control)] px-4 py-4">
+	<figcaption class="text-subtle font-mono text-xs">{title}</figcaption>
+	<ol class="flex flex-col gap-1.5 @lg:flex-row">
+		{steps.map((step, i) => (
+			<li class="flex min-w-0 flex-1 flex-col gap-1.5 @lg:flex-row">
+				<div class="border-line min-w-0 flex-1 rounded-[var(--radius-control)] border px-3 py-2">
+					<p class="text-fg text-sm">{step.label}</p>
+					{step.detail && <p class="text-muted mt-0.5 text-[0.8125rem]">{step.detail}</p>}
+				</div>
+				{i < steps.length - 1 && (
+					<ArrowRight
+						aria-hidden="true"
+						class="text-subtle size-3.5 flex-none rotate-90 self-center @lg:rotate-0"
+					/>
+				)}
+			</li>
+		))}
+	</ol>
+</figure>

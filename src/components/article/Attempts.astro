@@ -1,0 +1,37 @@
+---
+import RenderView from '../agent/RenderView.svelte';
+import { getProjects } from '../../lib/content';
+
+/**
+ * The attempts that led to a project, as a timeline ending on the project itself. It reads
+ * `previously` from the project's entry, so an article never repeats that list by hand.
+ */
+interface Props {
+	/** The id of a published project with `previously`; anything else fails the build. */
+	project: string;
+	title: string;
+}
+
+const { project: id, title } = Astro.props;
+const lang = Astro.params.lang!;
+const project = (await getProjects(lang)).find((p) => p.id === id);
+if (!project?.text.previously?.length) {
+	throw new Error(`Attempts: "${id}" is not a published project with \`previously\``);
+}
+const items = [
+	...project.text.previously.map((p) => ({
+		date: String(p.year),
+		label: p.name,
+		status: 'archived'
+	})),
+	{
+		date: project.meta.created.slice(0, 4),
+		label: project.text.title,
+		status: project.meta.status
+	}
+];
+---
+
+<div class="not-prose my-8">
+	<RenderView view={{ type: 'timeline', title, items }} locale={lang} />
+</div>

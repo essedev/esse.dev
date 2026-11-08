@@ -78,7 +78,8 @@ type TextEntry =
 function join<M extends object, E extends TextEntry>(
 	kind: string,
 	metas: { id: string; data: M }[],
-	texts: E[]
+	texts: E[],
+	{ drafts = false }: { drafts?: boolean } = {}
 ): { id: string; meta: M; texts: Record<string, E> }[] {
 	const byId = new Map(
 		metas.map((m) => [m.id, { id: m.id, meta: m.data, texts: {} as Record<string, E> }])
@@ -93,7 +94,7 @@ function join<M extends object, E extends TextEntry>(
 	}
 	// Without the `published` field (method, now, changelog) an entry is always published.
 	const published = [...byId.values()].filter(
-		(item) => !('published' in item.meta) || item.meta.published !== false
+		(item) => drafts || !('published' in item.meta) || item.meta.published !== false
 	);
 	for (const item of published) {
 		const missing = languageCodes.filter((l) => !item.texts[l]);
@@ -131,7 +132,9 @@ function loadAll() {
 			getCollection('changelogTexts')
 		]);
 		const projects = join('projects', pm, pt);
-		const articles = join('articles', am, at);
+		// In `pnpm dev` a draft article reads as published, so it can be read in place. A build
+		// never shows one.
+		const articles = join('articles', am, at, { drafts: import.meta.env.DEV });
 		const method = join('method', mm, mt);
 		const now = join('now', nm, nt);
 		const changelog = join('changelog', cm, ct);

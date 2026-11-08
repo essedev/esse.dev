@@ -75,7 +75,7 @@
 			{#each view.items as item, i (i)}
 				<li class="grid grid-cols-[5.5rem_auto_minmax(0,1fr)] items-baseline gap-x-3">
 					<span class="font-mono text-xs text-subtle tabular-nums">{item.date}</span>
-					<span class="led self-center" data-status="in-progress"></span>
+					<span class="led self-center" data-status={item.status ?? 'in-progress'}></span>
 					<span class="flex flex-col gap-0.5">
 						<span class="text-sm text-fg">{item.label}</span>
 						{#if item.detail}<span class="text-sm text-muted">{item.detail}</span>{/if}

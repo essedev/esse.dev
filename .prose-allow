@@ -1,5 +1,6 @@
 # Localized content: the Italian texts are the product, not prose to translate.
 src/content/**/it.md
+src/content/**/it.mdx
 src/content/site/it.json
 # Historical archive, not canonical (read, never updated).
 docs/archive/**

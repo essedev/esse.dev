@@ -7,6 +7,8 @@ import { execSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 
+import mdx from '@astrojs/mdx';
+
 // The theme and boot scripts run inline, before the first paint, and Astro does not hash
 // inline scripts: each hash comes from the same file that the layout inlines.
 /** @returns {`sha256-${string}`} */
@@ -40,7 +42,7 @@ export default defineConfig({
 	markdown: { syntaxHighlight: false },
 	// Responsive images in Markdown too: a srcset generated at build time instead of the original.
 	image: { layout: 'constrained', responsiveStyles: true },
-	integrations: [svelte()],
+	integrations: [svelte(), mdx()],
 	// Self-hosted fonts through the Fonts API: files downloaded at build time, preload and
 	// tuned fallbacks to reduce layout shift. The CSS variables are used in the @theme of
 	// global.css.
