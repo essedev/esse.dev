@@ -19,7 +19,7 @@
 		"test:unit": "vitest run",
 		"test:e2e": "playwright test",
 		"test:ci": "vitest run && playwright test",
-		"generate-types": "wrangler types",
+		"generate-types": "wrangler types --env-file .dev.vars.example",
 		"eval:decision": "node --experimental-strip-types scripts/eval-decision.ts",
 		"favicons": "node --experimental-strip-types scripts/generate-favicons.ts"
 	},

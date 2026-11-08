@@ -8,9 +8,6 @@
 		"directory": "./dist",
 		"binding": "ASSETS"
 	},
-	// Workers AI, today only for the decision model's alternative transport (`DECISION_TRANSPORT`): the agent's
-	// models go through OpenRouter. In dev the binding is remote (Cloudflare account).
-	"ai": { "binding": "AI", "remote": true },
 	// Dynamic Workers for `run_code` (paid Workers plan): the model's code runs in a throwaway
 	// isolate, with no network.
 	"worker_loaders": [{ "binding": "LOADER" }],

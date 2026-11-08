@@ -91,7 +91,7 @@ describe('triage', () => {
 			);
 		expect(isSmallTalk(triage({ chat: 1 }, 'chat'))).toBe(true);
 		// A real question half-read as small talk stays a question.
-		expect(isSmallTalk(triage({ chat: 0.38, about: 0.28, offtopic: 0.34 }, 'chat'))).toBe(false);
+		expect(isSmallTalk(triage({ chat: 0.8, code: 0.2 }, 'chat'))).toBe(false);
 	});
 
 	it('lets on-topic requests and small talk through, not off-topic tasks or abuse', () => {

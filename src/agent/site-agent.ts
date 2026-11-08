@@ -84,20 +84,6 @@ import {
  * is charged to the visitor's budget and the site's (`Ledger`).
  */
 
-/**
- * How the decision model is reached. Same questions and same answers (the System One
- * protocol), only the transport changes:
- * - `openrouter`: `DECISION_MODEL`, with the same key as the agent's model
- *   (`OPENROUTER_API_KEY`);
- * - `typesafe`: TypeSafe's API with `TYPESAFE_API_KEY`, Jev only;
- * - `workers-ai`: the `AI` binding, no keys, Jev only, but needs AI Gateway credits on the
- *   account.
- */
-const DECISION_TRANSPORT: 'openrouter' | 'typesafe' | 'workers-ai' = 'openrouter';
-const DECISION_ENDPOINTS = {
-	openrouter: { url: DECISION_ENDPOINT, model: DECISION_MODEL },
-	typesafe: { url: 'https://api.typesafe.ai/v1/systemone', model: 'jev-latest' }
-} as const;
 /** A text file past this size is cut: the rest would cost tokens for nothing. */
 const PAGE_MAX_CHARS = 12_000;
 /** The site's repo: not a project's `repo`, but the agent may read it. */
@@ -277,8 +263,7 @@ export class SiteAgent extends DurableObject<Env> {
 
 	/** A Worker secret (`.dev.vars` locally, `wrangler secret put` in production). */
 	#secret(
-		name:
-			'OPENROUTER_API_KEY' | 'TYPESAFE_API_KEY' | 'GITHUB_TOKEN' | 'TURNSTILE_SECRET' | 'MAIL_TO'
+		name: 'OPENROUTER_API_KEY' | 'GITHUB_TOKEN' | 'TURNSTILE_SECRET' | 'MAIL_TO'
 	): string | undefined {
 		return (this.env as Env & Partial<Record<typeof name, string>>)[name];
 	}
@@ -979,23 +964,16 @@ export class SiteAgent extends DurableObject<Env> {
 
 	/** A call to the decision model; `parseTriage` validates the shape of the answer. */
 	async #decide(input: ReturnType<typeof triageInput>): Promise<DecisionOutput> {
-		if (DECISION_TRANSPORT === 'workers-ai') {
-			// Jev has no type in the binding's model catalog.
-			const run = this.env.AI.run as (model: string, input: unknown) => Promise<unknown>;
-			return (await run('typesafe/jev', input)) as DecisionOutput;
-		}
-		const endpoint = DECISION_ENDPOINTS[DECISION_TRANSPORT];
-		const keyName = DECISION_TRANSPORT === 'openrouter' ? 'OPENROUTER_API_KEY' : 'TYPESAFE_API_KEY';
-		const key = this.#secret(keyName);
-		if (!key) throw new Error(`${keyName} is not set`);
-		const res = await fetch(endpoint.url, {
+		const key = this.#secret('OPENROUTER_API_KEY');
+		if (!key) throw new Error('OPENROUTER_API_KEY is not set');
+		const res = await fetch(DECISION_ENDPOINT, {
 			method: 'POST',
 			headers: { authorization: `Bearer ${key}`, 'content-type': 'application/json' },
-			body: JSON.stringify({ model: endpoint.model, ...input }),
+			body: JSON.stringify({ model: DECISION_MODEL, ...input }),
 			signal: AbortSignal.timeout(DECISION_TIMEOUT_MS)
 		});
 		if (!res.ok) {
-			throw new Error(`Decision model (${endpoint.model}): HTTP ${res.status} ${await res.text()}`);
+			throw new Error(`Decision model (${DECISION_MODEL}): HTTP ${res.status} ${await res.text()}`);
 		}
 		return (await res.json()) as DecisionOutput;
 	}

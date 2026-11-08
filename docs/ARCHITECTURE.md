@@ -257,8 +257,8 @@ sides.
 
 - **Models:** from OpenRouter (`src/agent/models.ts`), `glm-5.3-flash` on an ordered list
   of fast providers with automatic fallback to the next, a timeout on a stream without
-  tokens and pi's retries. Key `OPENROUTER_API_KEY` as a Worker secret. The `AI` binding
-  remains only as an alternative transport for the decision model. Choices in `docs/DECISIONS.md` #11.
+  tokens and pi's retries. Key `OPENROUTER_API_KEY` as a Worker secret. Choices in
+  `docs/DECISIONS.md` #11.
 - **Site tools:** `search_site`, `read_page`, `list_projects` and `show_page` read
   `/agent/index.json`, a site index generated at build from the same collections as the
   pages and read from the assets: the agent sees only what the site publishes.
@@ -335,8 +335,8 @@ sides.
   token opens its call and result, the header the reasoning; cards, drafts and views stay
   in the answer, which follows.
 - **Triage and limits:** first the per-IP burst (binding `AGENT_RATE`, Workers Rate
-  Limiting), then the budget, then the decision model (`DECISION_MODEL` in `triage.ts`, today Jev), which stops off-topic and abuse and
-  decides the language of the answer and of the notices. A chat message (intent `chat`)
+  Limiting), then the budget, then the decision model (`DECISION_MODEL` in `triage.ts`, #46),
+  which stops off-topic and abuse and decides the language of the answer and of the notices. A chat message (intent `chat`)
   goes through, and if the model is sure about it the prompt gets the short mode with no tools.
   Spending is deducted in real cost per visitor (in the `SiteAgent`), per daily IP
   fingerprint and for the whole site (both in the `Ledger` Durable Object), with the

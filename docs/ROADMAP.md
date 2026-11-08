@@ -55,8 +55,8 @@ of the earlier idea (the site redesigned live by a model). Choices in
   pi-durable and `glm-5.3-flash` from OpenRouter (#11); the site tools, `show_page` as a
   card and the code tools on the public repos (#13); the demo tools `render`, `run_code`,
   `delegate` and `draft_message` (#14), the latter live on `hello@esse.dev` with a delivery
-  note for the model (#29); triage with Jev, chat to the model and `get_budget` (#12);
-  per-IP limits and a red team in Jev's set (#17); no link allowlist for now (#18);
+  note for the model (#29); triage, chat to the model and `get_budget` (#12);
+  per-IP limits and a red team in the triage's set (#17); no link allowlist for now (#18);
   90-day retention (#23); the states of the work and of errors (#24).
 - Done (Cycle 29): sub-agents in the background (#33), on the page as chips on the field
   with the live transcript in a sheet (#34).

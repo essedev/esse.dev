@@ -572,7 +572,9 @@ test.describe('agent sub-agents', () => {
 						id: 12,
 						kind: 'pi.message',
 						model: [
-							assistant([{ type: 'text', text: '# Il triage\n\nJev decide prima del modello.' }])
+							assistant([
+								{ type: 'text', text: '# Il triage\n\nIl classificatore decide prima del modello.' }
+							])
 						]
 					}
 				];
@@ -670,7 +672,7 @@ test.describe('agent sub-agents', () => {
 				model: [
 					{
 						role: 'user',
-						content: `[sub-agent #7 "${TITLE}" finished]\nJev classifica ogni messaggio in circa 300 ms.`,
+						content: `[sub-agent #7 "${TITLE}" finished]\nIl classificatore valuta ogni messaggio in circa 300 ms.`,
 						timestamp: 0
 					}
 				]
@@ -682,7 +684,7 @@ test.describe('agent sub-agents', () => {
 		await expect(report).toContainText('finito');
 		await expect(page.getByText('[sub-agent #7')).toHaveCount(0);
 		await report.locator('summary').click();
-		await expect(report).toContainText('Jev classifica ogni messaggio');
+		await expect(report).toContainText('Il classificatore valuta ogni messaggio');
 	});
 });
 

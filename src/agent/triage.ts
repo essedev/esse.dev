@@ -10,11 +10,11 @@
  */
 
 /**
- * The decision model, pinned to a version because an alias can shift the probabilities. The
- * thresholds in this file are tuned on it and do not carry over to another model: changing it
- * means rerunning `pnpm eval:decision` and fixing them again.
+ * The decision model, an exact id and not a `~...-latest` alias, which can shift the
+ * probabilities (DECISIONS #46). The thresholds in this file are tuned on it and do not carry
+ * over to another model: changing it means rerunning `pnpm eval:decision` and fixing them again.
  */
-export const DECISION_MODEL = 'typesafe/jev-1.13';
+export const DECISION_MODEL = 'liquid/d1-ultra';
 
 /**
  * OpenRouter's route for the System One protocol, open to every maker's models. The newer
@@ -136,8 +136,8 @@ export function parseTriage(output: DecisionOutput, ms: number): Triage {
 /**
  * When to stop a request, tuned on the labeled messages (`pnpm eval:decision`,
  * `tests/eval/triage.json`). It counts the probability that the message passes
- * ("about", "code" and "chat"), not the single chosen category: an impersonation scored
- * 0.61 off-topic and 0.09 abuse is 0.70 likely to be stopped, even though neither passes the
+ * ("about", "code" and "chat"), not the single chosen category: a message scored 0.61
+ * off-topic and 0.09 abuse is 0.70 likely to be stopped, even though neither passes the
  * threshold alone. Abuse also has its own, lower threshold.
  */
 export const BLOCK_OFF_TOPIC_MASS = 0.65;
@@ -169,10 +169,10 @@ export function admits(
 
 /**
  * When to treat the message as small talk (short answer, no tools): only if the model is sure.
- * Below that, a real question half-read as small talk ("Do you use Claude Code or Codex
- * more?", 0.38) would get a three-sentence answer without searching the site.
+ * Below that, a real question half-read as small talk ("Which tools do you have and how
+ * do they work?", 0.80) would get a three-sentence answer without searching the site.
  */
-export const SMALL_TALK_MIN = 0.7;
+export const SMALL_TALK_MIN = 0.85;
 
 /** Is the message small talk? */
 export function isSmallTalk(triage: Triage): boolean {

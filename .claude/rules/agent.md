@@ -20,8 +20,7 @@ paths:
 - Model, provider order and timeouts in `src/agent/models.ts`; existing conversations move
   to the new model when the object starts. Spending limits in `src/agent/budget.ts`
   (visitor, IP, site), per-IP burst with the `AGENT_RATE` binding. Triage, decision
-  model and its thresholds in `src/agent/triage.ts`, its transport in `DECISION_TRANSPORT` of
-  `src/agent/site-agent.ts`.
+  model and its thresholds in `src/agent/triage.ts`.
 - A new tool is a pi-durable `ToolRegistration`, with `replay: 'safe'` only if rerunning it
   has no effects. A tool with `prepareArguments` repairs the model's slips on the server only:
   the transcript keeps the raw arguments, so the page reads them through the same function

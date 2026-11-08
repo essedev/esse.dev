@@ -1,7 +1,5 @@
 # Copy to .dev.vars (excluded from git) for local development. In production:
-# pnpm exec wrangler secret put TYPESAFE_API_KEY
-# Only if DECISION_TRANSPORT is 'typesafe'.
-TYPESAFE_API_KEY=
+# pnpm exec wrangler secret put OPENROUTER_API_KEY
 
 # The agent's model and the decision model via OpenRouter (a key dedicated to the site, with a monthly limit).
 OPENROUTER_API_KEY=
