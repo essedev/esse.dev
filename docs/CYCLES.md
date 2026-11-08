@@ -434,3 +434,17 @@ articles published (`ea03983`). Changelog entry `2026-11-08-scritti`.
   of #46.
 - **Next step:** the milestones of the ROADMAP; the open items of Cycle 32 stand, in
   `docs/BACKLOG.md`.
+
+## Cycle 35 - Privacy after the new model, the headline, November's note (2026-11-08)
+
+The texts that Cycle 34 left behind, no code touched. Changelog entry `2026-11-08-privacy`.
+
+- **Privacy:** the page still named TypeSafe, gone with #46: it now says that OpenRouter forwards
+  each message to two models, the small one from Liquid AI first (`a212a12`). Dated 2026-11-08.
+- **Home:** the headline moves to the first person, without the team (`63cc0e7`). The voice in
+  `docs/features/progetti.md` records it as the exception to the plural: the About page tells
+  the team.
+- **Now:** November's note `2026-11-scritti-nexus`, and Nexus's `now` line says the next step is
+  making it open source (`454e3d4`). The note and the changelog entry `2026-11-08-scritti` say
+  "articles" instead of the section's name (`5680f4a`).
+- **Next step:** unchanged from Cycle 34.
