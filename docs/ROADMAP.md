@@ -55,6 +55,6 @@ In production: `main` (Astro), deployed by Workers Builds on every push to `main
 domain's mail is on Qboxmail (MX and SPF), and Email Routing would take the MX; Email
 Service adds only the `cf-bounce` MX, DKIM and DMARC, and its SPF goes into the existing
 record, never a second one. Optional: `GITHUB_TOKEN`. Build variable in Workers
-Builds, still to set: `GITHUB_ACTIVITY_TOKEN` (#42, read access to the repos' contents, used
+Builds: `GITHUB_ACTIVITY_TOKEN` (#42, read access to the repos' contents, used
 for dates and counts only); without it the Now page reads only the public repos, at 60
 requests an hour.
