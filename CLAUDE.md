@@ -9,7 +9,7 @@ stays attached to the Worker: its proxied record is what the rule acts on. The m
 `simonesalerno.it` is not affected. Astro 7 + strict TS + Tailwind 4, Svelte 5
 islands, deployed on Cloudflare Workers; a page is an agent (Durable Object with
 pi-durable, models from OpenRouter). The why of the choices is in `docs/ARCHITECTURE.md`
-and `docs/DECISIONS.md`; state and log in `docs/ROADMAP.md` and `docs/CYCLES.md`.
+and `docs/DECISIONS.md`; state and log in `docs/ROADMAP.md`, `docs/BACKLOG.md` and `docs/CYCLES.md`.
 
 Public repository: code, comments, docs and commits in English; README.md is mirrored in
 README.it.md in the same commit. Language rules and glossary in `docs/CONVENTIONS.md`.

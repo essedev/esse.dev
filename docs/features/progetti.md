@@ -26,8 +26,9 @@ the repo.
 
 Applies to the whole site: entries, pages, articles.
 
-- First person, clean but young, short and direct sentences; technical terms where
-  needed ("review", "prod"), without overdoing the jargon.
+- First person, clean but young, direct sentences linked to each other: a short one is an
+  effect, not the default. Technical terms where needed ("review", "prod"), without overdoing
+  the jargon.
 - AI-first and enthusiastic, never defensive: the human is not the brake that validates
   the AI, they design the system (architecture, context, checks) and that is why they can
   go fast. Engineering solidity is what allows delegating more, not what limits it.
