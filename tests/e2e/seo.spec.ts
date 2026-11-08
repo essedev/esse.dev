@@ -32,20 +32,47 @@ test.describe('structured data (JSON-LD)', () => {
 	});
 });
 
-// No article is published today: writing has no page, no sidebar row and no sitemap entry.
-// When the next article arrives, this block becomes the BlogPosting check on its page
-// (the JSON-LD helper is covered in tests/unit/seo.test.ts meanwhile).
-test.describe('writing without articles', () => {
-	test('the section answers 404 and is not in the sidebar or the sitemap', async ({
-		page,
-		request
-	}) => {
+test.describe('writing', () => {
+	const ARTICLE = '/en/writing/what-happens-when-you-write-to-my-agent';
+
+	test('the section is in the sidebar and the sitemap', async ({ page, request }) => {
 		const res = await page.goto('/en/writing');
-		expect(res?.status()).toBe(404);
-		await page.goto('/en');
-		await expect(page.locator('a[href="/en/writing"]')).toHaveCount(0);
+		expect(res?.status()).toBe(200);
+		await expect(page.locator('a[href="/en/writing"]').first()).toBeAttached();
 		const sitemap = await (await request.get('/sitemap.xml')).text();
-		expect(sitemap).not.toContain('/en/writing');
+		expect(sitemap).toContain(ARTICLE);
+	});
+
+	test('an article carries its BlogPosting data', async ({ page }) => {
+		await page.goto(ARTICLE);
+		const json = await page.locator('script[type="application/ld+json"]').first().textContent();
+		const data = JSON.parse(json ?? '{}');
+		const types = (Array.isArray(data) ? data : [data]).map((d) => d['@type']);
+		expect(types).toContain('BlogPosting');
+	});
+
+	test('an article draws its diagram and charts within the CSP', async ({ page }) => {
+		const violations: string[] = [];
+		page.on('console', (message) => {
+			if (message.type() === 'error' && /content security policy/i.test(message.text())) {
+				violations.push(message.text());
+			}
+		});
+		await page.goto(ARTICLE);
+		await expect(page.locator('article figure')).toHaveCount(3);
+		await expect(page.locator('article figure ol li')).toHaveCount(5);
+		await expect(page.locator('article figure table')).toBeVisible();
+		await expect(page.locator('article figure svg').first()).toBeVisible();
+		expect(violations).toEqual([]);
+	});
+
+	test('the attempts timeline reads the project and ends on it', async ({ page }) => {
+		await page.goto('/en/writing/the-orange-binder');
+		const timeline = page.locator('article figure ol li');
+		await expect(timeline.first().locator('.led')).toHaveAttribute('data-status', 'archived');
+		await expect(timeline.last()).toContainText('Nexus');
+		await expect(timeline.last().locator('.led')).not.toHaveAttribute('data-status', 'archived');
+		await expect(page.locator('article img[alt^="Drawings of robots"]')).toBeVisible();
 	});
 });
 

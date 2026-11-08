@@ -1,0 +1,100 @@
+---
+slug: "what-happens-when-you-write-to-my-agent"
+title: "What happens when you write to my agent"
+excerpt: "A question to the agent goes through a limit, a budget, a filter and a model, and in the end someone pays the bill. The whole trip, with the choices made along the way."
+description: "The trip of a message through this site's agent, on Cloudflare and OpenRouter: limits, a real-cost budget, triage, model and tools, with the choices behind each step."
+tags:
+  - "Cloudflare"
+  - "AI Agents"
+  - "Coding agents"
+---
+
+This site has an [agent](/en/agent) you can ask about my projects and my code, including the code that runs it. Say you write [How does Relay work?](/en/agent?ask=How%20does%20Relay%20work%3F). Before the answer comes back, that sentence takes quite a trip.
+
+<Flow
+	title="The trip of a message. Dashed: outside Cloudflare."
+	steps={[
+		{ label: 'Limit', detail: 'messages per minute' },
+		{ label: 'Budget', detail: 'what you can still spend' },
+		{ label: 'Filter', detail: 'off-topic and abuse', outside: true },
+		{ label: 'Model', detail: 'with its tools', outside: true },
+		{ label: 'Charge', detail: 'the real cost' }
+	]}
+/>
+
+## An instance for every visitor
+
+The page is a static file, the same for everyone. What brings it to life is the WebSocket your browser opens to a Durable Object: on Cloudflare, a small instance with its own database. There is one per visitor.
+
+The conversation lives in there, so no table holds everyone's messages. If the instance gets suspended halfway through an answer it picks up where it was, and ninety days after the last message it deletes itself.
+
+## The cheap checks come first
+
+From the model onward every word costs money, so the checks sit in front of it.
+
+The first only looks at frequency: ten messages a minute per IP at most. It runs before everything else because the filter further down is paid for even on the messages it drops. The address is not stored, only a SHA-256 fingerprint of address and day, so two different days cannot be linked.
+
+The second is the budget: ten cents a day per visitor, fifty per IP and two dollars for the whole site. I do not count messages, because a light question and one that reads three repos cost very different amounts. The per-IP limit exists because the browser picks the visitor's id, and changing it would be enough to start over. It is five times higher because a whole office can sit behind one address.
+
+## A filter in front of the model
+
+Next comes a small model, `liquid/d1-ultra`, which in about a quarter of a second says what the message asks, how much work it needs and what language it is in. If it is off-topic or abuse, the trip ends here.
+
+Until recently this was Jev. I replaced it after trying seven models on the eighty or so messages I keep for this, about twenty of them attacks, rather than trusting a leaderboard: the top of the Artificial Analysis index took more than twice as long here and also returned a 429.
+
+<View
+	type="table"
+	title="On the same messages"
+	columns={['Test', 'Jev', 'd1-ultra']}
+	rows={[
+		['Wrong decisions', '5%', '1%'],
+		['Attacks that get through', '16%', '5%']
+	]}
+/>
+
+One attack still gets through, and a filter like this can always be fooled. So if it does not answer, the message goes on anyway: the real guarantee is the budget. A greeting is not blocked either, it just gets a short answer with no tools.
+
+## The model lives elsewhere
+
+I started with Cloudflare's own models, Workers AI, until I looked at the times.
+
+<View
+	type="bars"
+	title="The same question, when I tried them"
+	unit="s"
+	items={[
+		{ label: 'Workers AI', value: 40 },
+		{ label: 'OpenRouter', value: 7 }
+	]}
+/>
+
+So today the model comes from OpenRouter: GLM-5.3-flash, on three providers ordered by speed. If one does not answer the next takes over, and if it stops sending text for 30 seconds the call starts again.
+
+## The tools
+
+To tell you about Relay, the model searches an index built from the same pages you read, so what is not online it cannot see. Code comes from the GitHub API, picking only from a closed list of public repos.
+
+When it needs many calls, or some math on the results, it can write a script. A model wrote that code, though, so it runs in a Dynamic Worker: a throwaway Worker with no network and no secrets, 20 seconds and 40 calls at most. For long jobs it can start up to three sub-agents in the background and keep talking to you in the meantime.
+
+It can also write to me, but only as a draft: you send the message, after the Turnstile check, and it goes to a single address.
+
+## The bill
+
+At the end the real cost of the answer comes off the three budgets. A light question uses about ten of the thousand credits available each day. Tokens and credits show under every answer, while the counter of what you have left appears only below 30%, so you do not have to think about it until it matters.
+
+## Why Cloudflare
+
+The part I find most elegant is that adding one of these pieces takes one line of config, and from then on it is a variable in the code.
+
+```jsonc
+"worker_loaders": [{ "binding": "LOADER" }],
+"send_email": [{ "name": "MAIL" }]
+```
+
+Here they become `env.LOADER` and `env.MAIL`, with no SDK to wire up and no keys to pass around. The flip side is that a Durable Object does not move elsewhere with a copy and paste, and the runtime is not Node: a `fetch` saved in a field throws `Illegal invocation` on the Worker while it works fine in tests, so you find out late.
+
+## If you build one
+
+Of the whole trip, the two things I would do the same way again are the real-cost budget and the cheap checks in front of the expensive ones.
+
+The numbers in this article are from November 2026. For today's, [ask the agent](/en/agent?ask=Follow%20the%20trip%20of%20a%20message%20by%20reading%20your%20code%20and%20tell%20me%20today%27s%20limits), which reads its own code too.

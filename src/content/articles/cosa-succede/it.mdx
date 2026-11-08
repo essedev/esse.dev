@@ -1,0 +1,100 @@
+---
+slug: "cosa-succede-quando-scrivi-al-mio-agente"
+title: "Cosa succede quando scrivi al mio agente"
+excerpt: "Una domanda all'agente passa da un limite, un budget, un filtro e un modello, e alla fine qualcuno paga il conto. Il giro completo, con le scelte fatte lungo la strada."
+description: "Il giro di un messaggio nell'agente di questo sito, su Cloudflare e OpenRouter: limiti, budget in costo reale, triage, modello e strumenti, con le scelte dietro ogni passaggio."
+tags:
+  - "Cloudflare"
+  - "AI Agents"
+  - "Coding agents"
+---
+
+Su questo sito c'è un [agente](/it/agente) a cui puoi chiedere dei miei progetti e del mio codice, compreso quello che lo fa funzionare. Mettiamo che tu gli scriva [Come funziona Relay?](/it/agente?ask=Come%20funziona%20Relay%3F): prima che arrivi la risposta, quella frase fa un bel giro.
+
+<Flow
+	title="Il giro di un messaggio. Tratteggiato: fuori da Cloudflare."
+	steps={[
+		{ label: 'Limite', detail: 'quanti messaggi al minuto' },
+		{ label: 'Budget', detail: 'quanto puoi ancora spendere' },
+		{ label: 'Filtro', detail: 'off-topic e abusi', outside: true },
+		{ label: 'Modello', detail: 'con i suoi strumenti', outside: true },
+		{ label: 'Addebito', detail: 'il costo reale' }
+	]}
+/>
+
+## Un'istanza per ogni visitatore
+
+La pagina è un file statico, uguale per tutti. A renderla viva è il WebSocket che il browser apre verso un Durable Object, che su Cloudflare è una piccola istanza con un proprio database, e qui ce n'è una per ogni visitatore.
+
+La conversazione sta lì dentro, quindi non esiste una tabella con i messaggi di tutti. Se l'istanza si sospende a metà risposta riparte da dove era, e novanta giorni dopo l'ultimo messaggio si cancella da sola.
+
+## Prima i controlli che costano poco
+
+Dal modello in poi ogni parola si paga, per questo i controlli stanno davanti.
+
+Il primo guarda solo la frequenza: al massimo dieci messaggi al minuto per IP. Viene prima di tutto perché il filtro che arriva dopo si paga anche sui messaggi che scarta. L'indirizzo non viene salvato, resta solo un'impronta SHA-256 di indirizzo e giorno, così due giorni diversi non si possono collegare.
+
+Il secondo è il budget: dieci centesimi al giorno per visitatore, cinquanta per IP e due dollari per tutto il sito. Non conto i messaggi, perché una domanda leggera e una che legge tre repo hanno costi molto diversi. Il limite per IP serve perché l'identificativo del visitatore lo sceglie il browser, e basterebbe cambiarlo per ricominciare da capo. È cinque volte più alto perché dietro un solo indirizzo può esserci un ufficio intero.
+
+## Un filtro davanti al modello
+
+A questo punto entra in gioco un piccolo modello, `liquid/d1-ultra`, che in circa un quarto di secondo dice cosa chiede il messaggio, quanto lavoro richiede e in che lingua è scritto. Se è fuori tema o è un abuso, il giro finisce qui.
+
+Fino a poco fa c'era Jev. L'ho sostituito dopo aver provato sette modelli su un'ottantina di messaggi che tengo per questo, tra cui una ventina di attacchi, invece di fidarmi di una classifica: il primo dell'indice di Artificial Analysis, qui, ci ha messo più del doppio e ha dato anche un errore 429.
+
+<View
+	type="table"
+	title="Sugli stessi messaggi"
+	columns={['Prova', 'Jev', 'd1-ultra']}
+	rows={[
+		['Decisioni sbagliate', '5%', '1%'],
+		['Attacchi che passano', '16%', '5%']
+	]}
+/>
+
+Un attacco passa ancora, e un filtro così si può sempre ingannare. Per questo, se non risponde, il messaggio va avanti lo stesso: la garanzia vera resta il budget. Un saluto invece non si blocca, ma riceve una risposta breve, senza strumenti.
+
+## Il modello sta fuori
+
+Ero partito dai modelli di Cloudflare, Workers AI, finché non ho guardato i tempi.
+
+<View
+	type="bars"
+	title="La stessa domanda, quando li ho provati"
+	unit="s"
+	items={[
+		{ label: 'Workers AI', value: 40 },
+		{ label: 'OpenRouter', value: 7 }
+	]}
+/>
+
+Per questo oggi il modello arriva da OpenRouter: GLM-5.3-flash, su tre provider in ordine di velocità. Se uno non risponde si passa al successivo, e se smette di mandare testo per 30 secondi la chiamata riparte.
+
+## Gli strumenti
+
+Per parlarti di Relay il modello cerca in un indice generato alla build dalle stesse pagine che leggi tu, quindi quello che non è online non lo vede. Il codice lo legge dall'API di GitHub, scegliendo solo da una lista chiusa di repo pubblici.
+
+Quando servono molte chiamate, o un calcolo sui risultati, può scrivere uno script. Quel codice però l'ha scritto un modello, e infatti gira in un Dynamic Worker: un Worker usa e getta, senza rete né segreti, con 20 secondi e 40 chiamate al massimo. Per i lavori lunghi può far partire fino a tre sotto-agenti in background e intanto continuare a parlare con te.
+
+Può anche scrivermi, ma solo in bozza: il messaggio lo mandi tu, dopo il controllo di Turnstile, e arriva a un solo indirizzo.
+
+## Il conto
+
+Alla fine il costo reale della risposta viene scalato dai tre budget. Una domanda leggera consuma circa dieci crediti sui mille disponibili ogni giorno. Sotto ogni risposta vedi token e crediti, mentre il contatore di quanto ti resta compare solo sotto il 30%, così finché non serve non devi pensarci.
+
+## Perché Cloudflare
+
+La cosa che trovo più elegante è che per aggiungere uno di questi pezzi basta una riga di configurazione, e da quel momento nel codice è una variabile.
+
+```jsonc
+"worker_loaders": [{ "binding": "LOADER" }],
+"send_email": [{ "name": "MAIL" }]
+```
+
+Qui diventano `env.LOADER` e `env.MAIL`, senza SDK da collegare o chiavi da passare in giro. Il rovescio è che un Durable Object non si porta altrove con un copia e incolla, e il runtime non è Node: un `fetch` salvato in un campo dà `Illegal invocation` sul Worker, mentre nei test funziona benissimo, così te ne accorgi tardi.
+
+## Se ne costruisci uno
+
+Di tutto il giro, le due cose che rifarei uguali sono il budget in costo reale e i controlli economici davanti a quelli cari.
+
+I numeri di questo articolo sono di novembre 2026. Per quelli di oggi puoi [chiedere all'agente](/it/agente?ask=Segui%20il%20giro%20di%20un%20messaggio%20leggendo%20il%20tuo%20codice%20e%20dimmi%20i%20limiti%20di%20oggi), che legge anche il proprio codice.

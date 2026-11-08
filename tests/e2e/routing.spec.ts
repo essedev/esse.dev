@@ -168,8 +168,6 @@ test.describe('sitemap', () => {
 });
 
 test.describe('rss', () => {
-	// The feed stays up with no article, so subscribers keep it: valid and empty today.
-	// With the next article it gets back `<item>` and a `/en/writing/` link.
 	test('/en/rss.xml is a valid feed', async ({ request }) => {
 		const res = await request.get('/en/rss.xml');
 		expect(res.status()).toBe(200);
@@ -177,5 +175,7 @@ test.describe('rss', () => {
 		const body = await res.text();
 		expect(body).toContain('<rss');
 		expect(body).toContain('<channel>');
+		expect(body).toContain('<item>');
+		expect(body).toContain('/en/writing/');
 	});
 });

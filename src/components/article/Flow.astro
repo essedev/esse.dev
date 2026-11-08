@@ -10,6 +10,8 @@ interface Props {
 	steps: {
 		label: string;
 		detail?: string;
+		/** Drawn dashed: the step happens outside the system the diagram is about. */
+		outside?: boolean;
 	}[];
 }
 
@@ -21,7 +23,12 @@ const { title, steps } = Astro.props;
 	<ol class="flex flex-col gap-1.5 @lg:flex-row">
 		{steps.map((step, i) => (
 			<li class="flex min-w-0 flex-1 flex-col gap-1.5 @lg:flex-row">
-				<div class="border-line min-w-0 flex-1 rounded-[var(--radius-control)] border px-3 py-2">
+				<div
+					class:list={[
+						'border-line min-w-0 flex-1 rounded-[var(--radius-control)] border px-3 py-2',
+						step.outside && 'border-dashed'
+					]}
+				>
 					<p class="text-fg text-sm">{step.label}</p>
 					{step.detail && <p class="text-muted mt-0.5 text-[0.8125rem]">{step.detail}</p>}
 				</div>
