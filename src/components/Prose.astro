@@ -18,6 +18,8 @@ const { class: className } = Astro.props;
 		'prose-code:rounded prose-code:bg-surface prose-code:px-1.5 prose-code:py-0.5 prose-code:font-normal prose-code:text-fg',
 		'prose-code:before:content-none prose-code:after:content-none prose-img:rounded-[var(--radius-panel)]',
 		'prose-li:marker:text-accent',
+		// The inline code's chip stays out of code blocks: there it would band every line.
+		'[&_pre_code]:rounded-none [&_pre_code]:bg-transparent [&_pre_code]:p-0',
 		className
 	]}
 >
