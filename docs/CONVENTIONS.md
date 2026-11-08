@@ -52,7 +52,6 @@ the table says so.
 | velo                                    | veil         | CRT veil (`--crt-*`), wallpaper veil (`--wall`)                              |
 | sfondo                                  | wallpaper    | The layer behind the window (`--wall`); a plain fill (fondo) is "background" |
 | ciclo                                   | cycle        | Numbering is fixed: "Cycle 22"                                               |
-| Aperte (ROADMAP)                        | Open         | Section title: the anchor is `#open`                                         |
 | scritti                                 | writing      | Route `scritti` stays in Italian                                             |
 | metodo                                  | method       | Route `metodo` stays in Italian                                              |
 | progetti                                | projects     | Route `progetti` stays in Italian                                            |

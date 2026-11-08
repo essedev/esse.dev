@@ -86,7 +86,7 @@ stop there. It stops when the probability of being off-topic (off-topic plus abu
 reaches 0.65, or that of abuse 0.5: thresholds fixed on the labeled messages
 (`pnpm eval:decision`). Since Cycle 19 the `chat` intent (greetings, jokes, questions about
 the agent) goes to the model and is not off-topic; the short answer with no tools
-triggers only with `chat` at least 0.7, because a real question read half as chat must
+triggers only with `chat` at least 0.85 (0.7 until #46), because a real question read half as chat must
 search the site. Since Cycle 28 a question about the credits left is `chat` too, and
 `get_budget` is the one tool the short mode allows. If the model does not answer the request
 goes through: the cap in real cost remains the guarantee. It goes through OpenRouter with the

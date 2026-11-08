@@ -8,7 +8,7 @@ Portfolio personale di Simone Salerno, online su [esse.dev](https://esse.dev). F
 
 - **Astro 7** - pagine statiche, con isole Svelte 5 dove serve interazione
 - **Tailwind CSS 4** - stile, più il plugin typography per i contenuti Markdown
-- **Content collections** - progetti e articoli come `meta.json` + Markdown per lingua, validati con Zod
+- **Content collections** - progetti e articoli come `meta.json` + Markdown per lingua (MDX per gli articoli), validati con Zod
 - **Cloudflare Workers** - asset statici più un piccolo Worker per rilevare la lingua, i redirect e l'agente del sito
 - **Agente del sito** - pi-durable su un Durable Object per visitatore (Cloudflare Agents SDK), modelli tramite OpenRouter
 - **TypeScript** (strict), **Vitest** e **Playwright**
@@ -20,7 +20,7 @@ Portfolio personale di Simone Salerno, online su [esse.dev](https://esse.dev). F
 - Home con al centro cosa faccio, i loghi dei progetti nella presentazione, i contatti e tre card da cui iniziare: l'agente, un progetto di punta, il metodo
 - Progetti raggruppati per stato ed elenco degli articoli, con ricerca e filtri per tag e ordine, tenuti nell'URL
 - Una pagina del metodo con dove si vede ogni principio, una pagina Adesso costruita sull'attività dei progetti su GitHub, la pagina Chi sono come timeline
-- Tempo di lettura e stima dei token degli articoli, articoli correlati
+- Articoli con grafici e diagrammi disegnati dai componenti del sito, tempo di lettura e stima dei token, articoli correlati
 - Feed RSS per lingua, sitemap con alternate, JSON-LD, `llms.txt`
 - Immagini Open Graph generate alla build, una per pagina
 - Tema scuro e chiaro: segue il sistema finché il visitatore non ne sceglie uno dal pulsante nella toolbar
@@ -68,6 +68,7 @@ pnpm lint && pnpm check && pnpm build && pnpm test:ci
 - [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) - scelte di design e tradeoff
 - [`docs/DECISIONS.md`](docs/DECISIONS.md) - decisioni durature, citabili come `#N` (quelle non più attive in [`docs/decisions-archive.md`](docs/decisions-archive.md))
 - [`docs/ROADMAP.md`](docs/ROADMAP.md) - le milestone correnti
+- [`docs/BACKLOG.md`](docs/BACKLOG.md) - il lavoro aperto che nessuno sta per iniziare
 - [`docs/CYCLES.md`](docs/CYCLES.md) - log dei cicli di lavoro
 - [`docs/features/progetti.md`](docs/features/progetti.md) - come si scelgono e si raccontano i progetti
 - [`docs/archive/RESTYLE.md`](docs/archive/RESTYLE.md) - storia del lavoro sull'identità visiva

@@ -8,7 +8,7 @@ Personal portfolio of Simone Salerno, online at [esse.dev](https://esse.dev). Bu
 
 - **Astro 7** - static pages, with Svelte 5 islands where interaction is needed
 - **Tailwind CSS 4** - styling, plus the typography plugin for Markdown content
-- **Content collections** - projects and articles as `meta.json` + Markdown per language, validated with Zod
+- **Content collections** - projects and articles as `meta.json` + Markdown per language (MDX for articles), validated with Zod
 - **Cloudflare Workers** - static assets plus a small Worker for language detection, redirects and the site agent
 - **Site agent** - pi-durable on a Durable Object per visitor (Cloudflare Agents SDK), models through OpenRouter
 - **TypeScript** (strict), **Vitest** and **Playwright**
@@ -20,7 +20,7 @@ Personal portfolio of Simone Salerno, online at [esse.dev](https://esse.dev). Bu
 - Home with what I do at the center, the project logos in the intro, contacts and three start cards: the agent, a lead project, the method
 - Projects grouped by status and an article listing, with search, tag and sort filters kept in the URL
 - A method page with where each principle shows, a Now page built from the projects' activity on GitHub, an about page as a timeline
-- Article reading time and token estimate, related articles
+- Articles with charts and diagrams drawn by the site's components, reading time and token estimate, related articles
 - Per-language RSS feed, sitemap with alternates, JSON-LD, `llms.txt`
 - Open Graph images generated at build time, one per page
 - Dark and light theme: it follows the system until the visitor picks one with the toggle in the toolbar
@@ -68,6 +68,7 @@ pnpm lint && pnpm check && pnpm build && pnpm test:ci
 - [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) - design decisions and tradeoffs
 - [`docs/DECISIONS.md`](docs/DECISIONS.md) - durable decisions, citable as `#N` (inactive ones in [`docs/decisions-archive.md`](docs/decisions-archive.md))
 - [`docs/ROADMAP.md`](docs/ROADMAP.md) - current milestones
+- [`docs/BACKLOG.md`](docs/BACKLOG.md) - open work nobody is about to start
 - [`docs/CYCLES.md`](docs/CYCLES.md) - work-cycle log
 - [`docs/features/progetti.md`](docs/features/progetti.md) - how projects are chosen and written up
 - [`docs/archive/RESTYLE.md`](docs/archive/RESTYLE.md) - history of the visual identity work

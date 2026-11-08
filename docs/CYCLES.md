@@ -424,4 +424,11 @@ articles published (`ea03983`). Changelog entry `2026-11-08-scritti`.
 - **Tests:** the Writing E2E flip from absent to present, and add the `BlogPosting` data, the
   diagram and charts within the CSP and the attempts timeline; the RSS E2E expects items; unit
   and E2E follow the neutral names.
-- **Next step:** the open items of Cycle 32 stand.
+- **Italian review:** the binder draft read as thought in English, so a global skill for
+  reviewing Italian texts, `revisione-italiano`, came out of this work (in the personal agent
+  setup, not in this repo); `900287f` rewrites the draft's Italian right after it.
+- **Docs audit:** the ROADMAP keeps only open work. Closed items left it (the story is in these
+  cycles), the Open section became `docs/BACKLOG.md`, and #12 follows the small talk threshold
+  of #46.
+- **Next step:** the milestones of the ROADMAP; the open items of Cycle 32 stand, in
+  `docs/BACKLOG.md`.
