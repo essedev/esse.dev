@@ -72,9 +72,9 @@ test.describe('agent states', () => {
 		expect(await submitted).toBe(question);
 		const status = page.locator('[data-agent-status]');
 
-		// Before Jev answers, the message is already on screen.
+		// Before the triage answers, the message is already on screen.
 		await expect(page.getByText(question)).toBeVisible();
-		await expect(status).toContainText('jev valuta la domanda');
+		await expect(status).toContainText('il classificatore valuta la domanda');
 
 		ws.send(
 			JSON.stringify({

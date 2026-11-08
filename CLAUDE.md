@@ -25,9 +25,10 @@ README.it.md in the same commit. Language rules and glossary in `docs/CONVENTION
   and `src/agent`) and `scripts/check-prose.py` (Italian outside the paths in `.prose-allow`;
   README pair aligned). `pnpm format` to write.
 - `pnpm test:unit` - Vitest. `pnpm test:e2e` - Playwright. `pnpm test:ci` - both.
-- `pnpm eval:jev` - evaluates the agent's triage on `tests/eval/jev-triage.json` (real
-  calls via OpenRouter, after a build; outside `test:ci`). Rerun if questions, thresholds
-  or the Jev version change.
+- `pnpm eval:decision` - evaluates decision models on the triage set `tests/eval/triage.json`
+  (real calls via OpenRouter, after a build; outside `test:ci`). `--models a,b` compares them,
+  `--neutral` tests opaque option names, `--max-cost` caps the spend. Rerun if questions,
+  thresholds or the model change.
 - `pnpm favicons` - regenerates the favicons in `public/` from
   `scripts/generate-favicons.ts`.
 - `pnpm generate-types` - regenerates `worker-configuration.d.ts` after every change to

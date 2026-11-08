@@ -1,13 +1,29 @@
 /**
- * Triage of every message before the large model, with Jev (TypeSafe, "System One"), via
- * OpenRouter: in about 300 ms it returns intent, weight and language with calibrated
- * probabilities. Pure logic: the request to Jev and the decision that follows are tested
+ * Triage of every message before the large model, with a decision model (System One
+ * protocol) via OpenRouter: in about 300 ms it returns intent, weight and language with their
+ * probabilities. Pure logic: the request to the model and the decision that follows are tested
  * without a network.
  *
  * Triage does not replace the spending limit, which stays in real cost (`budget.ts`): it
  * decides how to treat the request. A prompt can try to get itself classified as light; the
  * real-cost cap stops it anyway.
  */
+
+/**
+ * The decision model, pinned to a version because an alias can shift the probabilities. The
+ * thresholds in this file are tuned on it and do not carry over to another model: changing it
+ * means rerunning `pnpm eval:decision` and fixing them again.
+ */
+export const DECISION_MODEL = 'typesafe/jev-1.13';
+
+/**
+ * OpenRouter's route for the System One protocol, open to every maker's models. The newer
+ * `/api/alpha/decisions` takes the same body but is still alpha.
+ */
+export const DECISION_ENDPOINT = 'https://openrouter.ai/api/v1/systemone';
+
+/** Past this time triage is dropped and the message goes through (the cap still applies). */
+export const DECISION_TIMEOUT_MS = 3000;
 
 /** What a visitor message asks of the agent. */
 export const INTENTS = ['about', 'code', 'chat', 'offtopic', 'abuse'] as const;
@@ -20,7 +36,7 @@ export type Weight = (typeof WEIGHTS)[number];
 /** The languages of the site. */
 export type Lang = 'it' | 'en';
 
-/** Jev's verdict on a message. */
+/** The decision model's verdict on a message. */
 export interface Triage {
 	intent: Intent;
 	weight: Weight;
@@ -33,11 +49,11 @@ export interface Triage {
 }
 
 /**
- * The input for Jev. `site_topics` are the titles of the site's pages (projects, method,
- * writing): without them Jev does not know that "Relay" or "Portsage" are Simone's projects
- * and classifies them as off-topic.
+ * The input for the decision model. `site_topics` are the titles of the site's pages
+ * (projects, method, writing): without them the model does not know that "Relay" or "Portsage"
+ * are Simone's projects and classifies them as off-topic.
  */
-export function jevInput(message: string, topics: readonly string[] = []) {
+export function triageInput(message: string, topics: readonly string[] = []) {
 	return {
 		state: { visitor_message: message, site_topics: topics },
 		questions: {
@@ -83,24 +99,27 @@ interface ScoreAnswer {
 	type: 'score';
 	score: number;
 }
-/** The raw answer of Jev. */
-export interface JevOutput {
+/** The raw answer of a decision model. */
+export interface DecisionOutput {
 	answers: Record<string, ChoiceAnswer | ScoreAnswer | { type: string }>;
+	/** The exact build that answered, which an alias or a new release can change. */
+	model?: string;
+	usage?: { input_tokens?: number; cost?: number };
 }
 
-/** Reads Jev's answer; a missing or unexpected field is an error, not a default. */
-export function parseTriage(output: JevOutput, ms: number): Triage {
+/** Reads the model's answer; a missing or unexpected field is an error, not a default. */
+export function parseTriage(output: DecisionOutput, ms: number): Triage {
 	const intent = output.answers.intent as ChoiceAnswer | undefined;
 	const weight = output.answers.weight as ScoreAnswer | undefined;
 	const lang = output.answers.lang as ChoiceAnswer | undefined;
 	if (intent?.type !== 'choice' || !INTENTS.includes(intent.choice as Intent)) {
-		throw new Error(`Jev: unexpected intent ${JSON.stringify(intent)}`);
+		throw new Error(`Decision model: unexpected intent ${JSON.stringify(intent)}`);
 	}
 	if (weight?.type !== 'score' || typeof weight.score !== 'number') {
-		throw new Error(`Jev: unexpected weight ${JSON.stringify(weight)}`);
+		throw new Error(`Decision model: unexpected weight ${JSON.stringify(weight)}`);
 	}
 	if (lang?.type !== 'choice' || (lang.choice !== 'it' && lang.choice !== 'en')) {
-		throw new Error(`Jev: unexpected lang ${JSON.stringify(lang)}`);
+		throw new Error(`Decision model: unexpected lang ${JSON.stringify(lang)}`);
 	}
 	// The score is continuous (0-2): round it to the nearest level.
 	const level = Math.min(WEIGHTS.length - 1, Math.max(0, Math.round(weight.score)));
@@ -115,8 +134,8 @@ export function parseTriage(output: JevOutput, ms: number): Triage {
 }
 
 /**
- * When to stop a request, tuned on the labeled messages (`pnpm eval:jev`,
- * `tests/eval/jev-triage.json`). It counts the probability that the message passes
+ * When to stop a request, tuned on the labeled messages (`pnpm eval:decision`,
+ * `tests/eval/triage.json`). It counts the probability that the message passes
  * ("about", "code" and "chat"), not the single chosen category: an impersonation scored
  * 0.61 off-topic and 0.09 abuse is 0.70 likely to be stopped, even though neither passes the
  * threshold alone. Abuse also has its own, lower threshold.
@@ -139,13 +158,17 @@ export function onTopic(triage: Triage): number {
 }
 
 /** Off-topic or abusive requests, when certain enough, do not reach the model. */
-export function admits(triage: Triage): boolean {
-	if ((triage.probabilities.abuse ?? 0) >= BLOCK_ABUSE) return false;
-	return 1 - onTopic(triage) < BLOCK_OFF_TOPIC_MASS;
+export function admits(
+	triage: Triage,
+	offTopicMass: number = BLOCK_OFF_TOPIC_MASS,
+	abuse: number = BLOCK_ABUSE
+): boolean {
+	if ((triage.probabilities.abuse ?? 0) >= abuse) return false;
+	return 1 - onTopic(triage) < offTopicMass;
 }
 
 /**
- * When to treat the message as small talk (short answer, no tools): only if Jev is sure.
+ * When to treat the message as small talk (short answer, no tools): only if the model is sure.
  * Below that, a real question half-read as small talk ("Do you use Claude Code or Codex
  * more?", 0.38) would get a three-sentence answer without searching the site.
  */

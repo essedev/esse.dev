@@ -69,7 +69,7 @@ of the earlier idea (the site redesigned live by a model). Choices in
   private repos, no memory between visits. The only effect outside the site is the
   `draft_message` email, and it goes out only from a visitor's click.
 - `@cloudflare/computer` only if running the repos' code became necessary.
-- To measure with real traffic: whether the weight estimated by Jev predicts the real
+- To measure with real traffic: whether the weight estimated by the triage predicts the real
   cost of the answers (both exist for every message). Only if it predicts it well, use it
   to choose which tools to offer; today the weight is shown and that is all.
 - Before enabling it in production: cost measured on a sample and approved by Simone.

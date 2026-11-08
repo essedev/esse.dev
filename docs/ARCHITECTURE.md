@@ -258,7 +258,7 @@ sides.
 - **Models:** from OpenRouter (`src/agent/models.ts`), `glm-5.3-flash` on an ordered list
   of fast providers with automatic fallback to the next, a timeout on a stream without
   tokens and pi's retries. Key `OPENROUTER_API_KEY` as a Worker secret. The `AI` binding
-  remains only as an alternative transport for Jev. Choices in `docs/DECISIONS.md` #11.
+  remains only as an alternative transport for the decision model. Choices in `docs/DECISIONS.md` #11.
 - **Site tools:** `search_site`, `read_page`, `list_projects` and `show_page` read
   `/agent/index.json`, a site index generated at build from the same collections as the
   pages and read from the assets: the agent sees only what the site publishes.
@@ -318,7 +318,7 @@ sides.
   and the site's budget, rounded like the page's counter), the daily credits and the
   reset time. The rules of the credits are in the prompt, so a question about them costs
   one call instead of a search in the site's code; it is the only tool allowed in the
-  short chat mode, where Jev puts these questions.
+  short chat mode, where the triage puts these questions.
 - **Link to the agent:** `?ask=` writes a question into the input without sending it
   (the home uses it). Not `?q=`, which is the list's search.
 - **Page with a conversation started:** `data-agent-started` on `[data-workspace]` hides
@@ -335,21 +335,21 @@ sides.
   token opens its call and result, the header the reasoning; cards, drafts and views stay
   in the answer, which follows.
 - **Triage and limits:** first the per-IP burst (binding `AGENT_RATE`, Workers Rate
-  Limiting), then the budget, then Jev (`triage.ts`), which stops off-topic and abuse and
+  Limiting), then the budget, then the decision model (`DECISION_MODEL` in `triage.ts`, today Jev), which stops off-topic and abuse and
   decides the language of the answer and of the notices. A chat message (intent `chat`)
-  goes through, and if Jev is sure about it the prompt gets the short mode with no tools.
+  goes through, and if the model is sure about it the prompt gets the short mode with no tools.
   Spending is deducted in real cost per visitor (in the `SiteAgent`), per daily IP
   fingerprint and for the whole site (both in the `Ledger` Durable Object), with the
   thresholds in `budget.ts`; the IP is not stored, only the SHA-256 fingerprint of day and
   address. In the page the budget is shown in credits, only when it is about to run out.
-  If Jev does not answer the message goes through and the cap applies. The thresholds are
-  verified with `pnpm eval:jev` on a labeled set (`tests/eval/jev-triage.json`), which
+  If the model does not answer the message goes through and the cap applies. The thresholds are
+  verified with `pnpm eval:decision` on a labeled set (`tests/eval/triage.json`), which
   also contains attacks. Choices in `docs/DECISIONS.md` #12 and #17.
 - **Transcript:** Markdown passed through a sanitizing renderer (`markdown.ts`), reasoning
-  collapsed, Jev's verdict, tokens, cost and remaining budget for every answer.
-- **States:** a status line under the answer shows the phase of the work (Jev, thinking,
+  collapsed, the triage's verdict, tokens, cost and remaining budget for every answer.
+- **States:** a status line under the answer shows the phase of the work (triage, thinking,
   reasoning, the tool at work, writing, retry with countdown), derived in the browser by
-  `phaseOf` (`phase.ts`) from the session view and the message waiting for Jev, with no
+  `phaseOf` (`phase.ts`) from the session view and the message waiting for triage, with no
   extra server events. Errors go through `errorKind` and show by kind in the visitor's
   language, the raw text under "details"; a resumed conversation, a dropped connection, an
   agent that never answers and a message queued behind an answer have their own state. An

@@ -58,7 +58,7 @@ the table says so.
 | progetti                                | projects     | Route `progetti` stays in Italian                                            |
 | `Il perché`                             | Why          | UI label of the `why` field, in Italian                                      |
 | `Prima di questo`                       | Before this  | UI label of the `previously` field                                           |
-| chiacchiera                             | small talk   | Jev's intent id stays `chat`; "small talk" is also the English UI label      |
+| chiacchiera                             | small talk   | Triage's intent id stays `chat`; "small talk" is also the English UI label   |
 | fuori tema                              | off-topic    |                                                                              |
 | abuso                                   | abuse        |                                                                              |
 | raffica                                 | burst        | Per-IP burst limit                                                           |
@@ -66,7 +66,8 @@ the table says so.
 | impronta                                | fingerprint  | Daily SHA-256 of IP and day                                                  |
 | bozza                                   | draft        | `draft_message`                                                              |
 | sotto-agente                            | sub-agent    | `delegate`                                                                   |
-| agente, Jev                             | agent, Jev   | Jev is the proper name of the triage, it stays                               |
+| agente                                  | agent        |                                                                              |
+| classificatore                          | classifier   | The decision model behind the triage, in the UI                              |
 | smistamento                             | sorting      | Where a project goes: showcase, registry, ideas, out                         |
 | ricerca                                 | search       |                                                                              |
 | sommario                                | excerpt      | The `excerpt` frontmatter field                                              |

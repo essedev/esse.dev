@@ -34,7 +34,7 @@
 
 	/**
 	 * The agent's transcript: a WebSocket to the visitor's Durable Object, pi's events folded
-	 * by `reduceEvents` (the same reducer as the server). It shows how the agent works: Jev's
+	 * by `reduceEvents` (the same reducer as the server). It shows how the agent works: the
 	 * triage of every message and, per turn, the work as tokens under one header (concept Q,
 	 * D2: every tool call readable and expandable, the sub-agents, tokens and cost), then the
 	 * answer; the budget that is left. The visitor has an object of their own, remembered in the
@@ -402,7 +402,7 @@
 
 	/**
 	 * The messages sent and not yet in the transcript, in order: they show at once, under the
-	 * first the status line says Jev is weighing it. Each knows how many user messages come
+	 * first the status line says triage is weighing it. Each knows how many user messages come
 	 * before it (`after`) and leaves when pi records it, when a notice stops it, or on an error.
 	 */
 	let pending: { text: string; after: number }[] = $state([]);
@@ -601,7 +601,7 @@
 		budget !== null && budget.remaining < budget.limit * SHOW_BUDGET_BELOW
 	);
 	/**
-	 * The text of a notice, in the message's language when Jev recognized it ("ciao" on `/en`
+	 * The text of a notice, in the message's language when triage recognized it ("ciao" on `/en`
 	 * gets the notice in Italian), with the refill time in the reader's time zone.
 	 */
 	function noticeText(item: Local) {
@@ -763,7 +763,7 @@
 {#snippet verdict(triage: Triage | null | undefined)}
 	{#if triage}
 		<p class="font-mono text-[0.7rem] text-subtle">
-			jev · {labels.intent[triage.intent]}
+			triage · {labels.intent[triage.intent]}
 			{triage.confidence.toLocaleString(locale, { maximumFractionDigits: 2 })} · {labels.weight[
 				triage.weight
 			]} · {triage.lang} · {triage.ms} ms
@@ -815,7 +815,7 @@
 {/snippet}
 
 <!-- The visitor's message: a lilac bubble on the right, as the home's card draws it, with
-     Jev's verdict under it (concept Q, D2). -->
+     the triage's verdict under it (concept Q, D2). -->
 {#snippet visitorMessage(text: string, queuedNote = false)}
 	<div class="flex flex-col items-end gap-1.5">
 		<p

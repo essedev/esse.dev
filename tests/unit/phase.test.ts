@@ -16,7 +16,7 @@ describe('phaseOf', () => {
 		expect(phaseOf(EMPTY_VIEW, null)).toBeNull();
 	});
 
-	it('waits for Jev, then for the run, before pi starts', () => {
+	it('waits for triage, then for the run, before pi starts', () => {
 		expect(phaseOf(EMPTY_VIEW, 'triage')).toEqual({ kind: 'triage' });
 		expect(phaseOf(EMPTY_VIEW, 'admitted')).toEqual({ kind: 'think' });
 	});

@@ -20,7 +20,7 @@
 		"test:e2e": "playwright test",
 		"test:ci": "vitest run && playwright test",
 		"generate-types": "wrangler types",
-		"eval:jev": "node --experimental-strip-types scripts/eval-jev.ts",
+		"eval:decision": "node --experimental-strip-types scripts/eval-decision.ts",
 		"favicons": "node --experimental-strip-types scripts/generate-favicons.ts"
 	},
 	"dependencies": {

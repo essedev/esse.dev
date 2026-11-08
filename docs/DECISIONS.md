@@ -84,14 +84,14 @@ computed by pi-ai, is deducted, not the number of messages. Before the model, Je
 TypeSafe) classifies intent, weight and language in under a second: off-topic and abuse
 stop there. It stops when the probability of being off-topic (off-topic plus abuse)
 reaches 0.65, or that of abuse 0.5: thresholds fixed on the labeled messages
-(`pnpm eval:jev`). Since Cycle 19 the `chat` intent (greetings, jokes, questions about
+(`pnpm eval:decision`). Since Cycle 19 the `chat` intent (greetings, jokes, questions about
 the agent) goes to the model and is not off-topic; the short answer with no tools
 triggers only with `chat` at least 0.7, because a real question read half as chat must
 search the site. Since Cycle 28 a question about the credits left is `chat` too, and
 `get_budget` is the one tool the short mode allows. The set is 79 messages with 10
 attacks: 75 right decisions. If Jev does not answer the request goes through: the cap in
 real cost remains the guarantee. Jev goes through OpenRouter with the same key as the
-model; TypeSafe direct and Workers AI remain as alternative transports (`JEV_TRANSPORT` in `src/agent/site-agent.ts`).
+model; TypeSafe direct and Workers AI remain as alternative transports (`DECISION_TRANSPORT` in `src/agent/site-agent.ts`).
 Rejected: a fixed number of messages per visitor (rigid, ignores how much a question
 costs), triage alone without a cap (a classification can be fooled), chat stopped as
 off-topic (a greeting received a curt notice). The budget per visitor is 10 cents a day

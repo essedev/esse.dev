@@ -7,7 +7,7 @@ import type { PiSessionView } from './view';
 
 /**
  * What the agent is doing now, for the status line under the answer. Read from what the
- * client already has: the visitor's message waiting for Jev, pi's run, the tools running,
+ * client already has: the visitor's message waiting for triage, pi's run, the tools running,
  * the last part of the message being streamed, the retry backoff.
  */
 export type Phase =
@@ -20,7 +20,7 @@ export type Phase =
 
 /**
  * The phase of a session, or `null` when nothing is in progress. `waiting` is the message
- * sent and not yet in the transcript: `triage` until Jev answers, `admitted` after.
+ * sent and not yet in the transcript: `triage` until the decision model answers, `admitted` after.
  */
 export function phaseOf(view: PiSessionView, waiting: 'triage' | 'admitted' | null): Phase | null {
 	if (view.retry) return { kind: 'retry', at: view.retry.at, error: view.retry.error };

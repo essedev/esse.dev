@@ -63,7 +63,7 @@ export type PiServerMessage =
 			readonly session: PiSessionId;
 			readonly events: readonly AgentEvent[];
 	  }
-	/** Jev's triage of a message, before the model; `null` if Jev did not answer. */
+	/** The triage of a message, before the model; `null` if the decision model did not answer. */
 	| { readonly type: 'triage'; readonly text: string; readonly triage: Triage | null }
 	/** A message stopped before the model: off-topic, abuse or budget used up. */
 	| {

@@ -13,12 +13,12 @@ import {
 	admits,
 	blockReason,
 	isSmallTalk,
-	jevInput,
 	parseTriage,
-	type JevOutput
+	triageInput,
+	type DecisionOutput
 } from '../../src/agent/triage';
 
-const output = (intent: string, score: number, lang: string, p: number = 0.9): JevOutput => ({
+const output = (intent: string, score: number, lang: string, p: number = 0.9): DecisionOutput => ({
 	answers: {
 		intent: { type: 'choice', choice: intent, probabilities: { [intent]: p } },
 		weight: { type: 'score', score },
@@ -27,8 +27,8 @@ const output = (intent: string, score: number, lang: string, p: number = 0.9): J
 });
 
 describe('triage', () => {
-	it('asks Jev three typed questions about the message, with the site topics', () => {
-		const input = jevInput('ciao', ['Relay']);
+	it('asks the decision model three typed questions about the message, with the site topics', () => {
+		const input = triageInput('ciao', ['Relay']);
 		expect(input.state).toEqual({ visitor_message: 'ciao', site_topics: ['Relay'] });
 		expect(Object.keys(input.questions)).toEqual(['intent', 'weight', 'lang']);
 	});
@@ -77,7 +77,7 @@ describe('triage', () => {
 		expect(blockReason(passwd)).toBe('abuse');
 	});
 
-	it('treats a message as small talk only when Jev is sure', () => {
+	it('treats a message as small talk only when the model is sure', () => {
 		const triage = (p: Record<string, number>, choice: string) =>
 			parseTriage(
 				{

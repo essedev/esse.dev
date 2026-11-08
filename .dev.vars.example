@@ -1,9 +1,9 @@
 # Copy to .dev.vars (excluded from git) for local development. In production:
 # pnpm exec wrangler secret put TYPESAFE_API_KEY
-# Only if JEV_TRANSPORT is 'typesafe'.
+# Only if DECISION_TRANSPORT is 'typesafe'.
 TYPESAFE_API_KEY=
 
-# The agent's model and Jev via OpenRouter (a key dedicated to the site, with a monthly limit).
+# The agent's model and the decision model via OpenRouter (a key dedicated to the site, with a monthly limit).
 OPENROUTER_API_KEY=
 
 # Repo tools (optional): fine-grained GitHub token, "Public repositories (read-only)", no
