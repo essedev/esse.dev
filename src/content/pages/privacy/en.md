@@ -1,6 +1,6 @@
 ---
 title: "Privacy"
-updated: "2026-10-06"
+updated: "2026-11-08"
 ---
 
 This site is mine and I am the one handling the data it collects: Simone Salerno, [hello@esse.dev](mailto:hello@esse.dev). Here is everything that goes through it, why, where it ends up and how long it stays. No cookies, no ads, no profiling.
@@ -23,8 +23,7 @@ When you write to the [agent](/en/agent) I save the conversation: your messages,
 
 To answer, every message goes through:
 
-- **TypeSafe**, which first decides whether the message is on topic;
-- **OpenRouter**, which forwards it to an AI model run by providers in the United States;
+- **OpenRouter**, which forwards it to two AI models: first a small one from Liquid AI, which decides whether it is on topic, then a larger one, run by providers in the United States, which answers;
 - **GitHub**, when the agent's tools search my public repositories.
 
 Do not write to the agent anything you would not want a model to read. Legal basis: your request, which the agent answers.

@@ -1,6 +1,6 @@
 ---
 title: "Privacy"
-updated: "2026-10-06"
+updated: "2026-11-08"
 ---
 
 Questo sito è mio e i dati che raccoglie li tratto io: Simone Salerno, [hello@esse.dev](mailto:hello@esse.dev). Qui c'è tutto quello che passa di qui, perché, dove finisce e per quanto resta. Niente cookie, niente pubblicità, niente profilazione.
@@ -23,8 +23,7 @@ Quando scrivi all'[agente](/it/agente) salvo la conversazione: i tuoi messaggi, 
 
 Per rispondere, ogni messaggio passa da:
 
-- **TypeSafe**, che prima decide se il messaggio è in tema;
-- **OpenRouter**, che lo inoltra a un modello AI eseguito da fornitori negli Stati Uniti;
+- **OpenRouter**, che lo inoltra a due modelli AI: prima uno piccolo di Liquid AI, che decide se è in tema, poi uno più grande, eseguito da fornitori negli Stati Uniti, che risponde;
 - **GitHub**, quando gli strumenti dell'agente cercano nei miei repository pubblici.
 
 Non scrivere all'agente dati che non vuoi far leggere a un modello. Base giuridica: la tua richiesta, a cui l'agente risponde.
