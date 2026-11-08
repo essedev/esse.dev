@@ -2,7 +2,7 @@
 
 Current state of the project. Real milestones, not a wishlist. Updated together with the code.
 
-Last update: 2026-10-28 (Cycle 32: the listing pages rebuilt)
+Last update: 2026-11-08 (Cycle 34: Writing is back, a new decision model)
 
 ## Context
 
@@ -12,7 +12,8 @@ history in `docs/CYCLES.md`). Closed: M14, the migration to Astro (Cycle 11, DEC
 theme came after it (Cycle 26, DECISIONS #27), the new home and the tab bar on phones
 after that (Cycle 27, #30, #31), a changelog for visitors
 and a boot on the first visit in Cycle 30 (#35, #37), the projects, method, now and
-about pages rebuilt in Cycle 32 (#40-#43). The "Laboratorio" restyle (M11) is paused: its motifs are
+about pages rebuilt in Cycle 32 (#40-#43), Writing back with two MDX articles in Cycle 34
+(#44, #45). The "Laboratorio" restyle (M11) is paused: its motifs are
 in `docs/archive/RESTYLE.md`, and its branches (`restyle/laboratory`, `restyle/base`) and
 the `astro` working branch were retired when `astro` reached `main`. Their full history is
 kept in a git bundle outside the repo; the discarded pixel-art PNGs were dropped from the
@@ -63,6 +64,8 @@ of the earlier idea (the site redesigned live by a model). Choices in
 - Done (Cycle 30): the empty page says what the agent does (#38), the chat reads by turn
   with the work as tokens, the same in a sub-agent's sheet (#39); sub-agents talking to
   each other tried and left out (#36).
+- Done (Cycle 34): the triage independent of its decision model, moved to `liquid/d1-ultra`
+  after `pnpm eval:decision` on our messages (#46).
 - To do: the sub-agents' sheet on phones, where chips and field leave it about half the
   screen (#34).
 - Read-only tools on already public data. No writes, no fetch of arbitrary URLs, no

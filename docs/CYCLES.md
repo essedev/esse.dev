@@ -6,69 +6,10 @@ session and the next. High-level planning lives in `docs/ROADMAP.md`.
 
 Older cycles are in `docs/archive/` (Cycles 1-6 in `CYCLES-1-6.md`, 7-8 in
 `CYCLES-7-8.md`, 9-10 in `CYCLES-9-10.md`, 11-12 in `CYCLES-11-12.md`, 13-14 in
-`CYCLES-13-14.md`, 15-16 in `CYCLES-15-16.md`, 17-18 in `CYCLES-17-18.md`).
+`CYCLES-13-14.md`, 15-16 in `CYCLES-15-16.md`, 17-18 in `CYCLES-17-18.md`, 19-20 in
+`CYCLES-19-20.md`).
 
 ---
-
-## Cycle 19 - Glass, the chatting agent, per-IP limits (2026-10-04)
-
-Round on M15 and M17 (`9a1005e` .. `e85f4c7`).
-
-- **Glass (#16):** `docs/concepts/concept-c-vetro.html` with variants tunable live, B
-  chosen with the flat top bar. The window rests on a colored background (`wallpaper`);
-  frame, list, pane, agent field and menus are glass (`glass` utility, values in
-  `--glass-*`). Short rounds on the background: separate glows became blotches through the
-  glass, now it is a continuous diagonal veil with `--wall` at 0.2. A white veil on the
-  glass turned it grey, and is at zero. `subtle` raised to `#908e9b`, measured on the glass
-  where the veil behind is lighter; `surface` and `hover` become light veils instead of
-  solid greys.
-- **Nested blur** (`a68c6c7`): in Chromium a blurring glass inside another blurring one
-  stops blurring, and the agent field showed the transcript behind it sharp. Frame and
-  pane keep only the glass border; list, agent field and menus blur.
-- **Overscroll:** no bounce and no scroll passing underneath. `overscroll-none` on every
-  element stopped the wheel on the list after the first hit (Chromium hooked it to an
-  ancestor that does not scroll): now it sits on the page and the main containers, and
-  the nested blocks (code, tables, tool output) have only `overscroll-x-none`, otherwise
-  the wheel over a command did not scroll the page. Never a rule on `*`.
-- **Drawer** (`5384214`): `touch-action` does not pass inside a scrolling container, so
-  inside the list the browser took the gesture and dragging to the left no longer closed
-  it. The list has `touch-pan-y` too; an E2E sends real touches via CDP.
-- **Agent page:** title and introduction disappear once the conversation starts (they stay
-  for screen readers), "new conversation" moves to the toolbar and appears only then; the
-  notices follow the language of the message detected by Jev, not the page's.
-- **Chat** (`adb4ef5`): Jev has a `chat` intent (greetings, jokes, thanks, questions about
-  the agent) that goes to the model; the chat mode (two or three sentences, no tools)
-  triggers only with `chat` at least 0.7, so a real question read half as chat still
-  searches the site. Off-topic now means a real task unrelated to Simone. The prompt has a
-  voice (sharp, warm, a bit playful, never human, no emoji).
-- **Per-IP limits (#17,** `e85f4c7`): the visitor id is chosen by the browser and its cap
-  was bypassed. Burst of 10 messages a minute per IP with Workers Rate Limiting, before
-  Jev; 50 cents a day per IP in the `Ledger`, with a SHA-256 fingerprint of day and
-  address, never the IP in clear. The burst has its own notice.
-- **Red team:** Jev's set goes to 76 cases with 10 attacks, some disguised as a game or a
-  joke: 72 right decisions out of 76. Of the 10 attacks 7 stop at the triage, the 3 that
-  pass were refused by the model in a live trial.
-- **Links in answers (#18):** no allowlist of external domains, for now.
-- **Mobile:** agent placeholder on one line, link to the releases written as a path
-  (`f8dc543`); Instagram and X handles fixed to `essedotdev`.
-- **Concept D** (`docs/concepts/concept-d-og.html`): proposals for the OG images and the
-  favicon, awaiting Simone's choice.
-- **Tests:** 106 unit and 61 E2E.
-- **Next step:** OG and favicon from concept D, the height of the list beyond 900 px.
-
-## Cycle 20 - OG and favicon from concept D (2026-10-04)
-
-- **OG (#19):** direction B, the terminal: command that opens the page, title with the
-  lavender cursor (word by word, so on two lines it follows the last word), excerpt, mono
-  metadata with the status LED, CRT lines. 45 PNGs generated at build. Departure Mono
-  converted to `woff` for satori.
-- **Favicon (#19):** the logo cursor alone, proposal 7 of concept D, after a round with
-  three variants of a vertical cursor (s, e, cursor alone). `scripts/generate-favicons.ts`
-  (`pnpm favicons`) produces SVG, ICO with PNG inside, PNG for iOS and manifest; manifest
-  with the new colors.
-- **Tests:** unit on command, metadata, LED and title size of the OG images.
-- **M15 closed** by Simone: structure and style done; the height of the list stays among
-  the Open items of the ROADMAP.
 
 ## Cycle 21 - The glass pane, M16 started (2026-10-04 / 2026-10-05)
 
@@ -458,3 +399,29 @@ rewritten as a draft (`beabbb9`); about and home in the new register (`8e930d3`,
   (`measure`/`misurare`); navigation, SEO and workspace E2E expect no Writing.
 - **Next step:** publishing the draft brings Writing back on its own; the open items of
   Cycle 32 stand.
+
+## Cycle 34 - Writing is back with MDX articles, a new decision model (2026-11-08)
+
+MDX for articles (`bfe7468`, #45), the binder draft finished (`5dbb269`, `900287f`), the
+triage made independent of its model and moved to another (`33544bc`, `83566c5`, #46), two
+articles published (`ea03983`). Changelog entry `2026-11-08-scritti`.
+
+- **MDX (#45):** only articles accept it, with `<View>`, `<Flow>` and `<Attempts>` passed by
+  `[slug].astro` and never imported in the text. A draft is visible at its URL in `pnpm dev`,
+  never in a build. The inline code chip no longer bands the lines of a fenced block
+  (`4886f80`).
+- **Articles:** `il-mio-nuovo-laboratorio` (The orange binder), with its attempts as a
+  timeline, and the new `cosa-succede` (What happens when you write to my agent), both
+  published and dated 2026-11-08. Writing, the list row, the sitemap entries and the RSS items
+  came back on their own, as #44 meant.
+- **Decision model (#46):** the model is one pinned value in `triage.ts`, next to the
+  thresholds tuned on it; the UI says "classificatore" instead of naming it. `pnpm eval:jev`
+  became `pnpm eval:decision`: several models compared, thresholds fixed on held-out messages,
+  opaque option names, a spend cap, paid answers kept in `.eval/`. On the 79 labeled messages
+  `liquid/d1-ultra` makes 1 wrong decision against 4 for Jev 1.13 and lets 1 attack of 19
+  through against 3. Small talk rises to 0.85. The TypeSafe and Workers AI transports are gone,
+  with the AI binding and `TYPESAFE_API_KEY`.
+- **Tests:** the Writing E2E flip from absent to present, and add the `BlogPosting` data, the
+  diagram and charts within the CSP and the attempts timeline; the RSS E2E expects items; unit
+  and E2E follow the neutral names.
+- **Next step:** the open items of Cycle 32 stand.
