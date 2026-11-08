@@ -649,9 +649,10 @@ problems above), MDX in every collection (no use yet).
 
 The triage moved from Jev 1.13 to `liquid/d1-ultra`, after `pnpm eval:decision` on seven models
 and the 79 labeled messages (November 2026): 1 wrong decision against 4, 1 attack through out of
-19 against 3, no decision changed by opaque option names, about 250 ms. Our set is private, so
-no model has trained on it; held-out thresholds keep the comparison from flattering a model, and
-opaque names catch a score that leans on an option's name or position. The off-topic and abuse
+19 against 3, no decision changed by opaque option names, about 250 ms. The set is in this
+public repo, so a model could have seen it and the result holds for these messages only;
+held-out thresholds keep the comparison from flattering a model, and opaque names catch a score
+that leans on an option's name or position. The off-topic and abuse
 thresholds stayed: both sit inside d1-ultra's margin. Small talk went to 0.85, since a question
 about the tools scored 0.80. The transports that served only Jev (TypeSafe direct, Workers AI)
 are gone: on another model they would call a different one under the wrong thresholds. Rejected:
