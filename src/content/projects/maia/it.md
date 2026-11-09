@@ -19,6 +19,6 @@ previously:
 
 Maia mappa il tuo livello in ogni ambito con un assessment che si adatta alle risposte, individua i buchi più importanti e ti guida a colmarli con metodi che la ricerca dà per efficaci: il metodo Feynman, il recupero attivo, la ripetizione dilazionata. Quello che impari finisce in una wiki personale da consultare.
 
-È la terza volta che giro intorno alla stessa idea. Cosmoscope partiva da una domanda, Upstream dagli interessi; Maia parte da quello che sai e da quello che non sai, ed è quella che è arrivata più lontano. La tassonomia copre 19 ambiti, tutte le schermate parlano con il backend vero e un pannello tiene il conto della spesa sui modelli.
+È la terza volta che giro intorno alla stessa idea. Cosmoscope partiva da una domanda, Upstream dagli interessi; Maia parte da quello che sai e da quello che non sai, ed è arrivata più lontano delle altre. La tassonomia copre 19 ambiti, tutte le schermate parlano con il backend vero e un pannello tiene il conto della spesa sui modelli.
 
 Prima ho fatto tutto il frontend su dati finti, poi il backend l'ha sostituito una fetta alla volta, con i test che verificano il giro completo.

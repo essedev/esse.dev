@@ -17,7 +17,7 @@ previously:
 now: "Trascrive i due lati della call e propone le risposte dalla knowledge base."
 ---
 
-In una call di vendita le risposte servono nel momento in cui il cliente fa la domanda: prezzi, casi, obiezioni già sentite. Copilota ascolta la call e le porta in un overlay laterale, escluso dalla condivisione dello schermo e che non ruba il focus a Meet.
+In una call di vendita le risposte servono nel momento in cui il cliente fa la domanda: prezzi, casi, obiezioni già sentite. Copilota ascolta la call e le porta in un overlay laterale che resta fuori dalla condivisione dello schermo e non ruba il focus a Meet.
 
 ## Durante la call
 

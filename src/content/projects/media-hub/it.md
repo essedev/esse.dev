@@ -19,6 +19,6 @@ Il server di casa è un ThinkPad con Ubuntu. Media Hub è la piattaforma che ci 
 - La libreria ha metadati, copertine, trailer e voti esterni, con le serie divise per stagione e quelle degli anime ricavate dalle date. Si esplora per anno e per genere, e di un titolo si possono tenere più versioni sul disco.
 - I sottotitoli scaricati si allineano da soli misurandoli sull'audio, si correggono a mano al decimo di secondo e passano all'episodio successivo.
 - Un'app per la TV Samsung, su Tizen e installata in sideload: home per categorie, dettaglio, player nativo con l'episodio successivo a fine puntata, e uno splash d'apertura al posto della schermata di caricamento. Il codice arriva dal server a ogni deploy, senza reinstallarla.
-- Il server rimonta da solo il disco dei media quando torna, e finché manca lo dichiara nel controllo di salute.
+- Quando il disco dei media ricompare, il server lo rimonta da solo; finché manca, lo segnala nel controllo di salute.
 
 Backend Python con FastAPI e PostgreSQL, frontend React, app TV in React sul player di Tizen.

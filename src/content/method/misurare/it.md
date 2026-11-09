@@ -14,4 +14,4 @@ proofs:
 
 Prima si misura, poi si decide cosa dire, e una conclusione sbagliata si ritira per iscritto.
 
-Test, review e numeri veri. Nei miei progetti il perimetro di quello che ho misurato, e di quello che no, è scritto accanto ai risultati.
+Si misura con test, review e numeri veri, e nei miei progetti accanto ai risultati scrivo cosa ho misurato e cosa no.

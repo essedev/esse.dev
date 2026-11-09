@@ -25,7 +25,7 @@ previously:
     note: "Finanza e salute in un'app sola, con un agente che legge e scrive i dati e cambia ruolo a seconda della sezione. Finanza e salute sono passate in Plannerinator."
   - name: "Almanac"
     year: 2026
-    note: "Un ChatGPT mio in Elixir e Phoenix, con tool, cartelle e RAG ibrido su pgvector."
+    note: "Un mio ChatGPT in Elixir e Phoenix, con tool, cartelle e RAG ibrido su pgvector."
   - name: "Nexus in Elixir"
     year: 2026
     note: "La prima versione di Nexus, in Elixir e Phoenix con LiveView: il runtime di Almanac con il dominio di Plannerinator."
@@ -42,8 +42,8 @@ L'assistente non si limita a leggere i dati. Li gestisce mentre ci parlo, e fa e
 - Automazioni a cron o a evento, compresi agenti che girano su un prompt.
 - Trascrizione delle riunioni con i parlanti separati, OCR, ricerca web e vision come capability generiche.
 - Un server MCP con OAuth, così qualunque coding agent può leggere e scrivere nei miei dati.
-- Le chat di Claude Code sincronizzate dal laptop e i commit dei progetti attivi, collegati al progetto giusto: l'attività di un progetto la ricava da lì, e un commit è la prova per chiudere un task.
-- Le Aree dividono la navigazione per ambito, ognuna con le sue voci, e un launcher passa dall'una all'altra.
+- Le chat di Claude Code sincronizzate dal laptop e i commit dei progetti attivi, collegati al progetto giusto: l'attività di un progetto la ricava da lì, e un commit vale come prova per chiudere un task.
+- Le Aree dividono la navigazione per ambito, ognuna con le sue voci, e un launcher permette di passare dall'una all'altra.
 - Campi che si compilano da soli dallo storico, con la correzione a mano che vince sempre: la stessa idea di [pgbee](/it/progetti/pgbee), portata dentro il motore.
 - File tabellari, come gli estratti conto, importati con formati che sono dati e non codice: una banca nuova è una riga, non una funzione.
 - Da una bozza scritta di fretta esce un messaggio pronto nello stile scelto, e si ritocca ("più corto") senza riscriverlo.

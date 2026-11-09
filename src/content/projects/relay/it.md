@@ -9,8 +9,8 @@ tags:
   - "AI Agents"
   - "Claude Code"
   - "Homebrew"
-why: "Lo stato di ogni agente arriva dagli hook di Claude Code e Codex, non dal parsing dell'output, quindi resta giusto anche sotto un muro di log. L'ho scritto in Swift partendo da zero esperienza di Swift."
-now: "Gli aggiornamenti si installano dal popup; poi il motore del terminale staccato dal resto."
+why: "Lo stato di ogni agente arriva dagli hook di Claude Code e Codex, non dal parsing dell'output, quindi resta giusto anche sotto un muro di log. L'ho scritto in Swift senza averlo mai usato prima."
+now: "Gli aggiornamenti si installano dal popup; poi separare il motore del terminale dal resto."
 ---
 
 Lavoro con cinque o sei sessioni di Claude Code e Codex aperte insieme, su progetti diversi. In un terminale normale, per capire quale agente sta aspettando una risposta, devo passare tab per tab. Relay nasce per togliere quel giro.
@@ -18,11 +18,11 @@ Lavoro con cinque o sei sessioni di Claude Code e Codex aperte insieme, su proge
 ## Come funziona
 
 - Lo stato di ogni agente (in esecuzione, in attesa di input, errore, finito) arriva dagli hook nativi di Claude Code e Codex, non dal parsing dell'output. Resta giusto anche sotto un muro di log di build.
-- Un modello di attenzione in tre passi: una sessione che ti vuole si fa notare, una che hai visto resta in sottofondo, rispondere la spegne.
-- Home (Cmd+D) dice quante sessioni ti aspettano e le elenca con l'ultima riga lasciata dall'agente e l'azione che vuole, poi cosa sta lavorando e quali progetti si sono fermati.
+- Un modello di attenzione in tre passi: una sessione che ha bisogno di te si fa notare, una che hai già visto resta in sottofondo, e quando rispondi si spegne.
+- Home (Cmd+D) dice quante sessioni ti aspettano e le elenca con l'ultima riga lasciata dall'agente e l'azione che vuole, poi quali sono al lavoro e quali progetti si sono fermati.
 - Un progetto si chiude senza perderlo: tiene gruppo, tab e sessioni degli agenti, e ferma i processi così la memoria torna libera. La sidebar mostra solo i progetti aperti, Projects li elenca tutti e Cmd+P ne riapre uno per nome.
 - Workspace con gruppi, pane divisi con i propri tab, finestre multiple e un layout che sopravvive al riavvio. Gli aggiornamenti si installano dall'app, che poi propone il riavvio.
 
-È scritto in Swift 6 e AppKit, con SwiftTerm come motore dietro un'astrazione che lascia spazio a libghostty. I terminali inattivi vengono scaricati dalla memoria: circa 90 MB residenti con un terminale vivo, 92 con tredici, e 2,4 µs aggiunti nel caso peggiore su un tasto. Metodo e numeri sono nel repo.
+È scritto in Swift 6 e AppKit, con SwiftTerm come motore dietro un'astrazione che lascia spazio a libghostty. I terminali inattivi vengono scaricati dalla memoria: circa 90 MB residenti con un terminale vivo e 92 con tredici; nel caso peggiore ogni tasto premuto aggiunge 2,4 µs. Metodo e numeri sono nel repo.
 
 È open source con licenza MIT e si installa con Homebrew: `brew install --cask essedev/relay/relay-terminal`.

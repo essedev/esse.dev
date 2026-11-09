@@ -15,7 +15,7 @@ Flux è nato come TLDR Checker, uno scraper per leggere i digest di TLDR senza a
 
 L'estrazione usa ricette generate da un LLM per ogni fonte, ma il modello non riscrive mai il testo: individua dove sta il contenuto, e il contenuto viene copiato così com'è. È la regola che tiene lontane le allucinazioni e fa sì che non si perda niente.
 
-- Un cron cattura i feed e salva subito l'originale, poi una coda di Cloudflare Queues fa l'estrazione: se qualcosa fallisce, il dato grezzo c'è già.
+- Un cron scarica i feed e salva subito l'originale, poi una coda di Cloudflare Queues fa l'estrazione: se qualcosa fallisce, il dato grezzo c'è già.
 - PWA con lettura offline, salvati, collezioni, ricerca e notifiche push con un digest due volte al giorno.
 - Worker in Hono, D1 con Drizzle, better-auth; frontend React 19 con Tailwind e shadcn/ui.
 
