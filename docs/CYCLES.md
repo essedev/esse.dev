@@ -411,13 +411,14 @@ across the site. No changelog entry.
 
 ## Cycle 37 - The home's headline and intro logos (2026-11-09)
 
-The home's first lines, and where its logos come from (`406e667`, `3e3596d`). Changelog entry
-`2026-11-09-home`.
+The home's first lines, and where its logos come from (`406e667`, `3e3596d`, `ab2fc48`).
+Changelog entry `2026-11-09-home`.
 
 - **Headline:** plainer, "from prototype to production" in the accent instead of "keep it
   running in production".
 - **Intro logos (#30):** the welcome page's own `tools` list named only the developer tools and
   drifted from the showcase. It is gone: `{projects}` in `intro` places the logos of the
-  featured projects of `featured.json`, and the build fails if one has no logo. The intro now
-  names both kinds, tools for coding with agents and complete products, before the logos.
+  featured projects of `featured.json`, and the build fails if one has no logo. The intro no
+  longer sorts them into tools and products: it says the site tells the story of the projects,
+  the stopped ones too.
 - **Next step:** unchanged from Cycle 34.
