@@ -399,5 +399,12 @@ across the site. No changelog entry.
 - **Tests:** an E2E in `seo.spec.ts` checks the photo's position on both widths and the caption.
 - **Italian:** the two articles (`c4cd9dd`), then pages, method, projects and interface strings,
   among them the agent's off-topic notice and its provider and timeout errors (`b09a230`).
-  Facts unchanged.
+  Facts unchanged in this pass.
+- **After the pass** (`99716d3`, `01b0aec`, `c56a84b`, `c73a096`): four slips of the review
+  undone (a forced metaphor, a detail dropped from doppia.os, a shifted reference in Floppy, a
+  fragment in Relay); the method's setup note says the repo holds the whole setup, not only the
+  context; four privacy sentences made clear with the same meaning, so its date stays.
+- **Two figures** (`a4a1068`): the only facts that changed. In Local LLM Eval 0.76 against 0.002
+  dollars is about 380 times, not four orders of magnitude; mcpbelt's OCR reads 20 cents and 8.4
+  instead of thousandths, same values.
 - **Next step:** unchanged from Cycle 34.
