@@ -7,62 +7,9 @@ session and the next. High-level planning lives in `docs/ROADMAP.md`.
 Older cycles are in `docs/archive/` (Cycles 1-6 in `CYCLES-1-6.md`, 7-8 in
 `CYCLES-7-8.md`, 9-10 in `CYCLES-9-10.md`, 11-12 in `CYCLES-11-12.md`, 13-14 in
 `CYCLES-13-14.md`, 15-16 in `CYCLES-15-16.md`, 17-18 in `CYCLES-17-18.md`, 19-20 in
-`CYCLES-19-20.md`, 21-22 in `CYCLES-21-22.md`).
+`CYCLES-19-20.md`, 21-22 in `CYCLES-21-22.md`, 23-24 in `CYCLES-23-24.md`).
 
 ---
-
-## Cycle 23 - Public repo, production, covers and logos (2026-10-05)
-
-From the public repo to production, then the M16 covers (`2f6abed` .. `e96fe80`).
-
-- **Public repo:** renamed `essedev/esse.dev` (Worker and package stay `simonesalerno`);
-  MIT for the code, content and visual identity excluded at the top of `LICENSE`. Docs,
-  comments and test names in English, README mirrored in `README.it.md`,
-  `docs/CONVENTIONS.md` with language and glossary; `pnpm lint` runs
-  `scripts/check-prose.py` and requires doc comments on the exports of `src/lib` and
-  `src/agent`. `eslint-plugin-jsdoc` stays at 61: 65 needs Node 22.22.2 or 24.15, and with
-  `engine-strict` an older Node 22 would fail the install.
-- **Reserved content** (`49c2e71`): unpublished projects, two archived mockups with
-  internal material and the personal notes leave the working tree (#21 supersedes #6).
-- **Production:** `astro` reaches `main`, the restyle and `astro` branches go to a bundle
-  outside the repo; the pixel-art PNGs left the unpushed history, so the commits cited in
-  these cycles were remapped. First Astro deploy from `main` with Workers Builds.
-- **Finishing touches:** `/llms.txt` built from the collections (before it fell into the
-  catch-all redirect); profile links with a 24 px touch target (flagged by Lighthouse);
-  the pane on the same glass as the list, which read as a greyer material.
-- **Covers and logos (#22):** `scripts/render-cover.ts` (mockup from a JSON spec) and
-  `scripts/render-logo.ts` (tile with a Lucide glyph or the project's own mark). Every
-  project page opens with a cover, the logo rises over its edge and takes the LED's place
-  in the list. Screenshots from demo data where an interface exists, designed mockups for
-  the five with nothing to show. Short rounds after: every logo a tile, the shadow follows
-  the logo's shape, no text in a designed cover (it repeated the heading and stayed in
-  English on the Italian pages), Budokan's cover tried on four sections of its site.
-- **Content:** the Nexus lineage from Plannerinator and Life Terminal to Elixir; Ethicode no
-  longer links to a domain now serving another product.
-- **Next step:** rereading the M16 entries with Simone, a skill that proposes the items.
-
-## Cycle 24 - Analytics, privacy notice, conversations that expire (2026-10-06)
-
-Mobile fixes, then what the site collects and for how long (`fa4e6a6` .. `7ce1c79`).
-
-- **Mobile:** pager links side by side with titles on two lines; pane and drawer rounder
-  and closer to the screen corners.
-- **Analytics:** `essedev.it` expired, so Umami moves to `analytics.esse.dev`, self-hosted,
-  with neutral names for script and collect endpoint (the defaults are in the ad blockers'
-  lists); the CSP changes in the same commit, or the browser blocks the script silently.
-  Custom events in `src/scripts/track.ts`: where an agent message comes from, notices,
-  errors, drafts sent, copies, the host of an outbound link. Never the visitor's text.
-- **Retention (#23):** a conversation expires 90 days after the last message
-  (`src/agent/retention.ts`). A Lifecycle job moved on every settled turn empties the
-  object: alarms off, storage deleted, instance reset. Conversations from before get a
-  deadline at their next start. "Nuova conversazione" does not delete.
-- **Privacy notice (#23):** a single page in both languages, linked from the list's status
-  line and under the agent's field, in the sitemap, `llms.txt` and the agent's index, so
-  the agent answers "do you keep my messages?" from the notice. Then a summary on top and
-  categories instead of model, providers, server location and storage keys.
-- **Content:** Budokan is the Next.js rewrite, the SvelteKit site goes to `previously`.
-- **Next step:** the Open items of the ROADMAP (redirect from `simonesalerno.it`, the
-  `hello@esse.dev` mailbox) and the production secrets for `draft_message`.
 
 ## Cycle 25 - Agent states and error pages from concept G (2026-10-06)
 
@@ -421,4 +368,32 @@ Changelog entry `2026-11-09-home`.
   featured projects of `featured.json`, and the build fails if one has no logo. The intro no
   longer sorts them into tools and products: it says the site tells the story of the projects,
   the stopped ones too.
+- **Next step:** unchanged from Cycle 34.
+
+## Cycle 38 - The site installs as an app, readable offline (2026-11-09)
+
+An installable app with a service worker and an offline page, then the iOS standalone layout
+(`54696b9`, `ae44eee`). Changelog entry `2026-11-09-app`.
+
+- **Manifest (#47):** one per language at `/<lang>/manifest.webmanifest`, prerendered from the
+  site texts and the dark theme's tokens, with a shared `id` so the two installs are one app.
+  "Any" and "maskable" icons from `pnpm favicons`, shortcuts to projects, agent and method,
+  screenshots from `pnpm pwa-screenshots` (`public/pwa/`; a build fails while one is missing).
+  `public/site.webmanifest` is gone.
+- **Service worker (#47):** hand-written in `src/scripts/sw.js`, served at `/sw.js` with the
+  build's commit in its first line, so every deploy installs a new worker and drops the old
+  caches. Pages network first with the last visit's copy after 4 s or offline, `/_astro/*`
+  cache first, `/agents/*` and other origins untouched. Registered only in a build.
+- **Offline page:** `/<lang>/offline`, precached at install and out of the sitemap, lists the
+  pages kept on the device.
+- **iOS standalone** (`ae44eee`): with the `black-translucent` status bar WebKit stops the
+  viewport a status bar short of the bottom. The window takes 100lvh, the body adds the status
+  bar back, the fixed layers reach the physical edge and the window starts below iOS 26's blur
+  band, through `--screen-h`, `--top-inset` and `--fixed-bottom` in `global.css` (rule in
+  `.claude/rules/workspace-ui.md`). Safari's bar strips hide there, Android's keyboard resizes
+  the layout, taps no longer flash the gray box.
+- **Tests:** `tests/e2e/pwa.spec.ts` checks the manifest per language, a visited page read
+  offline, the offline page for one never visited, and that the offline page is not
+  indexable. The other specs block service workers, since `page.route` does not see what a
+  worker answers. Simone tested the install on a real iPhone: OK.
 - **Next step:** unchanged from Cycle 34.
