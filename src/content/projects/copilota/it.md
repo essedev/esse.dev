@@ -21,7 +21,7 @@ In una call di vendita le risposte servono nel momento in cui il cliente fa la d
 
 ## Durante la call
 
-- Due canali separati: il microfono è chi vende, l'audio di sistema è il cliente, catturato con un process tap di Core Audio. Ognuno ha il suo stream di trascrizione in tempo reale.
+- Due canali separati: il microfono riprende chi vende, l'audio di sistema il cliente, catturato con un process tap di Core Audio. Ognuno ha il suo stream di trascrizione in tempo reale.
 - Quando il cliente fa una domanda, solleva un'obiezione o tocca un tema della knowledge base, un modello veloce decide se serve una card e la scrive con la fonte: nel test dal vivo la card arriva in 1,1-1,3 secondi. Una card quando serve, non una per frase.
 - Una domanda diretta (⌥⌘K) sulla knowledge base o sulla call stessa, come "cosa ha detto sul budget?", passa dalla stessa pipeline e risponde in meno di un secondo.
 - In via sperimentale Nemotron separa le voci del cliente in locale, con MLX, in un processo isolato senza rete: sul campione di prova le frasi attribuite salgono da 22 a 28 su 37.
