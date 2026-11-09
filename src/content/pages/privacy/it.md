@@ -3,7 +3,7 @@ title: "Privacy"
 updated: "2026-11-08"
 ---
 
-Questo sito è mio e i dati che raccoglie li tratto io: Simone Salerno, [hello@esse.dev](mailto:hello@esse.dev). Qui c'è tutto quello che passa di qui, perché, dove finisce e per quanto resta. Niente cookie, niente pubblicità, niente profilazione.
+Questo sito è mio e i dati che raccoglie li tratto io: Simone Salerno, [hello@esse.dev](mailto:hello@esse.dev). Qui trovi quali dati passano da questo sito, perché, dove finiscono e per quanto restano. Niente cookie, niente pubblicità, niente profilazione.
 
 In breve:
 
@@ -13,13 +13,13 @@ In breve:
 
 ## Statistiche
 
-Conto le visite con [Umami](https://umami.is), installato su un mio server nell'Unione europea. Registra la pagina, da dove arrivi, il paese, il tipo di dispositivo e alcune azioni sul sito: un messaggio mandato all'agente, un link copiato, un link verso un altro sito. Il testo dei messaggi non ci finisce mai.
+Conto le visite con [Umami](https://umami.is), installato su un mio server nell'Unione europea. Registra la pagina, da dove arrivi, il paese, il tipo di dispositivo e alcune azioni sul sito: un messaggio mandato all'agente, un link copiato, un link verso un altro sito. Il testo dei messaggi non arriva mai a Umami.
 
 Umami non usa cookie e non salva niente sul tuo dispositivo. L'indirizzo IP non viene conservato: serve a ricavare il paese e un identificativo anonimo, un hash che cambia ogni mese, per distinguere i visitatori senza sapere chi sono. I dati sono aggregati e li tengo senza scadenza, per confrontare un anno con l'altro. Base giuridica: il mio legittimo interesse a capire cosa viene letto.
 
 ## L'agente
 
-Quando scrivi all'[agente](/it/agente) salvo la conversazione: i tuoi messaggi, le risposte, gli strumenti usati e le eventuali bozze di messaggio. Sta su Cloudflare e si cancella da sola **90 giorni dopo l'ultimo messaggio**. "Nuova conversazione" fa ripartire il contesto ma non cancella le conversazioni precedenti, che restano fino alla stessa scadenza. Se vuoi cancellarle prima, scrivimi.
+Quando scrivi all'[agente](/it/agente) salvo la conversazione: i tuoi messaggi, le risposte, gli strumenti usati e le eventuali bozze di messaggio. La conversazione sta su Cloudflare e si cancella da sola **90 giorni dopo l'ultimo messaggio**. "Nuova conversazione" fa ripartire il contesto ma non cancella le conversazioni precedenti, che restano fino alla stessa scadenza. Se vuoi cancellarle prima, scrivimi.
 
 Per rispondere, ogni messaggio passa da:
 
@@ -36,7 +36,7 @@ Ogni risposta ha un costo, e per evitare abusi conto la spesa per visitatore e p
 
 ## Messaggi a me
 
-Se mandi un messaggio con l'agente, mi arriva per email con l'oggetto, il testo e il contatto che scegli di lasciare. Prima dell'invio Cloudflare Turnstile verifica che non sia un bot con segnali del browser. Il messaggio lo tengo nella mia casella per il tempo che serve a risponderti. Base giuridica: la tua richiesta di contatto.
+Se mi scrivi tramite l'agente, il messaggio mi arriva per email con l'oggetto, il testo e il contatto che scegli di lasciare. Prima dell'invio Cloudflare Turnstile verifica, in base a segnali del browser, che a scrivere non sia un bot. Il messaggio lo tengo nella mia casella per il tempo che serve a risponderti. Base giuridica: la tua richiesta di contatto.
 
 ## Hosting
 
