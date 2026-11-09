@@ -17,6 +17,6 @@ The individual capabilities are commodities. What matters is having all of them 
 
 - 459 tokens instead of 6,355 for a forty-page document, which stays fully queryable.
 - The first run at real scale: 50 pages and 56 minutes of audio delivered in 35 seconds, for 1.14 euros paid to providers.
-- That same run found a bug no test could see: an OCR job worth 200 thousandths was charging 84. Units are now counted from the file.
+- That same run found a bug no test could see: an OCR job worth 20 cents was charging 8.4. Units are now counted from the file.
 
 FastAPI backend with OAuth 2.1 and a separate job queue, public site in Astro, top-ups through Stripe.

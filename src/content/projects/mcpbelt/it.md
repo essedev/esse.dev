@@ -17,6 +17,6 @@ Le singole capability sono commodity. Quello che conta è averle tutte in una co
 
 - 459 token invece di 6.355 per un documento di quaranta pagine, che resta interamente interrogabile.
 - Il primo giro a scala vera: 50 pagine e 56 minuti di registrazione consegnati in 35 secondi, per 1,14 euro pagati ai fornitori.
-- Lo stesso giro ha trovato un difetto che nessun test poteva vedere: un OCR che valeva 200 millesimi ne incassava 84. Adesso le unità si contano dal file.
+- Lo stesso giro ha trovato un difetto che nessun test poteva vedere: un OCR da 20 centesimi ne incassava 8,4. Adesso le unità si contano dal file.
 
 Backend FastAPI con OAuth 2.1 e una coda di lavori separata, sito pubblico in Astro, ricariche via Stripe.
