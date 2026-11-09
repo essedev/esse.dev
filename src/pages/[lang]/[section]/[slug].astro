@@ -3,6 +3,7 @@ import { render } from 'astro:content';
 import { ArrowUpRight } from '@lucide/astro';
 import EntryRow from '../../../components/EntryRow.svelte';
 import Attempts from '../../../components/article/Attempts.astro';
+import Beside from '../../../components/article/Beside.astro';
 import Flow from '../../../components/article/Flow.astro';
 import View from '../../../components/article/View.astro';
 import CopyCommand from '../../../components/detail/CopyCommand.astro';
@@ -200,7 +201,7 @@ const host = (url: string) => url.replace(/^https?:\/\/(www\.)?/, '').replace(/\
 				)}
 
 				<Prose class="mt-10">
-					<Content components={{ Attempts, Flow, View }} />
+					<Content components={{ Attempts, Beside, Flow, View }} />
 				</Prose>
 
 				{project?.text.previously && (

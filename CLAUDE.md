@@ -78,7 +78,7 @@ Secrets in `.dev.vars` (excluded from git, template in `.dev.vars.example`), rea
   proposing it; refactors, tests and docs do not (DECISIONS #35). One entry per release,
   in the site's voice, links to the pages it touched and never to a private repo.
 - An article can be `<lang>.mdx` (only articles, DECISIONS #45): charts and diagrams instead of
-  images, with `<View>`, `<Flow>` and `<Attempts>` from `src/components/article/`, passed by
+  images, with `<View>`, `<Flow>`, `<Attempts>` and `<Beside>` from `src/components/article/`, passed by
   `[slug].astro` and never imported in the text. Inside them no client code: static HTML. A new
   one is added to the `components` of that page. In `pnpm dev` a draft (`published: false`) is
   visible at its URL, in a build never.

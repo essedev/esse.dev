@@ -49,7 +49,8 @@ language, every text has its meta, slugs are unique per language, the showcase
 
 An article's text can be MDX (#45), for charts and diagrams in place of images: the page
 passes `View` (the agent's `RenderView`, with the same validation of `render.ts`), `Flow`
-and `Attempts` (a project's `previously` as a timeline), so the text imports nothing. They
+`Attempts` (a project's `previously` as a timeline) and `Beside` (an image with the text flowing
+next to it), so the text imports nothing. Any other image stays under a height limit (`Prose`). They
 render to static HTML with the site's tokens, so they follow the theme and the CSP. In
 `pnpm dev` the drafts are visible, to read them in place; a build never shows one.
 

@@ -66,6 +66,23 @@ test.describe('writing', () => {
 		expect(violations).toEqual([]);
 	});
 
+	test('a photo sits beside the text on a wide column and above it on a narrow one', async ({
+		page
+	}) => {
+		const photo = page.locator('article img[alt^="Drawings of robots"]');
+		const text = page.locator('article .prose p', { hasText: 'mad scientist' });
+		await page.setViewportSize({ width: 1440, height: 900 });
+		await page.goto('/en/writing/the-orange-binder');
+		const wide = { photo: await photo.boundingBox(), text: await text.boundingBox() };
+		expect(wide.photo!.y).toBeLessThan(wide.text!.y + wide.text!.height);
+		expect(wide.photo!.x).toBeGreaterThan(wide.text!.x + 100);
+
+		await page.setViewportSize({ width: 390, height: 844 });
+		await page.goto('/en/writing/the-orange-binder');
+		const narrow = { photo: await photo.boundingBox(), text: await text.boundingBox() };
+		expect(narrow.photo!.y + narrow.photo!.height).toBeLessThanOrEqual(narrow.text!.y);
+	});
+
 	test('the attempts timeline reads the project and ends on it', async ({ page }) => {
 		await page.goto('/en/writing/the-orange-binder');
 		const timeline = page.locator('article figure ol li');

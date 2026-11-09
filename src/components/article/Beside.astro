@@ -1,0 +1,12 @@
+---
+/**
+ * An image in an article with the text flowing next to it, for a photo that would take over
+ * the column at full width. The column decides, not the screen: `Prose` is the container.
+ * Below the breakpoint it sits above the text, under the height limit of every prose image.
+ * The top margin is the one of a prose paragraph, so the photo starts level with the text.
+ */
+---
+
+<div class="@xl:float-right @xl:mt-[1.25em] @xl:mb-4 @xl:ml-8 @xl:w-[42%] [&_img]:my-0 @xl:[&_img]:max-h-none @xl:[&_img]:w-full [&_p]:my-0">
+	<slot />
+</div>
