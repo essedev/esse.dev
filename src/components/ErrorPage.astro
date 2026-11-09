@@ -3,13 +3,13 @@ import Workspace from '../layouts/Workspace.astro';
 import Page from './Page.astro';
 
 /**
- * The frame of the 404 and the 500 (concept G): the number as a disturbed signal, a mono
- * line under it (the path asked for, the request code), the title, then the page's own
- * content. `noise` fills the digits with snow: the fault is on my side.
+ * The frame of the 404, the 500 and the offline page (concept G): the code as a disturbed
+ * signal, a mono line under it (the path asked for, the request code), the title, then the
+ * page's own content. `noise` fills the digits with snow: the fault is on my side.
  */
 interface Props {
 	lang: string;
-	code: '404' | '500';
+	code: '404' | '500' | 'offline';
 	title: string;
 	noise?: boolean;
 }
@@ -28,7 +28,13 @@ const { lang, code, title, noise = false } = Astro.props;
 >
 	<Page>
 		<p
-			class="signal self-start font-mono text-[clamp(4.5rem,3rem+6vw,8rem)] leading-none"
+			class:list={[
+				'signal self-start font-mono leading-none',
+				// A word instead of three digits: smaller, so it fits a phone.
+				code === 'offline'
+					? 'text-[clamp(2.75rem,2rem+4vw,6rem)]'
+					: 'text-[clamp(4.5rem,3rem+6vw,8rem)]'
+			]}
 			data-text={code}
 			data-noise={noise || undefined}
 			aria-hidden="true"

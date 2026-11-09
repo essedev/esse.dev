@@ -4,8 +4,9 @@
  * hand with `pnpm favicons` when the mark or the palette changes; the generated files are
  * committed in `public/`.
  *
- * Two versions of the same drawing: the rounded tile for browser tabs, and the full-bleed
- * one for iOS and the manifest (iOS rounds the corners itself, and "maskable" icons want the
+ * Two versions of the same drawing: the rounded tile for browser tabs and the manifest's
+ * "any" icons (desktop installs show them as they are), and the full-bleed one for iOS and
+ * the manifest's "maskable" icons (iOS and Android cut their own shape, and want the
  * background to the edge, with the mark inside the central 80%).
  */
 import { Resvg } from '@resvg/resvg-js';
@@ -63,6 +64,8 @@ out('favicon.svg', tile);
 out('favicon-96x96.png', png(tile, 96));
 out('favicon.ico', ico([16, 32, 48].map((size) => ({ size, data: png(tile, size) }))));
 out('apple-touch-icon.png', png(full, 180));
-out('web-app-manifest-192x192.png', png(full, 192));
-out('web-app-manifest-512x512.png', png(full, 512));
+for (const size of [192, 512]) {
+	out(`web-app-manifest-${size}x${size}.png`, png(full, size));
+	out(`web-app-manifest-any-${size}x${size}.png`, png(tile, size));
+}
 console.log('favicon generate in public/');

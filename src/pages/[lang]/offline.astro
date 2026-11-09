@@ -1,0 +1,52 @@
+---
+import { ArrowRight } from '@lucide/astro';
+import ErrorPage from '../../components/ErrorPage.astro';
+import { languageCodes } from '../../lib/config';
+import { translator } from '../../lib/site';
+
+/**
+ * The offline page (DECISIONS #47): precached by the service worker, it answers a page never
+ * visited when the network is gone, at that page's own address. It lists the pages kept on
+ * this device, read from the cache by src/scripts/offline.ts. Out of the sitemap and noindex.
+ */
+export function getStaticPaths() {
+	return languageCodes.map((lang) => ({ params: { lang } }));
+}
+
+const { lang } = Astro.params;
+const t = await translator(lang);
+---
+
+<ErrorPage lang={lang} code="offline" title={t('offline')}>
+	<p class="text-muted mt-4 max-w-[46ch] text-[clamp(1rem,0.92rem+0.28vw,1.1875rem)] text-pretty">
+		{t('offlineText')}
+	</p>
+	<div class="mt-6 flex flex-wrap gap-2">
+		<button type="button" data-offline-retry class="chip hover:text-fg cursor-pointer">
+			{t('offlineRetry')}
+		</button>
+		<a href={`/${lang}`} class="chip hover:text-fg">
+			{t('backHome')}
+		</a>
+	</div>
+	<section data-offline-pages hidden class="mt-8 flex-col gap-2 [&:not([hidden])]:flex">
+		<h2 class="label">{t('offlineSaved')}</h2>
+		<ul class="flex flex-col gap-1.5"></ul>
+		<template>
+			<li>
+				<a class="group bg-surface hover:bg-hover flex items-center gap-4 rounded-[var(--radius-control)] px-4 py-2.5 transition-colors">
+					<span data-title class="text-fg min-w-0 flex-1 truncate"></span>
+					<span data-path class="text-subtle hidden font-mono text-xs sm:inline"></span>
+					<ArrowRight
+						data-motion="arrow"
+						class="text-subtle group-hover:text-accent size-3.5 shrink-0 transition-colors"
+					/>
+				</a>
+			</li>
+		</template>
+	</section>
+</ErrorPage>
+
+<script>
+	import '../../scripts/offline';
+</script>

@@ -31,6 +31,8 @@ README.it.md in the same commit. Language rules and glossary in `docs/CONVENTION
   thresholds or the model change.
 - `pnpm favicons` - regenerates the favicons in `public/` from
   `scripts/generate-favicons.ts`.
+- `pnpm pwa-screenshots` - recaptures the manifest's screenshots (`public/pwa/`) from a build
+  of its own; rerun when the home changes visibly. A build fails while one is missing.
 - `pnpm generate-types` - regenerates `worker-configuration.d.ts` after every change to
   `wrangler.jsonc`.
 - `pnpm deploy` - build + wrangler deploy.
@@ -49,6 +51,10 @@ tests). An orphan `workerd` on one of these ports serves old assets: close it. L
 `pnpm check` rebuilds the Vite cache (`node_modules/.vite`) under a running `pnpm dev`: the
 Svelte islands stop hydrating (404 on dependencies, then "reading 'call'") until you stop
 it, delete the cache and restart it.
+The preview registers the service worker on `localhost:8787` (DECISIONS #47): pages come from
+the network first, but a stale worker or cache is cleared in DevTools, Application, Storage.
+The E2E tests block service workers except in `tests/e2e/pwa.spec.ts`: `page.route` does not
+see the requests a worker answers.
 Replacing an image file keeps the old one on screen in dev: the image endpoint answers
 `immutable` and wrangler's emulated cache (`.wrangler/state/v3/cache`) keys it by URL, not by
 content. Stop the dev server, delete that folder, restart, and hard-reload the browser.

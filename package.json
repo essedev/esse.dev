@@ -21,7 +21,8 @@
 		"test:ci": "vitest run && playwright test",
 		"generate-types": "wrangler types --env-file .dev.vars.example",
 		"eval:decision": "node --experimental-strip-types scripts/eval-decision.ts",
-		"favicons": "node --experimental-strip-types scripts/generate-favicons.ts"
+		"favicons": "node --experimental-strip-types scripts/generate-favicons.ts",
+		"pwa-screenshots": "node --experimental-strip-types scripts/pwa-screenshots.ts"
 	},
 	"dependencies": {
 		"@astrojs/cloudflare": "^14.3.3",

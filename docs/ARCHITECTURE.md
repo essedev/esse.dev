@@ -35,6 +35,21 @@ The prerender runs in Node (`prerenderEnvironment: 'node'`) because the OG image
 resvg, which is native. The E2E tests run against the build served by `wrangler dev`, not
 the dev server, so redirects, headers and 404s are the production ones.
 
+## Installed app and offline
+
+The site is a PWA (DECISIONS #47). Each language links its own manifest
+(`/<lang>/manifest.webmanifest`, prerendered from the site texts and the color tokens), so an
+install from an Italian page has the Italian description and shortcuts; the shared `id` keeps
+it one app. The service worker is `src/scripts/sw.js`, served at `/sw.js` by
+`src/pages/sw.js.ts`, which writes the build's commit and the languages into its first line:
+every deploy changes the file and the browser installs the new worker, which drops the caches
+older than the previous build. Pages go to the network first and fall back to the copy of the
+last visit, so offline the visited pages stay readable and a release is never hidden behind a
+cache; files under `/_astro/` are content-hashed and come from the cache first. A page never
+visited answers offline with `/<lang>/offline` (precached at install, out of the sitemap),
+whose script lists the pages kept on the device. The worker ignores the agent and other
+origins, and is registered only in a build (`src/scripts/pwa.ts`).
+
 ## Content: files in the repo, no DB or CMS
 
 Each project and article is a folder in `src/content/`: a `meta.json` with the fields

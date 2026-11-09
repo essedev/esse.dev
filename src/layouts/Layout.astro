@@ -68,7 +68,7 @@ const locale = lang === 'it' ? 'it_IT' : 'en_US';
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<link rel="shortcut icon" href="/favicon.ico" />
 		<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-		<link rel="manifest" href="/site.webmanifest" />
+		<link rel="manifest" href={`/${lang}/manifest.webmanifest`} />
 
 		<meta
 			property="og:type"
@@ -92,6 +92,7 @@ const locale = lang === 'it' ? 'it_IT' : 'en_US';
 		<script>
 			import '../scripts/analytics';
 			import '../scripts/theme';
+			import '../scripts/pwa';
 		</script>
 	</body>
 </html>

@@ -661,3 +661,18 @@ are gone: on another model they would call a different one under the wrong thres
 `baseten/mammoth-1` (0 mistakes, but 11 with opaque names), `nace-ai/drex-max` (first on the
 Artificial Analysis index, 606 ms and a 429 here), staying on Jev (`typesafe/jev-1.14` makes the
 same mistakes as 1.13), lowering the abuse threshold to 0.2 (0 mistakes, fitted on one message).
+
+## #47 - The site installs as an app, with a hand-written service worker and pages network first
+
+**Status:** active
+
+A manifest per language (`src/pages/[lang]/manifest.webmanifest.ts`, one `id` so it is one app),
+"any" and "maskable" icons, shortcuts and screenshots (`pnpm pwa-screenshots`). The service
+worker (`src/scripts/sw.js`, served at `/sw.js` with the build's commit) keeps one cache per
+build: pages network first, so a release shows at once and the boot sees it (#37), with the
+copy of the last visit after 4 s or without a network; `/_astro/*` cache first; a page never
+visited gets `/<lang>/offline`, which lists the kept pages. It never touches `/agents/*`.
+Rejected: `@vite-pwa/astro` (configuring it around the Worker's routes and the CSP costs more
+than a small worker written once), precaching the whole site (every release would download
+every page for a rare offline read), a custom install banner (Chrome has its own, iOS
+installs from the Share menu).

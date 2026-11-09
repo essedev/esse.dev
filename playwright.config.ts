@@ -12,7 +12,10 @@ export default defineConfig({
 	reporter: process.env.CI ? 'list' : 'line',
 	use: {
 		baseURL: 'http://localhost:8788',
-		trace: 'on-first-retry'
+		trace: 'on-first-retry',
+		// The service worker answers requests before `page.route` sees them: blocked here, it is
+		// allowed only in pwa.spec.ts, which tests it.
+		serviceWorkers: 'block'
 	},
 	projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
 	webServer: {
