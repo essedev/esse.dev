@@ -76,6 +76,7 @@ test.describe('writing', () => {
 		const wide = { photo: await photo.boundingBox(), text: await text.boundingBox() };
 		expect(wide.photo!.y).toBeLessThan(wide.text!.y + wide.text!.height);
 		expect(wide.photo!.x).toBeGreaterThan(wide.text!.x + 100);
+		await expect(page.locator('article figure figcaption').first()).toContainText('Robots built');
 
 		await page.setViewportSize({ width: 390, height: 844 });
 		await page.goto('/en/writing/the-orange-binder');

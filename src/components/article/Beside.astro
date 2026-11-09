@@ -5,8 +5,15 @@
  * Below the breakpoint it sits above the text, under the height limit of every prose image.
  * The top margin is the one of a prose paragraph, so the photo starts level with the text.
  */
+interface Props {
+	/** Optional line under the image; the image's alt text stays, for who cannot see it. */
+	caption?: string;
+}
+
+const { caption } = Astro.props;
 ---
 
-<div class="@xl:float-right @xl:mt-[1.25em] @xl:mb-4 @xl:ml-8 @xl:w-[42%] [&_img]:my-0 @xl:[&_img]:max-h-none @xl:[&_img]:w-full [&_p]:my-0">
+<figure class="my-0 @xl:float-right @xl:mt-[1.25em] @xl:mb-4 @xl:ml-8 @xl:w-[42%] [&_img]:my-0 @xl:[&_img]:max-h-none @xl:[&_img]:w-full [&_p]:my-0">
 	<slot />
-</div>
+	{caption && <figcaption class="text-subtle mt-2 font-mono text-xs">{caption}</figcaption>}
+</figure>
