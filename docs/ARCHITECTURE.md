@@ -62,9 +62,9 @@ frontmatter: it costs duplication, and grows with every shared field (cover and 
 
 The single pages (welcome, about, contacts, privacy) are Markdown per language in
 `src/content/pages/`. The welcome page keeps its text in the frontmatter, without a body:
-the headline (`*...*` marks the accent) and the introduction, where `{tools}` places the
-logos of the projects listed in `tools`, are composed with components, which Markdown
-cannot do. The home's method card shows the `quote` of the note named in `featured.json`
+the headline (`*...*` marks the accent) and the introduction, where `{projects}` places the
+logos of the featured projects of `featured.json`, are composed with components, which
+Markdown cannot do. The home's method card shows the `quote` of the note named in `featured.json`
 (`method`, #41). The about page works the same way: `lead`, the steps of `path` and the
 `certification` are frontmatter, composed into a timeline, with an optional `photo` (#43);
 the agent's index joins them back into text.

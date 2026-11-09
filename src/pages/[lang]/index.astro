@@ -21,7 +21,7 @@ const t = await translator(lang);
 const site = await getSite(lang);
 const routes = navigation[lang];
 
-const [{ page: welcome, tools }, contact, projects, method] = await Promise.all([
+const [{ page: welcome, projects: introProjects }, contact, projects, method] = await Promise.all([
 	getWelcome(lang),
 	getPage('contact', lang),
 	getProjects(lang),
@@ -31,7 +31,7 @@ const { title, eyebrow, facts } = welcome.data;
 
 // The headline is what I do, the largest line; the name stays the h1, as a status line.
 const headline = splitEmphasis(welcome.data.headline);
-const [introBefore, introAfter] = welcome.data.intro.split('{tools}');
+const [introBefore, introAfter] = welcome.data.intro.split('{projects}');
 const projectHref = (slug: string) => `/${lang}/${routes.projects}/${slug}`;
 
 const lead = projects.find((p) => p.id === featured.projects[0]) ?? projects[0];
@@ -103,7 +103,7 @@ const cardArrow = 'text-subtle group-hover:text-accent size-4 shrink-0 transitio
 				<p class="text-text mt-6 text-[clamp(1.0625rem,0.98rem+0.3vw,1.25rem)] leading-[1.65] text-pretty">
 					{introBefore}
 					<span class="mx-0.5 inline-flex align-[-0.35em] leading-none">
-						{tools.map((p) => (
+						{introProjects.map((p) => (
 							<a
 								href={projectHref(p.text.slug)}
 								class="group/logo relative flex rounded-[var(--radius-control)] outline-offset-4 not-first:-ml-[7px] hover:z-10 focus-visible:z-10"

@@ -280,20 +280,22 @@ export async function getSlugMap(): Promise<SlugMap> {
 	return { projects: toMap(projects), articles: toMap(articles), method: toMap(method) };
 }
 
-/** The home's text in one language, with the projects of its introduction in their order (each with a logo). */
+/**
+ * The home's text in one language, with the projects of its introduction: the featured ones of
+ * `featured.json`, in their order, each with a logo.
+ */
 export async function getWelcome(
 	lang: string
-): Promise<{ page: CollectionEntry<'welcome'>; tools: Project[] }> {
-	const [page, projects] = await Promise.all([getPage('welcome', lang), getProjects(lang)]);
-	const byId = new Map(projects.map((p) => [p.id, p]));
-	const tools = page.data.tools.map((id) => {
+): Promise<{ page: CollectionEntry<'welcome'>; projects: Project[] }> {
+	const [page, all] = await Promise.all([getPage('welcome', lang), getProjects(lang)]);
+	const byId = new Map(all.map((p) => [p.id, p]));
+	const projects = featured.projects.map((id) => {
+		// Published is already checked on load; the introduction shows the project by its logo alone.
 		const project = byId.get(id);
-		if (!project) throw new Error(`pages/welcome/${lang}.md: "${id}" non è un progetto pubblicato`);
-		// The introduction shows the project by its logo alone.
-		if (!project.meta.logo) throw new Error(`pages/welcome/${lang}.md: "${id}" non ha un logo`);
+		if (!project?.meta.logo) throw new Error(`featured.json: "${id}" non ha un logo`);
 		return project;
 	});
-	return { page, tools };
+	return { page, projects };
 }
 
 /** A single page (welcome, about, contact) in one language. */

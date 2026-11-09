@@ -206,10 +206,8 @@ const welcome = defineCollection({
 		title: z.string().min(1),
 		/** The largest line of the home: what I do. `*...*` marks the part in the accent. */
 		headline: z.string().regex(/^[^*]*\*[^*]+\*[^*]*$/, 'una sola parte tra *...*'),
-		/** The introduction under it; `{tools}` is where the logos of `tools` go. */
-		intro: z.string().includes('{tools}', { message: 'manca {tools}' }),
-		/** The projects whose logos stand in the introduction, in order (published ones). */
-		tools: z.array(z.string().min(1)).min(1),
+		/** The introduction under it; `{projects}` is where the logos of the featured projects go. */
+		intro: z.string().includes('{projects}', { message: 'manca {projects}' }),
 		/** Short key and value rows under the introduction. */
 		facts: z.array(z.object({ label: z.string().min(1), value: z.string().min(1) })).default([])
 	})

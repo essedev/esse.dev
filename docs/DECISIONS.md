@@ -391,10 +391,12 @@ status line and stays the h1; the largest line is what Simone does and for whom,
 part in the accent. The introduction under it carries the logos of the projects it names,
 inline. "Where to start" is three equal cards: the agent with its first question, the lead
 project on its cover, the method with a quote from its notes. The text lives in the
-welcome page's frontmatter (`headline`, `intro` with `{tools}`, `tools`) and the quote in
+welcome page's frontmatter (`headline`, `intro` with `{projects}`) and the quote in
 the note's (`quote`, in every language or none), because the components compose them with
-the logos and the accent, which Markdown cannot; the build checks that every tool is
-published and has a logo. Rejected: the big name of before (X), a manifesto with a
+the logos and the accent, which Markdown cannot. The logos are the featured projects of
+`featured.json`, not a list of their own: a separate `tools` list named only the developer
+tools and drifted from the showcase (Cycle 37). The build checks that every featured project
+has a logo. Rejected: the big name of before (X), a manifesto with a
 pipeline (A), a terminal with a command palette (B), the name on two lines (C), a "now"
 strip with a bento (D), questions as the main piece (E), the mono name after `whoami` (F).
 
