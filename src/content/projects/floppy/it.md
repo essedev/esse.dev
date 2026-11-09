@@ -11,7 +11,7 @@ tags:
   - "FastAPI"
   - "Valkey"
   - "Homebrew"
-why: "Su macOS JuiceFS richiederebbe l'estensione kernel di macFUSE, cioè avviare ogni Mac in recovery. Floppy lo fa girare in una piccola VM Linux e lo condivide con il Mac via SMB: niente estensioni e niente permessi da amministratore."
+why: "Su macOS JuiceFS richiederebbe l'estensione kernel di macFUSE, cioè avviare ogni Mac in recovery. Floppy lo fa girare in una piccola VM Linux e condivide il disco con il Mac via SMB: niente estensioni e niente permessi da amministratore."
 now: "Si aggiorna da solo con Homebrew e chiede una password sola, tenuta nel portachiavi."
 ---
 

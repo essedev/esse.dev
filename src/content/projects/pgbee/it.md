@@ -26,6 +26,6 @@ Quando una colonna la riempie un modello (la categoria di un ticket, un riassunt
 
 Field test su 3.000 reclami veri del database pubblico CFPB, con quattro colonne derivate: 12.000 job, zero falliti, zero ritentati, circa 0,14 dollari ogni 1.000 righe. Quando il modello è sicuro (confidenza 0,9 o più) concorda con l'etichetta del consumatore l'86-88% delle volte, sotto 0,5 solo il 32-35%: la confidenza serve a mandare in revisione le righe dubbie.
 
-Poi l'ho provato a colpi di crash, a confronto con due design classici fatti lato applicazione, "salva e poi accoda" e l'outbox transazionale: processi uccisi ogni 60 operazioni, coda esterna che cade, prompt cambiato a metà, persone che correggono il 3% dei valori. Su 2.000 righe pgbee non lascia righe vuote, non tiene valori vecchi che sembrano freschi e non sovrascrive nessuna correzione; gli altri due sì.
+Poi l'ho messo a confronto con due design classici fatti lato applicazione, "salva e poi accoda" e l'outbox transazionale, provocando apposta guasti e imprevisti: processi uccisi ogni 60 operazioni, coda esterna che cade, prompt cambiato a metà, persone che correggono il 3% dei valori. Su 2.000 righe pgbee non lascia righe vuote, non tiene valori vecchi che sembrano freschi e non sovrascrive nessuna correzione; gli altri due sì.
 
 È open source con licenza Apache 2.0.

@@ -10,7 +10,7 @@ tags:
   - "Claude Code"
   - "Homebrew"
 why: "Lo stato di ogni agente arriva dagli hook di Claude Code e Codex, non dal parsing dell'output, quindi resta giusto anche sotto un muro di log. L'ho scritto in Swift senza averlo mai usato prima."
-now: "Gli aggiornamenti si installano dal popup; poi separare il motore del terminale dal resto."
+now: "Gli aggiornamenti si installano dal popup; il prossimo passo è separare il motore del terminale dal resto."
 ---
 
 Lavoro con cinque o sei sessioni di Claude Code e Codex aperte insieme, su progetti diversi. In un terminale normale, per capire quale agente sta aspettando una risposta, devo passare tab per tab. Relay nasce per togliere quel giro.
