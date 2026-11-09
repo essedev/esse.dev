@@ -37,6 +37,11 @@ mobile drawer (`data-drawer`) in `src/scripts/workspace.ts`.
   fixed layer is sampled even at opacity 0: closed, it leaves the page (`display: none`). On
   phones the wallpaper runs vertically so each edge is one color. A change to the wallpaper,
   the desk or the CRT veil means measuring them again.
+- The window's height and top inset and how far the fixed layers reach are `--screen-h`,
+  `--top-inset` and `--fixed-bottom`, never `h-dvh`, `inset-0` alone or `env(safe-area-*)`
+  inline for the top: installed on iOS they change (100lvh, below iOS 26's blur band, down to
+  the physical bottom), and a layer that ignores them leaves a dead strip. A new full-screen
+  fixed layer joins the list in the standalone block at the end of `global.css` (DECISIONS #47).
 - On mobile the window stays still and only the pane scrolls (DECISIONS #15): Safari's bottom
   bar then never shrinks, since it does so only when the document scrolls. A taller page
   under an inner scroll adds a second scroll, and a document that scrolls gives up the still

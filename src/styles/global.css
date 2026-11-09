@@ -73,6 +73,11 @@
 		/* The agent field's distance from the bottom of the pane: on phones it clears the agent
 		   disc, which rises 16px over the pane's edge from the tab bar. */
 		--dock-gap: 1.25rem;
+		/* The window's height, where its top starts and how far below the viewport the fixed
+		   layers reach: in a browser tab the visible area. Installed on iOS they change, below. */
+		--screen-h: 100dvh;
+		--top-inset: max(0.375rem, env(safe-area-inset-top));
+		--fixed-bottom: 0px;
 		color-scheme: dark;
 
 		@media (width >= 64rem) {
@@ -211,6 +216,9 @@
 	html {
 		background-color: var(--color-bar-top);
 		color: var(--color-fg);
+		/* No gray box from the system on tap: links and controls have their own pressed and
+		   hover states, which a phone plays on touch. */
+		-webkit-tap-highlight-color: transparent;
 		-webkit-font-smoothing: antialiased;
 		text-rendering: optimizeLegibility;
 	}
@@ -1392,4 +1400,43 @@ body::after,
 		),
 		linear-gradient(var(--color-surface), var(--color-surface));
 	box-shadow: 0 0 0 1px rgb(var(--veil-rgb) / 0.06);
+}
+
+/*
+ * The app installed on iOS (DECISIONS #47), the same layout as varco and flux. With the
+ * black-translucent status bar WebKit stops the viewport a status bar short of the physical
+ * bottom: 100dvh and fixed layers at `inset: 0` leave a dead strip under the tab bar, and what
+ * lies past the viewport is not drawn. So the window takes 100lvh, the body adds the status bar
+ * back, and the fixed layers reach down by --fixed-bottom (100dvh - 100lvh, zero or negative).
+ * iOS 26 also blurs about 30 pt of the app under the status bar, with no way to turn it off:
+ * the window starts below that band. `-webkit-touch-callout` exists only in iOS WebKit:
+ * Android and desktop installs keep the browser's layout, where none of this happens.
+ * Unlayered, so it beats the utilities on the same elements.
+ */
+@media (display-mode: standalone) {
+	@supports (-webkit-touch-callout: none) {
+		:root {
+			--screen-h: 100lvh;
+			--top-inset: calc(env(safe-area-inset-top) + 2rem);
+			--fixed-bottom: calc(100dvh - 100lvh);
+		}
+		html {
+			height: 100%;
+			overflow: hidden;
+		}
+		body {
+			min-height: calc(100% + env(safe-area-inset-top));
+			overflow: hidden;
+		}
+		body::after,
+		.boot-screen,
+		.boot-screen::after,
+		[data-drawer-backdrop] {
+			bottom: var(--fixed-bottom);
+		}
+		/* They color Safari's bars, which an installed app does not have. */
+		[data-bar-strip] {
+			display: none;
+		}
+	}
 }

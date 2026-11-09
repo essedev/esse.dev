@@ -39,7 +39,12 @@ const locale = lang === 'it' ? 'it_IT' : 'en_US';
 <html lang={lang}>
 	<head>
 		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+		{/* `interactive-widget`: on Android the keyboard shrinks the layout viewport, so the
+		    window (h-dvh) ends above the keyboard instead of under it. Safari ignores it. */}
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content"
+		/>
 		<Font cssVariable="--font-geist" preload />
 		<Font cssVariable="--font-departure" preload />
 		<Font cssVariable="--font-geist-mono" />
@@ -69,6 +74,11 @@ const locale = lang === 'it' ? 'it_IT' : 'en_US';
 		<link rel="shortcut icon" href="/favicon.ico" />
 		<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
 		<link rel="manifest" href={`/${lang}/manifest.webmanifest`} />
+		{/* The installed app on iOS: the wallpaper runs under the status bar, which the window's
+		    safe-area padding already leaves free (DECISIONS #47). */}
+		<meta name="mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-title" content="esse.dev" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 
 		<meta
 			property="og:type"

@@ -672,6 +672,9 @@ worker (`src/scripts/sw.js`, served at `/sw.js` with the build's commit) keeps o
 build: pages network first, so a release shows at once and the boot sees it (#37), with the
 copy of the last visit after 4 s or without a network; `/_astro/*` cache first; a page never
 visited gets `/<lang>/offline`, which lists the kept pages. It never touches `/agents/*`.
+Installed on iOS the window follows varco and flux: 100lvh, the body adds the status bar back,
+the fixed layers reach the physical bottom and the window starts below iOS 26's blur band
+(`global.css`, only where `-webkit-touch-callout` exists).
 Rejected: `@vite-pwa/astro` (configuring it around the Worker's routes and the CSP costs more
 than a small worker written once), precaching the whole site (every release would download
 every page for a rare offline read), a custom install banner (Chrome has its own, iOS

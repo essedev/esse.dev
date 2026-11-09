@@ -50,6 +50,11 @@ visited answers offline with `/<lang>/offline` (precached at install, out of the
 whose script lists the pages kept on the device. The worker ignores the agent and other
 origins, and is registered only in a build (`src/scripts/pwa.ts`).
 
+Installed on iOS the status bar is `black-translucent` and the wallpaper runs under it; the
+window's height, top inset and the reach of the fixed layers are custom properties
+(`--screen-h`, `--top-inset`, `--fixed-bottom` in `global.css`) that change only in an iOS
+install, where WebKit stops the viewport a status bar short of the screen's bottom.
+
 ## Content: files in the repo, no DB or CMS
 
 Each project and article is a folder in `src/content/`: a `meta.json` with the fields
