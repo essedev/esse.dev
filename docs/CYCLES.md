@@ -397,3 +397,24 @@ An installable app with a service worker and an offline page, then the iOS stand
   indexable. The other specs block service workers, since `page.route` does not see what a
   worker answers. Simone tested the install on a real iPhone: OK.
 - **Next step:** unchanged from Cycle 34.
+
+## Cycle 39 - darwin-chess and Motio enter the showcase (2026-11-26)
+
+Two new project entries, the showcase changed to hold them, and what followed from it
+(`e641882` .. `58cbd52`). Content only, no code touched.
+
+- **darwin-chess** (`e641882`): an LLM agent that evolves a chess engine under a verification
+  environment it cannot touch. The cover is a screenshot of its live Evolution page in both
+  themes, the logo the Lucide knight in the project's green.
+- **Motio** (`9ff5a04`): the React video framework. The cover is the hero of its site in both
+  themes, English headline included; the logo is the project's own mark on the shared tile.
+- **Showcase** (`50feef7`): darwin-chess and Motio take the places of pgbee and Zeno, the two
+  entries that had been still the longest; both stay in the registry. The manifest's
+  screenshots were recaptured with `pnpm pwa-screenshots`, since the home changed.
+- **Personal servers** (`cdc8a5b`): the entry linked the monitor's repo, which is private, so
+  the link led visitors to a 404. It is gone.
+- **Now** (`58cbd52`): the dated note `2026-11-darwin-chess-motio`.
+- **Docs:** `docs/features/progetti.md` follows the sorting, and names the two covers among
+  the screenshots in both themes and Motio's among the covers with text.
+- **Next step:** the changelog entry for this release, due in the same push (#35); then
+  unchanged from Cycle 34.

@@ -135,7 +135,7 @@ Both are files in the project's folder, declared in `meta.json` (`logo`, `cover`
   desktop and 16:9 on mobile around `focus` (`top`, `center`, `bottom`).
 - **Logo file**: always a tile, so the list reads as one row of icons and the logo stands out
   over a bright cover. An app icon that already is a tile (Relay, Copilota, Portsage) is used
-  as it is, square and without margin; a free mark (pgbee, Zeno, Nexus, Budokan) goes on the
+  as it is, square and without margin; a free mark (pgbee, Zeno, Nexus, Budokan, Motio) goes on the
   shared tile with `scripts/render-logo.ts <mark-file> <accent>`; a project without a mark gets
   a Lucide glyph on the same tile (`render-logo.ts <lucide-name> <accent>`). Never a template
   favicon (Vite, Astro) and never the logo of a third party.
@@ -143,8 +143,10 @@ Both are files in the project's folder, declared in `meta.json` (`logo`, `cover`
   `render-cover.ts` have a light variant next to them (`logo-light.svg`, `cover-light.webp`),
   written by the same script and declared as `logoLight` and `cover.srcLight`. An app icon
   that is its own tile, a screenshot and the generated cover have one only, unless the project
-  renders the same view in both themes (Varco's map from its `design/og.html`, Floppy's landing).
+  renders the same view in both themes (Varco's map from its `design/og.html`, Floppy's landing,
+  darwin-chess's Evolution page, Motio's site).
 - **Text in a cover**: Varco's cover is its share image, title in Italian included, by
   Simone's choice (2026-10-27); pgbee's is a frame of its video, with the English caption;
-  Floppy's is the hero of its own landing page (`floppy/site/`), in both themes.
+  Floppy's is the hero of its own landing page (`floppy/site/`), in both themes; Motio's is the
+  hero of its site, with the English headline.
 - **Weight**: no source file over 300 KB. The pixel-art archive cost 80 MB of history.
