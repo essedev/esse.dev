@@ -3,6 +3,9 @@ The MIT License below covers the source code of this repository. It does not cov
 - The content of the site: everything under `src/content/` (texts, translations, project
   descriptions, articles), the images and Open Graph assets, the favicons and web app
   icons in `public/`, and the visual identity of the site. All rights reserved.
+- The knight in `src/content/projects/darwin-chess/logo.svg` and `logo-light.svg`: the
+  "cburnett" chess piece by Colin M.L. Burnett, recoloured, licensed under GPLv2 or later
+  (https://www.gnu.org/licenses/old-licenses/gpl-2.0.html). Those two files keep that licence.
 - Third-party fonts: `src/assets/fonts/` holds Departure Mono, which is distributed under
   its own licence (see `src/assets/fonts/DepartureMono-LICENSE.txt`).
 
