@@ -25,8 +25,8 @@ I make the videos of my projects with Motio: a video is a React component, and t
 
 ## Where it stands
 
-It started on 22 November 2026 and is in pre-alpha: nothing is on npm yet and it is tried from a clone of the repo. In four days it got rendering, compatibility with the most used packages, audio and video, the Player and the CLI, with 92 written decisions and the thresholds of every milestone in the roadmap. Now I am trying it on real projects.
+It started on 22 November 2026 and is in pre-alpha: nothing is on npm yet and it is tried from a clone of the repo. In four days it got rendering, compatibility with the most used packages, audio and video, the Player and the CLI, with every decision written down and the thresholds of every milestone in the roadmap. Now I am trying it on real projects.
 
-In the repo's benchmark, on my M5 Mac, the same two compositions at 1920x1080 come out in 1.75 seconds with Motio and in 6.54 with Remotion 4.0.545 on a single tab; with eight tabs, in 1.31 against 1.58. The method and the script are in the repo.
+In the repo's benchmark, on my Mac, the same compositions come out 1.2 to 3.7 times faster than with Remotion, depending on how many browser tabs work in parallel. The method and the script are in the repo.
 
 Site and guide are on [motio.esse.dev](https://motio.esse.dev). Motio is an independent project, not affiliated with Remotion.

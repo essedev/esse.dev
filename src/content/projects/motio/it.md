@@ -25,8 +25,8 @@ I video dei miei progetti li faccio con Motio: un video è un componente React, 
 
 ## A che punto è
 
-È nato il 22 novembre 2026 ed è in pre-alpha: su npm non c'è ancora niente e si prova da un clone del repo. In quattro giorni sono arrivati il render, la compatibilità con i pacchetti più usati, audio e video, il Player e la CLI, con 92 decisioni scritte e le soglie di ogni traguardo nella roadmap. Adesso lo sto provando su progetti veri.
+È nato il 22 novembre 2026 ed è in pre-alpha: su npm non c'è ancora niente e si prova da un clone del repo. In quattro giorni sono arrivati il render, la compatibilità con i pacchetti più usati, audio e video, il Player e la CLI, con ogni decisione scritta e le soglie di ogni traguardo nella roadmap. Adesso lo sto provando su progetti veri.
 
-Nel benchmark del repo, sul mio Mac con M5, le stesse due composizioni a 1920x1080 escono in 1,75 secondi con Motio e in 6,54 con Remotion 4.0.545 a una scheda sola; con otto schede in 1,31 contro 1,58. Il metodo e lo script sono nel repo.
+Nel benchmark del repo, sul mio Mac, le stesse composizioni escono da 1,2 a 3,7 volte più in fretta che con Remotion, secondo quante schede del browser lavorano in parallelo. Il metodo e lo script sono nel repo.
 
 Sito e guida sono su [motio.esse.dev](https://motio.esse.dev). Motio è un progetto indipendente, non affiliato a Remotion.

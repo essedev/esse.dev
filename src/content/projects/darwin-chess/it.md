@@ -29,10 +29,10 @@ Volevo vedere fin dove arriva un agente economico lasciato da solo, a patto che 
 
 I numeri sono del 26 novembre, dopo un giorno e mezzo. Quelli aggiornati sono in diretta su [darwin.esse.dev](https://darwin.esse.dev), insieme alle partite, al ragionamento dell'agente e alla spesa.
 
-- 43 sessioni, 16 proposte promosse, 15 generazioni. Le altre proposte hanno perso il match, non hanno passato i controlli o partivano da una base già superata.
-- L'Elo contro Stockfish è passato da circa 1.200 alle prime misure a 1.900-2.100 nelle ultime due generazioni, con un margine di ± 130-170. Per un motore di scacchi è poco e il margine è largo: per ora guardo la pendenza.
-- Una sessione costa poco più di un centesimo, e del budget di 2 dollari al giorno ne usa una frazione. A fare la coda è la CPU che gioca le partite, non il modello.
-- Per quattro generazioni l'agente ha solo ritoccato la valutazione, 17-42 Elo a colpo. Doveva rileggere la propria storia ogni dieci tentativi e non l'aveva mai fatto, per un bug mio: il contatore ripartiva da zero a ogni riavvio. Corretto quello, alla prima riflessione vera ha cambiato strada e la proposta successiva ha fatto +416 Elo. Nello stesso giro l'ho anche fatto ragionare di più a ogni sessione, quindi non so dire quale delle due cose abbia pesato.
+- Meno della metà delle proposte sopravvive. Le altre perdono il match, non passano i controlli o partono da una base già superata.
+- L'Elo contro Stockfish è passato da circa 1.200 a circa 2.000, con un margine di errore largo. Per un motore di scacchi è poco: per ora guardo la pendenza.
+- Una sessione costa poco più di un centesimo. A fare la coda è la CPU che gioca le partite, non il modello.
+- Per quattro generazioni l'agente ha solo ritoccato la valutazione, guadagnando poco. Doveva rileggere la propria storia ogni dieci tentativi e non l'aveva mai fatto, per un bug mio. Corretto quello, alla prima riflessione vera ha cambiato strada e ha fatto il salto più grande fin lì. Nello stesso giro l'ho anche fatto ragionare di più a ogni sessione, quindi non so dire quale delle due cose abbia pesato.
 
 Un limite va detto subito: l'agente conosce a memoria le tecniche dei motori di scacchi e le sta applicando più o meno nell'ordine dei manuali. Finora quindi misuro quanto bene applica cose note sotto una verifica che non può piegare, non una scoperta. Il piano è che la conoscenza scacchistica arrivi da una rete addestrata sulle partite del motore contro se stesso, invece che dalla memoria del modello.
 

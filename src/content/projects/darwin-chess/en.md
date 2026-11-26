@@ -29,10 +29,10 @@ I wanted to see how far a cheap agent gets when left alone, as long as it cannot
 
 The numbers are from 26 November, after a day and a half. The current ones are live on [darwin.esse.dev](https://darwin.esse.dev), together with the games, the agent's reasoning and the spend.
 
-- 43 sessions, 16 submissions promoted, 15 generations. The other submissions lost the match, failed the checks or started from a base that had already been overtaken.
-- The Elo against Stockfish went from about 1,200 at the first measurements to 1,900-2,100 in the last two generations, with a margin of ± 130-170. For a chess engine that is low and the margin is wide: for now I am watching the slope.
-- A session costs a little over a cent, and it uses a fraction of the 2 dollars a day it is allowed. What queues up is the CPU that plays the games, not the model.
-- For four generations the agent only tweaked the evaluation, 17-42 Elo at a time. It was supposed to reread its own history every ten attempts and had never done it, because of a bug of mine: the counter went back to zero at every restart. With that fixed, its first real reflection sent it another way and the next submission gained 416 Elo. In the same round I also let it think harder in each session, so I cannot say which of the two mattered.
+- Fewer than half of the submissions survive. The others lose the match, fail the checks or start from a base that has already been overtaken.
+- The Elo against Stockfish went from about 1,200 to about 2,000, with a wide margin of error. For a chess engine that is low: for now I am watching the slope.
+- A session costs a little over a cent. What queues up is the CPU that plays the games, not the model.
+- For four generations the agent only tweaked the evaluation, gaining little. It was supposed to reread its own history every ten attempts and had never done it, because of a bug of mine. With that fixed, its first real reflection sent it another way and it made the biggest jump up to then. In the same round I also let it think harder in each session, so I cannot say which of the two mattered.
 
 One limit is worth saying up front: the agent knows chess engine techniques by heart and is applying them more or less in textbook order. So what I am measuring so far is how well it applies known things under a verification it cannot bend, not a discovery. The plan is for the chess knowledge to come from a network trained on the engine's games against itself, instead of from the model's memory.
 
