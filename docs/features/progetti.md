@@ -148,7 +148,7 @@ Both are files in the project's folder, declared in `meta.json` (`logo`, `cover`
   written by the same script and declared as `logoLight` and `cover.srcLight`. An app icon
   that is its own tile, a screenshot and the generated cover have one only, unless the project
   renders the same view in both themes (Varco's map from its `design/og.html`, Floppy's landing,
-  darwin-chess's Evolution page, Motio's site).
+  darwin-chess's Live page, Motio's site).
 - **Text in a cover**: Varco's cover is its share image, title in Italian included, by
   Simone's choice (2026-10-27); pgbee's is a frame of its video, with the English caption;
   Floppy's is the hero of its own landing page (`floppy/site/`), in both themes; Motio's is the

@@ -404,7 +404,8 @@ Two new project entries, the showcase changed to hold them, and what followed fr
 (`e641882` .. `58cbd52`). Content only, no code touched.
 
 - **darwin-chess** (`e641882`): an LLM agent that evolves a chess engine under a verification
-  environment it cannot touch. The cover is a screenshot of its live Evolution page in both
+  environment it cannot touch. The cover is a screenshot of its Live page, with the whole board
+  (it was the Evolution page at first: the board reads better in the list), in both
   themes. The logo started as the Lucide knight and is now the project's own (`5959c0a`): the
   cburnett knight, GPLv2 or later, which the `LICENSE` names for the two logo files.
 - **Motio** (`9ff5a04`): the React video framework. The cover is the hero of its site in both
@@ -431,6 +432,8 @@ Two new project entries, the showcase changed to hold them, and what followed fr
   small team"; Varco, Relay, Zeno, Personal servers and Copilota got their current state. Along
   the way figures that age fast or serve no reader went out (session counts, micro-benchmarks).
   The Now note of the month and the changelog entry tell all of it.
+- **Designed covers:** Copilota's list no longer carries the two claims its text dropped, and
+  Watch OS's list has the same two columns as the others.
 - **Open**, both in the BACKLOG: the `/releases` link shown even for repos with no release,
   and an E2E test of the mobile menu that fails now and then under the full suite.
 - **Next step:** unchanged from Cycle 34.
