@@ -5,10 +5,10 @@
 		"kind": "list",
 		"lines": [
 			"audio     seller on mic, customer on system",
-			"question  customer asks, card in 1.1-1.3 s",
+			"question  customer asks, a card in about a second",
 			"card      answer with its source",
-			"overlay   hidden from screen sharing",
-			"search    hybrid dense + lexical, RRF"
+			"overlay   meant to stay out of screen sharing",
+			"search    hybrid, dense + lexical"
 		]
 	},
 	"out": "cover.webp"
