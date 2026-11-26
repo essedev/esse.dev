@@ -14,6 +14,8 @@
  *     "panel": { "kind": "code" | "list", "lines": ["..."] } | { "kind": "image", "image": "x.png" },
  *     "out": "cover.webp" }
  * `prompt` is an optional first line of a code or list panel, after a `$` in the accent.
+ * A code or list panel is always `TEXT_WIDTH` wide, whatever its text, so the covers read as one
+ * family in the list; a line that does not fit stops the render instead of being cut.
  *
  * The spec lives next to the cover (`cover.json`) so the cover can be regenerated; it is not
  * read by the site.
@@ -64,6 +66,9 @@ const THEME = {
 /** The largest box a screenshot fits in: inside the mobile crop, with room for the glow. */
 const BOX = { width: 1500, height: 760 };
 
+/** The width of every code or list panel: about 42 characters of text beside the marker. */
+const TEXT_WIDTH = 1340;
+
 const MIME: Record<string, string> = {
 	'.png': 'image/png',
 	'.webp': 'image/webp',
@@ -100,7 +105,7 @@ async function page(spec: Spec, base: string, theme: Theme): Promise<string> {
 		const lines = spec.panel.lines
 			.map((l) => `<div class="line ${kind}">${escapeHtml(l)}</div>`)
 			.join('');
-		panel = `<div class="panel">${prompt}${lines}</div>`;
+		panel = `<div class="panel text">${prompt}${lines}</div>`;
 	}
 	return `<!doctype html><html><head><meta charset="utf-8"><style>
 @font-face { font-family: Mono; src: url(${mono}) format('woff'); }
@@ -121,6 +126,7 @@ body::after { /* the CRT scanlines of the site, faint */
 	background: ${t.panel}; box-shadow: inset 0 0 0 1px ${t.edge}, 0 30px 80px ${t.shadow};
 	color: ${t.text}; white-space: pre; overflow: hidden; max-width: ${BOX.width}px;
 }
+.panel.text { width: ${TEXT_WIDTH}px; }
 .panel.shot { padding: 0; } .panel.shot img { display: block; }
 .prompt { color: ${t.muted}; margin-bottom: 20px; } .prompt b { color: ${accent}; font-weight: 400; }
 .line.list::before { content: '› '; color: ${accent}; }
@@ -147,6 +153,12 @@ for (const file of specs) {
 	for (const theme of ['dark', 'light'] as const) {
 		await tab.setContent(await page(spec, base, theme));
 		await tab.evaluate(() => document.fonts.ready);
+		// The panel hides what overflows: a line too long would lose its end without a word.
+		const over = await tab.evaluate(() => {
+			const text = document.querySelector('.panel.text');
+			return text ? text.scrollWidth - text.clientWidth : 0;
+		});
+		if (over > 0) throw new Error(`${file}: a line is ${over}px wider than the panel, shorten it`);
 		await sharp(await tab.screenshot({ type: 'png' }))
 			.webp({ quality: 86 })
 			.toFile(outs[theme]);

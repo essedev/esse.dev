@@ -131,7 +131,9 @@ Both are files in the project's folder, declared in `meta.json` (`logo`, `cover`
   heading and the excerpt say them right below, translated, while text in an image stays in
   one language. A designed cover is one panel (code, a list or a screenshot) centered on the
   accent's glow, inside the 16:9 crop of mobile. A small screenshot goes in a panel rather
-  than full bleed, which would blow it up.
+  than full bleed, which would blow it up. A code or list panel has one width for every
+  cover (`TEXT_WIDTH` in the script, about 42 characters a line), so they read as one family in
+  the list; a longer line stops the render.
 - **Screenshots only from demo data.** No real personal data, no client or company names,
   no copyrighted posters or third-party content, no paths of private repos. A screenshot is
   looked at before it is saved. Dark interfaces where the project has a dark mode.

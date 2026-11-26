@@ -5,7 +5,7 @@
 		"kind": "list",
 		"lines": [
 			"stream   plays while the file arrives",
-			"remux    fMP4 for the browser, HLS for Safari",
+			"remux    fMP4 for browsers, HLS for Safari",
 			"subs     aligned on the audio by themselves",
 			"tv       Samsung app on Tizen",
 			"stack    FastAPI, PostgreSQL, React"

@@ -4,10 +4,10 @@
 	"panel": {
 		"kind": "list",
 		"lines": [
-			"audio     seller on mic, customer on system",
-			"question  customer asks, a card in about a second",
+			"audio     seller and customer, separate",
+			"question  a card in about a second",
 			"card      answer with its source",
-			"overlay   meant to stay out of screen sharing",
+			"overlay   meant to stay off shared screens",
 			"search    hybrid, dense + lexical"
 		]
 	},

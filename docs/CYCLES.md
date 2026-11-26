@@ -432,8 +432,10 @@ Two new project entries, the showcase changed to hold them, and what followed fr
   small team"; Varco, Relay, Zeno, Personal servers and Copilota got their current state. Along
   the way figures that age fast or serve no reader went out (session counts, micro-benchmarks).
   The Now note of the month and the changelog entry tell all of it.
-- **Designed covers:** Copilota's list no longer carries the two claims its text dropped, and
-  Watch OS's list has the same two columns as the others.
+- **Designed covers:** every code or list panel now has one width, set in
+  `scripts/render-cover.ts`: the panel used to follow its text, so Watch OS came out narrow and
+  Copilota wide. A line that does not fit stops the render. The six list covers are rendered
+  again; Copilota's no longer carries the two claims its text dropped.
 - **Open**, both in the BACKLOG: the `/releases` link shown even for repos with no release,
   and an E2E test of the mobile menu that fails now and then under the full suite.
 - **Next step:** unchanged from Cycle 34.
