@@ -3,7 +3,7 @@
 Current state of the project: the milestones about to be done, in order. The rest of the open
 work is in `docs/BACKLOG.md`, what is closed in `docs/CYCLES.md`.
 
-Last update: 2026-11-08 (Cycle 34: closed work out, Open moved to the backlog)
+Last update: 2026-11-26 (Cycle 39: tags cleaned up, out of M16)
 
 ## Context
 
@@ -20,7 +20,6 @@ a private repo is published only item by item.
 
 - To do: rereading the entries with Simone. Facts (dates, activity, stack) come from the
   sources, the text is written by hand, including the "Why" box.
-- To do: tags cleaned up.
 - To do: a skill that proposes the new or updated items from the repos; it proposes, it
   does not publish.
 - Copilota's private repo has no `activityRepo`, so its name stays out of the public files:

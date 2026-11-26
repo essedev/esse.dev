@@ -401,7 +401,7 @@ An installable app with a service worker and an offline page, then the iOS stand
 ## Cycle 39 - darwin-chess and Motio enter the showcase (2026-11-26)
 
 Two new project entries, the showcase changed to hold them, and what followed from it
-(`e641882` .. `58cbd52`). Content only, no code touched.
+(`e641882` .. `587fd3a`). Content, plus the project tags reworked at the close.
 
 - **darwin-chess** (`e641882`): an LLM agent that evolves a chess engine under a verification
   environment it cannot touch. The cover is a screenshot of its Live page, with the whole board
@@ -441,6 +441,14 @@ Two new project entries, the showcase changed to hold them, and what followed fr
   darwin-chess as a proof in place of pgbee (three proofs at most) and no longer cites a score
   from the archived rounds. darwin-chess's entry closes on that note. The setup note's proof
   lost a count that could go stale.
+- **Tags** (`22aa22e`, #48): the project tags were 80, 53 of them on a single project, so as
+  filters they narrowed the list to one entry. They now come from a closed vocabulary
+  (`src/config/tags.json`, a label per language), sit in `meta.json` (1-4, kind of project
+  first, language last) and the build fails on a tag with fewer than 2 published projects.
+  The technologies moved to `stack`: on the project page, in the agent's index and in the
+  workspace search. The release's changelog entry says it.
+- **solplace** (`587fd3a`): it moved to the `solana` slug and its old URLs, still listed by
+  Search Console, ended on a 404; the old slug is now in `formerSlugs`.
 - **Open**, both in the BACKLOG: the `/releases` link shown even for repos with no release,
   and an E2E test of the mobile menu that fails now and then under the full suite.
 - **Next step:** unchanged from Cycle 34.

@@ -679,3 +679,17 @@ Rejected: `@vite-pwa/astro` (configuring it around the Worker's routes and the C
 than a small worker written once), precaching the whole site (every release would download
 every page for a rare offline read), a custom install banner (Chrome has its own, iOS
 installs from the Share menu).
+
+## #48 - Project tags are filters from a closed vocabulary, technologies go in the stack
+
+**Status:** active, implemented
+
+Free tags had grown to 80, two thirds of them on a single project: clicking one narrowed the
+list to that entry, and rows repeated the same three technologies. A tag is now a filter: it
+comes from a closed vocabulary with a label per language, a project has 1-4 of them (the kind
+of project first, the language last), and a tag shared by fewer than 2 published projects
+fails the build. Technologies are a separate field, the stack, shown on the project page and
+read by the agent and the workspace search, never offered as filters. Rejected: keeping free
+tags and pruning them by hand (they grow back with every new entry, nothing checks them),
+dropping tags altogether (the kind of project and the language are the filters visitors
+use).
