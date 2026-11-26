@@ -7,7 +7,7 @@ proofs:
   - project: "relay"
     note: "Il terminale dove tengo aperti cinque o sei agenti insieme."
   - project: "local-llm-eval"
-    note: "LLM Dash: i modelli locali sul Mac in quattro profili, collegati a OpenCode."
+    note: "LLM Dash: i modelli locali sul Mac, un profilo per modello, collegati a OpenCode."
   - page: "changelog"
     note: "Quello che cambia nel sito, con la data, scritto a ogni rilascio."
 ---
