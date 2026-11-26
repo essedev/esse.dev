@@ -405,7 +405,8 @@ Two new project entries, the showcase changed to hold them, and what followed fr
 
 - **darwin-chess** (`e641882`): an LLM agent that evolves a chess engine under a verification
   environment it cannot touch. The cover is a screenshot of its live Evolution page in both
-  themes, the logo the Lucide knight in the project's green.
+  themes. The logo started as the Lucide knight and is now the project's own (`5959c0a`): the
+  cburnett knight, GPLv2 or later, which the `LICENSE` names for the two logo files.
 - **Motio** (`9ff5a04`): the React video framework. The cover is the hero of its site in both
   themes, English headline included; the logo is the project's own mark on the shared tile.
 - **Showcase** (`50feef7`): darwin-chess and Motio take the places of pgbee and Zeno, the two
@@ -416,5 +417,15 @@ Two new project entries, the showcase changed to hold them, and what followed fr
 - **Now** (`58cbd52`): the dated note `2026-11-darwin-chess-motio`.
 - **Docs:** `docs/features/progetti.md` follows the sorting, and names the two covers among
   the screenshots in both themes and Motio's among the covers with text.
-- **Changelog** (`44896ae`): the release's entry, `2026-11-26-darwin-chess-motio` (#35).
+- **piezo** (`4399c45`): a new entry in the registry, a modular synth an agent builds with you.
+  The cover is a real screenshot of a demo patch, taken from a local run with the project's own
+  E2E setup; the app has one theme, so one cover. No links while the repo is private.
+- **moe-stream** (`c05e7eb`): a chapter of Local LLM Experiments, with the measurements of 23
+  November marked as to be redone; the entry is in progress again.
+- **Setup** (`5b5ccd6`): the method note names Pi among the agents sharing the context.
+- **Changelog** (`44896ae`, `db45cea`): the release's entry, `2026-11-26-darwin-chess-motio` (#35).
+- **To follow up:** an audit against the projects' repos found entries that have aged (Relay,
+  Nexus, Floppy, Varco, Zeno, Personal servers, Copilota need touch-ups; Local LLM Experiments
+  still tells the results of rounds its repo has archived). Every entry with a repo also shows
+  a `/releases` link, even when the repo has no release.
 - **Next step:** unchanged from Cycle 34.

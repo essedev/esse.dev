@@ -139,7 +139,7 @@ Both are files in the project's folder, declared in `meta.json` (`logo`, `cover`
   desktop and 16:9 on mobile around `focus` (`top`, `center`, `bottom`).
 - **Logo file**: always a tile, so the list reads as one row of icons and the logo stands out
   over a bright cover. An app icon that already is a tile (Relay, Copilota, Portsage) is used
-  as it is, square and without margin; a free mark (pgbee, Zeno, Nexus, Budokan, Motio) goes on the
+  as it is, square and without margin; a free mark (pgbee, Zeno, Nexus, Budokan, Motio, darwin-chess, piezo) goes on the
   shared tile with `scripts/render-logo.ts <mark-file> <accent>`; a project without a mark gets
   a Lucide glyph on the same tile (`render-logo.ts <lucide-name> <accent>`). Never a template
   favicon (Vite, Astro) and never the logo of a third party.
