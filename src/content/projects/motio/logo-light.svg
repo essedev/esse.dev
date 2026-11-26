@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+	<defs>
+		<linearGradient id="t" x1="0" y1="0" x2="1" y2="1">
+			<stop offset="0" stop-color="#FF3D8B" stop-opacity="0.34"/>
+			<stop offset="1" stop-color="#FF3D8B" stop-opacity="0.16"/>
+		</linearGradient>
+	</defs>
+	<rect width="128" height="128" rx="28" fill="#f4f1fa"/>
+	<rect width="128" height="128" rx="28" fill="url(#t)"/>
+	<rect x="0.5" y="0.5" width="127" height="127" rx="27.5" fill="none" stroke="#2e1c6e" stroke-opacity="0.12"/>
+	<image x="19" y="19" width="90" height="90" preserveAspectRatio="xMidYMid meet" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjIuNTQgMy40MSA1My41OCA1My41OCIgcm9sZT0iaW1nIiBhcmlhLWxhYmVsbGVkYnk9InQiPjx0aXRsZSBpZD0idCI+TW90aW88L3RpdGxlPjxkZWZzPjxtYXNrIGlkPSJtay1iYWNrIiBtYXNrVW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4PSItNjQiIHk9Ii02NCIgd2lkdGg9IjE5MiIgaGVpZ2h0PSIxOTIiPjxyZWN0IHg9Ii02NCIgeT0iLTY0IiB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgZmlsbD0iI2ZmZiIvPjxyZWN0IHg9Ii0xLjc1IiB5PSItMjcuNzUiIHdpZHRoPSIzNy41IiBoZWlnaHQ9IjI5LjUiIHJ4PSI2Ljc1IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgyMSA1MSkgcm90YXRlKC0yMikiIGZpbGw9IiMwMDAiLz48cmVjdCB4PSItMS43NSIgeT0iLTI3Ljc1IiB3aWR0aD0iMzcuNSIgaGVpZ2h0PSIyOS41IiByeD0iNi43NSIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMjEgNTEpIHJvdGF0ZSgwKSIgZmlsbD0iIzAwMCIvPjwvbWFzaz48bWFzayBpZD0ibWstbWlkIiBtYXNrVW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4PSItNjQiIHk9Ii02NCIgd2lkdGg9IjE5MiIgaGVpZ2h0PSIxOTIiPjxyZWN0IHg9Ii02NCIgeT0iLTY0IiB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgZmlsbD0iI2ZmZiIvPjxyZWN0IHg9Ii0xLjc1IiB5PSItMjcuNzUiIHdpZHRoPSIzNy41IiBoZWlnaHQ9IjI5LjUiIHJ4PSI2Ljc1IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgyMSA1MSkgcm90YXRlKDApIiBmaWxsPSIjMDAwIi8+PC9tYXNrPjwvZGVmcz48ZyBtYXNrPSJ1cmwoI21rLWJhY2spIj48cmVjdCB4PSIxLjc1IiB5PSItMjQuMjUiIHdpZHRoPSIzMC41IiBoZWlnaHQ9IjIyLjUiIHJ4PSIzLjI1IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgyMSA1MSkgcm90YXRlKC00NCkiIGZpbGw9IiMxMkI1QTUiLz48L2c+PGcgbWFzaz0idXJsKCNtay1taWQpIj48cmVjdCB4PSIxLjc1IiB5PSItMjQuMjUiIHdpZHRoPSIzMC41IiBoZWlnaHQ9IjIyLjUiIHJ4PSIzLjI1IiB0cmFuc2Zvcm09InRyYW5zbGF0ZSgyMSA1MSkgcm90YXRlKC0yMikiIGZpbGw9IiNGRkREM0MiLz48L2c+PHJlY3QgeD0iMS43NSIgeT0iLTI0LjI1IiB3aWR0aD0iMzAuNSIgaGVpZ2h0PSIyMi41IiByeD0iMy4yNSIgdHJhbnNmb3JtPSJ0cmFuc2xhdGUoMjEgNTEpIHJvdGF0ZSgwKSIgZmlsbD0iI0ZGM0Q4QiIvPjwvc3ZnPgo="/>
+</svg>

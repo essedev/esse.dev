@@ -1,0 +1,16 @@
+{
+	"status": "in-progress",
+	"published": true,
+	"created": "2026-11-22",
+	"updated": "2026-11-26",
+	"repo": "https://github.com/essedev/motio",
+	"site": "https://motio.esse.dev",
+	"license": "Apache-2.0",
+	"logo": "./logo.svg",
+	"logoLight": "./logo-light.svg",
+	"cover": {
+		"src": "./cover.webp",
+		"srcLight": "./cover-light.webp",
+		"focus": "top"
+	}
+}
