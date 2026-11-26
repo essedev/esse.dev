@@ -1,0 +1,16 @@
+{
+	"status": "in-progress",
+	"published": true,
+	"created": "2026-11-24",
+	"updated": "2026-11-26",
+	"repo": "https://github.com/essedev/darwin-chess",
+	"site": "https://darwin.esse.dev",
+	"license": "MIT",
+	"logo": "./logo.svg",
+	"logoLight": "./logo-light.svg",
+	"cover": {
+		"src": "./cover.webp",
+		"srcLight": "./cover-light.webp",
+		"focus": "top"
+	}
+}
