@@ -2,11 +2,6 @@
 slug: "casussy"
 title: "Casussy"
 excerpt: "App iOS per gestire la casa insieme: task, spesa, menu della settimana e spese, condivisi in tempo reale."
-tags:
-  - "iOS"
-  - "Swift"
-  - "SwiftUI"
-  - "Sync"
 ---
 
 Un'app nativa per chi vive insieme: i task di casa, la lista della spesa, il menu della settimana e le spese condivise, visibili a tutti appena qualcuno aggiunge o spunta qualcosa.

@@ -2,15 +2,6 @@
 slug: "varco"
 title: "Varco"
 excerpt: "Un navigatore per Milano che sa dove può entrare la tua auto: ZTL, aree pedonali, Area B e Area C in base al veicolo e all'orario, e un percorso che le evita."
-tags:
-  - "React"
-  - "MapLibre"
-  - "Cloudflare Workers"
-  - "Hono"
-  - "Python"
-  - "Valhalla"
-  - "PWA"
-  - "Open Data"
 why: "Nel dubbio una zona è vietata: una regola non trascritta, un orario non trovato o un calendario scaduto danno \"non puoi entrare\", mai \"libero\". L'unico errore che costa una multa è dire che si entra quando non si può."
 previously:
   - name: "based-routing"

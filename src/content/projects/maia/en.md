@@ -2,12 +2,6 @@
 slug: "maia"
 title: "Maia"
 excerpt: "An assistant to actually learn: it measures what you know in every area, finds the gaps that matter and guides you to close them with methods that work."
-tags:
-  - "Python"
-  - "FastAPI"
-  - "React"
-  - "LLM"
-  - "Learning"
 previously:
   - name: "Cosmoscope"
     year: 2025

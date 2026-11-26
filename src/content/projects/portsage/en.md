@@ -2,13 +2,6 @@
 slug: "portsage"
 title: "Portsage"
 excerpt: "macOS menubar app that manages ports across development projects, with an MCP server and a CLI for agents."
-tags:
-  - "Rust"
-  - "Tauri"
-  - "React"
-  - "macOS"
-  - "MCP"
-  - "CLI"
 why: "Born from a trivial problem that AI productivity created, five projects open and \"address already in use\" every morning. It ships an MCP server, so the agents ask for ports themselves."
 ---
 

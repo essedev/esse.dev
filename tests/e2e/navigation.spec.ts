@@ -22,12 +22,12 @@ test.describe('up one level', () => {
 	});
 
 	test('Esc behaves like the breadcrumb', async ({ page }) => {
-		await open(page, '/en/projects?tag=Astro');
+		await open(page, '/en/projects?tag=Swift');
 		await page.locator('main a[href*="/projects/"]').first().click();
 		await page.waitForURL(/\/en\/projects\/[^/?]+$/);
 		await page.waitForLoadState('networkidle');
 		await page.keyboard.press('Escape');
-		await expect(page).toHaveURL(/\/en\/projects\?tag=Astro$/);
+		await expect(page).toHaveURL(/\/en\/projects\?tag=Swift$/);
 	});
 
 	test('home -> project detail -> up goes to the section, not back home', async ({ page }) => {

@@ -2,15 +2,6 @@
 slug: "piezo"
 title: "piezo"
 excerpt: "A modular synth you play in the browser and build together with an agent: modules are wired with cables like hardware, and the agent works on the same patch you are playing."
-tags:
-  - "Audio"
-  - "WebAssembly"
-  - "C++"
-  - "Faust"
-  - "React"
-  - "MCP"
-  - "AI Agents"
-  - "FastAPI"
 why: "There is one audio engine, compiled to WebAssembly: it runs in the browser when you play and on the server when an agent asks for a render. What the agent listens to comes out of the same engine you hear."
 now: "It is online on my server, with sign-up closed; I am working on multi-track songs, which for now agents write and render with no interface."
 ---

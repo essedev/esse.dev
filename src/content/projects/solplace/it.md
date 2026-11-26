@@ -2,13 +2,6 @@
 slug: "solana"
 title: "Esperimenti su Solana"
 excerpt: "Una mappa del mondo on-chain dove i token si contendono il territorio, e intorno gli strumenti che ho scritto per leggere il mercato di Solana in tempo reale."
-tags:
-  - "Solana"
-  - "Rust"
-  - "Anchor"
-  - "TypeScript"
-  - "Python"
-  - "Web3"
 ---
 
 Tra l'estate 2025 e l'inizio del 2026 ho lavorato dentro l'ecosistema di Solana, quello dei launchpad e dei token che nascono e muoiono in un pomeriggio. Il progetto da mostrare è SolPlace; intorno ci sono gli strumenti che ho costruito per capire come funziona quel mercato.

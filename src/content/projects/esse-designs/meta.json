@@ -3,5 +3,7 @@
 	"published": false,
 	"created": "2023-08-20",
 	"updated": "2024-12-01",
+	"tags": ["website"],
+	"stack": ["SvelteKit", "Tailwind CSS"],
 	"site": "https://t.me/essedev"
 }

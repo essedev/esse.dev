@@ -3,6 +3,8 @@
 	"published": true,
 	"created": "2023-06-10",
 	"updated": "2026-09-22",
+	"tags": ["education", "web", "typescript"],
+	"stack": ["SvelteKit", "Tailwind CSS", "PocketBase"],
 	"logo": "./logo.svg",
 	"logoLight": "./logo-light.svg",
 	"cover": {

@@ -2,13 +2,6 @@
 slug: "pgbee"
 title: "pgbee"
 excerpt: "A PostgreSQL extension: you declare in SQL that a column is derived from others by a model, and the database keeps it filled, versioned and accounted for."
-tags:
-  - "PostgreSQL"
-  - "SQL"
-  - "Python"
-  - "LLM"
-  - "Embeddings"
-  - "Open Source"
 why: "The guarantees live in the database, in SQL and PL/pgSQL: queue, versions, lineage and human corrections. The worker is replaceable, and under crashes pgbee leaves no row empty and never overwrites someone who fixed a value by hand."
 now: "Per-row requeue and retry of failed jobs; the README starts from the llm column."
 ---

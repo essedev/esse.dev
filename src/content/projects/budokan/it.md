@@ -2,13 +2,6 @@
 slug: "budokan"
 title: "Polisportiva Bu Do Kan"
 excerpt: "Il sito della polisportiva Bu Do Kan: corsi, orari, istruttori e richiesta di una lezione di prova, con un pannello su misura da cui la palestra gestisce contenuti e richieste."
-tags:
-  - "Next.js"
-  - "Cloudflare Workers"
-  - "D1"
-  - "CMS"
-  - "CRM"
-  - "Sport"
 previously:
   - name: "Bu Do Kan su SvelteKit"
     year: 2024

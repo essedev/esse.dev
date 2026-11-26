@@ -2,13 +2,6 @@
 slug: "portsage"
 title: "Portsage"
 excerpt: "App per la barra dei menu di macOS che gestisce le porte dei progetti in sviluppo, con un server MCP e una CLI per gli agenti."
-tags:
-  - "Rust"
-  - "Tauri"
-  - "React"
-  - "macOS"
-  - "MCP"
-  - "CLI"
 why: "Nato da un problema banale, effetto collaterale della produttività con l'AI: cinque progetti aperti e \"address already in use\" ogni mattina. Ha un server MCP, così le porte le chiedono direttamente gli agenti."
 ---
 

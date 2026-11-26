@@ -2,13 +2,6 @@
 slug: "mcpbelt"
 title: "mcpbelt"
 excerpt: "Un solo server MCP che dà a qualunque agente le capability che non può eseguire in locale: documenti, audio, pagine web, immagini."
-tags:
-  - "Python"
-  - "FastAPI"
-  - "MCP"
-  - "AI Agents"
-  - "OAuth"
-  - "Astro"
 ---
 
 Un coding agent sa scrivere codice, ma non sa leggere un PDF scansionato, trascrivere una registrazione o guardare un'immagine, a meno che qualcuno non gli colleghi un servizio per ciascuna cosa. mcpbelt le mette tutte dietro una connessione, un credito e uno schema.

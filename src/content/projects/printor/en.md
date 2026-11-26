@@ -4,12 +4,6 @@ formerSlugs:
   - "printor"
 title: "Edge Lab"
 excerpt: "A quant research lab around a single question: where an LLM gives a real edge in trading, if it does. With a harness built so I could not fool myself."
-tags:
-  - "Python"
-  - "LLM"
-  - "Quant"
-  - "DuckDB"
-  - "Research"
 why: "The test that matters is on the model's cutoff: on events after its training the edge disappears, so a good part of the result was leakage."
 ---
 

@@ -1,6 +1,7 @@
 import { defineCollection } from 'astro:content';
 import { glob } from 'astro/loaders';
 import { z } from 'astro/zod';
+import { tagIds } from './lib/config';
 
 // Every project and article is a folder: `meta.json` holds the fields shared across
 // languages, `<lang>.md` the text in that language (frontmatter + Markdown body). The two
@@ -33,6 +34,17 @@ const projects = defineCollection({
 			published: z.boolean(),
 			created: isoDate,
 			updated: isoDate,
+			/**
+			 * What a visitor filters by, from the closed vocabulary of `src/config/tags.json`:
+			 * what kind of project it is first, the language last. The list row shows the first three.
+			 */
+			tags: z
+				.array(z.enum(tagIds))
+				.min(1)
+				.max(4)
+				.refine((t) => new Set(t).size === t.length, 'repeated tag'),
+			/** The technologies it is built with, shown on its page and read by the agent. */
+			stack: z.array(z.string().min(1)).default([]),
 			/** Public code: the repo. Without it the project is private. */
 			repo: z.url().optional(),
 			/**
@@ -82,7 +94,6 @@ const projectTexts = defineCollection({
 		formerSlugs,
 		title: z.string().min(1),
 		excerpt: z.string().min(1),
-		tags: z.array(z.string().min(1)),
 		/** The interesting technical decision, for showcase projects. */
 		why: z.string().min(1).optional(),
 		/** What I am doing on it right now, one line for the Now page; in every language or none. */

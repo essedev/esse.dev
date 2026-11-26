@@ -3,6 +3,8 @@
 	"published": true,
 	"created": "2026-04-02",
 	"updated": "2026-09-22",
+	"tags": ["devtools", "macos", "mcp", "rust"],
+	"stack": ["Tauri", "React"],
 	"repo": "https://github.com/essedev/portsage",
 	"install": "brew install essedev/portsage/portsage",
 	"logo": "./logo.png",

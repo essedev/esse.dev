@@ -3,6 +3,8 @@
 	"published": true,
 	"created": "2022-03-15",
 	"updated": "2026-10-04",
+	"tags": ["website"],
+	"stack": ["SvelteKit", "Tailwind CSS"],
 	"site": "https://lrlelettrica.it/",
 	"logo": "./logo.svg",
 	"logoLight": "./logo-light.svg",

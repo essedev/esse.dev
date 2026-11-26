@@ -3,6 +3,8 @@
 	"published": true,
 	"created": "2026-02-14",
 	"updated": "2026-09-10",
+	"tags": ["game", "typescript"],
+	"stack": ["Phaser", "Fastify", "PostgreSQL"],
 	"logo": "./logo.svg",
 	"logoLight": "./logo-light.svg",
 	"cover": {

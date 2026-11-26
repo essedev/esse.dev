@@ -2,13 +2,6 @@
 slug: "milano"
 title: "New in Milan"
 excerpt: "Since I moved to Milan: a trip planner that picks the right station among all the ones around you, and a map of the neighbourhoods with the numbers."
-tags:
-  - "React"
-  - "MapLibre"
-  - "PostGIS"
-  - "GTFS"
-  - "Python"
-  - "Open Data"
 ---
 
 I moved to Milan in 2026, and two projects came almost right away. The third came later and has its own page: [Varco](/en/projects/varco), the navigator that knows which zones you can enter.

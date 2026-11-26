@@ -3,5 +3,7 @@
 	"published": false,
 	"created": "2025-01-10",
 	"updated": "2026-09-22",
+	"tags": ["devtools", "typescript"],
+	"stack": ["Next.js", "Cloudflare Workers", "PostgreSQL", "Drizzle"],
 	"repo": "https://github.com/essedev/templator"
 }

@@ -2,10 +2,11 @@ import { z } from 'astro/zod';
 import featuredJson from '../config/featured.json';
 import languagesJson from '../config/languages.json';
 import navigationJson from '../config/navigation.json';
+import tagsJson from '../config/tags.json';
 
 /**
- * The site configuration (languages, routes per language, showcase), validated on import:
- * a broken file fails the build.
+ * The site configuration (languages, routes per language, showcase, project tags), validated on
+ * import: a broken file fails the build.
  */
 
 /** Schema of `languages.json`. */
@@ -32,6 +33,15 @@ export const FeaturedSchema = z.object({
 	method: z.string().min(1).optional()
 });
 
+/**
+ * Schema of `tags.json`: the closed vocabulary of the project tags, id -> label per language.
+ * The tags are what a visitor filters by; the detailed technologies go in a project's `stack`.
+ */
+export const TagsSchema = z.record(
+	z.string().regex(/^[a-z0-9-]+$/),
+	z.record(z.string(), z.string().min(1))
+);
+
 /** A language of the site. */
 export type Language = z.infer<typeof LanguagesSchema>[number];
 /** The localized routes, per language. */
@@ -41,6 +51,8 @@ export type NavigationConfig = z.infer<typeof NavigationSchema>;
 export const languages = LanguagesSchema.parse(languagesJson);
 /** The validated routes per language. */
 export const navigation = NavigationSchema.parse(navigationJson);
+/** The validated project tags. */
+export const tags = TagsSchema.parse(tagsJson);
 /** The validated showcase. */
 export const featured = FeaturedSchema.parse(featuredJson);
 
@@ -51,4 +63,16 @@ export const defaultLang = 'en';
 
 for (const code of languageCodes) {
 	if (!navigation[code]) throw new Error(`navigation.json: manca la lingua "${code}"`);
+}
+for (const [id, labels] of Object.entries(tags)) {
+	for (const code of languageCodes)
+		if (!labels[code]) throw new Error(`tags.json: tag "${id}" has no label in "${code}"`);
+}
+
+/** The ids of the project tags, in the order of `tags.json`. */
+export const tagIds = Object.keys(tags) as [string, ...string[]];
+
+/** The label of a project tag in one language. */
+export function tagLabel(id: string, lang: string): string {
+	return tags[id]?.[lang] ?? id;
 }

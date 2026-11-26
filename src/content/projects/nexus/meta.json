@@ -3,6 +3,8 @@
 	"published": true,
 	"created": "2026-06-14",
 	"updated": "2026-11-26",
+	"tags": ["agents", "mcp", "data", "python"],
+	"stack": ["FastAPI", "React", "PostgreSQL"],
 	"activityRepo": "essedev/nexus",
 	"logo": "./logo.svg",
 	"logoLight": "./logo-light.svg",

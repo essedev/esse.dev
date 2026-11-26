@@ -2,13 +2,6 @@
 slug: "nexus"
 title: "Nexus"
 excerpt: "Personal data platform driven by an AI assistant: everything is an entity defined by a schema, and adding a new kind of data takes no code."
-tags:
-  - "Python"
-  - "FastAPI"
-  - "React"
-  - "PostgreSQL"
-  - "AI Agents"
-  - "MCP"
 why: "Everything is an entity defined by a schema, and a new type needs no code. The agent that operates has minimal privileges, the one that changes the system works in isolation and goes through human approval."
 previously:
   - name: "Plannerinator"

@@ -2,13 +2,6 @@
 slug: "pigeon"
 title: "Pigeon"
 excerpt: "Invio di email transazionali da template, con un'API e un pannello: la porta HTTP davanti al tuo server SMTP."
-tags:
-  - "TypeScript"
-  - "Fastify"
-  - "PostgreSQL"
-  - "Docker"
-  - "Email"
-  - "API"
 ---
 
 Nei runtime serverless ed edge non si può aprire la connessione TCP che una libreria SMTP si aspetta. Pigeon risolve il problema senza passare da un servizio esterno: l'applicazione chiama la sua API con un template e i dati, e Pigeon spedisce dal server SMTP della casella che hai già, registrando l'esito.

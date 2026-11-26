@@ -2,13 +2,6 @@
 slug: "solana"
 title: "Solana experiments"
 excerpt: "An on-chain world map where tokens fight over territory, and around it the tools I wrote to read the Solana market in real time."
-tags:
-  - "Solana"
-  - "Rust"
-  - "Anchor"
-  - "TypeScript"
-  - "Python"
-  - "Web3"
 ---
 
 Between summer 2025 and early 2026 I worked inside the Solana ecosystem, the one of launchpads and tokens that are born and die in an afternoon. The project to show is SolPlace; around it are the tools I built to understand how that market works.

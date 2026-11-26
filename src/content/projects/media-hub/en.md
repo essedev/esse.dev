@@ -2,13 +2,6 @@
 slug: "media-hub"
 title: "Media Hub"
 excerpt: "The platform of my home server: a home screen with several apps on one backend, a media server that starts the video while the file is still arriving, and a Samsung TV app."
-tags:
-  - "Python"
-  - "FastAPI"
-  - "React"
-  - "Tizen"
-  - "ffmpeg"
-  - "Self-hosted"
 why: "The video starts while the file is still arriving: the engine fetches pieces in order, prioritising the ones where you are, and ffmpeg remuxes them on the fly for the browser."
 now: "Video starts while the file is still arriving; the app for the Samsung TV."
 ---

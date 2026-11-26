@@ -2,15 +2,6 @@
 slug: "darwin-chess"
 title: "darwin-chess"
 excerpt: "A cheap LLM agent writes a chess engine in Rust from an empty project and keeps evolving it on its own: a change stays only if it beats the previous version in real games."
-tags:
-  - "AI Agents"
-  - "Rust"
-  - "Chess"
-  - "Research"
-  - "Python"
-  - "FastAPI"
-  - "React"
-  - "Docker"
 why: "The agent controls the whole engine and has no access to the environment that verifies it: it can neither see it nor touch it. Even the legal-move check uses random positions, because the counts for the standard ones are known and could be written in by hand."
 now: "It has been running day and night since 25 November and is at its fifteenth generation; I am measuring how much it pays to let it think harder in each session."
 ---

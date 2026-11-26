@@ -2,14 +2,6 @@
 slug: "motio"
 title: "Motio"
 excerpt: "Un framework open source per fare video scrivendo componenti React: ogni fotogramma viene reso in un vero Chrome headless e codificato con FFmpeg, con un'API compatibile con quella di Remotion."
-tags:
-  - "React"
-  - "TypeScript"
-  - "Video"
-  - "FFmpeg"
-  - "Chrome"
-  - "AI Agents"
-  - "Open Source"
 why: "La compatibilità con Remotion la misuro: le funzioni pure devono dare gli stessi risultati del pacchetto pubblicato, e lo stesso fotogramma deve dare gli stessi pixel in qualsiasi ordine. Le soglie fanno parte del contratto: cambiarne una è una decisione scritta."
 now: "È in pre-alpha e si prova da un clone; il prossimo passo è la pubblicazione su npm."
 ---

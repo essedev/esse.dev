@@ -2,15 +2,6 @@
 slug: "varco"
 title: "Varco"
 excerpt: "A navigator for Milan that knows where your car is allowed in: ZTLs, pedestrian areas, Area B and Area C by vehicle and time of day, and a route that avoids them."
-tags:
-  - "React"
-  - "MapLibre"
-  - "Cloudflare Workers"
-  - "Hono"
-  - "Python"
-  - "Valhalla"
-  - "PWA"
-  - "Open Data"
 why: "When in doubt, a zone is closed: a rule not yet transcribed, a time window not found or an expired calendar give \"you can't enter\", never \"free\". The only mistake that costs a fine is saying you can enter when you can't."
 previously:
   - name: "based-routing"

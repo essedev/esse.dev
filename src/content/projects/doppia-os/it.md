@@ -2,11 +2,6 @@
 slug: "doppia-os"
 title: "doppia.os"
 excerpt: "Un desktop nel browser con finestre che si trascinano, si agganciano e si ridimensionano. Iniziato a mano nel 2022, ripreso con l'AI nel 2025."
-tags:
-  - "Svelte"
-  - "TypeScript"
-  - "UI/UX"
-  - "AI"
 ---
 
 Ho iniziato doppia.os nel 2022: un sistema operativo finto dentro una pagina web, con finestre e piccole app, in Svelte. Non aveva obiettivi di prodotto: volevo capire fin dove si può spingere un'interfaccia nel browser.

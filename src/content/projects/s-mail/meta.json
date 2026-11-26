@@ -3,5 +3,7 @@
 	"published": false,
 	"created": "2024-10-08",
 	"updated": "2025-09-10",
+	"tags": ["devtools", "typescript"],
+	"stack": ["Node.js", "Fastify", "PostgreSQL"],
 	"site": "https://smail.essedev.it"
 }

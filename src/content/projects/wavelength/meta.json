@@ -3,6 +3,8 @@
 	"published": false,
 	"created": "2026-05-15",
 	"updated": "2026-05-17",
+	"tags": ["agents", "media", "python"],
+	"stack": ["FastAPI", "PostgreSQL", "React"],
 	"logo": "./logo.svg",
 	"logoLight": "./logo-light.svg",
 	"cover": {

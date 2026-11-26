@@ -2,12 +2,6 @@
 slug: "minerd"
 title: "Minerd"
 excerpt: "Un idle game di mining per mobile, già giocabile in singleplayer, come base per un'idea: un gioco che si aggiorna da solo con l'AI."
-tags:
-  - "TypeScript"
-  - "Phaser"
-  - "Fastify"
-  - "PostgreSQL"
-  - "Game"
 ---
 
 Minerd è un idle game in cui costruisci e gestisci rig da mining: compri hardware, scegli cosa minare, tieni sotto controllo watt e temperature, e guadagni anche ad app chiusa. Ogni pezzo è unico, con una lotteria del silicio che ne cambia core, frequenze e consumi.

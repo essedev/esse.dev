@@ -3,6 +3,8 @@
 	"published": true,
 	"created": "2026-08-22",
 	"updated": "2026-10-25",
+	"tags": ["infra", "media", "python"],
+	"stack": ["FastAPI", "React", "Tizen", "FFmpeg"],
 	"activityRepo": "essedev/home-media",
 	"logo": "./logo.svg",
 	"logoLight": "./logo-light.svg",

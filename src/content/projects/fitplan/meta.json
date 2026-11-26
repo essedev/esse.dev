@@ -2,5 +2,7 @@
 	"status": "in-progress",
 	"published": false,
 	"created": "2025-01-10",
-	"updated": "2025-01-10"
+	"updated": "2025-01-10",
+	"tags": ["llm", "typescript"],
+	"stack": ["React Native", "Expo", "Hono", "Cloudflare Workers", "PostgreSQL", "Drizzle"]
 }

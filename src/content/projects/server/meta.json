@@ -3,6 +3,8 @@
 	"published": true,
 	"created": "2026-08-06",
 	"updated": "2026-11-26",
+	"tags": ["infra", "typescript"],
+	"stack": ["Docker", "Caddy", "Cloudflare Workers"],
 	"logo": "./logo.svg",
 	"logoLight": "./logo-light.svg",
 	"cover": {

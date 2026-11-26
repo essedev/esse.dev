@@ -3,5 +3,7 @@
 	"published": false,
 	"created": "2025-06-09",
 	"updated": "2026-09-22",
+	"tags": ["website", "typescript"],
+	"stack": ["Next.js", "React", "Supabase"],
 	"site": "https://kebabbivori.it"
 }

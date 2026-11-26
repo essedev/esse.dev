@@ -3,5 +3,7 @@
 	"published": false,
 	"created": "2022-11-05",
 	"updated": "2026-09-22",
+	"tags": ["web", "education", "python"],
+	"stack": ["Flask", "Bootstrap", "SQLite"],
 	"repo": "https://github.com/essedev/didatticaintegrata.it"
 }

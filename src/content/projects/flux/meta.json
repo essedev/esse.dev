@@ -3,6 +3,8 @@
 	"published": true,
 	"created": "2024-02-23",
 	"updated": "2026-09-22",
+	"tags": ["web", "llm", "typescript"],
+	"stack": ["Cloudflare Workers", "Hono", "D1", "React", "PWA"],
 	"site": "https://flux.esse.dev",
 	"logo": "./logo.svg",
 	"logoLight": "./logo-light.svg",

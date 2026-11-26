@@ -2,11 +2,6 @@
 slug: "doppia-os"
 title: "doppia.os"
 excerpt: "A desktop in the browser with windows that drag, snap and resize. Started by hand in 2022, picked up again with AI in 2025."
-tags:
-  - "Svelte"
-  - "TypeScript"
-  - "UI/UX"
-  - "AI"
 ---
 
 I started doppia.os in 2022: a fake operating system inside a web page, with windows and small apps, in Svelte. No product goal, I wanted to find out how far a browser interface can be pushed.

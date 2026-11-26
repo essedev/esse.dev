@@ -2,12 +2,6 @@
 slug: "cosmoscope"
 title: "Cosmoscope"
 excerpt: "A research assistant that turns a question into a map of concepts, with sources attached to every node."
-tags:
-  - "React"
-  - "React Flow"
-  - "AI"
-  - "Search"
-  - "Knowledge Graph"
 ---
 
 The idea: you ask a question, say what quantum entanglement is, and instead of a paragraph you get a map. The concept in the middle, related topics around it, and on every node the sources it comes from, weighted by how reliable they are.

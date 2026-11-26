@@ -2,13 +2,6 @@
 slug: "copilota"
 title: "Copilota"
 excerpt: "Un copilota per le call di vendita: app macOS in Swift che trascrive i due lati della call in tempo reale e propone le risposte dalla knowledge base in un overlay che vede solo chi vende."
-tags:
-  - "Swift"
-  - "SwiftUI"
-  - "macOS"
-  - "FastAPI"
-  - "RAG"
-  - "Speech-to-text"
 why: "Il backend vive dentro l'app: Postgres con pgvector compilato dai sorgenti, un Python portatile e il codice, tutto firmato. Chi la usa installa un'app, non un server, e lo stesso backend resta deployabile quando la knowledge base sarà del team."
 previously:
   - name: "Sales AI Copilot"

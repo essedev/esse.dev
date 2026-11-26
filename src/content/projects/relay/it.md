@@ -2,13 +2,6 @@
 slug: "relay"
 title: "Relay"
 excerpt: "Terminale nativo per macOS pensato per far girare tanti coding agent in parallelo, con lo stato di ogni agente letto dagli hook e non dall'output."
-tags:
-  - "Swift"
-  - "AppKit"
-  - "macOS"
-  - "AI Agents"
-  - "Claude Code"
-  - "Homebrew"
 why: "Lo stato di ogni agente arriva dagli hook di Claude Code e Codex, non dal parsing dell'output, quindi resta giusto anche sotto un muro di log. L'ho scritto in Swift senza averlo mai usato prima."
 now: "È il terminale in cui lavoro ogni giorno; i prossimi passi sono la distribuzione firmata e un terzo agente."
 ---

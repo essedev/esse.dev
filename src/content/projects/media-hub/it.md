@@ -2,13 +2,6 @@
 slug: "media-hub"
 title: "Media Hub"
 excerpt: "La piattaforma del server di casa: una home con più app su un backend unico, un media server che fa partire il video mentre il file arriva e un'app per la TV Samsung."
-tags:
-  - "Python"
-  - "FastAPI"
-  - "React"
-  - "Tizen"
-  - "ffmpeg"
-  - "Self-hosted"
 why: "Il video parte mentre il file sta ancora arrivando: il motore prende i pezzi in ordine, dà la precedenza a quelli dove ti trovi, e ffmpeg li rimpacchetta al volo per il browser."
 now: "Il video parte mentre il file arriva; l'app per la TV Samsung."
 ---

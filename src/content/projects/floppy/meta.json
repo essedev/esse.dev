@@ -3,6 +3,8 @@
 	"published": true,
 	"created": "2026-10-06",
 	"updated": "2026-11-26",
+	"tags": ["macos", "infra", "python"],
+	"stack": ["JuiceFS", "Tauri", "React", "FastAPI", "Valkey", "Homebrew"],
 	"repo": "https://github.com/essedev/floppy",
 	"site": "https://floppy.esse.dev",
 	"license": "MIT, AGPL-3.0 (server)",

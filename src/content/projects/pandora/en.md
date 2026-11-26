@@ -2,13 +2,6 @@
 slug: "pandora"
 title: "PANDORA"
 excerpt: "Hybrid AI system for crypto price prediction with GPT-like and Diffusion models"
-tags:
-  - "Python"
-  - "PyTorch"
-  - "AI"
-  - "Machine Learning"
-  - "Crypto"
-  - "Streamlit"
 ---
 
 PANDORA (Probabilistic Analysis of Noisy Data for Optimal Risk Assessment) is a hybrid AI system for cryptocurrency price prediction. It combines GPT-like autoregressive models for short-term predictions (1-5 minutes) and Diffusion models to generate probabilistic medium-term scenarios (10-60 minutes).

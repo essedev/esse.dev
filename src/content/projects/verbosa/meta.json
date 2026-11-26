@@ -3,5 +3,7 @@
 	"published": false,
 	"created": "2025-06-13",
 	"updated": "2026-09-22",
+	"tags": ["llm"],
+	"stack": ["Flutter", "Go", "WebSocket"],
 	"site": "https://verbosa.it"
 }

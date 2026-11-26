@@ -1,0 +1,21 @@
+{
+	"agents": { "en": "AI agents", "it": "Agenti AI" },
+	"llm": { "en": "LLM", "it": "LLM" },
+	"devtools": { "en": "Developer tools", "it": "Strumenti per sviluppatori" },
+	"mcp": { "en": "MCP", "it": "MCP" },
+	"research": { "en": "Research", "it": "Ricerca" },
+	"data": { "en": "Data", "it": "Dati" },
+	"web": { "en": "Web app", "it": "Web app" },
+	"website": { "en": "Website", "it": "Sito web" },
+	"macos": { "en": "macOS", "it": "macOS" },
+	"infra": { "en": "Infrastructure", "it": "Infrastruttura" },
+	"media": { "en": "Audio and video", "it": "Audio e video" },
+	"voice": { "en": "Voice", "it": "Voce" },
+	"game": { "en": "Games", "it": "Giochi" },
+	"education": { "en": "Learning", "it": "Apprendimento" },
+	"python": { "en": "Python", "it": "Python" },
+	"typescript": { "en": "TypeScript", "it": "TypeScript" },
+	"rust": { "en": "Rust", "it": "Rust" },
+	"swift": { "en": "Swift", "it": "Swift" },
+	"cpp": { "en": "C++", "it": "C++" }
+}

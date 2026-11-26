@@ -2,13 +2,6 @@
 slug: "flux"
 title: "Flux"
 excerpt: "Lettore di newsletter e feed RSS che estrae gli articoli in markdown pulito e fedele all'originale, tutto su un solo Worker Cloudflare."
-tags:
-  - "Cloudflare Workers"
-  - "Hono"
-  - "D1"
-  - "React"
-  - "PWA"
-  - "AI"
 ---
 
 Flux è nato come TLDR Checker, uno scraper per leggere i digest di TLDR senza aprire la mail. La seconda versione è diventata un lettore agnostico: qualunque feed, qualunque newsletter, con gli articoli ben separati e il contenuto fedele all'originale.

@@ -2,13 +2,6 @@
 slug: "budokan"
 title: "Bu Do Kan Sports Club"
 excerpt: "Website for the Bu Do Kan sports club: classes, schedules, instructors and trial lesson requests, with a custom panel where the gym manages content and requests."
-tags:
-  - "Next.js"
-  - "Cloudflare Workers"
-  - "D1"
-  - "CMS"
-  - "CRM"
-  - "Sport"
 previously:
   - name: "Bu Do Kan su SvelteKit"
     year: 2024

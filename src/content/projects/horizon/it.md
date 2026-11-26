@@ -2,11 +2,6 @@
 slug: "horizon"
 title: "Horizon"
 excerpt: "Una dashboard che legge mercati, notizie e geopolitica al posto mio e mi mostra solo le poche cose che contano davvero."
-tags:
-  - "AI"
-  - "Dashboard"
-  - "News"
-  - "LLM"
 ---
 
 L'idea è l'opposto di un feed: una dashboard che ogni giorno legge mercati, crypto, notizie, meteo e geopolitica, dà un punteggio di rilevanza a ogni segnale e me ne mostra una decina al massimo.

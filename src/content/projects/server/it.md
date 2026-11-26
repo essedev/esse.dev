@@ -2,12 +2,6 @@
 slug: "server"
 title: "Server personali"
 excerpt: "Due VPS per le mie app, uno che serve e uno che ogni notte prova a ripristinare i backup, con la conoscenza in un repo e un monitor che guarda tutto da fuori."
-tags:
-  - "Docker"
-  - "Caddy"
-  - "Cloudflare Workers"
-  - "TypeScript"
-  - "Ops"
 why: "I controlli sanno cosa significa la risposta: l'endpoint MCP deve rispondere 401, perché un 200 vorrebbe dire che la protezione davanti è caduta."
 ---
 

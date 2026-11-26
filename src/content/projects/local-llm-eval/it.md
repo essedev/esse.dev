@@ -4,13 +4,6 @@ formerSlugs:
   - "local-llm-eval"
 title: "Local LLM Experiments"
 excerpt: "Esperimenti con i modelli locali su un MacBook Pro M5 da 32 GB: quanto reggono come coding agent, quanto vanno veloci e come farli stare in memoria."
-tags:
-  - "LLM"
-  - "MLX"
-  - "Benchmark"
-  - "AI Agents"
-  - "Research"
-  - "Python"
 now: "Sto misurando quanto resta usabile il Mac mentre un modello grande gira dentro un tetto di RAM."
 why: "Il perimetro di validità e quello che non ho misurato sono scritti prima dei risultati."
 ---

@@ -3,6 +3,8 @@
 	"published": true,
 	"created": "2026-04-26",
 	"updated": "2026-10-06",
+	"tags": ["voice", "agents", "cpp"],
+	"stack": ["ESP-IDF", "ESP-Brookesia", "ESP32"],
 	"activityRepo": "essedev/watch-os",
 	"logo": "./logo.svg",
 	"logoLight": "./logo-light.svg",

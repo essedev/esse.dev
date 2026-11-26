@@ -2,13 +2,6 @@
 slug: "relay"
 title: "Relay"
 excerpt: "Native macOS terminal built for running many coding agents in parallel, with each agent's state read from hooks instead of parsed output."
-tags:
-  - "Swift"
-  - "AppKit"
-  - "macOS"
-  - "AI Agents"
-  - "Claude Code"
-  - "Homebrew"
 why: "Each agent's state comes from Claude Code and Codex hooks, not from parsing output, so it stays right even under a wall of logs. I wrote it in Swift starting from zero Swift experience."
 now: "It is the terminal I work in every day; next come signed distribution and a third agent."
 ---

@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { featured, languageCodes, navigation } from '../../lib/config';
+import { featured, languageCodes, navigation, tagLabel } from '../../lib/config';
 import {
 	getArticles,
 	getChangelog,
@@ -25,7 +25,8 @@ export const GET: APIRoute = async () => {
 				kind: 'project',
 				title: p.text.title,
 				summary: p.text.excerpt,
-				tags: p.text.tags,
+				// The agent filters by both: a kind of project or a technology.
+				tags: [...p.meta.tags.map((t) => tagLabel(t, lang)), ...p.meta.stack],
 				status: p.meta.status,
 				date: p.meta.created,
 				featured: featured.projects.includes(p.id),

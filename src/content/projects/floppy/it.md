@@ -2,15 +2,6 @@
 slug: "floppy"
 title: "Floppy"
 excerpt: "Un disco condiviso per chi monta video su Mac: nel Finder è un volume come gli altri, i file stanno su S3 e una cache locale rende veloci le clip già toccate."
-tags:
-  - "macOS"
-  - "JuiceFS"
-  - "Tauri"
-  - "React"
-  - "Python"
-  - "FastAPI"
-  - "Valkey"
-  - "Homebrew"
 why: "Su macOS JuiceFS richiederebbe l'estensione kernel di macFUSE, cioè avviare ogni Mac in recovery. Floppy lo fa girare in una piccola VM Linux e condivide il disco con il Mac via SMB: niente estensioni e niente permessi da amministratore."
 now: "Un primo team lo usa da fine ottobre; sto lavorando su come si comporta con i file grandi nel lavoro vero."
 ---

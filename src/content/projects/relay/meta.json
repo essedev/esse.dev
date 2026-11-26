@@ -3,6 +3,8 @@
 	"published": true,
 	"created": "2026-07-02",
 	"updated": "2026-11-26",
+	"tags": ["macos", "agents", "devtools", "swift"],
+	"stack": ["AppKit", "Claude Code", "Homebrew"],
 	"repo": "https://github.com/essedev/relay",
 	"license": "MIT",
 	"install": "brew install --cask essedev/relay/relay-terminal",

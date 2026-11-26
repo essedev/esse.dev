@@ -2,13 +2,6 @@
 slug: "pgbee"
 title: "pgbee"
 excerpt: "Un'estensione per PostgreSQL: dichiari in SQL che una colonna si ricava da altre con un modello, e il database la tiene compilata, versionata e con i costi registrati."
-tags:
-  - "PostgreSQL"
-  - "SQL"
-  - "Python"
-  - "LLM"
-  - "Embeddings"
-  - "Open Source"
 why: "Le garanzie stanno nel database, in SQL e PL/pgSQL: coda, versioni, lineage e correzioni umane. Il worker è sostituibile, e anche in caso di crash pgbee non lascia righe vuote né sovrascrive chi ha corretto a mano."
 now: "Requeue per riga e retry dei job falliti; il README ora parte dalla colonna llm."
 ---

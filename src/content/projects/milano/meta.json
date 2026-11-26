@@ -3,6 +3,8 @@
 	"published": false,
 	"created": "2026-05-07",
 	"updated": "2026-07-04",
+	"tags": ["web", "data", "python"],
+	"stack": ["React", "MapLibre", "PostGIS", "GTFS"],
 	"repo": "https://github.com/essedev/based-routing",
 	"logo": "./logo.svg",
 	"logoLight": "./logo-light.svg",

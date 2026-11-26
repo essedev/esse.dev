@@ -2,12 +2,6 @@
 slug: "zeno"
 title: "Zeno"
 excerpt: "A web agency made of agents for Italian local businesses: it finds the ones without a website, builds them a real demo and handles the sale, publishing and support."
-tags:
-  - "AI Agents"
-  - "Astro"
-  - "Cloudflare Workers"
-  - "Python"
-  - "FastAPI"
 why: "Every piece of content declares in the schema where it comes from: business registry, derived, sample content or customer. In development samples show, in production they fail the build: a site cannot go live with made-up text."
 now: "The presentation is there and the service is still to validate: next comes closing the offer and finding the first pilot customer."
 ---

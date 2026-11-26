@@ -3,6 +3,8 @@
 	"published": true,
 	"created": "2026-10-19",
 	"updated": "2026-11-26",
+	"tags": ["web", "data"],
+	"stack": ["React", "MapLibre", "Cloudflare Workers", "Hono", "Python", "Valhalla", "PWA"],
 	"activityRepo": "essedev/varco",
 	"site": "https://varco.esse.dev",
 	"logo": "./logo.png",

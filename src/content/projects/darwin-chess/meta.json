@@ -3,6 +3,8 @@
 	"published": true,
 	"created": "2026-11-24",
 	"updated": "2026-11-26",
+	"tags": ["agents", "research", "game", "rust"],
+	"stack": ["Python", "FastAPI", "React", "Docker"],
 	"repo": "https://github.com/essedev/darwin-chess",
 	"site": "https://darwin.esse.dev",
 	"license": "MIT",

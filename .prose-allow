@@ -2,6 +2,8 @@
 src/content/**/it.md
 src/content/**/it.mdx
 src/content/site/it.json
+# The project tags carry their label in every language.
+src/config/tags.json
 # Historical archive, not canonical (read, never updated).
 docs/archive/**
 # Mockups, in the language of the UI they show.

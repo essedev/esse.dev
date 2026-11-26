@@ -2,13 +2,6 @@
 slug: "core"
 title: "CORE"
 excerpt: "High-performance Proof of Work cryptocurrency with dynamic fees, advanced mempool and complete web interface"
-tags:
-  - "Python"
-  - "Blockchain"
-  - "Crypto"
-  - "P2P"
-  - "SQLite"
-  - "REST API"
 ---
 
 CORE is a robust cryptocurrency implementation built from scratch with enterprise-grade security and scalability. It implements a sophisticated Proof of Work consensus mechanism with dynamic difficulty adjustment, distributed mining, persistent SQLite storage, advanced fee market with priority-based transaction processing, and a full-featured P2P network.

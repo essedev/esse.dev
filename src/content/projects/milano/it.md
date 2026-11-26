@@ -2,13 +2,6 @@
 slug: "milano"
 title: "Nuovo a Milano"
 excerpt: "Da quando mi sono trasferito a Milano: un trip planner che sceglie la stazione giusta tra tutte quelle che hai intorno, e una mappa dei quartieri con i numeri."
-tags:
-  - "React"
-  - "MapLibre"
-  - "PostGIS"
-  - "GTFS"
-  - "Python"
-  - "Open Data"
 ---
 
 Mi sono trasferito a Milano nel 2026, e due progetti sono nati quasi subito. Il terzo è arrivato dopo e ha una scheda sua: [Varco](/it/progetti/varco), il navigatore che sa in quali zone puoi entrare.

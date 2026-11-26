@@ -58,8 +58,9 @@ install, where WebKit stops the viewport a status bar short of the screen's bott
 ## Content: files in the repo, no DB or CMS
 
 Each project and article is a folder in `src/content/`: a `meta.json` with the fields
-shared across languages (status, dates, links, published) and one `<lang>.md` per
-language (frontmatter with slug, title, excerpt, tags and, for projects, the earlier
+shared across languages (status, dates, links, published; for projects the tags, from the
+closed vocabulary of `src/config/tags.json`, and the stack) and one `<lang>.md` per language
+(frontmatter with slug, title, excerpt, tags for articles and, for projects, the earlier
 iterations in `previously`, #20; body in Markdown). The two halves are separate content
 collections (`src/content.config.ts`, Zod schemas) and are joined in `src/lib/content.ts`,
 the single access point to content for pages and endpoints. That is where the build

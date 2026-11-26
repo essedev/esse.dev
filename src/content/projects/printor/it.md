@@ -4,12 +4,6 @@ formerSlugs:
   - "printor"
 title: "Edge Lab"
 excerpt: "Un laboratorio di ricerca quant su una domanda sola: dove un LLM dà un vantaggio vero nel trading, se lo dà. Con un harness costruito per non ingannarmi."
-tags:
-  - "Python"
-  - "LLM"
-  - "Quant"
-  - "DuckDB"
-  - "Research"
 why: "Il test che conta è sul cutoff del modello: sugli eventi successivi al suo addestramento il vantaggio sparisce, quindi buona parte del risultato era leakage."
 ---
 

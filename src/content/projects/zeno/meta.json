@@ -3,6 +3,8 @@
 	"published": true,
 	"created": "2026-08-28",
 	"updated": "2026-11-26",
+	"tags": ["agents", "web", "python"],
+	"stack": ["Astro", "Cloudflare Workers", "FastAPI"],
 	"activityRepo": "essedev/zeno",
 	"logo": "./logo.svg",
 	"logoLight": "./logo-light.svg",

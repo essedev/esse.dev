@@ -2,15 +2,6 @@
 slug: "darwin-chess"
 title: "darwin-chess"
 excerpt: "Un agente LLM da pochi centesimi scrive un motore di scacchi in Rust partendo da un progetto vuoto e lo fa evolvere da solo: una modifica resta solo se batte la versione precedente in partite vere."
-tags:
-  - "AI Agents"
-  - "Rust"
-  - "Chess"
-  - "Research"
-  - "Python"
-  - "FastAPI"
-  - "React"
-  - "Docker"
 why: "L'agente controlla tutto il motore e non ha nessun accesso all'ambiente che lo verifica: non può vederlo né toccarlo. Anche il controllo delle mosse legali usa posizioni casuali, perché i conteggi di quelle standard sono noti e si potrebbero scrivere a mano."
 now: "Gira giorno e notte dal 25 novembre ed è alla quindicesima generazione; sto misurando quanto rende farlo ragionare di più a ogni sessione."
 ---

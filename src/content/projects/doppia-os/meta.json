@@ -3,6 +3,8 @@
 	"published": true,
 	"created": "2022-04-16",
 	"updated": "2026-10-04",
+	"tags": ["web", "typescript"],
+	"stack": ["Svelte"],
 	"site": "https://doppia-os.pages.dev/",
 	"logo": "./logo.svg",
 	"logoLight": "./logo-light.svg",

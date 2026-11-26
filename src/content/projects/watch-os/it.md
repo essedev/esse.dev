@@ -2,13 +2,6 @@
 slug: "watch-os"
 title: "Watch OS"
 excerpt: "Un firmware mio per uno smartwatch ESP32-S3: premi un tasto, parli, e risponde l'agente di Nexus."
-tags:
-  - "C++"
-  - "ESP-IDF"
-  - "ESP-Brookesia"
-  - "ESP32"
-  - "Embedded"
-  - "Voice"
 previously:
   - name: "Watch OS in C"
     year: 2026

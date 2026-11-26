@@ -2,12 +2,6 @@
 slug: "zeno"
 title: "Zeno"
 excerpt: "Un'agenzia web fatta di agenti per le attività locali italiane: trova chi non ha un sito, gliene costruisce una demo vera e segue vendita, pubblicazione e supporto."
-tags:
-  - "AI Agents"
-  - "Astro"
-  - "Cloudflare Workers"
-  - "Python"
-  - "FastAPI"
 why: "Ogni contenuto dichiara nello schema da dove viene: dati camerali, dedotto, contenuto d'esempio o cliente. In sviluppo gli esempi si vedono, in produzione fanno fallire la build: un sito non può andare online con un testo inventato."
 now: "La presentazione c'è e il servizio è da validare: il prossimo passo è chiudere l'offerta e trovare il primo cliente pilota."
 ---

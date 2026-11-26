@@ -3,6 +3,8 @@
 	"published": true,
 	"created": "2026-01-13",
 	"updated": "2026-11-26",
+	"tags": ["llm", "voice", "macos", "swift"],
+	"stack": ["SwiftUI", "FastAPI"],
 	"logo": "./logo.png",
 	"cover": {
 		"src": "./cover.webp",

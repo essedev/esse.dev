@@ -2,14 +2,6 @@
 slug: "motio"
 title: "Motio"
 excerpt: "An open source framework for making videos by writing React components: every frame is rendered in a real headless Chrome and encoded with FFmpeg, with an API compatible with Remotion's."
-tags:
-  - "React"
-  - "TypeScript"
-  - "Video"
-  - "FFmpeg"
-  - "Chrome"
-  - "AI Agents"
-  - "Open Source"
 why: "Compatibility with Remotion is something I measure: pure functions have to give the same results as the published package, and the same frame has to give the same pixels in any order. The thresholds are part of the contract: changing one is a written decision."
 now: "It is in pre-alpha and can be tried from a clone; next comes the release on npm."
 ---

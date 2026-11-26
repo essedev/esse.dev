@@ -3,6 +3,8 @@
 	"published": true,
 	"created": "2026-03-18",
 	"updated": "2026-03-19",
+	"tags": ["game"],
+	"stack": ["Kotlin", "OpenGL", "LWJGL"],
 	"logo": "./logo.svg",
 	"logoLight": "./logo-light.svg",
 	"cover": {

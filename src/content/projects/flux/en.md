@@ -2,13 +2,6 @@
 slug: "flux"
 title: "Flux"
 excerpt: "Newsletter and RSS reader that extracts articles into clean markdown faithful to the source, all on a single Cloudflare Worker."
-tags:
-  - "Cloudflare Workers"
-  - "Hono"
-  - "D1"
-  - "React"
-  - "PWA"
-  - "AI"
 ---
 
 Flux started as TLDR Checker, a scraper to read TLDR digests without opening my inbox. The second version became a source-agnostic reader: any feed, any newsletter, with articles cleanly separated and content faithful to the original.

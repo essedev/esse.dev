@@ -2,5 +2,7 @@
 	"status": "archived",
 	"published": false,
 	"created": "2025-12-22",
-	"updated": "2025-09-10"
+	"updated": "2025-09-10",
+	"tags": ["web"],
+	"stack": ["SvelteKit", "Tailwind CSS", "PocketBase"]
 }

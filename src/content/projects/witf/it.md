@@ -2,14 +2,6 @@
 slug: "witf"
 title: "What's in the Fridge"
 excerpt: "Applicazione web per la gestione intelligente dell'inventario domestico con blog ricette AI e riduzione spreco alimentare"
-tags:
-  - "Next.js"
-  - "TypeScript"
-  - "Cloudflare"
-  - "PostgreSQL"
-  - "Drizzle"
-  - "AI"
-  - "OpenAI"
 ---
 
 What's in the Fridge (WITF) è un'applicazione web per la gestione intelligente dell'inventario domestico. Traccia prodotti con sistema batch per scadenze multiple, organizzazione per location (frigo, freezer, dispensa), alert scadenze con notifiche visive e sistema memoria per prodotti frequenti. Include calendario raccolta differenziata configurabile e upload immagini prodotti.

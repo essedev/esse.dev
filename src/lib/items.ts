@@ -1,3 +1,4 @@
+import { tagLabel } from './config';
 import type { Article, Project, ProjectStatus } from './content';
 import type { ListItem } from './listing';
 import type { UiKey } from './site';
@@ -34,7 +35,7 @@ export function projectItem(p: Project, route: string, t: (k: UiKey) => string):
 		href: `/${p.lang}/${route}/${p.text.slug}`,
 		title: p.text.title,
 		excerpt: p.text.excerpt,
-		tags: p.text.tags,
+		tags: p.meta.tags.map((t) => tagLabel(t, p.lang)),
 		date: p.meta.created,
 		dateLabel: formatDate(p.meta.created, p.lang),
 		status: p.meta.status,

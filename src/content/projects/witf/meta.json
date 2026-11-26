@@ -2,5 +2,7 @@
 	"status": "in-progress",
 	"published": false,
 	"created": "2025-01-10",
-	"updated": "2025-01-10"
+	"updated": "2025-01-10",
+	"tags": ["web", "llm", "typescript"],
+	"stack": ["Next.js", "Cloudflare Workers", "PostgreSQL", "Drizzle", "OpenAI"]
 }

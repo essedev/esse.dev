@@ -92,8 +92,11 @@ Secrets in `.dev.vars` (excluded from git, template in `.dev.vars.example`), rea
 - Site texts and UI strings: `site` collection (`src/content/site/<lang>.json`), read with
   `getSite(lang)` and `translator(lang)` from `src/lib/site.ts`. Strict schema: a new key
   goes in the schema and in every language, and becomes a type (`UiKey`).
-- Configuration in `src/config/` (languages, routes per language, showcase), validated on
-  import by `src/lib/config.ts`.
+- Configuration in `src/config/` (languages, routes per language, showcase, project tags),
+  validated on import by `src/lib/config.ts`.
+- Project tags are filters: 1-4 ids from `src/config/tags.json` in `meta.json`, the kind of
+  project first and the language last; the build fails on a tag with fewer than 2 published
+  projects. Technologies go in `stack`, shown on the page and read by the agent.
 - Astro's standard where it exists (collections, `@astrojs/rss`, Fonts API). The sitemap is
   hand-written: `@astrojs/sitemap` does not know the translated slugs. Its stylesheet
   (`src/pages/sitemap.css.ts`) reads color tokens from `global.css`: renaming one there

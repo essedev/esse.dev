@@ -3,6 +3,8 @@
 	"published": true,
 	"created": "2025-08-15",
 	"updated": "2026-03-08",
+	"tags": ["web", "data", "rust"],
+	"stack": ["Solana", "Anchor", "TypeScript", "Python"],
 	"repo": "https://github.com/essedev/solplace",
 	"logo": "./logo.svg",
 	"logoLight": "./logo-light.svg",

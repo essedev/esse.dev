@@ -1,5 +1,5 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
-import { featured, languageCodes } from './config';
+import { featured, languageCodes, tagIds } from './config';
 import { orderFeaturedFirst } from './featured';
 import type { FormerSlugMap, SlugMap } from './i18n';
 
@@ -174,6 +174,13 @@ function loadAll() {
 				throw new Error(`method/${m.id}: \`quote\` presente solo in alcune lingue`);
 		}
 		const publishedIds = new Set(projects.map((p) => p.id));
+		// A tag is a filter: one that narrows the list to a single project, or to none, does not
+		// belong in the vocabulary.
+		for (const id of tagIds) {
+			const count = projects.filter((p) => p.meta.tags.includes(id)).length;
+			if (count < 2)
+				throw new Error(`tags.json: "${id}" is on ${count} published projects, it needs 2`);
+		}
 		// The about page's steps are the same in every language: only the words change.
 		const about = await getCollection('about');
 		const steps = (lang: string) =>

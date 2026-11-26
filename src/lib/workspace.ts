@@ -1,5 +1,5 @@
 import type { ImageMetadata } from 'astro';
-import { featured, navigation } from './config';
+import { featured, navigation, tagLabel } from './config';
 import { getArticles, getMethod, getNow, getProjects, type ProjectStatus } from './content';
 import { orderFeaturedFirst } from './featured';
 import { formatDate } from './items';
@@ -129,7 +129,7 @@ export async function getNav(lang: string, t: Translate): Promise<Nav> {
 					status: p.meta.status,
 					logo: p.meta.logo,
 					logoLight: p.meta.logoLight,
-					search: `${p.text.title} ${p.text.tags.join(' ')} ${statusLabel(p.meta.status)}`,
+					search: `${p.text.title} ${p.meta.tags.map((t) => tagLabel(t, lang)).join(' ')} ${p.meta.stack.join(' ')} ${statusLabel(p.meta.status)}`,
 					rest: !showcase.has(p.id)
 				})),
 				more:

@@ -2,13 +2,6 @@
 slug: "idkcraft"
 title: "IDKCraft"
 excerpt: "A Minecraft-style voxel game in Kotlin and OpenGL, with multiplayer, machines and live updates: 209 commits in two days. Plus a studio that generates its pixel art textures."
-tags:
-  - "Kotlin"
-  - "OpenGL"
-  - "LWJGL"
-  - "Game"
-  - "Multiplayer"
-  - "AI"
 why: "The game updates while you play: singleplayer is a client connected to a local server, so on every build the server restarts, reloads the world and clients update themselves."
 ---
 

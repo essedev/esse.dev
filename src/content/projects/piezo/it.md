@@ -2,15 +2,6 @@
 slug: "piezo"
 title: "piezo"
 excerpt: "Un synth modulare che si suona nel browser e si costruisce insieme a un agente: i moduli si collegano con i cavi come su un hardware, e l'agente lavora sulla stessa patch che stai suonando."
-tags:
-  - "Audio"
-  - "WebAssembly"
-  - "C++"
-  - "Faust"
-  - "React"
-  - "MCP"
-  - "AI Agents"
-  - "FastAPI"
 why: "Il motore audio è uno solo, compilato in WebAssembly: gira nel browser quando suoni e sul server quando un agente chiede un render. Quello che l'agente ascolta esce dallo stesso motore che senti tu."
 now: "È online sul mio server, con la registrazione chiusa; sto lavorando ai brani a tracce, che per ora gli agenti scrivono e renderizzano senza interfaccia."
 ---

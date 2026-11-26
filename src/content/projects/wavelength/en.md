@@ -2,13 +2,6 @@
 slug: "wavelength"
 title: "Wavelength"
 excerpt: "A radio made by AI, born at a Milan AI Week 2026 hackathon: a newsroom of agents picks and checks the news, two AI hosts talk about it live."
-tags:
-  - "AI Agents"
-  - "Python"
-  - "FastAPI"
-  - "PostgreSQL"
-  - "React"
-  - "Hackathon"
 ---
 
 I built it in three days for the AI Agent Olympics at Milan AI Week 2026. A newsroom of agents reads the sources, picks the stories, checks and writes them; two AI hosts discuss them in a multi-turn dialogue, generated and read out as a stream.

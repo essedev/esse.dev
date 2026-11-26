@@ -3,6 +3,8 @@
 	"published": true,
 	"created": "2024-09-09",
 	"updated": "2026-10-06",
+	"tags": ["website", "typescript"],
+	"stack": ["Next.js", "Cloudflare Workers", "D1"],
 	"site": "https://budokan.it",
 	"logo": "./logo.svg",
 	"logoLight": "./logo-light.svg",

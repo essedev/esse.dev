@@ -14,7 +14,7 @@ import Pager from '../../../components/detail/Pager.astro';
 import Page from '../../../components/Page.astro';
 import Prose from '../../../components/Prose.astro';
 import Workspace from '../../../layouts/Workspace.astro';
-import { featured, languageCodes, navigation } from '../../../lib/config';
+import { featured, languageCodes, navigation, tagLabel } from '../../../lib/config';
 import {
 	getArticles,
 	getMethod,
@@ -307,12 +307,20 @@ const host = (url: string) => url.replace(/^https?:\/\/(www\.)?/, '').replace(/\
 							</div>
 						)}
 					</dl>
-					{project.text.tags.length > 0 && (
+					<div class="flex flex-col gap-2.5">
+						<p class="label">{t('tags')}</p>
+						<ul class="flex flex-wrap gap-1.5">
+							{project.meta.tags.map((tag) => (
+								<li class="chip">{tagLabel(tag, lang)}</li>
+							))}
+						</ul>
+					</div>
+					{project.meta.stack.length > 0 && (
 						<div class="flex flex-col gap-2.5">
 							<p class="label">{t('stack')}</p>
 							<ul class="flex flex-wrap gap-1.5">
-								{project.text.tags.map((tag) => (
-									<li class="chip">{tag}</li>
+								{project.meta.stack.map((tech) => (
+									<li class="chip">{tech}</li>
 								))}
 							</ul>
 						</div>
