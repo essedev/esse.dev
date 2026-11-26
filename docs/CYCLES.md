@@ -416,5 +416,5 @@ Two new project entries, the showcase changed to hold them, and what followed fr
 - **Now** (`58cbd52`): the dated note `2026-11-darwin-chess-motio`.
 - **Docs:** `docs/features/progetti.md` follows the sorting, and names the two covers among
   the screenshots in both themes and Motio's among the covers with text.
-- **Next step:** the changelog entry for this release, due in the same push (#35); then
-  unchanged from Cycle 34.
+- **Changelog** (`44896ae`): the release's entry, `2026-11-26-darwin-chess-motio` (#35).
+- **Next step:** unchanged from Cycle 34.
