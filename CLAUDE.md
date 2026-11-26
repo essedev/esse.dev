@@ -77,8 +77,8 @@ Secrets in `.dev.vars` (excluded from git, template in `.dev.vars.example`), rea
   build if a language is missing, a text has no meta, a slug repeats or the showcase points
   to an unpublished project. A renamed slug that ever went live stays in the text's
   `formerSlugs`: the catch-all redirects it with a 301. A project to hide goes to
-  `published: false`; one that must not be named is deleted, since the files are public (DECISIONS #21). Which projects, how to
-  tell them and the site's voice: `docs/features/progetti.md`. The repo is public and the
+  `published: false`; one that must not be named is deleted, since the files are public
+  (DECISIONS #21). Which projects, how to tell them and the site's voice: `docs/features/progetti.md`. The repo is public and the
   agent reads its docs: no client or reserved project names in any file.
 - A change a visitor notices (a page, an agent ability, projects added or reworked) brings
   its entry in `src/content/changelog/<date>-<slug>/` in the same push, written before
