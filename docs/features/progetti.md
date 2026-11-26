@@ -77,7 +77,9 @@ which stopped the day Nexus restarted.
 - Watch OS: firmware for a smartwatch that is a voice client of an agent.
 - IDKCraft: a voxel game in Kotlin, with IDKCraft Studio generating pixel-art textures
   via image models, with reference images to keep the style.
-- Local LLM Experiments, a single item on local LLMs: Local LLM Eval and LLM Dash.
+- Local LLM Experiments, a single item on local LLMs: Local LLM Eval, LLM Dash and, since
+  2026-11-26, moe-stream (a RAM cap for MoE models in llama.cpp), told as a chapter while its
+  repo is private.
 - piezo: a modular synth in the browser that an agent builds with you. Private repo, sign-up
   closed: an entry with no repo or site link until it opens.
 - Milan: Varco carries based-routing (multi-origin trip planner on the Lombardy network) and

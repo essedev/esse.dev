@@ -1,8 +1,8 @@
 {
-	"status": "completed",
+	"status": "in-progress",
 	"published": true,
 	"created": "2026-05-26",
-	"updated": "2026-08-22",
+	"updated": "2026-11-26",
 	"repo": "https://github.com/essedev/local-llm-eval",
 	"logo": "./logo.svg",
 	"logoLight": "./logo-light.svg",

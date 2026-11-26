@@ -9,6 +9,7 @@ tags:
   - "AI Agents"
   - "Research"
   - "Python"
+now: "Sto misurando quanto resta usabile il Mac mentre un modello grande gira dentro un tetto di RAM."
 why: "Il perimetro di validità e quello che non ho misurato sono scritti prima dei risultati."
 ---
 
@@ -20,6 +21,19 @@ Volevo sapere se un modello locale può fare davvero da coding agent, non in una
 - Spezzare il lavoro in una roadmap salva i modelli fragili ma rompe quelli capaci, perché il reset del contesto fra un task e l'altro fa perdere coerenza.
 
 Il perimetro è stretto e lo dico nel repo: un solo task, quasi tutte le celle con N=1, nessun dato su refactor o contesti lunghi. Vale come punto di partenza qualitativo, non come benchmark. Log, codice generato, punteggi e costi di ogni run sono pubblici.
+
+## moe-stream
+
+A novembre 2026 la domanda è diventata un'altra: far girare un modello grande senza che si prenda tutto il Mac. macOS non ha un modo di limitare la memoria di un processo, e llama.cpp con Metal blocca in memoria le pagine del modello. Il limite quindi lo deve mettere il motore. moe-stream è un fork di llama.cpp per i modelli MoE, quelli che per ogni token usano solo una parte dei loro pesi: gli si dà un tetto di RAM, e quello che non ci sta lo legge dall'SSD quando serve.
+
+Misure del 23 novembre sullo stesso M5 da 32 GB, da rifare prima di pubblicare il repo:
+
+- Il tetto regge: con 12 GiB il modello ne blocca 12,2, con 16 ne blocca 16,3.
+- Token e probabilità sono identici bit per bit a quelli del modello tutto in memoria.
+- Inkling 2 Mini, 16,5 GB su disco, fa 21-23 token al secondo tutto in memoria, 17,6-19,8 con un tetto di 16 GiB, 12-17 con 12 e 6-11 con 8.
+- Qwen3.8 Flash Next, 102 GB su disco, gira sul Mac da 32 GB a circa 7,5 token al secondo con un tetto di 12-16 GiB. Lì il limite è la velocità dell'SSD.
+
+Lo stesso tetto l'ho portato anche in un server basato su MLX. Quello che non ho ancora misurato è la cosa per cui l'ho fatto: quanto resta usabile il Mac per il resto mentre il modello gira. Il repo è ancora privato.
 
 ## LLM Dash
 
