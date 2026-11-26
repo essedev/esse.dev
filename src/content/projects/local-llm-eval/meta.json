@@ -4,6 +4,7 @@
 	"created": "2026-05-26",
 	"updated": "2026-11-26",
 	"repo": "https://github.com/essedev/local-llm-eval",
+	"activityRepo": "essedev/moe-stream",
 	"logo": "./logo.svg",
 	"logoLight": "./logo-light.svg",
 	"cover": {

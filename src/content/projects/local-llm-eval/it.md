@@ -1,7 +1,7 @@
 ---
 slug: "local-llm-experiments"
 title: "Local LLM Experiments"
-excerpt: "Quanto regge il coding agentico con modelli locali su un MacBook Pro M5 da 32 GB, misurato contro i modelli cloud."
+excerpt: "Esperimenti con i modelli locali su un MacBook Pro M5 da 32 GB: quanto reggono come coding agent, quanto vanno veloci e come farli stare in memoria."
 tags:
   - "LLM"
   - "MLX"
@@ -13,28 +13,33 @@ now: "Sto misurando quanto resta usabile il Mac mentre un modello grande gira de
 why: "Il perimetro di validità e quello che non ho misurato sono scritti prima dei risultati."
 ---
 
-Volevo sapere se un modello locale può fare davvero da coding agent, non in una demo ma in un harness che scrive un'app intera. Il task è sempre lo stesso: una CRUD con backend FastAPI e SQLite e frontend React, generata da zero e valutata con una rubrica fissa.
+Da maggio 2026 uso il mio MacBook Pro M5 da 32 GB per capire cosa si può fare davvero con i modelli locali. Sono tre domande, arrivate una dopo l'altra.
 
-- Su uno scaffold piccolo, Qwen3.6-35B-A3B quantizzato a 4 bit con MLX ha fatto 18 su 18 in 3,5-7 minuti, senza correzioni umane. Replicato due volte.
-- Sullo stesso task Opus 4.7 ha fatto 17 su 18 a 0,76 dollari a run, DeepSeek V4 Flash 17 su 18 a 0,002: il costo cambia di circa 380 volte, il risultato resta nel rumore della rubrica.
-- Per il tool calling in locale servono tre cose allineate: il training del modello, il chat template e il parser del server. Se un anello è rotto, il modello fallisce appena installato.
-- Spezzare il lavoro in una roadmap salva i modelli fragili ma rompe quelli capaci, perché il reset del contesto fra un task e l'altro fa perdere coerenza.
+## Reggono come coding agent?
 
-Il perimetro è stretto e lo dico nel repo: un solo task, quasi tutte le celle con N=1, nessun dato su refactor o contesti lunghi. Vale come punto di partenza qualitativo, non come benchmark. Log, codice generato, punteggi e costi di ogni run sono pubblici.
+Il task è sempre lo stesso: una piccola app con backend e frontend, generata da zero dentro un harness e valutata con una rubrica fissa. I primi round hanno lasciato due indicazioni, da prendere come tali:
+
+- su un progetto piccolo un modello locale scelto bene sta alla pari con i modelli cloud;
+- per il tool calling in locale servono tre cose allineate: il training del modello, il chat template e il parser del server. Se un anello è rotto, il modello fallisce appena installato.
+
+Il resto l'ho archiviato. Il confronto fra dare il lavoro tutto insieme e spezzarlo in passi era sbilanciato, perché le due modalità ricevevano istruzioni diverse. Ho ricominciato con un metodo più stretto, e quel round è ancora da finire. Il perimetro è piccolo e il repo lo dice prima dei risultati: un solo task, quasi sempre una sola prova, niente refactor né contesti lunghi.
+
+## Quanto vanno veloci?
+
+Ad agosto ho misurato perché un modello più piccolo sul disco può essere molte volte più lento di uno più grande. Un modello denso rilegge tutti i suoi pesi a ogni token, uno MoE ne attiva solo una parte: sulla stessa macchina il primo faceva 8 token al secondo, gli altri due 40 e 60. Il limite è quanti GB al secondo la memoria riesce a muovere, non quanta RAM c'è.
 
 ## moe-stream
 
-A novembre 2026 la domanda è diventata un'altra: far girare un modello grande senza che si prenda tutto il Mac. macOS non ha un modo di limitare la memoria di un processo, e llama.cpp con Metal blocca in memoria le pagine del modello. Il limite quindi lo deve mettere il motore. moe-stream è un fork di llama.cpp per i modelli MoE, quelli che per ogni token usano solo una parte dei loro pesi: gli si dà un tetto di RAM, e quello che non ci sta lo legge dall'SSD quando serve.
+A novembre la domanda è diventata un'altra: far girare un modello grande senza che si prenda tutto il Mac. macOS non ha un modo di limitare la memoria di un processo, quindi il limite lo deve mettere il motore. moe-stream è un fork di llama.cpp per i modelli MoE: gli si dà un tetto di RAM, e i pesi che non ci stanno li legge dall'SSD quando servono.
 
-Misure del 23 novembre sullo stesso M5 da 32 GB, da rifare prima di pubblicare il repo:
+Le misure sono del 23 novembre, sullo stesso Mac, e le rifaccio prima di pubblicare il repo:
 
-- Il tetto regge: con 12 GiB il modello ne blocca 12,2, con 16 ne blocca 16,3.
-- Token e probabilità sono identici bit per bit a quelli del modello tutto in memoria.
-- Inkling 2 Mini, 16,5 GB su disco, fa 21-23 token al secondo tutto in memoria, 17,6-19,8 con un tetto di 16 GiB, 12-17 con 12 e 6-11 con 8.
-- Qwen3.8 Flash Next, 102 GB su disco, gira sul Mac da 32 GB a circa 7,5 token al secondo con un tetto di 12-16 GiB. Lì il limite è la velocità dell'SSD.
+- Il modello resta dentro la memoria che gli dai, e le risposte sono identiche, bit per bit, a quelle del modello tutto in memoria.
+- Si paga in velocità: un modello da 16 GB fa 21-23 token al secondo tutto in memoria e 12-17 con un tetto di 12 GiB.
+- Un modello da 102 GB gira sul Mac da 32 GB, a circa 7 token al secondo. Lì il limite è l'SSD.
 
-Lo stesso tetto l'ho portato anche in un server basato su MLX. Quello che non ho ancora misurato è la cosa per cui l'ho fatto: quanto resta usabile il Mac per il resto mentre il modello gira. Il repo è ancora privato.
+Quello che non ho ancora misurato è la cosa per cui l'ho fatto: quanto resta usabile il Mac per il resto mentre il modello gira.
 
 ## LLM Dash
 
-Per usarli ogni giorno c'è [LLM Dash](https://github.com/essedev/llm-dash), il pannello di controllo dei modelli locali sul mio Mac: quattro profili pronti (build, coder, plan e uno veloce per quando la memoria è stretta), avviati con `mlx_lm.server`, una dashboard per cambiare modello e tenere d'occhio memoria e velocità, e l'integrazione con opencode. Nei profili entrano solo modelli con il tool calling verificato davvero, con lo stesso harness degli esperimenti.
+Per usarli ogni giorno c'è [LLM Dash](https://github.com/essedev/llm-dash), il pannello di controllo dei modelli locali sul mio Mac: i profili dei modelli in un file solo, il cambio da un modello all'altro dal browser, la memoria tenuta d'occhio (su 32 GB ci sta un modello grande alla volta) e una chat che mostra anche il ragionamento del modello. È open source con licenza MIT.

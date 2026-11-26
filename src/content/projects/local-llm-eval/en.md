@@ -1,7 +1,7 @@
 ---
 slug: "local-llm-experiments"
 title: "Local LLM Experiments"
-excerpt: "How far agentic coding goes with local models on a 32 GB MacBook Pro M5, measured against cloud models."
+excerpt: "Experiments with local models on a 32 GB MacBook Pro M5: how well they hold up as coding agents, how fast they run and how to make them fit in memory."
 tags:
   - "LLM"
   - "MLX"
@@ -13,28 +13,33 @@ now: "I am measuring how usable the Mac stays while a large model runs inside a 
 why: "The scope of validity and what I did not measure are written before the results."
 ---
 
-I wanted to know whether a local model can really act as a coding agent, not in a demo but in a harness that writes a whole app. The task is always the same: a CRUD app with a FastAPI and SQLite backend and a React frontend, generated from scratch and scored against a fixed rubric.
+Since May 2026 I have used my 32 GB MacBook Pro M5 to find out what can really be done with local models. There are three questions, which came one after the other.
 
-- On a small scaffold, Qwen3.6-35B-A3B quantized to 4 bits with MLX scored 18 out of 18 in 3.5 to 7 minutes, with no human fixes. Replicated twice.
-- On the same task Opus 4.7 scored 17 out of 18 at 0.76 dollars per run, DeepSeek V4 Flash 17 out of 18 at 0.002: cost differs by a factor of about 380, the result stays within the rubric's noise.
-- Local tool calling needs three things aligned: the model's training, the chat template and the server's parser. If one link is broken, the model fails out of the box.
-- Splitting the work into a roadmap rescues fragile models but breaks capable ones, because resetting context between tasks loses coherence.
+## Do they hold up as coding agents?
 
-The scope is narrow and the repo says so: one task, most cells with N=1, no data on refactors or long contexts. It is a qualitative starting point, not a benchmark. Logs, generated code, scores and costs for every run are public.
+The task is always the same: a small app with a backend and a frontend, generated from scratch inside a harness and scored against a fixed rubric. The first rounds left two indications, to be taken as such:
+
+- on a small project a well-chosen local model is on par with cloud models;
+- local tool calling needs three things aligned: the model's training, the chat template and the server's parser. If one link is broken, the model fails out of the box.
+
+The rest I archived. The comparison between giving the work all at once and splitting it into steps was unbalanced, because the two modes got different instructions. I started again with a stricter method, and that round is still to finish. The scope is small and the repo says so before the results: one task, almost always a single run, no refactors and no long contexts.
+
+## How fast do they run?
+
+In August I measured why a model that is smaller on disk can be many times slower than a larger one. A dense model rereads all its weights for every token, an MoE one activates only part of them: on the same machine the first did 8 tokens per second, the other two 40 and 60. The limit is how many GB per second the memory can move, not how much RAM there is.
 
 ## moe-stream
 
-In November 2026 the question became a different one: running a large model without it taking the whole Mac. macOS has no way to cap a process's memory, and llama.cpp with Metal locks the model's pages in memory. So the limit has to come from the engine. moe-stream is a fork of llama.cpp for MoE models, the ones that use only part of their weights for each token: you give it a RAM cap, and what does not fit is read from the SSD when needed.
+In November the question became a different one: running a large model without it taking the whole Mac. macOS has no way to cap a process's memory, so the limit has to come from the engine. moe-stream is a fork of llama.cpp for MoE models: you give it a RAM cap, and the weights that do not fit are read from the SSD when needed.
 
-Measurements of 23 November on the same 32 GB M5, to be redone before the repo goes public:
+The measurements are from 23 November, on the same Mac, and I will redo them before the repo goes public:
 
-- The cap holds: with 12 GiB the model locks 12.2, with 16 it locks 16.3.
-- Tokens and probabilities are bit-for-bit identical to those of the model fully in memory.
-- Inkling 2 Mini, 16.5 GB on disk, does 21-23 tokens per second fully in memory, 17.6-19.8 with a 16 GiB cap, 12-17 with 12 and 6-11 with 8.
-- Qwen3.8 Flash Next, 102 GB on disk, runs on the 32 GB Mac at about 7.5 tokens per second with a 12-16 GiB cap. There the limit is the speed of the SSD.
+- The model stays inside the memory you give it, and its answers are bit-for-bit identical to those of the model fully in memory.
+- You pay in speed: a 16 GB model does 21-23 tokens per second fully in memory and 12-17 with a 12 GiB cap.
+- A 102 GB model runs on the 32 GB Mac, at about 7 tokens per second. There the limit is the SSD.
 
-I brought the same cap to an MLX-based server too. What I have not measured yet is the reason I did it: how usable the Mac stays for everything else while the model runs. The repo is still private.
+What I have not measured yet is the reason I did it: how usable the Mac stays for everything else while the model runs.
 
 ## LLM Dash
 
-For daily use there is [LLM Dash](https://github.com/essedev/llm-dash), the control panel for local models on my Mac: four ready profiles (build, coder, plan and a fast one for when memory is tight), served with `mlx_lm.server`, a dashboard to switch models and watch memory and speed, and opencode integration. Only models whose tool calling was actually verified, with the same harness as the experiments, make it into a profile.
+For daily use there is [LLM Dash](https://github.com/essedev/llm-dash), the control panel for local models on my Mac: the model profiles in a single file, switching from one model to another in the browser, memory kept in view (on 32 GB one large model fits at a time) and a chat that also shows the model's reasoning. It is open source under the MIT license.
