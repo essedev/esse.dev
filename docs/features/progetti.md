@@ -81,7 +81,8 @@ which stopped the day Nexus restarted.
 - Milan: Varco carries based-routing (multi-origin trip planner on the Lombardy network) and
   Milanoz in `previously`, with the move to Milan in 2026 as its opening; the Milan entry is
   hidden (2026-10-27).
-- Personal servers, a single item: monitor (`status.esse.dev`) and server-ops.
+- Personal servers, a single item: monitor (`status.esse.dev`) and server-ops. Both repos are
+  private, so the entry has no repo link.
 - Experiments on Solana, a single item (folder `solplace`): SolPlace by name, the rest
   without.
 - doppia.os: one of the first projects with AI, while the coding agents were arriving. The
