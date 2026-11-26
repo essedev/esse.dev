@@ -1,5 +1,7 @@
 ---
 slug: "solana"
+formerSlugs:
+  - "solplace"
 title: "Solana experiments"
 excerpt: "An on-chain world map where tokens fight over territory, and around it the tools I wrote to read the Solana market in real time."
 ---

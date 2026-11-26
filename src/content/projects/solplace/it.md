@@ -1,5 +1,7 @@
 ---
 slug: "solana"
+formerSlugs:
+  - "solplace"
 title: "Esperimenti su Solana"
 excerpt: "Una mappa del mondo on-chain dove i token si contendono il territorio, e intorno gli strumenti che ho scritto per leggere il mercato di Solana in tempo reale."
 ---
