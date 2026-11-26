@@ -30,7 +30,7 @@ I wanted to see how far a cheap agent gets when left alone, as long as it cannot
 The numbers are from 26 November, after a day and a half. The current ones are live on [darwin.esse.dev](https://darwin.esse.dev), together with the games, the agent's reasoning and the spend.
 
 - Fewer than half of the submissions survive. The others lose the match, fail the checks or start from a base that has already been overtaken.
-- The Elo against Stockfish went from about 1,200 to about 2,000, with a wide margin of error. For a chess engine that is low: for now I am watching the slope.
+- The Elo against Stockfish went from about 1,200 to about 2,000. For a chess engine that is low: for now I am watching the slope.
 - A session costs a little over a cent. What queues up is the CPU that plays the games, not the model.
 - For four generations the agent only tweaked the evaluation, gaining little. It was supposed to reread its own history every ten attempts and had never done it, because of a bug of mine. With that fixed, its first real reflection sent it another way and it made the biggest jump up to then. In the same round I also let it think harder in each session, so I cannot say which of the two mattered.
 
