@@ -78,6 +78,8 @@ which stopped the day Nexus restarted.
 - IDKCraft: a voxel game in Kotlin, with IDKCraft Studio generating pixel-art textures
   via image models, with reference images to keep the style.
 - Local LLM Experiments, a single item on local LLMs: Local LLM Eval and LLM Dash.
+- piezo: a modular synth in the browser that an agent builds with you. Private repo, sign-up
+  closed: an entry with no repo or site link until it opens.
 - Milan: Varco carries based-routing (multi-origin trip planner on the Lombardy network) and
   Milanoz in `previously`, with the move to Milan in 2026 as its opening; the Milan entry is
   hidden (2026-10-27).

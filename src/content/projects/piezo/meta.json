@@ -1,0 +1,12 @@
+{
+	"status": "in-progress",
+	"published": true,
+	"created": "2026-11-16",
+	"updated": "2026-11-26",
+	"logo": "./logo.svg",
+	"logoLight": "./logo-light.svg",
+	"cover": {
+		"src": "./cover.webp",
+		"focus": "top"
+	}
+}

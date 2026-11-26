@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+	<defs>
+		<linearGradient id="t" x1="0" y1="0" x2="1" y2="1">
+			<stop offset="0" stop-color="#ff6a1f" stop-opacity="0.34"/>
+			<stop offset="1" stop-color="#ff6a1f" stop-opacity="0.16"/>
+		</linearGradient>
+	</defs>
+	<rect width="128" height="128" rx="28" fill="#f4f1fa"/>
+	<rect width="128" height="128" rx="28" fill="url(#t)"/>
+	<rect x="0.5" y="0.5" width="127" height="127" rx="27.5" fill="none" stroke="#2e1c6e" stroke-opacity="0.12"/>
+	<image x="19" y="19" width="90" height="90" preserveAspectRatio="xMidYMid meet" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA4MiA4MiI+CiAgPCEtLSBUaGUgcCBvZiB0aGUgd29yZG1hcmsgYWxvbmUsIGhlYXZpZXIgc28gaXQgaG9sZHMgYXQgMTYgcHg6IGNhYmxlIDAgYW5kIHRoZSBwbHVnLiAtLT4KICA8cGF0aCBkPSJNMjMgNTlWMjdhMjAgMjAgMCAxIDEgNDAgMCAyMCAyMCAwIDAgMS0zOC44IDYuOCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjZmY2YTFmIiBzdHJva2Utd2lkdGg9IjEzIiBzdHJva2UtbGluZWNhcD0icm91bmQiIHN0cm9rZS1saW5lam9pbj0icm91bmQiLz4KICA8cmVjdCB4PSIxMy41IiB5PSI1NyIgd2lkdGg9IjE5IiBoZWlnaHQ9IjE1IiByeD0iMyIgZmlsbD0iIzhiOTA5OSIvPgogIDxyZWN0IHg9IjE5LjUiIHk9IjcyIiB3aWR0aD0iNyIgaGVpZ2h0PSI5IiByeD0iMS41IiBmaWxsPSIjNTU1YTYzIi8+Cjwvc3ZnPgo="/>
+</svg>
