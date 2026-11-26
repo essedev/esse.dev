@@ -36,4 +36,6 @@ The numbers are from 26 November, after a day and a half. The current ones are l
 
 One limit is worth saying up front: the agent knows chess engine techniques by heart and is applying them more or less in textbook order. So what I am measuring so far is how well it applies known things under a verification it cannot bend, not a discovery. The plan is for the chess knowledge to come from a network trained on the engine's games against itself, instead of from the model's memory.
 
+It is the way I work with agents every day, taken to the extreme: I let them go fast and put the verification where they cannot bend it. Here the verification is a game. In real work it is tests, checks and measurements, and they have to be built first: it is [measure instead of trusting](/en/method/measure).
+
 It runs on a fanless MacBook Air M4, at home. The code is open source under the MIT license.

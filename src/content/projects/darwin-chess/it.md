@@ -36,4 +36,6 @@ I numeri sono del 26 novembre, dopo un giorno e mezzo. Quelli aggiornati sono in
 
 Un limite va detto subito: l'agente conosce a memoria le tecniche dei motori di scacchi e le sta applicando più o meno nell'ordine dei manuali. Finora quindi misuro quanto bene applica cose note sotto una verifica che non può piegare, non una scoperta. Il piano è che la conoscenza scacchistica arrivi da una rete addestrata sulle partite del motore contro se stesso, invece che dalla memoria del modello.
 
+È il modo in cui lavoro con gli agenti tutti i giorni, portato all'estremo: li lascio andare veloci e metto la verifica dove non possono piegarla. Qui la verifica è una partita. Nel lavoro vero sono test, controlli e misure, e vanno costruiti prima: è [misurare invece di fidarsi](/it/metodo/misurare).
+
 Gira su un MacBook Air M4 senza ventola, in casa. Il codice è open source con licenza MIT.
