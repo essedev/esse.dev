@@ -436,6 +436,11 @@ Two new project entries, the showcase changed to hold them, and what followed fr
   `scripts/render-cover.ts`: the panel used to follow its text, so Watch OS came out narrow and
   Copilota wide. A line that does not fit stops the render. The six list covers are rendered
   again; Copilota's no longer carries the two claims its text dropped.
+- **Method:** "Measure instead of trusting" now says the idea behind darwin-chess (an agent goes
+  as fast as the environment that checks it, built first and out of its reach), takes
+  darwin-chess as a proof in place of pgbee (three proofs at most) and no longer cites a score
+  from the archived rounds. darwin-chess's entry closes on that note. The setup note's proof
+  lost a count that could go stale.
 - **Open**, both in the BACKLOG: the `/releases` link shown even for repos with no release,
   and an E2E test of the mobile menu that fails now and then under the full suite.
 - **Next step:** unchanged from Cycle 34.
