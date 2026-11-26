@@ -2,7 +2,7 @@
 	"status": "in-progress",
 	"published": true,
 	"created": "2026-07-02",
-	"updated": "2026-10-11",
+	"updated": "2026-11-26",
 	"repo": "https://github.com/essedev/relay",
 	"license": "MIT",
 	"install": "brew install --cask essedev/relay/relay-terminal",

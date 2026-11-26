@@ -14,17 +14,17 @@ previously:
   - name: "Sales AI Copilot"
     year: 2026
     note: "La prima versione, con l'overlay in Electron. Riscritta da capo in Swift dopo gli spike su trascrizione, modelli veloci e retrieval."
-now: "Trascrive i due lati della call e propone le risposte dalla knowledge base."
+now: "Il backend ora vive dentro l'app; la sto provando su call vere prima di darla ad altri."
 ---
 
-In una call di vendita le risposte servono nel momento in cui il cliente fa la domanda: prezzi, casi, obiezioni già sentite. Copilota ascolta la call e le porta in un overlay laterale che resta fuori dalla condivisione dello schermo e non ruba il focus a Meet.
+In una call di vendita le risposte servono nel momento in cui il cliente fa la domanda: prezzi, casi, obiezioni già sentite. Copilota ascolta la call e le porta in un overlay laterale, pensato per restare fuori dalla condivisione dello schermo e non rubare il focus a Meet.
 
 ## Durante la call
 
 - Due canali separati: il microfono riprende chi vende, l'audio di sistema il cliente, catturato con un process tap di Core Audio. Ognuno ha il suo stream di trascrizione in tempo reale.
-- Quando il cliente fa una domanda, solleva un'obiezione o tocca un tema della knowledge base, un modello veloce decide se serve una card e la scrive con la fonte: nel test dal vivo la card arriva in 1,1-1,3 secondi. Una card quando serve, non una per frase.
+- Quando il cliente fa una domanda, solleva un'obiezione o tocca un tema della knowledge base, un modello veloce decide se serve una card e la scrive con la fonte, in poco più di un secondo. Una card quando serve, non una per frase.
 - Una domanda diretta (⌥⌘K) sulla knowledge base o sulla call stessa, come "cosa ha detto sul budget?", passa dalla stessa pipeline e risponde in meno di un secondo.
-- In via sperimentale Nemotron separa le voci del cliente in locale, con MLX, in un processo isolato senza rete: sul campione di prova le frasi attribuite salgono da 22 a 28 su 37.
+- In via sperimentale un modello locale separa le voci dal lato del cliente, in un processo isolato senza rete.
 - Senza cuffie il microfono riprende il cliente dalle casse: un filtro dell'eco scarta quelle frasi prima che diventino contesto.
 
 ## Prima e dopo
@@ -33,7 +33,7 @@ Prima della call c'è una scheda del cliente costruita dalle call precedenti, da
 
 ## Sotto
 
-- Ricerca ibrida, densa e lessicale con lo stemming italiano di Postgres, fusa con RRF: recall@5 di 0,97 sul corpus di prova.
+- Ricerca ibrida, densa e lessicale con lo stemming italiano di Postgres.
 - Il lavoro in background (ingestion dei documenti con OCR, embedding, schede, riassunti) passa da [pgbee](/it/progetti/pgbee).
 - Le eval girano sul codice vero: controllano i fatti chiave delle risposte, i numeri inventati e il "non c'è" sulle domande fuori dalla knowledge base.
 - Il client Swift è sottile: niente chiavi e nessuna chiamata ai provider, che stanno tutti nel backend.

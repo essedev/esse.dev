@@ -19,7 +19,7 @@ previously:
   - name: "Milanoz"
     year: 2026
     note: "Una mappa degli 88 quartieri ufficiali di Milano con abitanti, redditi, prezzi delle case, verde e isole di calore, più i luoghi con la loro storia. Statica: una pipeline in Python prepara i dati, senza backend."
-now: "È online alla versione 1.1; il prossimo passo è la prova in auto."
+now: "È online e ora porta in tutta Italia, con le regole di Milano; il prossimo passo è la prova in auto."
 ---
 
 Da quando mi sono trasferito a Milano, nel 2026, la città mi ha dato tre progetti: Varco è il terzo, i primi due sono qui sotto. In auto la domanda non è solo come arrivo, ma se posso entrare: ZTL con orari diversi, aree pedonali, Area B e Area C con regole che dipendono da alimentazione, classe Euro e deroghe. Il navigatore ti porta dentro senza chiederti che auto guidi. Varco parte da lì: dice per ogni zona se puoi entrare, a quali condizioni e fino a quando, e ti guida evitando quelle vietate.
@@ -34,4 +34,4 @@ Da quando mi sono trasferito a Milano, nel 2026, la città mi ha dato tre proget
 
 ## A che punto è
 
-È online su [varco.esse.dev](https://varco.esse.dev), alla versione 1.1, e si installa dal browser come app. Tutte le ZTL in vigore sono trascritte con una fonte. Il prossimo passo è la prova in auto. Varco è un nome di lavoro.
+È online su [varco.esse.dev](https://varco.esse.dev) e si installa dal browser come app. Conosce le regole del Comune di Milano, e solo quelle: da novembre cerca indirizzi e calcola percorsi in tutta Italia, e fuori Milano avvisa che lì vale la segnaletica. Quasi tutte le ZTL in vigore sono trascritte con una fonte. La navigazione l'ho provata solo con una guida simulata: il prossimo passo è la prova in auto. Varco è un nome di lavoro.

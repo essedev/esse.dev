@@ -10,7 +10,7 @@ tags:
   - "Claude Code"
   - "Homebrew"
 why: "Lo stato di ogni agente arriva dagli hook di Claude Code e Codex, non dal parsing dell'output, quindi resta giusto anche sotto un muro di log. L'ho scritto in Swift senza averlo mai usato prima."
-now: "Gli aggiornamenti si installano dal popup; il prossimo passo è separare il motore del terminale dal resto."
+now: "È il terminale in cui lavoro ogni giorno; i prossimi passi sono la distribuzione firmata e un terzo agente."
 ---
 
 Lavoro con cinque o sei sessioni di Claude Code e Codex aperte insieme, su progetti diversi. In un terminale normale, per capire quale agente sta aspettando una risposta, devo passare tab per tab. Relay nasce per togliere quel giro.
@@ -23,6 +23,6 @@ Lavoro con cinque o sei sessioni di Claude Code e Codex aperte insieme, su proge
 - Un progetto si chiude senza perderlo: tiene gruppo, tab e sessioni degli agenti, e ferma i processi così la memoria torna libera. La sidebar mostra solo i progetti aperti, Projects li elenca tutti e Cmd+P ne riapre uno per nome.
 - Workspace con gruppi, pane divisi con i propri tab, finestre multiple e un layout che sopravvive al riavvio. Gli aggiornamenti si installano dall'app, che poi propone il riavvio.
 
-È scritto in Swift 6 e AppKit, con SwiftTerm come motore dietro un'astrazione che lascia spazio a libghostty. I terminali inattivi vengono scaricati dalla memoria: circa 90 MB residenti con un terminale vivo e 92 con tredici; nel caso peggiore ogni tasto premuto aggiunge 2,4 µs. Metodo e numeri sono nel repo.
+È scritto in Swift 6 e AppKit, con SwiftTerm come motore dietro un'astrazione che lascia spazio a libghostty. I terminali inattivi vengono scaricati dalla memoria: tredici terminali aperti occupano quasi quanto uno. Metodo e numeri sono nel repo.
 
 È open source con licenza MIT e si installa con Homebrew: `brew install --cask essedev/relay/relay-terminal`.
