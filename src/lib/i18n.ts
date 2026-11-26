@@ -42,6 +42,12 @@ export const LEGACY_ROUTES: Record<string, Section> = {
 /** Content id -> language -> slug, per section with detail pages. */
 export type SlugMap = Record<DetailSection, Record<string, Record<string, string>>>;
 
+/**
+ * Former slug -> content id, per section with detail pages: the slugs an item had before a
+ * rename, so its old URLs still reach it.
+ */
+export type FormerSlugMap = Record<DetailSection, Record<string, string>>;
+
 /** Whether `lang` is one of the configured languages. */
 export function isValidLanguage(lang: string | undefined, languages: Language[]): boolean {
 	return !!lang && languages.some((l) => l.code === lang);
@@ -147,8 +153,8 @@ export function getLanguageUrl(params: {
 /**
  * The redirect to the canonical URL for a path that matches no page, or null if there is no
  * canonical (then it is a 404). It covers: unknown language, route of another language,
- * slug of another language, route without a language. The result never has a trailing
- * slash, so a single hop is enough.
+ * slug of another language, former slug of a renamed item, route without a language. The
+ * result never has a trailing slash, so a single hop is enough.
  */
 export function resolveRedirect(
 	pathname: string,
@@ -156,10 +162,11 @@ export function resolveRedirect(
 		languages: Language[];
 		navigation: NavigationConfig;
 		slugMap: SlugMap;
+		formerSlugs?: FormerSlugMap;
 		defaultLang: string;
 	}
 ): string | null {
-	const { languages, navigation, slugMap, defaultLang } = ctx;
+	const { languages, navigation, slugMap, formerSlugs, defaultLang } = ctx;
 	const segments = pathname.split('/').filter(Boolean);
 	if (segments.length === 0 || segments.length > 3) return null;
 
@@ -192,7 +199,10 @@ export function resolveRedirect(
 	}
 
 	if (!isDetailSection(found.section)) return null;
-	const targetSlug = translateSlug(slug, found.section, targetLang, slugMap);
+	const formerId = formerSlugs?.[found.section][slug];
+	const targetSlug =
+		translateSlug(slug, found.section, targetLang, slugMap) ??
+		(formerId ? (slugMap[found.section][formerId]?.[targetLang] ?? null) : null);
 	if (!targetSlug) return null;
 	const target = path(targetLang, targetRoute, targetSlug);
 	return target === path(...segments) ? null : target;

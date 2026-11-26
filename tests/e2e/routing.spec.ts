@@ -93,6 +93,12 @@ test.describe('i18n routing & redirects', () => {
 		expect(res.headers()['location']).toMatch(/\/en\/projects\/budokan$/);
 	});
 
+	test('a URL of the old site with a former slug reaches the renamed item', async ({ request }) => {
+		const res = await request.get('/it/blog/il-mio-nuovo-laboratorio', { maxRedirects: 0 });
+		expect(res.status()).toBe(301);
+		expect(res.headers()['location']).toMatch(/\/it\/scritti\/il-raccoglitore-arancione$/);
+	});
+
 	test('a canonical detail URL does not redirect (no loop)', async ({ request }) => {
 		const res = await request.get('/en/projects/budokan', { maxRedirects: 0 });
 		expect(res.status()).toBe(200);

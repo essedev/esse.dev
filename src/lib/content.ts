@@ -1,7 +1,7 @@
 import { getCollection, type CollectionEntry } from 'astro:content';
 import { featured, languageCodes } from './config';
 import { orderFeaturedFirst } from './featured';
-import type { SlugMap } from './i18n';
+import type { FormerSlugMap, SlugMap } from './i18n';
 
 /**
  * The only access to content for pages and endpoints. It joins the shared meta of each
@@ -114,6 +114,25 @@ function join<M extends object, E extends TextEntry>(
 			seen.set(slug, item.id);
 		}
 	}
+	// A former slug must lead to one item only, and never shadow a live one.
+	const live = new Set(
+		published.flatMap((item) =>
+			Object.values(item.texts).flatMap((t) => ('slug' in t.data ? [t.data.slug] : []))
+		)
+	);
+	const former = new Map<string, string>();
+	for (const item of published)
+		for (const t of Object.values(item.texts)) {
+			if (!('formerSlugs' in t.data)) continue;
+			for (const slug of t.data.formerSlugs ?? []) {
+				if (live.has(slug))
+					throw new Error(`${kind}/${item.id}: former slug "${slug}" is a live slug`);
+				const owner = former.get(slug);
+				if (owner && owner !== item.id)
+					throw new Error(`${kind}: former slug "${slug}" used by ${owner} and ${item.id}`);
+				former.set(slug, item.id);
+			}
+		}
 	return published;
 }
 
@@ -276,6 +295,20 @@ export async function getSlugMap(): Promise<SlugMap> {
 					Object.entries(item.texts).map(([lang, t]) => [lang, 'slug' in t.data ? t.data.slug : ''])
 				)
 			])
+		);
+	return { projects: toMap(projects), articles: toMap(articles), method: toMap(method) };
+}
+
+/** The former slugs of every item, for the redirect of the URLs it had before a rename. */
+export async function getFormerSlugs(): Promise<FormerSlugMap> {
+	const { projects, articles, method } = await load();
+	const toMap = (items: { id: string; texts: Record<string, TextEntry> }[]) =>
+		Object.fromEntries(
+			items.flatMap((item) =>
+				Object.values(item.texts).flatMap((t) =>
+					'formerSlugs' in t.data ? (t.data.formerSlugs ?? []).map((s) => [s, item.id]) : []
+				)
+			)
 		);
 	return { projects: toMap(projects), articles: toMap(articles), method: toMap(method) };
 }

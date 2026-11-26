@@ -1,7 +1,7 @@
 ---
 import NotFound from '../components/NotFound.astro';
 import { defaultLang, languageCodes, languages, navigation } from '../lib/config';
-import { getArticles, getMethod, getProjects, getSlugMap } from '../lib/content';
+import { getArticles, getFormerSlugs, getMethod, getProjects, getSlugMap } from '../lib/content';
 import { resolveRedirect, SECTIONS } from '../lib/i18n';
 import { getSite } from '../lib/site';
 import { searchWords, suggestPages, type PageRef } from '../lib/suggest';
@@ -17,6 +17,7 @@ const target = resolveRedirect(pathname, {
 	languages,
 	navigation,
 	slugMap: await getSlugMap(),
+	formerSlugs: await getFormerSlugs(),
 	defaultLang
 });
 if (target) return Astro.redirect(target, 301);

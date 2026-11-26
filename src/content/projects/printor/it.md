@@ -1,5 +1,7 @@
 ---
 slug: "edge-lab"
+formerSlugs:
+  - "printor"
 title: "Edge Lab"
 excerpt: "Un laboratorio di ricerca quant su una domanda sola: dove un LLM dà un vantaggio vero nel trading, se lo dà. Con un harness costruito per non ingannarmi."
 tags:

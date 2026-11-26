@@ -9,6 +9,7 @@ import {
 	routeOf,
 	sectionOf,
 	translateSlug,
+	type FormerSlugMap,
 	type SlugMap
 } from '../../src/lib/i18n';
 
@@ -44,6 +45,12 @@ const slugMap: SlugMap = {
 	projects: { budokan: { en: 'budokan', it: 'budokan' } },
 	articles: { lab: { en: 'my-new-laboratory', it: 'il-mio-nuovo-laboratorio' } },
 	method: { context: { en: 'context', it: 'contesto' } }
+};
+
+const formerSlugs: FormerSlugMap = {
+	projects: { 'budokan-old': 'budokan' },
+	articles: { 'old-lab': 'lab', 'vecchio-lab': 'lab' },
+	method: {}
 };
 
 describe('isValidLanguage', () => {
@@ -148,6 +155,16 @@ describe('resolveRedirect', () => {
 		expect(go('/it/blog/my-new-laboratory')).toBe('/it/scritti/il-mio-nuovo-laboratorio');
 		expect(go('/it/informazioni')).toBe('/it/chi-sono');
 		expect(go('/blog')).toBe('/en/writing');
+	});
+
+	it('redirects the former slug of a renamed item to its current slug', () => {
+		const withFormer = (path: string) =>
+			resolveRedirect(path, { languages, navigation, slugMap, formerSlugs, defaultLang: 'en' });
+		expect(withFormer('/en/projects/budokan-old')).toBe('/en/projects/budokan');
+		expect(withFormer('/it/scritti/old-lab')).toBe('/it/scritti/il-mio-nuovo-laboratorio');
+		expect(withFormer('/en/blog/vecchio-lab')).toBe('/en/writing/my-new-laboratory');
+		expect(withFormer('/en/writing/budokan-old')).toBeNull();
+		expect(go('/en/projects/budokan-old')).toBeNull();
 	});
 
 	it('does not accept a slug on a section without details', () => {

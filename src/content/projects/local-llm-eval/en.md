@@ -1,5 +1,7 @@
 ---
 slug: "local-llm-experiments"
+formerSlugs:
+  - "local-llm-eval"
 title: "Local LLM Experiments"
 excerpt: "Experiments with local models on a 32 GB MacBook Pro M5: how well they hold up as coding agents, how fast they run and how to make them fit in memory."
 tags:

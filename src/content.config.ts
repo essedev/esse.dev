@@ -69,10 +69,17 @@ const projects = defineCollection({
 		})
 });
 
+/**
+ * The slugs a text had before a rename: its old URLs redirect to the current one with a 301.
+ * A slug that ever went live stays here, or its ranking and links end on a 404.
+ */
+const formerSlugs = z.array(z.string().min(1)).optional();
+
 const projectTexts = defineCollection({
 	loader: glob({ pattern: '*/*.md', base: './src/content/projects', generateId: textId }),
 	schema: z.object({
 		slug: z.string().min(1),
+		formerSlugs,
 		title: z.string().min(1),
 		excerpt: z.string().min(1),
 		tags: z.array(z.string().min(1)),
@@ -111,6 +118,7 @@ const articleTexts = defineCollection({
 	loader: glob({ pattern: '*/*.{md,mdx}', base: './src/content/articles', generateId: textId }),
 	schema: z.object({
 		slug: z.string().min(1),
+		formerSlugs,
 		title: z.string().min(1),
 		excerpt: z.string().min(1),
 		description: z.string().min(1),
@@ -128,6 +136,7 @@ const methodTexts = defineCollection({
 	loader: glob({ pattern: '*/*.md', base: './src/content/method', generateId: textId }),
 	schema: z.object({
 		slug: z.string().min(1),
+		formerSlugs,
 		title: z.string().min(1),
 		summary: z.string().min(1),
 		/**
