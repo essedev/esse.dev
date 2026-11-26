@@ -56,7 +56,9 @@ DECISIONS #20.
 Decided with Simone on 2026-10-04 and applied in Cycle 21: every item has its entry, the
 new ones in first draft.
 
-**Showcase** (6): Relay, Nexus, Varco, pgbee, Zeno, Floppy. On 2026-10-27 Varco took
+**Showcase** (6): Relay, darwin-chess, Nexus, Motio, Varco, Floppy. On 2026-11-26 darwin-chess
+and Motio took the places of pgbee and Zeno, the two entries that had been still the longest;
+both moved to the registry, and Zeno comes back when work on it resumes. On 2026-10-27 Varco took
 Portsage's place and Floppy mcpbelt's; both moved to the registry. Floppy comes from what some
 colleagues needed; who they are is not named. Zeno and Varco are private: entries without a
 link to the repo (Varco links its site). The iterations of Nexus (`previously`) are Plannerinator, then
@@ -65,7 +67,7 @@ which stopped the day Nexus restarted.
 
 **Registry**:
 
-- Portsage, mcpbelt.
+- Portsage, mcpbelt, pgbee, Zeno.
 - Copilota: a copilot for sales calls, macOS app in Swift with the backend inside the app,
   transcription of both channels, cards from the knowledge base, Nemotron locally. Private
   repo.
