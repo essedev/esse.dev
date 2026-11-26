@@ -431,5 +431,6 @@ Two new project entries, the showcase changed to hold them, and what followed fr
   small team"; Varco, Relay, Zeno, Personal servers and Copilota got their current state. Along
   the way figures that age fast or serve no reader went out (session counts, micro-benchmarks).
   The Now note of the month and the changelog entry tell all of it.
-- **Open:** every entry with a repo shows a `/releases` link, even when the repo has no release.
+- **Open**, both in the BACKLOG: the `/releases` link shown even for repos with no release,
+  and an E2E test of the mobile menu that fails now and then under the full suite.
 - **Next step:** unchanged from Cycle 34.

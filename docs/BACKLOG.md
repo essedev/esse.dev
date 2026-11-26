@@ -14,6 +14,13 @@ Open work nobody is about to start, by area and in no order. A milestone in
   about 1,000 and on short screens it scrolls. Left like this by Simone at the close of
   M15; to be picked up again if the showcase or the single pages grow.
 
+- The project page shows a `/releases` link for every entry with a repo, even when the repo
+  has no release (darwin-chess, mcpbelt, Local LLM Experiments).
+- `tests/e2e/navigation.spec.ts`, "a vertical swipe in it scrolls the list": it fails about one
+  run in six when the whole suite runs after a build (the list's `scrollTop` stays 0), and
+  passed 25 times out of 25 alone. Seen on 2026-11-26; it looks like the touches racing the
+  sheet's opening, not yet proven.
+
 ## Agent
 
 - `@cloudflare/computer`, only if running the repos' code became necessary (#13).
