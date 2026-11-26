@@ -32,20 +32,21 @@ previously:
   - name: "Bob"
     year: 2026
     note: "Un assistente vocale su Hermes Agent, con PWA e bot Discord: push-to-talk e voce in streaming. Fermato il giorno in cui è ripartito Nexus."
-now: "L'agente cambia lo schema dietro un gate umano e risponde anche dall'orologio; il prossimo passo è renderlo open source."
+now: "È in produzione e lo uso ogni giorno; sta diventando multi-utente, con una seconda persona che vede e cambia solo quello che le è concesso. L'open source viene dopo."
 ---
 
-Nexus è dove tengo task, progetti, note, libri, spese, riunioni e le mie conversazioni con Claude Code. Invece di un'app per ogni cosa c'è un solo motore: definisci uno schema e il sistema genera storage, API, i tool per l'assistente e un'interfaccia con tabelle, board, calendari e dashboard.
+Nexus è dove tengo task, progetti, note, spese, riunioni e le mie conversazioni con i coding agent. Invece di un'app per ogni cosa c'è un solo motore: definisci uno schema e il sistema genera storage, API, i tool per l'assistente e un'interfaccia con tabelle, board, calendari e dashboard.
 
 L'assistente non si limita a leggere i dati. Li gestisce mentre ci parlo, e fa evolvere lo schema: se gli dico che voglio tenere traccia dei film che guardo, crea il tipo, i campi e la vista. Ogni modifica è versionata e reversibile, e niente viene mai cancellato davvero.
 
-- Automazioni a cron o a evento, compresi agenti che girano su un prompt.
-- Trascrizione delle riunioni con i parlanti separati, OCR, ricerca web e vision come capability generiche.
-- Un server MCP con OAuth, così qualunque coding agent può leggere e scrivere nei miei dati.
-- Le chat di Claude Code sincronizzate dal laptop e i commit dei progetti attivi, collegati al progetto giusto: l'attività di un progetto la ricava da lì, e un commit vale come prova per chiudere un task.
-- Le Aree dividono la navigazione per ambito, ognuna con le sue voci, e un launcher permette di passare dall'una all'altra.
-- Campi che si compilano da soli dallo storico, con la correzione a mano che vince sempre: la stessa idea di [pgbee](/it/progetti/pgbee), portata dentro il motore.
-- File tabellari, come gli estratti conto, importati con formati che sono dati e non codice: una banca nuova è una riga, non una funzione.
-- Da una bozza scritta di fretta esce un messaggio pronto nello stile scelto, e si ritocca ("più corto") senza riscriverlo.
+- Automazioni a orario o a evento, compresi agenti che partono da un prompt.
+- Trascrizione delle riunioni, lettura di documenti e immagini e ricerca web, come capacità generiche che ogni tipo di dato può usare.
+- Un server MCP, così qualunque coding agent può leggere e scrivere nei miei dati.
+- Le chat con i coding agent e i commit dei progetti arrivano lì da soli, collegati al progetto giusto: l'attività di un progetto la ricavo da quello.
+- Le modifiche delicate passano da una mia approvazione, e scelgo io quanto l'agente può fare da solo.
 
-Backend Python con FastAPI, SQLAlchemy async e PostgreSQL con pgvector, frontend React. È self-hosted e single-user, con deploy blue-green. È il punto d'arrivo di una serie di assistenti personali, uno diverso dall'altro: sono qui sotto, dal primo.
+## A che punto è
+
+È in produzione sul mio server e lo uso ogni giorno. È nato per una persona sola e sta diventando multi-utente: una seconda persona entra con il suo accesso, vede e modifica solo quello che le è concesso e ha un suo tetto di spesa. L'accesso c'è, manca la prova nell'uso di tutti i giorni. Dopo viene l'open source: il piano è scritto, il lavoro non è cominciato.
+
+Backend Python con FastAPI e PostgreSQL, frontend React. È il punto d'arrivo di una serie di assistenti personali, uno diverso dall'altro: sono qui sotto, dal primo.
