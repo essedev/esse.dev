@@ -59,8 +59,8 @@ new ones in first draft.
 **Showcase** (6): Relay, darwin-chess, Nexus, Motio, Varco, Floppy. On 2026-11-26 darwin-chess
 and Motio took the places of pgbee and Zeno, the two entries that had been still the longest;
 both moved to the registry, and Zeno comes back when work on it resumes. On 2026-10-27 Varco took
-Portsage's place and Floppy mcpbelt's; both moved to the registry. Floppy comes from what some
-colleagues needed; who they are is not named. Zeno and Varco are private: entries without a
+Portsage's place and Floppy mcpbelt's; both moved to the registry. Floppy comes from what a small
+team needed: the entry says "a small team" and never who they are. Zeno and Varco are private: entries without a
 link to the repo (Varco links its site). The iterations of Nexus (`previously`) are Plannerinator, then
 the personal assistants: Verbosa, NanoClaw, Life Terminal, Almanac, Nexus in Elixir, Bob,
 which stopped the day Nexus restarted.

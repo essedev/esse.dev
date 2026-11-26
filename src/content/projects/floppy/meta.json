@@ -2,9 +2,10 @@
 	"status": "in-progress",
 	"published": true,
 	"created": "2026-10-06",
-	"updated": "2026-10-22",
+	"updated": "2026-11-26",
 	"repo": "https://github.com/essedev/floppy",
-	"license": "MIT",
+	"site": "https://floppy.esse.dev",
+	"license": "MIT, AGPL-3.0 (server)",
 	"install": "brew install --cask essedev/floppy/floppy",
 	"logo": "./logo.png",
 	"cover": {
