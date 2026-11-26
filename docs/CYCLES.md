@@ -424,8 +424,12 @@ Two new project entries, the showcase changed to hold them, and what followed fr
   November marked as to be redone; the entry is in progress again.
 - **Setup** (`5b5ccd6`): the method note names Pi among the agents sharing the context.
 - **Changelog** (`44896ae`, `db45cea`): the release's entry, `2026-11-26-darwin-chess-motio` (#35).
-- **To follow up:** an audit against the projects' repos found entries that have aged (Relay,
-  Nexus, Floppy, Varco, Zeno, Personal servers, Copilota need touch-ups; Local LLM Experiments
-  still tells the results of rounds its repo has archived). Every entry with a repo also shows
-  a `/releases` link, even when the repo has no release.
+- **Entries brought up to date:** an audit against the projects' repos found entries that had
+  aged. Local LLM Experiments is rewritten around its three questions (it told the results of
+  rounds its repo has archived); Nexus says it is in production and becoming multi-user, with
+  open source after; Floppy tells the first team's use and its two licences, and calls it "a
+  small team"; Varco, Relay, Zeno, Personal servers and Copilota got their current state. Along
+  the way figures that age fast or serve no reader went out (session counts, micro-benchmarks).
+  The Now note of the month and the changelog entry tell all of it.
+- **Open:** every entry with a repo shows a `/releases` link, even when the repo has no release.
 - **Next step:** unchanged from Cycle 34.
